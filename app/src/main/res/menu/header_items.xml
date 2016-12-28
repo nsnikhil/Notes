@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigationMyNotes"
+        android:icon="@drawable/ic_create_white_48dp"
+        android:title="@string/mynotes" />
+    <item
+        android:id="@+id/navigationAllNotes"
+        android:icon="@drawable/ic_note_white_48dp"
+        android:title="@string/allnotes" />
+    <item
+        android:id="@+id/navigationFolder"
+        android:icon="@drawable/ic_folder_white_48dp"
+        android:title="@string/myfolder" />
+
+    <item
+        android:id="@+id/navigationSettings"
+        android:icon="@drawable/ic_settings_white_48dp"
+        android:title="@string/navsettings" />
+
+</menu>

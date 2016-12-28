@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/matchParent"
+    android:clipToPadding="false">
+
+    <ImageView
+        android:id="@+id/singleImage"
+        android:background="@android:color/darker_gray"
+        android:scaleType="centerCrop"
+        style="@style/matchParent" />
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/singleImageCancel"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/eight"
+        android:src="@drawable/ic_cancel_black_48dp" />
+
+</RelativeLayout>

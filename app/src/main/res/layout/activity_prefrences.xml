@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_prefrences"
+    style="@style/verticalLinearLayout"
+    tools:context="com.nexus.nsnik.notes.Prefrences">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/prefrenceToolbar"
+        style="@style/toolbar"/>
+
+    <LinearLayout
+       style="@style/verticalLinearLayout"
+        android:id="@+id/prefrenceContainer"></LinearLayout>
+
+</LinearLayout>

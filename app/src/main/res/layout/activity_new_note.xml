@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_new_note"
+    style="@style/verticalLinearLayout">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/newNoteToolbar"
+        style="@style/toolbar"
+        app:theme="@style/ToolbarStyle" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/newNoteImageRecyclerView"
+        style="@style/matchParent"
+        android:layout_height="@dimen/newNoteImage"
+        android:layout_below="@id/newNoteToolbar"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/newNoteAudioContainer"
+        style="@style/horizontalLinearLayout"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/newNoteImageRecyclerView"
+        android:padding="@dimen/eight"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/newNoteAudioPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/playsmall" />
+
+
+        <SeekBar
+            android:id="@+id/newNoteAudioSeek"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:max="100" />
+
+        <ImageView
+            android:id="@+id/newNoteAudioCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cancelsmall" />
+
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/newNoteTitle"
+        style="@style/newNoteHeading"
+        android:layout_below="@id/newNoteAudioContainer"
+        android:maxLines="1" />
+
+    <EditText
+        android:id="@+id/newNoteContent"
+        style="@style/newNoteContent"
+        android:layout_below="@id/newNoteTitle" />
+
+    <com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout
+        android:id="@+id/fabtoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:containerId="@+id/fabtoolbar_container"
+        app:fabId="@+id/fabtoolbar_fab"
+        app:fabToolbarId="@+id/fabtoolbar_toolbar"
+        app:fadeInFraction="0.2"
+        app:hideDuration="200"
+        app:horizontalMargin="30dp"
+        app:showDuration="600"
+        app:verticalMargin="30dp">
+
+        <RelativeLayout
+            android:id="@+id/fabtoolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabtoolbar_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_attach_file_white_48dp"
+                app:borderWidth="0dp"
+                app:fabSize="normal" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/fabtoolbar_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/newNoteTakePicture"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/takepicturesmall" />
+
+            <ImageView
+                android:id="@+id/newNoteChoosePicture"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/addphotosmall" />
+
+            <ImageView
+                android:id="@+id/newNoteAddAudio"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/addaudiosmall" />
+
+            <ImageView
+                android:id="@+id/newNoteSetReminder"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/setremindersmall" />
+
+        </LinearLayout>
+
+    </com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout>
+
+</RelativeLayout>

@@ -1,0 +1,13 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/matchParent"
+    android:layout_height="wrap_content"
+    tools:context="com.nexus.nsnik.notes.FolderFragment">
+
+    <GridView
+        style="@style/matchParent"
+        android:layout_height="wrap_content"
+        android:numColumns="2"
+        android:id="@+id/folderFragmentGridView"/>
+
+</RelativeLayout>

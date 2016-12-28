@@ -1,0 +1,117 @@
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="drawerOpen">Open</string>
+    <string name="drawerClose">Close</string>
+    <string name="title">Title</string>
+    <string name="newNote">Note</string>
+    <string name="addNote">Add Note</string>
+    <string name="editNote">Edit Note</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="warning">Warning</string>
+    <string name="folderName">notes</string>
+    <string name="noteSaved">New note saved</string>
+    <string name="noteNotSaved">Error while saving new note</string>
+    <string name="permissionDenied">Permission Denied to record Audio</string>
+    <string name="newfoldername">Folder Name</string>
+    <string name="folder">Folder</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="nofolder">nofolder</string>
+    <string name="serach">Search</string>
+    <string name="count">count</string>
+    <string name="serachhint">Search Notes</string>
+
+
+    <!-- FileType-->
+    <string name="typeImage">image</string>
+    <string name="typeText">text</string>
+    <!-- -->
+
+    <!-- navigationMenu-->
+    <string name="mynotes">My Notes</string>
+    <string name="myfolder">Folders</string>
+    <string name="allnotes">All Notes</string>
+    <string name="navsettings">Settings</string>
+    <!-- -->
+
+    <!-- bundle-->
+    <string name="foldernamebundle">foldbund</string>
+    <string name="newnotefolderbundle">newntbd</string>
+    <!-- -->
+
+    <!-- menuStrings-->
+    <string name="settings">Settings</string>
+    <string name="attach">Attach</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="deleteall">Delete All</string>
+    <!-- -->
+
+    <!-- folder-->
+    <string name="newfoldercreated"> New Folder Created</string>
+    <string name="newfoldernotcreated">Error while creating new folder</string>
+    <!-- -->
+
+    <!-- floatingActionMneu-->
+    <string name="addImage">Choose Image</string>
+    <string name="takeImage">Take a Photo</string>
+    <string name="addAudio">Recording</string>
+    <!-- -->
+
+    <!-- prefrenceStrings-->
+    <string name="tempTile">Temp</string>
+    <string name="tempSummary">Temporary</string>
+    <string name="tempKey">tempkey</string>
+
+    <!-- intentFail-->
+    <string name="noCamera">No Camera Application Found</string>
+    <string name="noGallery">No Gallery Application Found</string>
+    <!-- -->
+
+    <!-- insertNote-->
+    <string name="insertedNote">Note Saved</string>
+    <string name="insertFailed">Error while saving note</string>
+    <!-- -->
+
+    <!-- updateNote-->
+    <string name="updateNote">Note Updated</string>
+    <string name="updateFailed">Error while updating note</string>
+    <!-- -->
+
+    <!-- emptyNote-->
+    <string name="noNote">Cannot Save Empty Note</string>
+    <string name="noTitle">Cannot Save Note Without Title</string>
+    <!-- -->
+
+    <!-- delete-->
+    <string name="deletealldialog">Are you sure you want to delete all folder and notes</string>
+    <string name="deleteallnotesdialog">Are you sure you want to delete all notes in this folder</string>
+    <string name="deleteallnotesfragmentDailog">Are you sure you want to delete all the Notes</string>
+    <string name="deleteallfolderDailog">Are you sure you want to delete all folders this will also delete notes within those folder</string>
+    <string name="deletesingledialog">Are you sure you want to delete this note</string>
+    <string name="deletedall">Notes and Folder Deleted</string>
+    <string name="deletedallnotes">Notes Deleted</string>
+    <string name="deleteallfailed">Error while deleting notes and folder</string>
+    <string name="deleteallnotesfailed">Error while deleting notes</string>
+    <string name="deletednote">Note Deleted</string>
+    <string name="deletenotefailed">Error while deleting note</string>
+    <string name="deletenoitem">Nothing to delete</string>
+    <string name="deletefolder">Folder Deleted</string>
+    <string name="deletefolderfailed">Failed to Delete folder</string>
+    <string name="deletefolderalldialog">Are you aure you want to delete all folders</string>
+    <string name="deleteallfolder">All folders Deleted</string>
+    <string name="deleteallfolderfailed">Error while deleting all folders</string>
+    <!-- -->
+
+    <!-- audio-->
+    <string name="recording">Recording</string>
+    <string name="stoprecording">Stop Recording</string>
+    <!-- -->
+
+    <!-- notification-->
+    <string name="notificationtitle">notifytitle</string>
+    <string name="notificationcontent">notifycontent</string>
+    <!-- -->
+
+</resources>

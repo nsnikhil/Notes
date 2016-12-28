@@ -1,0 +1,11 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/matchParent"
+    tools:context="com.nexus.nsnik.notes.MainFragment">
+
+    <GridView
+        style="@style/matchParent"
+        android:numColumns="2"
+        android:id="@+id/mainFragmentGridView"/>
+
+</RelativeLayout>
