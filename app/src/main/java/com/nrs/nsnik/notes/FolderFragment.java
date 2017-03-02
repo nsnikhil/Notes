@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,7 +15,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.nexus.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.data.TableNames;
 
 public class FolderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 

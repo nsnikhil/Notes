@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;

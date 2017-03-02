@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 
 import android.content.Intent;
@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.nexus.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.data.TableNames;
 
 public class AllNotesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 

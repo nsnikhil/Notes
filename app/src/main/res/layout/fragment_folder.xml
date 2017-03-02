@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/matchParent"
     android:layout_height="wrap_content"
-    tools:context="com.nexus.nsnik.notes.FolderFragment">
+    tools:context="com.nrs.nsnik.notes.FolderFragment">
 
     <GridView
         style="@style/matchParent"

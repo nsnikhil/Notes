@@ -3,6 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fullScreenImage"
     style="@style/matchParent"
-    tools:context="com.nexus.nsnik.notes.FullScreen">
+    tools:context="com.nrs.nsnik.notes.FullScreen">
 
 </ImageView>

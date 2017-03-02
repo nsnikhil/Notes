@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

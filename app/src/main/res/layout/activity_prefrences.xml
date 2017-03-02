@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_prefrences"
     style="@style/verticalLinearLayout"
-    tools:context="com.nexus.nsnik.notes.Prefrences">
+    tools:context="com.nrs.nsnik.notes.Prefrences">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/prefrenceToolbar"

@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.nexus.nsnik.notes.data.TableNames.table2;
+import com.nrs.nsnik.notes.data.TableNames.table2;
 
 public class FolderAdapter extends CursorAdapter{
 

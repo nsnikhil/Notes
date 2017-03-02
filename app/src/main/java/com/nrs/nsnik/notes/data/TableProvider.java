@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes.data;
+package com.nrs.nsnik.notes.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -8,9 +8,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.nexus.nsnik.notes.data.TableNames.table1;
+import com.nrs.nsnik.notes.data.TableNames.table1;
 
 
 

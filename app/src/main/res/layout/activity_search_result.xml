@@ -3,6 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_search_result"
     style="@style/verticalLinearLayout"
-    tools:context="com.nexus.nsnik.notes.SearchResultActivity">
+    tools:context="com.nrs.nsnik.notes.SearchResultActivity">
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,10 +20,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -38,16 +37,13 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
+import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.nexus.nsnik.notes.data.TableNames;
-import com.nexus.nsnik.notes.data.TableNames.table1;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -64,81 +60,150 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     ImageView takePicture, addImage, addAudio, addReminder, playAudio, cancelAudio;
     SeekBar seekAudio;
     android.support.design.widget.FloatingActionButton newNoteMenu;
-    String mFileName;
     String mAudioFileName;
-    String mImageFileName;
+    String mFoldername = "nofolder";
     Uri intentUri = null;
-    Cursor intentCursor = null;
     Bitmap mImage = null;
     int hour = 289;
     int minutes = 291;
+    int mReminder = 0;
     int audio = 0;
     MediaRecorder mRecorder;
     MediaPlayer mPlayer;
-    String uriFolderName = null;
     ArrayList<Bitmap> imagesArray;
+    ArrayList<String> imagesLocations;
     ImageAdapter imageAdapter;
-    String imageName[] = new String[10];
-    File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
+    FileOperation fileOperation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_note);
         initilize();
-        Bundle extra = null;
-        if (getIntent().getExtras() != null) {
-            Log.d("here0", "");
-            extra = getIntent().getExtras();
-            if (extra != null) {
-                Log.d("here1", "");
-                uriFolderName = extra.getString(getResources().getString(R.string.newnotefolderbundle));
-            }
-        }
         setClickListener();
-        if (getIntent().getData() != null) {
-            invalidateOptionsMenu();
-            //setNote();
+        if(getIntent().getData()!=null){
+            intentUri = getIntent().getData();
+            try {
+                setNote();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        if(getIntent().getExtras()!=null){
+            mFoldername  = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
         }
     }
 
-    /*private void setNote() {
-        intentUri = getIntent().getData();
-        getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
-        intentCursor = getContentResolver().query(intentUri, null, null, null, null);
-        if (intentCursor.moveToFirst()) {
-            title.setText(intentCursor.getString(intentCursor.getColumnIndex(table1.mTitile)));
-            setNoteText();
-            if (intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture)) != null) {
-                setNoteImage();
+    private void setNote() throws IOException, ClassNotFoundException {
+        Cursor c = getContentResolver().query(intentUri,null,null,null,null);
+        if(c.moveToFirst()){
+            title.setText(c.getString(c.getColumnIndex(table1.mTitile)));
+            File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
+            File f = new File(folder,c.getString(c.getColumnIndex(table1.mFileName)));
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            try{
 
-            }
-            if (intentCursor.getString(intentCursor.getColumnIndex(table1.mAudio)) != null) {
-                newNoteAudioContainer.setVisibility(View.VISIBLE);
-                mAudioFileName = intentCursor.getString(intentCursor.getColumnIndex(table1.mAudio));
-            }
-        }
-    }*/
+                //setNoteText
+                fis = new FileInputStream(f);
+                ois = new ObjectInputStream(fis);
+                NoteObject obj = (NoteObject) ois.readObject();
+                note.setText(obj.getNote());
 
-    private void setNoteText() {
-        File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-        File f = new File(folder, intentCursor.getString(intentCursor.getColumnIndex(table1.mNote)));
-        try {
-            String noteContent = Files.toString(f, Charsets.UTF_8);
-            note.setText(noteContent);
-        } catch (IOException e) {
-            e.printStackTrace();
+                //setNoteImages
+                if(obj.getImages().size()>0){
+                    imageRecyclerView.setVisibility(View.VISIBLE);
+                    for(int i=0;i<obj.getImages().size();i++) {
+                        imagesLocations.add(obj.getImages().get(i));
+                        File path = new File(folder,obj.getImages().get(i));
+                        imagesArray.add(BitmapFactory.decodeFile(path.toString()));
+                    }
+                }
+
+                //setAudio
+                if(obj.getAudioLocation()!=null){
+                    newNoteAudioContainer.setVisibility(View.VISIBLE);
+                    mAudioFileName = obj.getAudioLocation();
+                }
+
+                //setReminder
+                if(obj.getReminder()!=0){
+                    hour = 292;
+                    minutes = 392;
+                }
+
+                //foldername
+                mFoldername = obj.getFolderName();
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }finally {
+                fis.close();
+                ois.close();
+            }
         }
     }
 
-    private void setNoteImage() {
-        File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-        //  mImageFileName = intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture));
-        File f = new File(folder, mImageFileName);
-        String fpath = String.valueOf(f);
-        mImage = BitmapFactory.decodeFile(fpath);
-        // newNoteImage.setImageBitmap(mImage);
-        //  newNoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    private void deleteNote() throws IOException {
+        if(intentUri!=null){
+            AlertDialog.Builder deleteDialog = new AlertDialog.Builder(NewNoteActivity.this);
+            deleteDialog.setTitle(getResources().getString(R.string.warning));
+            deleteDialog.setMessage(getResources().getString(R.string.deletesingledialog));
+            deleteDialog.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            }).setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    imagesArray.clear();
+                    imagesLocations.clear();
+                    try {
+                        deleteFiles();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    int count = getContentResolver().delete(intentUri,null,null);
+                    if (count == 0) {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletenotefailed), Toast.LENGTH_SHORT).show();
+                    } else {
+                        finish();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.delete), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            deleteDialog.create().show();
+        }
+    }
+
+    private void  deleteFiles() throws IOException {
+        Cursor c = getContentResolver().query(intentUri,null,null,null,null);
+        if(c.moveToFirst()){
+            File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
+            File f = new File(folder,c.getString(c.getColumnIndex(table1.mFileName)));
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            try{
+                fis = new FileInputStream(f);
+                ois = new ObjectInputStream(fis);
+                NoteObject obj = (NoteObject) ois.readObject();
+                for(int i=0;i<obj.getImages().size();i++){
+                    File path = new File(folder,obj.getImages().get(i));
+                    path.delete();
+                }
+                File file = new File(folder,c.getString(c.getColumnIndex(table1.mFileName)));
+                file.delete();
+            }catch(Exception e){
+                e.printStackTrace();
+            }finally{
+                fis.close();
+                ois.close();
+            }
+
+        }
     }
 
     private void setClickListener() {
@@ -170,84 +235,40 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.newNoteMenuSave:
-                /*if (verifyAndSave()) {
-                    saveToFile();
-                    if (hour != 289 && minutes != 291) {
-                        setNotification();
+                if (verifyAndSave()) {
+                    try {
+                        if(intentUri!=null){
+                            updateNote();
+                        }else {
+                            saveNote();
+                        }
+                        finish();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    if (intentUri == null) {
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.noteSaved), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.updateNote), Toast.LENGTH_SHORT).show();
-                    }
-                    finish();
-                }*/
+                }
                 break;
             case R.id.newNoteMenuDelete:
-                //deleteNote();
+                try {
+                    deleteNote();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
         return true;
     }
 
-   /* private void deleteNote() {
-        AlertDialog.Builder deleteDialog = new AlertDialog.Builder(NewNoteActivity.this);
-        deleteDialog.setTitle(getResources().getString(R.string.warning));
-        deleteDialog.setMessage(getResources().getString(R.string.deletesingledialog));
-        if(uriFolderName!=null){
-            Log.d("Uri",Uri.withAppendedPath(TableNames.mContentUri,uriFolderName).toString());
+    private void updateNote() throws IOException {
+        Cursor c = getContentResolver().query(intentUri,null,null,null,null);
+        if(hour!=289||minutes!=291){
+            mReminder = 1;
         }
-        deleteDialog.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-        deleteDialog.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-                Cursor c = null;
-                try{
-                    c =  getContentResolver().query(intentUri, null, null, null, null);
-                    if (c.moveToFirst()) {
-                        if (c.getString(c.getColumnIndex(table1.mNote)) != null) {
-                            File f = new File(folder, c.getString(c.getColumnIndex((table1.mNote))));
-                            if (f.exists()) {
-                                f.delete();
-                            }
-                        }
-                        if (c.getString(c.getColumnIndex(table1.mPicture)) != null) {
-                            File fimg = new File(folder, c.getString(c.getColumnIndex(table1.mPicture)));
-                            if (fimg.exists()) {
-                                fimg.delete();
-                            }
-                        }
-                        if (c.getString(c.getColumnIndex(table1.mAudio)) != null) {
-                            File faudio = new File(folder, c.getString(c.getColumnIndex(table1.mAudio)));
-                            if (faudio.exists()) {
-                                faudio.delete();
-                            }
-                        }
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }finally {
-                    if(c!=null){
-                        c.close();
-                    }
-                }
-                int count = getContentResolver().delete(intentUri, null, null);
-                if (count != 0) {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletednote), Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletenotefailed), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        deleteDialog.create().show();
-    }*/
+        if(c.moveToFirst()){
+            NoteObject noteObject = new NoteObject(title.getText().toString(),note.getText().toString(),imagesLocations,mAudioFileName,mReminder,mFoldername);
+            fileOperation.updateNote(c.getString(c.getColumnIndex(table1.mFileName)),noteObject,intentUri);
+        }
+    }
 
     private boolean verifyAndSave() {
         if (note.getText().toString().equalsIgnoreCase("") || note.getText().toString().isEmpty() || note.getText().toString() == null) {
@@ -260,122 +281,19 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         return true;
     }
 
-   /* private void saveToFile() {
-        ContentValues cv = new ContentValues();
-        if (intentUri == null) {
-            saveNoteToFile();
-            cv.put(table1.mTitile, title.getText().toString());
-            cv.put(table1.mNote, mFileName);
-            saveImages(cv);
-            if (hour != 289 && minutes != 291) {
-                cv.put(table1.mReminder, 1);
-            }
-            if (audio == 1) {
-                cv.put(table1.mAudio, mAudioFileName);
-            }
-            if (uriFolderName != null) {
-                cv.put(table1.mFolderName, uriFolderName);
-            } else {
-                cv.put(table1.mFolderName, getResources().getString(R.string.nofolder));
-            }
-            insertVal(cv);
-
-        } else {
-            if (updateToFile()) {
-                cv.put(table1.mTitile, title.getText().toString());
-                cv.put(table1.mNote, mFileName);
-                updateImageToFile();
-                cv.put(table1.mPicture, mImageFileName);
-                cv.put(table1.mAudio, mAudioFileName);
-                if (hour != 289 && minutes != 291) {
-                    cv.put(table1.mReminder, 1);
-                }
-                updateVal(cv);
-            }
+    private void saveNote() throws IOException {
+        if(hour!=289||minutes!=291){
+           mReminder = 1;
         }
-    }*/
-
-
-    private void insertVal(ContentValues cv) {
-        Uri u = getContentResolver().insert(TableNames.mContentUri, cv);
-        if (u == null) {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.insertFailed), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.insertedNote), Toast.LENGTH_SHORT).show();
-        }
+        NoteObject noteObject = new NoteObject(title.getText().toString(),note.getText().toString(),imagesLocations,mAudioFileName,mReminder,mFoldername);
+        fileOperation.saveNote(makeNoteName(),noteObject);
     }
 
-    private void updateVal(ContentValues cv) {
-        if (intentUri != null) {
-            int count = getContentResolver().update(intentUri, cv, null, null);
-            if (count == 0) {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.updateFailed), Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.updateNote), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private boolean updateToFile() {
-        File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-        String fileName = null;
-        if (intentCursor.moveToFirst()) {
-            fileName = intentCursor.getString(intentCursor.getColumnIndex(table1.mNote));
-        }
-        File f = new File(folder, fileName);
-        mFileName = fileName;
-        try {
-            Files.write(note.getText().toString(), f, Charsets.UTF_8);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private void saveNoteToFile() {
+    private String makeNoteName() {
         Calendar c = Calendar.getInstance();
-        String fileName = title.getText().toString() + c.getTimeInMillis() + ".txt";
-        mFileName = fileName;
-        FileOperation.saveText(getApplicationContext(), fileName, note.getText().toString());
+        return title.getText().toString() + c.getTimeInMillis() + ".txt";
     }
 
-
-   /* private void updateImageToFile() {
-        if (mImage != null && intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture)) != null) {
-            File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-            String imageFileName = intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture));
-            mImageFileName = imageFileName;
-            if (mImageFileName != null && mImage != null) {
-                File f = new File(folder, imageFileName);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                mImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                try {
-                    Files.write(byteArray, f);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else if (mImage != null && intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture)) == null) {
-            saveImageToFile();
-        } else if (mImage == null && intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture)) == null || intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture)) != null) {
-            File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-            if (intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture)) != null) {
-                File f = new File(folder, intentCursor.getString(intentCursor.getColumnIndex(table1.mPicture)));
-                if (f.exists()) {
-                    f.delete();
-                }
-            }
-        }
-    }*/
-
-    private void saveImageToFile() {
-        Calendar c = Calendar.getInstance();
-        String imageFileName = title.getText().toString() + c.getTimeInMillis() + ".jpg";
-        mImageFileName = imageFileName;
-        FileOperation.saveImage(getApplicationContext(),imageFileName,null);//replace null with bitmap
-    }
 
     private void initilize() {
         newNoteToolbar = (Toolbar) findViewById(R.id.newNoteToolbar);
@@ -390,17 +308,24 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         addImage = (ImageView) findViewById(R.id.newNoteChoosePicture);
         addAudio = (ImageView) findViewById(R.id.newNoteAddAudio);
         addReminder = (ImageView) findViewById(R.id.newNoteSetReminder);
+
+        //Image
         imageRecyclerView = (RecyclerView) findViewById(R.id.newNoteImageRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         imageRecyclerView.setLayoutManager(layoutManager);
+        imagesArray = new ArrayList<>();
+        imageAdapter = new ImageAdapter(NewNoteActivity.this, imagesArray, this);
+        imageRecyclerView.setAdapter(imageAdapter);
+        imagesLocations = new ArrayList<>();
+
         playAudio = (ImageView) findViewById(R.id.newNoteAudioPlay);
         cancelAudio = (ImageView) findViewById(R.id.newNoteAudioCancel);
         seekAudio = (SeekBar) findViewById(R.id.newNoteAudioSeek);
         seekAudio.incrementProgressBy(10);
         newNoteAudioContainer = (LinearLayout) findViewById(R.id.newNoteAudioContainer);
-        imagesArray = new ArrayList<>();
-        imageAdapter = new ImageAdapter(NewNoteActivity.this, imagesArray, this);
-        imageRecyclerView.setAdapter(imageAdapter);
+        fileOperation = new FileOperation(getApplicationContext());
+
+
     }
 
     @Override
@@ -410,6 +335,11 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             super.onBackPressed();
         }
+    }
+
+    private String makeImageName(){
+        Calendar c = Calendar.getInstance();
+        return title.getText().toString() + c.getTimeInMillis() + ".jpg";
     }
 
     @Override
@@ -423,6 +353,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                         imagesArray.add(mImage);
                         imageRecyclerView.swapAdapter(imageAdapter, true);
                         imageRecyclerView.setVisibility(View.VISIBLE);
+                        String name = makeImageName();
+                        imagesLocations.add(name);
+                        fileOperation.saveImage(name,mImage);
+                        Toast.makeText(getApplicationContext(),name,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),imagesArray.size()+"",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),imagesLocations.size()+"",Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -435,16 +371,21 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     imagesArray.add(mImage);
                     imageRecyclerView.swapAdapter(imageAdapter, true);
                     imageRecyclerView.setVisibility(View.VISIBLE);
+                    String name = makeImageName();
+                    imagesLocations.add(name);
+                    try {
+                        fileOperation.saveImage(name,mImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(),name,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),imagesArray.size()+"",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),imagesLocations.size()+"",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
     }
 
-    private void createFileName(int ){
-        Calendar c = Calendar.getInstance();
-        String imageFileName = title.getText().toString()+ c.getTimeInMillis() + ".jpg";
-        File f = new File(folder,imageFileName);
-    }
 
     @Override
     public void onClick(View view) {
@@ -481,7 +422,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     }
                 }, c.getTime().getHours(), c.getTime().getMinutes(), true);
                 time.show();
-                Toast.makeText(getApplicationContext(), "Set Reminder", Toast.LENGTH_SHORT).show();
+                setNotification();
                 break;
             case R.id.newNoteAudioPlay:
                 mPlayer = new MediaPlayer();
@@ -608,18 +549,15 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     @Override
-    public void validateSize() {
+    public void validateSize(int position) {
         if (imagesArray.size() <= 0) {
             imageRecyclerView.setVisibility(View.GONE);
         } else {
             imageRecyclerView.setVisibility(View.VISIBLE);
         }
+        imagesLocations.remove(position);
     }
 
 

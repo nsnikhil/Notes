@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nexus.nsnik.notes">
+    package="com.nrs.nsnik.notes">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.nrs.nsnik.notes.MainActivity"
             android:theme="@style/tranparentStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,23 +20,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Prefrences"
+            android:name="com.nrs.nsnik.notes.Prefrences"
             android:label="@string/settings"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName="com.nrs.nsnik.notes.MainActivity" />
         <activity
-            android:name=".NewNoteActivity"
+            android:name="com.nrs.nsnik.notes.NewNoteActivity"
             android:label="@string/addNote"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName="com.nrs.nsnik.notes.MainActivity" />
 
         <provider
-            android:name=".data.TableProvider"
-            android:authorities="com.nexus.nsnik.notes"
+            android:name="com.nrs.nsnik.notes.data.TableProvider"
+            android:authorities="com.nrs.nsnik.notes"
+            android:enabled="true"
             android:exported="false" />
 
         <receiver android:name=".NewNoteActivity$ReminderService" />
 
         <activity
-            android:name=".SearchResultActivity"
+            android:name="com.nrs.nsnik.notes.SearchResultActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -46,7 +47,7 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".FullScreen"></activity>
+        <activity android:name="com.nrs.nsnik.notes.FullScreen"></activity>
     </application>
 
 </manifest>

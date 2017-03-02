@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
@@ -8,8 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,24 +21,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
 import com.github.clans.fab.FloatingActionMenu;
-import com.nexus.nsnik.notes.data.TableHelper;
-import com.nexus.nsnik.notes.data.TableNames;
-import com.nexus.nsnik.notes.data.TableNames.table2;
+import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.data.TableNames.table2;
+
 import java.io.File;
 import java.util.Calendar;
 
@@ -72,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         if (folderUri != null) {
             UrifolderName = getIntent().getExtras().getString(getResources().getString(R.string.foldernamebundle));
             getSupportActionBar().setTitle(UrifolderName.toUpperCase());
-            mainDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);;
+            mainDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             mainDrawerToggle.setDrawerIndicatorEnabled(false);
             mainDrawerToggle.syncState();
         }
@@ -112,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment fragment = null;
                 final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.navigationMyNotes:
                         mNotesFragment = new MainFragment();
                         ft.replace(R.id.mainContainer, mNotesFragment);
@@ -121,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                         drawerAction(0);
                         break;
                     case R.id.navigationAllNotes:
-                        if(mFoldersFragment!=null){
+                        if (mFoldersFragment != null) {
                             ft.remove(mFoldersFragment);
                             mFoldersFragment = null;
                         }
@@ -130,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         drawerAction(1);
                         break;
                     case R.id.navigationFolder:
-                        if(mNotesFragment!=null){
+                        if (mNotesFragment != null) {
                             ft.remove(mNotesFragment);
                             mNotesFragment = null;
                         }
@@ -139,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                         drawerAction(2);
                         break;
                     case R.id.navigationSettings:
-                        startActivity(new Intent(MainActivity.this,Prefrences.class));
+                        startActivity(new Intent(MainActivity.this, Prefrences.class));
                         break;
                 }
                 ft.commit();
@@ -148,16 +142,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void drawerAction(int key){
+    private void drawerAction(int key) {
         invalidateOptionsMenu();
         MenuItem notes = mainNaviagtionView.getMenu().getItem(0).setChecked(false);
-        MenuItem allnotes =  mainNaviagtionView.getMenu().getItem(1).setChecked(false);
-        MenuItem folder =  mainNaviagtionView.getMenu().getItem(2).setChecked(false);
+        MenuItem allnotes = mainNaviagtionView.getMenu().getItem(1).setChecked(false);
+        MenuItem folder = mainNaviagtionView.getMenu().getItem(2).setChecked(false);
         mainDrawerLayout.closeDrawers();
         mainFab.removeAllMenuButtons();
         setupFab();
         setFolderFab();
-        switch (key){
+        switch (key) {
             case 0:
                 notes.setChecked(true);
                 getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
@@ -181,11 +175,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setEmpty() {
-        Cursor c = getContentResolver().query(TableNames.mContentUri,null,null,null,null);
-        Cursor fc = getContentResolver().query(TableNames.mFolderContentUri,null,null,null,null);
-        if(c.getCount()!=0||fc.getCount()!=0){
+        Cursor c = getContentResolver().query(TableNames.mContentUri, null, null, null, null);
+        Cursor fc = getContentResolver().query(TableNames.mFolderContentUri, null, null, null, null);
+        if (c.getCount() != 0 || fc.getCount() != 0) {
             emptyState.setVisibility(View.GONE);
-        }else {
+        } else {
             emptyState.setVisibility(View.VISIBLE);
         }
 
@@ -199,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         newFile.setImageResource(R.drawable.newfilesmall);
         newFile.setColorNormal(getResources().getColor(R.color.colorAccent));
         newFile.setColorPressed(getResources().getColor(R.color.colorAccent));
-        if(mNotesFragment!=null){
+        if (mNotesFragment != null) {
             mainFab.addMenuButton(newFile);
             newFile.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -222,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         newFolder.setImageResource(R.drawable.newfoldersmall);
         newFolder.setColorNormal(getResources().getColor(R.color.colorAccent));
         newFolder.setColorPressed(getResources().getColor(R.color.colorAccent));
-        if(mFoldersFragment!=null) {
+        if (mFoldersFragment != null) {
             mainFab.addMenuButton(newFolder);
             newFolder.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -282,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem serachItem = menu.findItem(R.id.menuMainSearch);
         android.widget.SearchView searchView = (android.widget.SearchView) MenuItemCompat.getActionView(serachItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        ComponentName componentName = new ComponentName(this,SearchResultActivity.class);
+        ComponentName componentName = new ComponentName(this, SearchResultActivity.class);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
         return true;
     }
@@ -304,9 +298,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuMainDeleteAll:
-                if(mFoldersFragment!=null&&mNotesFragment!=null){
+                if (mFoldersFragment != null && mNotesFragment != null) {
                     if (folderUri == null && UrifolderName == null) {
-                        if (getContentResolver().query(TableNames.mContentUri, null, null, null, null).getCount() == 0 && getContentResolver().query(TableNames.mFolderContentUri, null, null, null, null).getCount()==0) {
+                        if (getContentResolver().query(TableNames.mContentUri, null, null, null, null).getCount() == 0 && getContentResolver().query(TableNames.mFolderContentUri, null, null, null, null).getCount() == 0) {
                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletenoitem), Toast.LENGTH_SHORT).show();
                         } else {
                             showAlertDialog(TableNames.mContentUri, 0);
@@ -318,9 +312,9 @@ public class MainActivity extends AppCompatActivity {
                             showAlertDialog(Uri.withAppendedPath(TableNames.mContentUri, UrifolderName), 1);
                         }
                     }
-                }else if(mFoldersFragment==null&&mNotesFragment!=null){
+                } else if (mFoldersFragment == null && mNotesFragment != null) {
                     fragmentDialog(1);
-                }else if(mNotesFragment==null&&mFoldersFragment!=null){
+                } else if (mNotesFragment == null && mFoldersFragment != null) {
                     fragmentDialog(0);
                 }
                 break;
@@ -331,12 +325,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void fragmentDialog(final int key){
+
+
+
+    private void fragmentDialog(final int key) {
         AlertDialog.Builder del = new AlertDialog.Builder(MainActivity.this);
         del.setTitle(getResources().getString(R.string.warning));
-        if(key==0){
+        if (key == 0) {
             del.setMessage(getResources().getString(R.string.deleteallfolderDailog));
-        }else {
+        } else {
             del.setMessage(getResources().getString(R.string.deleteallnotesfragmentDailog));
         }
         del.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -349,25 +346,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 long count;
-                if(key==0){
-                    Cursor c = getContentResolver().query(TableNames.mFolderContentUri,null,null,null,null);
-                    while (c.moveToNext()){
+                if (key == 0) {
+                    Cursor c = getContentResolver().query(TableNames.mFolderContentUri, null, null, null, null);
+                    while (c.moveToNext()) {
                         String nm = c.getString(c.getColumnIndex(table2.mFolderName));
                         deleteNotesInFolder(nm);
                     }
-                    count = getContentResolver().delete(TableNames.mFolderContentUri,null,null);
-                    if(count!=0){
-                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.deleteallfolder),Toast.LENGTH_SHORT).show();
-                    }else {
-                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.deleteallfolderfailed),Toast.LENGTH_SHORT).show();
+                    count = getContentResolver().delete(TableNames.mFolderContentUri, null, null);
+                    if (count != 0) {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteallfolder), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteallfolderfailed), Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                } else {
                     deleteAllNotes();
-                    count = getContentResolver().delete(TableNames.mContentUri,null,null);
-                    if(count!=0){
-                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.deletedallnotes),Toast.LENGTH_SHORT).show();
-                    }else {
-                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.deleteallnotesfailed),Toast.LENGTH_SHORT).show();
+                    count = getContentResolver().delete(TableNames.mContentUri, null, null);
+                    if (count != 0) {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletedallnotes), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteallnotesfailed), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -376,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void deleteAllNotes(){
+    private void deleteAllNotes() {
         File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
         String child[] = folder.list();
         if (folder.isDirectory()) {
@@ -386,26 +383,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteNotesInFolder(String fldrNm){
-        Cursor c = getContentResolver().query(Uri.withAppendedPath(TableNames.mContentUri,fldrNm),null,null,null,null);
+    private void deleteNotesInFolder(String fldrNm) {
+        Cursor c = getContentResolver().query(Uri.withAppendedPath(TableNames.mContentUri, fldrNm), null, null, null, null);
         File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-        while (c.moveToNext()){
-            String filename = c.getString(c.getColumnIndex(TableNames.table1.mNote));
-            File f = new File(folder,filename);
-            if(f.exists()){
+        while (c.moveToNext()) {
+            String filename = c.getString(c.getColumnIndex(TableNames.table1.mFileName));
+            File f = new File(folder, filename);
+            if (f.exists()) {
                 f.delete();
             }
         }
-        long count = getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri,fldrNm),null,null);
+        long count = getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, fldrNm), null, null);
     }
 
 
-    private boolean checkFirst(){
+    private boolean checkFirst() {
         SharedPreferences spf = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        int count = spf.getInt(getResources().getString(R.string.count),0);
-        if(count==1){
+        int count = spf.getInt(getResources().getString(R.string.count), 0);
+        if (count == 1) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
@@ -480,19 +477,18 @@ public class MainActivity extends AppCompatActivity {
         File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
         try {
             if (c.moveToNext()) {
-                String name = c.getString(c.getColumnIndex(TableNames.table1.mNote));
+                String name = c.getString(c.getColumnIndex(TableNames.table1.mFileName));
                 File f = new File(folder, name);
                 if (f.exists()) {
                     f.delete();
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(c!=null){
+        } finally {
+            if (c != null) {
                 c.close();
             }
         }
-
     }
 }

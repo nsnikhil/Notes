@@ -6,7 +6,7 @@
     android:id="@+id/mainDrawerLayout"
     style="@style/matchParent"
     android:fitsSystemWindows="true"
-    tools:context="com.nexus.nsnik.notes.MainActivity">
+    tools:context="com.nrs.nsnik.notes.MainActivity">
 
     <RelativeLayout style="@style/matchParent">
 

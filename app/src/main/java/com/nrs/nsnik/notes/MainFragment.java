@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 
 import android.content.Intent;
@@ -9,16 +9,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
-import com.nexus.nsnik.notes.data.TableNames;
+import android.widget.Toast;
+
+import com.nrs.nsnik.notes.data.TableNames;
+
+import java.io.File;
 
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
@@ -61,6 +62,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 }else {
                     editor.setData(Uri.withAppendedPath(TableNames.mContentUri,getResources().getString(R.string.nofolder)));
                 }
+                Log.d("Uri",editor.getData().toString());
                 startActivity(editor);
             }
         });

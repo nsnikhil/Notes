@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -57,7 +57,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 public void onClick(View view) {
                     list.remove(getPosition());
                     notifyItemRemoved(getPosition());
-                    size.validateSize();
+                    size.validateSize(getPosition());
                 }
             });
             image.setOnClickListener(new View.OnClickListener() {

@@ -1,4 +1,4 @@
-package com.nexus.nsnik.notes;
+package com.nrs.nsnik.notes;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
