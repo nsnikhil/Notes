@@ -81,7 +81,11 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuMainDeleteAll:
+                if(mFolderCount>0||mNoteCount>0){
                 deleteAll();
+                }else {
+                    Toast.makeText(getActivity(),"Nothing to delete",Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -106,8 +110,8 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     }
 
     private void clearDatabase() {
-        getActivity().getContentResolver().delete(TableNames.mContentUri, null, null);
         getActivity().getContentResolver().delete(TableNames.mFolderContentUri, null, null);
+        getActivity().getContentResolver().delete(TableNames.mContentUri, null, null);
         deleteAllFiles();
     }
 

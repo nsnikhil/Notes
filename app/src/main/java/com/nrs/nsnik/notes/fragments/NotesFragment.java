@@ -1,12 +1,15 @@
 package com.nrs.nsnik.notes.fragments;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -94,9 +97,37 @@ public class NotesFragment extends Fragment implements NotesCount{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuMainDeleteAll:
+                deleteDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteDialog(){
+        AlertDialog.Builder delete = new AlertDialog.Builder(getActivity());
+        delete.setTitle(getActivity().getResources().getString(R.string.warning))
+                .setMessage(getActivity().getResources().getString(R.string.deleteallnotesfragmentDailog))
+                .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteNotes();
+            }
+        });
+        delete.create().show();
+    }
+
+    private void deleteNotes(){
+        if(getArguments()!=null){
+            String folderName = getArguments().getString(getActivity().getResources().getString(R.string.foldernamebundle));
+            getActivity().getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri,folderName),null,null);
+        } else {
+            getActivity().getContentResolver().delete(TableNames.mContentUri,null,null);
+        }
     }
 
     private void cleanUp() {

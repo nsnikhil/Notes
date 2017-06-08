@@ -2,6 +2,7 @@ package com.nrs.nsnik.notes.fragments;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -64,9 +65,43 @@ public class FolderFragment extends Fragment implements FolderCount{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuMainDeleteAll:
+                deleteDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteDialog(){
+        AlertDialog.Builder delete = new AlertDialog.Builder(getActivity());
+        delete.setTitle(getActivity().getResources().getString(R.string.warning))
+                .setMessage(getActivity().getResources().getString(R.string.deleteallfolderDailog))
+                .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteAllFolder();
+            }
+        });
+        delete.create().show();
+    }
+
+    private void deleteAllFolder(){
+        Cursor c = getActivity().getContentResolver().query(TableNames.mFolderContentUri,null,null,null,null);
+        try {
+            while (c!=null&&c.moveToNext()){
+                getActivity().getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri
+                        ,c.getString(c.getColumnIndex(TableNames.table2.mFolderName))),null,null);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(c!=null) {c.close();}
+        }
+        getActivity().getContentResolver().delete(TableNames.mFolderContentUri,null,null);
     }
 
     private void initialize(){

@@ -116,7 +116,7 @@ public class TableProvider extends ContentProvider{
             case uAllNotes:
                 return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
             case uSingleNote:
-                selection = table1.mFolderName + " =?";
+                selection = table1.mUid + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
             case uAllFolderNote:
@@ -124,13 +124,13 @@ public class TableProvider extends ContentProvider{
                 String s = uri.toString();
                 s = s.substring(s.lastIndexOf('/')+1);
                 selectionArgs = new String[]{s};
-                return deleteVal(uri,selection,selectionArgs,TableNames.mFolderTableName);
-            case uAllFolder:
                 return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
+            case uAllFolder:
+                return deleteVal(uri,selection,selectionArgs,TableNames.mFolderTableName);
             case uSingleFolder:
                 selection = TableNames.table2.mUid+ "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
+                return deleteVal(uri,selection,selectionArgs,TableNames.mFolderTableName);
             default:
                 throw new IllegalArgumentException("Invalid uri"+uri);
         }
