@@ -37,6 +37,10 @@
     <string name="navsettings">Settings</string>
     <!-- -->
 
+    <!-- IntentKeys-->
+    <string name="intentFolderName">intFldNmKy</string>
+    <!-- -->
+
     <!-- bundle-->
     <string name="foldernamebundle">foldbund</string>
     <string name="newnotefolderbundle">newntbd</string>

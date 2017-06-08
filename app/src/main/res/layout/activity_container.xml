@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/matchParent"
+    tools:context="com.nrs.nsnik.notes.ContainerActivity">
+
+    <include
+        android:id="@+id/containerToolbar"
+        layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:id="@+id/containerSpace"
+        style="@style/matchParent"
+        android:layout_marginTop="?attr/actionBarSize" />
+
+</FrameLayout>

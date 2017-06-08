@@ -44,4 +44,5 @@ public class NoteObject implements Serializable{
     public String getFolderName() {
         return folderName;
     }
+
 }

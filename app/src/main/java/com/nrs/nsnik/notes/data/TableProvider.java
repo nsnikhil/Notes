@@ -7,7 +7,9 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.nrs.nsnik.notes.data.TableNames.table1;
 
@@ -16,6 +18,8 @@ import com.nrs.nsnik.notes.data.TableNames.table1;
 public class TableProvider extends ContentProvider{
 
     TableHelper tableHelper;
+
+    private static final String TAG = TableProvider.class.getSimpleName();
 
     private static final int uAllNotes = 111;
     private static final int uSingleNote = 112;
@@ -41,9 +45,9 @@ public class TableProvider extends ContentProvider{
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)  {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)  {
         SQLiteDatabase sdb = tableHelper.getReadableDatabase();
-        Cursor c = null;
+        Cursor c ;
         switch (sUriMatcher.match(uri)){
             case uAllNotes:
                 c = sdb.query(TableNames.mTableName,projection,selection,selectionArgs,null,null,sortOrder);
@@ -55,9 +59,9 @@ public class TableProvider extends ContentProvider{
                 break;
             case uAllFolderNote:
                 selection = table1.mFolderName + " =?";
-                String s = uri.toString();
-                s = s.substring(s.lastIndexOf('/')+1);
-                selectionArgs = new String[]{s};
+                String sf = uri.toString();
+                sf = sf.substring(sf.lastIndexOf('/')+1);
+                selectionArgs = new String[]{sf};
                 c = sdb.query(TableNames.mTableName,projection,selection,selectionArgs,null,null,sortOrder);
                 break;
             case uAllFolder:
@@ -69,7 +73,7 @@ public class TableProvider extends ContentProvider{
                 c = sdb.query(TableNames.mFolderTableName,projection,selection,selectionArgs,null,null,sortOrder);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid Uri"+uri);
+                throw new IllegalArgumentException("Invalid Uri "+uri);
         }
         c.setNotificationUri(getContext().getContentResolver(),uri);
         return c;
@@ -77,13 +81,13 @@ public class TableProvider extends ContentProvider{
 
     @Nullable
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         return null;
     }
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
+    public Uri insert(@NonNull Uri uri, ContentValues contentValues) {
         switch (sUriMatcher.match(uri)){
             case uAllNotes:
                 return insertVal(uri,contentValues,TableNames.mTableName);
@@ -106,34 +110,40 @@ public class TableProvider extends ContentProvider{
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase sdb = tableHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)){
             case uAllNotes:
-                getContext().getContentResolver().notifyChange(uri,null);
-                return sdb.delete(TableNames.mTableName,selection,selectionArgs);
+                return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
             case uSingleNote:
                 selection = table1.mFolderName + " =?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                getContext().getContentResolver().notifyChange(uri,null);
-                return sdb.delete(TableNames.mTableName,selection,selectionArgs);
+                return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
             case uAllFolderNote:
                 selection = table1.mFolderName + " =?";
                 String s = uri.toString();
                 s = s.substring(s.lastIndexOf('/')+1);
                 selectionArgs = new String[]{s};
-                getContext().getContentResolver().notifyChange(uri,null);
-                return sdb.delete(TableNames.mTableName,selection,selectionArgs);
+                return deleteVal(uri,selection,selectionArgs,TableNames.mFolderTableName);
             case uAllFolder:
-                getContext().getContentResolver().notifyChange(uri,null);
-                return sdb.delete(TableNames.mFolderTableName,selection,selectionArgs);
+                return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
             case uSingleFolder:
                 selection = TableNames.table2.mUid+ "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                getContext().getContentResolver().notifyChange(uri,null);
-                return sdb.delete(TableNames.mFolderTableName,selection,selectionArgs);
+                return deleteVal(uri,selection,selectionArgs,TableNames.mTableName);
             default:
                 throw new IllegalArgumentException("Invalid uri"+uri);
+        }
+    }
+
+    private int deleteVal(Uri u,String sel,String[] selArgs,String tableName){
+        SQLiteDatabase sdb = tableHelper.getWritableDatabase();
+        int count = sdb.delete(tableName,sel,selArgs);
+        if(count>0){
+            getContext().getContentResolver().notifyChange(Uri.withAppendedPath(u,String.valueOf(count)),null);
+            return count;
+        }else {
+            return 0;
         }
     }
 

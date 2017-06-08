@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:background="?android:attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
     style="@style/crdv"
-    card_view:cardCornerRadius="4dp"
-    card_view:cardElevation="3dp"
-    card_view:cardMaxElevation="5dp"
+    card_view:cardCornerRadius="1dp"
+    card_view:cardElevation="1dp"
+    card_view:cardMaxElevation="4dp"
     card_view:cardUseCompatPadding="true">
 
     <LinearLayout style="@style/verticalLinearLayout">
@@ -24,6 +28,7 @@
 
         <TextView
             android:id="@+id/singleNoteContent"
+            android:lineSpacingExtra="5dp"
             style="@style/newNoteContent"
             android:maxLines="6" />
 

@@ -72,7 +72,7 @@ class FileOperation {
 
     private void updateInTable(String title,Uri uri){
         ContentValues contentValues  = new ContentValues();
-        contentValues.put(table1.mTitile,title);
+        contentValues.put(table1.mTitle,title);
         int count = mContext.getContentResolver().update(uri,contentValues,null,null);
         if (count == 0) {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.updateFailed), Toast.LENGTH_SHORT).show();
@@ -83,7 +83,7 @@ class FileOperation {
 
     private void insertInTable(String filename,NoteObject obj){
         ContentValues cv = new ContentValues();
-        cv.put(table1.mTitile, obj.getTitle());
+        cv.put(table1.mTitle, obj.getTitle());
         cv.put(table1.mFileName, filename);
         cv.put(table1.mFolderName, obj.getFolderName());
         Uri u = mContext.getContentResolver().insert(TableNames.mContentUri, cv);

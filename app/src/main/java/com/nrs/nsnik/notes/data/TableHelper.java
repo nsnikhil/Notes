@@ -9,8 +9,8 @@ public class TableHelper extends SQLiteOpenHelper{
 
     private static final String mCreateTable = "CREATE TABLE IF NOT EXISTS " + TableNames.mTableName + " ("
             + table1.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + table1.mTitile + " VARCHAR(250), "
-            + table1.mFileName + " VARCHAR(250) NOT NULL, "
+            + table1.mTitle + " TEXT, "
+            + table1.mFileName + " TEXT NOT NULL, "
             + table1.mFolderName + " TEXT "
             + ");";
 
@@ -18,7 +18,7 @@ public class TableHelper extends SQLiteOpenHelper{
 
     private static final String mCreateFolderTable = "CREATE TABLE "+ TableNames.mFolderTableName + " ("
             + TableNames.table2.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + TableNames.table2.mFolderName + " VARCHAR(250), "
+            + TableNames.table2.mFolderName + " TEXT, "
             + TableNames.table2.mFolderId + " TEXT "
             + ");";
 

@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
     </style>
 
 
@@ -30,6 +31,11 @@
     <style name="twentyFour">
         <item name="android:layout_width">@dimen/twentyFour</item>
         <item name="android:layout_height">@dimen/twentyFour</item>
+    </style>
+
+    <style name="thirtySix">
+        <item name="android:layout_width">@dimen/thirtySix</item>
+        <item name="android:layout_height">@dimen/thirtySix</item>
     </style>
 
     <style name="verticalLinearLayout" parent="matchParent">
@@ -76,14 +82,14 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="newNoteHeading">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:padding">@dimen/sixteen</item>
+    <style name="newNoteHeading" parent="stretchedVertically">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:padding">@dimen/eight</item>
         <item name="android:hint">@string/title</item>
         <item name="android:textSize">@dimen/headingText</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="newNoteContent">

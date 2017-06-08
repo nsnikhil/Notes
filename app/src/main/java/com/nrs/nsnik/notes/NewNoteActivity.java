@@ -29,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,18 +76,16 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     @BindView(R.id.newNoteAudioCancel) ImageView mCancelAudio;
     @BindView(R.id.newNoteAudioSeek) SeekBar seekAudio;
     String mAudioFileName,mFolderName = "nofolder";
-    Uri intentUri = null;
+    Uri mIntentUri = null;
     Bitmap mImage = null;
-    int hour = 289;
-    int minutes = 291;
-    int mReminder = 0;
-    int audio = 0;
+    int mHour = 289,mMinutes = 291,mReminder = 0,mAudio = 0;
     MediaRecorder mRecorder;
     MediaPlayer mPlayer;
-    ArrayList<Bitmap> imagesArray;
-    ArrayList<String> imagesLocations;
-    ImageAdapter imageAdapter;
-    FileOperation fileOperation;
+    ArrayList<Bitmap> mImagesArray;
+    ArrayList<String> mImagesLocations;
+    ImageAdapter mImageAdapter;
+    FileOperation mFileOperation;
+    private static final String TAG = NewNoteActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +95,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         initialize();
         setClickListener();
         if(getIntent().getData()!=null){
-            intentUri = getIntent().getData();
+            mIntentUri = getIntent().getData();
             try {
                 setNote();
             } catch (IOException | ClassNotFoundException e) {
@@ -108,9 +107,9 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setNote() throws IOException, ClassNotFoundException {
-        Cursor c = getContentResolver().query(intentUri,null,null,null,null);
+        Cursor c = getContentResolver().query(mIntentUri,null,null,null,null);
         if(c!=null&&c.moveToFirst()){
-            mTitle.setText(c.getString(c.getColumnIndex(table1.mTitile)));
+            mTitle.setText(c.getString(c.getColumnIndex(table1.mTitle)));
             File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
             File f = new File(folder,c.getString(c.getColumnIndex(table1.mFileName)));
             FileInputStream fis = null;
@@ -123,16 +122,16 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 if(obj.getImages().size()>0){
                     imageRecyclerView.setVisibility(View.VISIBLE);
                     for(int i=0;i<obj.getImages().size();i++) {
-                        imagesLocations.add(obj.getImages().get(i));
+                        mImagesLocations.add(obj.getImages().get(i));
                         File path = new File(folder,obj.getImages().get(i));
-                        imagesArray.add(BitmapFactory.decodeFile(path.toString()));
+                        mImagesArray.add(BitmapFactory.decodeFile(path.toString()));
                     }
                 }if(obj.getAudioLocation()!=null){
                     newNoteAudioContainer.setVisibility(View.VISIBLE);
                     mAudioFileName = obj.getAudioLocation();
                 }if(obj.getReminder()!=0){
-                    hour = 292;
-                    minutes = 392;
+                    mHour = 292;
+                    mMinutes = 392;
                 }
                 mFolderName = obj.getFolderName();
             }catch(Exception e){
@@ -148,7 +147,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void deleteNote() throws IOException {
-        if(intentUri!=null){
+        if(mIntentUri!=null){
             AlertDialog.Builder deleteDialog = new AlertDialog.Builder(NewNoteActivity.this);
             deleteDialog.setTitle(getResources().getString(R.string.warning));
             deleteDialog.setMessage(getResources().getString(R.string.deletesingledialog));
@@ -160,14 +159,14 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             }).setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    imagesArray.clear();
-                    imagesLocations.clear();
+                    mImagesArray.clear();
+                    mImagesLocations.clear();
                     try {
                         deleteFiles();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    int count = getContentResolver().delete(intentUri,null,null);
+                    int count = getContentResolver().delete(mIntentUri,null,null);
                     if (count == 0) {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletenotefailed), Toast.LENGTH_SHORT).show();
                     } else {
@@ -181,7 +180,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void  deleteFiles() throws IOException {
-        Cursor c = getContentResolver().query(intentUri,null,null,null,null);
+        Cursor c = getContentResolver().query(mIntentUri,null,null,null,null);
         if(c!=null&&c.moveToFirst()){
             File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
             File f = new File(folder,c.getString(c.getColumnIndex(table1.mFileName)));
@@ -241,7 +240,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.newNoteMenuSave:
                 if (verifyAndSave()) {
                     try {
-                        if(intentUri!=null){
+                        if(mIntentUri!=null){
                             updateNote();
                         }else {
                             saveNote();
@@ -264,13 +263,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void updateNote() throws IOException {
-        Cursor c = getContentResolver().query(intentUri,null,null,null,null);
-        if(hour!=289||minutes!=291){
+        Cursor c = getContentResolver().query(mIntentUri,null,null,null,null);
+        if(mHour!=289||mMinutes!=291){
             mReminder = 1;
         }try {
             if (c != null && c.moveToFirst()) {
-                NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), imagesLocations, mAudioFileName, mReminder, mFolderName);
-                fileOperation.updateNote(c.getString(c.getColumnIndex(table1.mFileName)), noteObject, intentUri);
+                NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
+                mFileOperation.updateNote(c.getString(c.getColumnIndex(table1.mFileName)), noteObject, mIntentUri);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -291,11 +290,11 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void saveNote() throws IOException {
-        if(hour!=289||minutes!=291){
+        if(mHour!=289||mMinutes!=291){
            mReminder = 1;
         }
-        NoteObject noteObject = new NoteObject(mTitle.getText().toString(),mNote.getText().toString(),imagesLocations,mAudioFileName,mReminder,mFolderName);
-        fileOperation.saveNote(makeNoteName(),noteObject);
+        NoteObject noteObject = new NoteObject(mTitle.getText().toString(),mNote.getText().toString(),mImagesLocations,mAudioFileName,mReminder,mFolderName);
+        mFileOperation.saveNote(makeNoteName(),noteObject);
     }
 
     private String makeNoteName() {
@@ -304,9 +303,9 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public boolean onNavigateUpFromChild(Activity child) {
+    public boolean onSupportNavigateUp() {
         finish();
-        return super.onNavigateUpFromChild(child);
+        return super.onSupportNavigateUp();
     }
 
     private void initialize() {
@@ -314,12 +313,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         imageRecyclerView.setLayoutManager(layoutManager);
-        imagesArray = new ArrayList<>();
-        imageAdapter = new ImageAdapter(NewNoteActivity.this, imagesArray, this);
-        imageRecyclerView.setAdapter(imageAdapter);
-        imagesLocations = new ArrayList<>();
+        mImagesArray = new ArrayList<>();
+        mImageAdapter = new ImageAdapter(NewNoteActivity.this, mImagesArray, this);
+        imageRecyclerView.setAdapter(mImageAdapter);
+        mImagesLocations = new ArrayList<>();
         seekAudio.incrementProgressBy(10);
-        fileOperation = new FileOperation(getApplicationContext());
+        mFileOperation = new FileOperation(getApplicationContext());
     }
 
     @Override
@@ -344,15 +343,15 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     Uri u = data.getData();
                     try {
                         mImage = MediaStore.Images.Media.getBitmap(getContentResolver(), u);
-                        imagesArray.add(mImage);
-                        imageRecyclerView.swapAdapter(imageAdapter, true);
+                        mImagesArray.add(mImage);
+                        imageRecyclerView.swapAdapter(mImageAdapter, true);
                         imageRecyclerView.setVisibility(View.VISIBLE);
                         String name = makeImageName();
-                        imagesLocations.add(name);
-                        fileOperation.saveImage(name,mImage);
+                        mImagesLocations.add(name);
+                        mFileOperation.saveImage(name,mImage);
                         Toast.makeText(getApplicationContext(),name,Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getApplicationContext(),imagesArray.size()+"",Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getApplicationContext(),imagesLocations.size()+"",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),mImagesArray.size()+"",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),mImagesLocations.size()+"",Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -362,19 +361,19 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 if (resultCode == RESULT_OK) {
                     Bundle extra = data.getExtras();
                     mImage = (Bitmap) extra.get("data");
-                    imagesArray.add(mImage);
-                    imageRecyclerView.swapAdapter(imageAdapter, true);
+                    mImagesArray.add(mImage);
+                    imageRecyclerView.swapAdapter(mImageAdapter, true);
                     imageRecyclerView.setVisibility(View.VISIBLE);
                     String name = makeImageName();
-                    imagesLocations.add(name);
+                    mImagesLocations.add(name);
                     try {
-                        fileOperation.saveImage(name,mImage);
+                        mFileOperation.saveImage(name,mImage);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     Toast.makeText(getApplicationContext(),name,Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplicationContext(),imagesArray.size()+"",Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplicationContext(),imagesLocations.size()+"",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),mImagesArray.size()+"",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),mImagesLocations.size()+"",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -412,8 +411,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        hour = i;
-                        minutes = i1;
+                        mHour = i;
+                        mMinutes = i1;
                     }
                 },  c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true);
                 time.show();
@@ -445,7 +444,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 deleteAudioFile();
                 mPlayer = null;
                 mRecorder = null;
-                audio = 0;
+                mAudio = 0;
                 mAudioFileName = null;
                 newNoteAudioContainer.setVisibility(View.GONE);
                 break;
@@ -507,7 +506,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 mRecorder.release();
                 mRecorder = null;
                 newNoteAudioContainer.setVisibility(View.VISIBLE);
-                audio = 1;
+                mAudio = 1;
             }
         });
         recordDialog = record.create();
@@ -522,8 +521,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, hour);
-        calendar.set(java.util.Calendar.MINUTE, minutes);
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, mHour);
+        calendar.set(java.util.Calendar.MINUTE, mMinutes);
         calendar.set(java.util.Calendar.SECOND, 0);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
@@ -546,12 +545,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void validateSize(int position) {
-        if (imagesArray.size() <= 0) {
+        if (mImagesArray.size() <= 0) {
             imageRecyclerView.setVisibility(View.GONE);
         } else {
             imageRecyclerView.setVisibility(View.VISIBLE);
         }
-        imagesLocations.remove(position);
+        mImagesLocations.remove(position);
     }
 
 

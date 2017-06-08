@@ -8,19 +8,21 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
@@ -29,6 +31,8 @@ import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.adapters.FolderObserverAdapter;
 import com.nrs.nsnik.notes.adapters.NoteObserverAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.interfaces.FolderCount;
+import com.nrs.nsnik.notes.interfaces.NotesCount;
 
 import java.io.File;
 import java.util.Calendar;
@@ -38,13 +42,20 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements NotesCount,FolderCount{
 
-    @BindView(R.id.homeNotesList) RecyclerView mNotesList;
-    @BindView(R.id.homeFolderList) RecyclerView mFolderList;
-    @BindView(R.id.homeAdd) FloatingActionMenu mAdd;
+    @BindView(R.id.homeNotesList)
+    RecyclerView mNotesList;
+    @BindView(R.id.homeFolderList)
+    RecyclerView mFolderList;
+    @BindView(R.id.homeAdd)
+    FloatingActionMenu mAdd;
+    @BindView(R.id.homeEmptyState)ImageView mEmpty;
+    private MenuItem mDeleteMenu;
+    private int mNoteCount,mFolderCount;
     private FolderObserverAdapter mFolderAdapter;
     private NoteObserverAdapter mNoteAdapter;
+    private static final String TAG = HomeFragment.class.getSimpleName();
     private Unbinder mUnbinder;
 
     public HomeFragment() {
@@ -63,6 +74,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
+        mDeleteMenu = menu.getItem(1);
     }
 
     @Override
@@ -93,7 +105,7 @@ public class HomeFragment extends Fragment {
         delete.create().show();
     }
 
-    private void clearDatabase(){
+    private void clearDatabase() {
         getActivity().getContentResolver().delete(TableNames.mContentUri, null, null);
         getActivity().getContentResolver().delete(TableNames.mFolderContentUri, null, null);
         deleteAllFiles();
@@ -111,13 +123,13 @@ public class HomeFragment extends Fragment {
 
     private void initialize() {
         mNotesList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        mFolderList.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        mNoteAdapter = new NoteObserverAdapter(getActivity(), getLoaderManager());
-        mFolderAdapter = new FolderObserverAdapter(getActivity(), getLoaderManager());
+        mNoteAdapter = new NoteObserverAdapter(getActivity(), TableNames.mContentUri,getLoaderManager(),this);
         mNotesList.setAdapter(mNoteAdapter);
+        mFolderList.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        mFolderAdapter = new FolderObserverAdapter(getActivity(), getLoaderManager(),this);
         mFolderList.setAdapter(mFolderAdapter);
-        setupNoteFab();
         setFolderFab();
+        setupNoteFab();
     }
 
     private void listeners() {
@@ -168,7 +180,7 @@ public class HomeFragment extends Fragment {
                 newFolder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        TextInputEditText editText = (TextInputEditText) v.findViewById(R.id.dialogFolderName);
+                        EditText editText = (EditText) v.findViewById(R.id.dialogFolderName);
                         createFolder(editText.getText().toString());
                     }
                 });
@@ -178,17 +190,15 @@ public class HomeFragment extends Fragment {
     }
 
     private void createFolder(String name) {
-        if (name != null) {
-            ContentValues cv = new ContentValues();
-            cv.put(TableNames.table2.mFolderName, name);
-            Calendar c = Calendar.getInstance();
-            cv.put(TableNames.table2.mFolderId, c.getTimeInMillis() + name);
-            Uri u = getActivity().getContentResolver().insert(TableNames.mFolderContentUri, cv);
-            if (u != null) {
-                Toast.makeText(getActivity(), getResources().getString(R.string.newfoldercreated), Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), getResources().getString(R.string.newfoldernotcreated), Toast.LENGTH_SHORT).show();
-            }
+        ContentValues cv = new ContentValues();
+        cv.put(TableNames.table2.mFolderName, name);
+        Calendar c = Calendar.getInstance();
+        cv.put(TableNames.table2.mFolderId, c.getTimeInMillis() + name);
+        Uri u = getActivity().getContentResolver().insert(TableNames.mFolderContentUri, cv);
+        if (u != null) {
+            Toast.makeText(getActivity(), getResources().getString(R.string.newfoldercreated), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), getResources().getString(R.string.newfoldernotcreated), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -202,5 +212,28 @@ public class HomeFragment extends Fragment {
     public void onDestroy() {
         cleanUp();
         super.onDestroy();
+    }
+
+
+    @Override
+    public void getNotesCount(int count) {
+        mNoteCount = count;
+        setEmpty();
+    }
+
+    @Override
+    public void getFolderCount(int count) {
+        mFolderCount = count;
+        setEmpty();
+    }
+
+    private void setEmpty(){
+        if(mFolderCount==0&&mNoteCount==0){
+            if(mDeleteMenu!=null) mDeleteMenu.setVisible(false);
+            mEmpty.setVisibility(View.VISIBLE);
+        }else {
+            if(mDeleteMenu!=null) mDeleteMenu.setVisible(true);
+            mEmpty.setVisibility(View.GONE);
+        }
     }
 }

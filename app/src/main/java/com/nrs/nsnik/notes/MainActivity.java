@@ -1,6 +1,5 @@
 package com.nrs.nsnik.notes;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -12,11 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
 
-import com.github.clans.fab.FloatingActionMenu;
-import com.nrs.nsnik.notes.fragments.AllNotesFragment;
+import com.nrs.nsnik.notes.fragments.NotesFragment;
 import com.nrs.nsnik.notes.fragments.FolderFragment;
 import com.nrs.nsnik.notes.fragments.HomeFragment;
 
@@ -62,19 +58,19 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawers();
                 switch (item.getItemId()) {
                     case R.id.navigationMyNotes:
-                        if(getFragmentManager().findFragmentByTag(mFragTags[0])==null){
+                        if(getSupportFragmentManager().findFragmentByTag(mFragTags[0])==null){
                             replaceFragment(new HomeFragment(),mFragTags[0]);
                         }
                         drawerAction(0);
                         break;
                     case R.id.navigationAllNotes:
-                        if(getFragmentManager().findFragmentByTag(mFragTags[1])==null){
-                            replaceFragment(new AllNotesFragment(),mFragTags[1]);
+                        if(getSupportFragmentManager().findFragmentByTag(mFragTags[1])==null){
+                            replaceFragment(new NotesFragment(),mFragTags[1]);
                         }
                         drawerAction(1);
                         break;
                     case R.id.navigationFolder:
-                        if(getFragmentManager().findFragmentByTag(mFragTags[2])==null){
+                        if(getSupportFragmentManager().findFragmentByTag(mFragTags[2])==null){
                             replaceFragment(new FolderFragment(),mFragTags[2]);
                         }
                         drawerAction(2);

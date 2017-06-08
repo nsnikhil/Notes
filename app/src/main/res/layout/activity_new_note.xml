@@ -50,11 +50,15 @@
     <EditText
         android:id="@+id/newNoteTitle"
         style="@style/newNoteHeading"
+        android:textSize="24sp"
+        android:padding="@dimen/sixteen"
+        android:background="@android:color/transparent"
         android:layout_below="@id/newNoteAudioContainer"
         android:maxLines="1" />
 
     <EditText
         android:id="@+id/newNoteContent"
+        android:lineSpacingExtra="10dp"
         style="@style/newNoteContent"
         android:layout_below="@id/newNoteTitle" />
 

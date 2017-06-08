@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 public class TableNames {
 
     public static final String mDatabaseName = "newnotedatabase";
-    public static final int mDataBaseVersion = 4;
+    public static final int mDataBaseVersion = 6;
     public static final String mTableName = "newnotetable";
     public static final String mFolderTableName = "foldertable";
 
@@ -22,7 +22,7 @@ public class TableNames {
 
     public class table1 implements BaseColumns {
         public static final String mUid = BaseColumns._ID;
-        public static final String mTitile = "title";
+        public static final String mTitle = "title";
         public static final String mFileName = "filename";
         public static final String mFolderName = "foldername";
     }

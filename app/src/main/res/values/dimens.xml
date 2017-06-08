@@ -5,11 +5,12 @@
     <dimen name="toolbarElevation">4dp</dimen>
     <dimen name="sixteen">16dp</dimen>
     <dimen name="twentyFour">24dp</dimen>
+    <dimen name="thirtySix">36dp</dimen>
     <dimen name="eight">8dp</dimen>
     <dimen name="drawerWidth">240dp</dimen>
     <dimen name="headerHeight">180dp</dimen>
     <dimen name="headerCircleImage">70dp</dimen>
-    <dimen name="headingText">24sp</dimen>
+    <dimen name="headingText">20sp</dimen>
     <dimen name="smallHeadingText">16sp</dimen>
     <dimen name="newNoteImage">300dp</dimen>
     <dimen name="cardLayoutHeight">300dp</dimen>

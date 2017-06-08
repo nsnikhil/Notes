@@ -3,5 +3,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/toolbar"
     android:background="@color/colorPrimary"
-    android:theme="@style/blackColorCode"
+    android:theme="@style/whiteColorCode"
     app:titleTextColor="@color/cardview_light_background" />
