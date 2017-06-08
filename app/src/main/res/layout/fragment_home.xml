@@ -1,0 +1,27 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/verticalLinearLayout"
+    tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/homeFolderList"
+        style="@style/stretchedVertically" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/homeNotesList"
+        style="@style/stretchedVertically"
+        android:layout_below="@id/homeFolderList"
+        android:layout_marginTop="@dimen/sixteen" />
+
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/homeAdd"
+        style="@style/fab"
+        app:fabSize="normal"
+        fab:menu_colorNormal="@color/colorAccent"
+        fab:menu_colorPressed="@color/colorAccent"
+        fab:menu_colorRipple="#99FFFFFF" />
+
+</RelativeLayout>

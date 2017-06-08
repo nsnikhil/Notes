@@ -1,4 +1,4 @@
-package com.nrs.nsnik.notes;
+package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -10,17 +10,21 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.interfaces.SendSize;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
 
-    Activity mContext;
-    ArrayList<Bitmap> list;
-    SendSize size;
+    private Activity mContext;
+    private ArrayList<Bitmap> list;
+    private SendSize size;
 
-    ImageAdapter(Activity c, ArrayList<Bitmap> arrayList, SendSize sz) {
+    public ImageAdapter(Activity c, ArrayList<Bitmap> arrayList, SendSize sz) {
         mContext = c;
         list = arrayList;
         size = sz;
@@ -45,22 +49,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        ImageView image;
-        CircularImageView remove;
+        @BindView(R.id.singleImage) ImageView image;
+        @BindView(R.id.singleImageCancel) CircularImageView remove;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.singleImage);
-            remove = (CircularImageView) itemView.findViewById(R.id.singleImageCancel);
             remove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    list.remove(getPosition());
-                    notifyItemRemoved(getPosition());
-                    size.validateSize(getPosition());
+                    list.remove(getAdapterPosition());
+                    notifyItemRemoved(getAdapterPosition());
+                    size.validateSize(getAdapterPosition());
                 }
-            });
-            image.setOnClickListener(new View.OnClickListener() {
+            });image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(mContext.getApplicationContext(), "Will Show Full Screen Image", Toast.LENGTH_SHORT).show();

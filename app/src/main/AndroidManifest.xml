@@ -20,10 +20,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.nrs.nsnik.notes.Prefrences"
-            android:label="@string/settings"
-            android:parentActivityName="com.nrs.nsnik.notes.MainActivity" />
-        <activity
             android:name="com.nrs.nsnik.notes.NewNoteActivity"
             android:label="@string/addNote"
             android:parentActivityName="com.nrs.nsnik.notes.MainActivity" />
@@ -36,18 +32,6 @@
 
         <receiver android:name=".NewNoteActivity$ReminderService" />
 
-        <activity
-            android:name="com.nrs.nsnik.notes.SearchResultActivity"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity android:name="com.nrs.nsnik.notes.FullScreen"></activity>
     </application>
 
 </manifest>

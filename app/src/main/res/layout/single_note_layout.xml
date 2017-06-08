@@ -1,58 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    style="@style/verticalLinearLayout">
+    style="@style/crdv"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="3dp"
+    card_view:cardMaxElevation="5dp"
+    card_view:cardUseCompatPadding="true">
 
+    <LinearLayout style="@style/verticalLinearLayout">
 
-    <android.support.v7.widget.CardView
-        style="@style/crdv"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="3dp"
-        card_view:cardMaxElevation="5dp"
-        card_view:cardUseCompatPadding="true">
+        <ImageView
+            android:id="@+id/singleNoteImage"
+            style="@style/matchParent"
+            android:layout_height="200dp"
+            android:contentDescription="@string/imageDescription"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/singleNoteTitle"
+            style="@style/newNoteHeading"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/singleNoteContent"
+            style="@style/newNoteContent"
+            android:maxLines="6" />
 
         <LinearLayout
-            style="@style/verticalLinearLayout">
+            style="@style/wrapContent"
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/eight"
+            android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/singleNoteImage"
-                style="@style/matchParent"
-                android:visibility="gone"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"/>
+                android:id="@+id/singleNoteReminder"
+                style="@style/small"
+                android:contentDescription="@string/imageDescription"
+                android:src="@drawable/setremindersmall"
+                android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/singleNoteTitle"
-                android:maxLines="1"
-                style="@style/newNoteHeading" />
-
-            <TextView
-                android:id="@+id/sinleNoteContent"
-                android:maxLines="6"
-                style="@style/newNoteContent" />
-
-            <LinearLayout
-                style="@style/wrapContent"
-                android:layout_gravity="end"
-                android:layout_margin="@dimen/eight"
-                android:orientation="horizontal">
-
-                <ImageView
-                    style="@style/small"
-                    android:visibility="gone"
-                    android:id="@+id/singleNoteReminder"
-                    android:src="@drawable/setremindersmall"/>
-
-                <ImageView
-                    style="@style/small"
-                    android:visibility="gone"
-                    android:id="@+id/singleNoteAudio"
-                    android:src="@drawable/addaudiosmall"/>
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/singleNoteAudio"
+                style="@style/small"
+                android:contentDescription="@string/imageDescription"
+                android:src="@drawable/addaudiosmall"
+                android:visibility="gone" />
 
         </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+    </LinearLayout>
 
-</LinearLayout>
+</android.support.v7.widget.CardView>

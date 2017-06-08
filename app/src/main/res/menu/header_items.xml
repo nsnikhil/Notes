@@ -2,19 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigationMyNotes"
+        android:checkable="true"
+        android:checked="true"
         android:icon="@drawable/ic_create_white_48dp"
         android:title="@string/mynotes" />
     <item
         android:id="@+id/navigationAllNotes"
+        android:checkable="true"
+        android:checked="false"
         android:icon="@drawable/ic_note_white_48dp"
         android:title="@string/allnotes" />
     <item
         android:id="@+id/navigationFolder"
+        android:checkable="true"
+        android:checked="false"
         android:icon="@drawable/ic_folder_white_48dp"
         android:title="@string/myfolder" />
 
     <item
         android:id="@+id/navigationSettings"
+        android:checkable="true"
+        android:checked="false"
         android:icon="@drawable/ic_settings_white_48dp"
         android:title="@string/navsettings" />
 

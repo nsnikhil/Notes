@@ -1,4 +1,4 @@
 <android.support.v7.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/folderList"
+    android:id="@+id/notesList"
     style="@style/stretchedVertically" />

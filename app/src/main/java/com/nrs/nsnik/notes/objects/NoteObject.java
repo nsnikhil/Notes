@@ -1,4 +1,4 @@
-package com.nrs.nsnik.notes;
+package com.nrs.nsnik.notes.objects;
 
 
 import android.graphics.Bitmap;
@@ -8,11 +8,11 @@ import java.util.ArrayList;
 
 public class NoteObject implements Serializable{
 
-    String title,note,audioLocation,folderName;
-    ArrayList<String> images;
-    int reminder;
+    private String title,note,audioLocation,folderName;
+    private ArrayList<String> images;
+    private int reminder;
 
-    NoteObject(String title,String note,ArrayList<String> images,String audioLocation,int reminder,String folderName){
+    public NoteObject(String title,String note,ArrayList<String> images,String audioLocation,int reminder,String folderName){
         this.note = note;
         this.title = title;
         this.images = images;

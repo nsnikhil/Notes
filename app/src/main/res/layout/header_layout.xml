@@ -4,6 +4,7 @@
     android:layout_height="@dimen/headerHeight">
 
     <ImageView
+        android:contentDescription="@string/imageDescription"
         style="@style/matchParent"
         android:scaleType="centerCrop"
         android:src="@drawable/headerimage" />

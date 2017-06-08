@@ -3,30 +3,28 @@ package com.nrs.nsnik.notes;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.data.TableNames.table1;
+import com.nrs.nsnik.notes.objects.NoteObject;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import com.nrs.nsnik.notes.data.TableNames;
-import com.nrs.nsnik.notes.data.TableNames.table1;
 
+class FileOperation {
 
-
-public class FileOperation {
-
-    Context mContext;
+    private Context mContext;
 
     FileOperation(Context c){
         mContext = c;
     }
 
-    public void saveNote(String filename,NoteObject noteObject) throws IOException {
+    void saveNote(String filename,NoteObject noteObject) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -49,7 +47,7 @@ public class FileOperation {
         insertInTable(filename,noteObject);
     }
 
-    public void updateNote(String filename,NoteObject noteObject,Uri uri) throws IOException {
+    void updateNote(String filename,NoteObject noteObject,Uri uri) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -83,7 +81,7 @@ public class FileOperation {
         }
     }
 
-    public void insertInTable(String filename,NoteObject obj){
+    private void insertInTable(String filename,NoteObject obj){
         ContentValues cv = new ContentValues();
         cv.put(table1.mTitile, obj.getTitle());
         cv.put(table1.mFileName, filename);
@@ -96,8 +94,7 @@ public class FileOperation {
         }
     }
 
-
-    public  void saveImage(String filename, Bitmap image) throws IOException {
+    void saveImage(String filename, Bitmap image) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         File f = new File(folder,filename);
         FileOutputStream fos = null;
@@ -106,12 +103,10 @@ public class FileOperation {
             image.compress(Bitmap.CompressFormat.JPEG,100,fos);
             fos.flush();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
-            fos.close();
+            if(fos!=null) fos.close();
         }
     }
 
@@ -124,6 +119,5 @@ public class FileOperation {
     private void deleteFile() {
 
     }
-
 
 }

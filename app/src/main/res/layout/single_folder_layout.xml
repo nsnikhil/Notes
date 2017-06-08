@@ -12,7 +12,7 @@
         <ImageView
             style="@style/wrapContent"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/sixteen"
+            android:layout_marginStart="@dimen/sixteen"
             android:src="@drawable/ic_folder_black_48dp" />
 
         <TextView
