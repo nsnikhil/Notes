@@ -18,8 +18,6 @@ import android.widget.Toast;
 
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.fragments.HomeFragment;
-import com.nrs.nsnik.notes.interfaces.FolderCount;
-import com.nrs.nsnik.notes.interfaces.NotesCount;
 
 import java.io.File;
 
@@ -29,13 +27,13 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String[] mFragTags = {"home", "starred", "recent"};
     @BindView(R.id.mainToolbar)
     Toolbar mMainToolbar;
     @BindView(R.id.mainDrawerLayout)
     DrawerLayout mDrawerLayout;
     @BindView(R.id.mainNaviagtionView)
     NavigationView mNavigationView;
-    private static final String[] mFragTags = {"home", "starred", "recent"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isNotEmpty(){
+    private boolean isNotEmpty() {
         return getContentResolver().query(TableNames.mContentUri, null, null, null, null).getCount() != 0 ||
                 getContentResolver().query(TableNames.mFolderContentUri, null, null, null, null).getCount() != 0;
     }
@@ -149,18 +147,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void drawerAction(int key) {
         MenuItem notes = mNavigationView.getMenu().getItem(0).setChecked(false);
-        MenuItem allNotes = mNavigationView.getMenu().getItem(1).setChecked(false);
-        MenuItem folder = mNavigationView.getMenu().getItem(2).setChecked(false);
+        MenuItem starred = mNavigationView.getMenu().getItem(1).setChecked(false);
+        MenuItem recants = mNavigationView.getMenu().getItem(2).setChecked(false);
         switch (key) {
             case 0:
                 notes.setChecked(true);
                 getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
                 break;
             case 1:
-                allNotes.setChecked(true);
+                starred.setChecked(true);
                 break;
             case 2:
-                folder.setChecked(true);
+                recants.setChecked(true);
         }
     }
 

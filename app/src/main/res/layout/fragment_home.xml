@@ -10,9 +10,9 @@
         style="@style/stretchedHorizontally" />
 
     <FrameLayout
-        android:layout_below="@id/homeNotesFolderContainer"
         android:id="@+id/homeNotesContainer"
-        style="@style/stretchedHorizontally" />
+        style="@style/stretchedHorizontally"
+        android:layout_below="@id/homeNotesFolderContainer" />
 
     <include
         android:id="@+id/homeEmptyState"

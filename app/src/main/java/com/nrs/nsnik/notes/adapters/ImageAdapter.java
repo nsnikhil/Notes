@@ -3,7 +3,6 @@ package com.nrs.nsnik.notes.adapters;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +21,10 @@ import butterknife.ButterKnife;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
 
+    private static final String TAG = ImageAdapter.class.getSimpleName();
     private Activity mContext;
     private ArrayList<Bitmap> mList;
     private SendSize mSize;
-    private static final String TAG = ImageAdapter.class.getSimpleName();
 
     public ImageAdapter(Activity c, ArrayList<Bitmap> arrayList, SendSize sz) {
         mContext = c;
@@ -45,7 +44,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     }
 
-
     @Override
     public int getItemCount() {
         return mList.size();
@@ -59,7 +57,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
             remove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

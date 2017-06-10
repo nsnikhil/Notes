@@ -40,7 +40,7 @@ public class FolderObserverAdapter extends RecyclerView.Adapter<FolderObserverAd
     private List<String> mFolderList;
     private Random r = new Random();
 
-    public FolderObserverAdapter(Context context, Uri uri,LoaderManager manager, FolderCount count) {
+    public FolderObserverAdapter(Context context, Uri uri, LoaderManager manager, FolderCount count) {
         mContext = context;
         FolderDataObserver observer = new FolderDataObserver(mContext, uri, manager);
         mFolderList = new ArrayList<>();
@@ -128,8 +128,8 @@ public class FolderObserverAdapter extends RecyclerView.Adapter<FolderObserverAd
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext,ContainerActivity.class);
-                    intent.putExtra(mContext.getResources().getString(R.string.intentFolderName),mFolderName.getText().toString());
+                    Intent intent = new Intent(mContext, ContainerActivity.class);
+                    intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderName.getText().toString());
                     mContext.startActivity(intent);
                 }
             });

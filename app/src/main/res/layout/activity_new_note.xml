@@ -4,8 +4,9 @@
     android:id="@+id/activity_new_note"
     style="@style/verticalLinearLayout">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/newNoteToolbar"/>
+    <include
+        android:id="@+id/newNoteToolbar"
+        layout="@layout/toolbar" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/newNoteImageRecyclerView"
@@ -23,10 +24,10 @@
         android:visibility="gone">
 
         <ImageView
-            android:contentDescription="@string/imageDescription"
             android:id="@+id/newNoteAudioPlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/imageDescription"
             android:src="@drawable/playsmall" />
 
 
@@ -38,10 +39,10 @@
             android:max="100" />
 
         <ImageView
-            android:contentDescription="@string/imageDescription"
             android:id="@+id/newNoteAudioCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/imageDescription"
             android:src="@drawable/cancelsmall" />
 
     </LinearLayout>
@@ -50,17 +51,17 @@
     <EditText
         android:id="@+id/newNoteTitle"
         style="@style/newNoteHeading"
-        android:textSize="24sp"
-        android:padding="@dimen/sixteen"
-        android:background="@android:color/transparent"
         android:layout_below="@id/newNoteAudioContainer"
-        android:maxLines="1" />
+        android:background="@android:color/transparent"
+        android:maxLines="1"
+        android:padding="@dimen/sixteen"
+        android:textSize="24sp" />
 
     <EditText
         android:id="@+id/newNoteContent"
-        android:lineSpacingExtra="10dp"
         style="@style/newNoteContent"
-        android:layout_below="@id/newNoteTitle" />
+        android:layout_below="@id/newNoteTitle"
+        android:lineSpacingExtra="10dp" />
 
     <com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout
         android:id="@+id/fabtoolbar"
@@ -101,38 +102,38 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:contentDescription="@string/imageDescription"
                 android:id="@+id/newNoteTakePicture"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
                 android:src="@drawable/takepicturesmall" />
 
             <ImageView
                 android:id="@+id/newNoteChoosePicture"
-                android:contentDescription="@string/imageDescription"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
                 android:src="@drawable/addphotosmall" />
 
             <ImageView
                 android:id="@+id/newNoteAddAudio"
-                android:contentDescription="@string/imageDescription"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
                 android:src="@drawable/addaudiosmall" />
 
             <ImageView
                 android:id="@+id/newNoteSetReminder"
-                android:contentDescription="@string/imageDescription"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
                 android:src="@drawable/setremindersmall" />
 

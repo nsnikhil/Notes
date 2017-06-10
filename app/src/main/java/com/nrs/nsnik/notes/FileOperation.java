@@ -20,60 +20,60 @@ class FileOperation {
 
     private Context mContext;
 
-    FileOperation(Context c){
+    FileOperation(Context c) {
         mContext = c;
     }
 
-    void saveNote(String filename,NoteObject noteObject) throws IOException {
+    void saveNote(String filename, NoteObject noteObject) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
-        File f = new File(folder,filename);
-        try{
+        File f = new File(folder, filename);
+        try {
             fos = new FileOutputStream(f);
             oos = new ObjectOutputStream(fos);
             oos.writeObject(noteObject);
             oos.flush();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            if(fos!=null){
+        } finally {
+            if (fos != null) {
                 fos.close();
             }
-            if(oos!=null){
+            if (oos != null) {
                 oos.close();
             }
         }
-        insertInTable(filename,noteObject);
+        insertInTable(filename, noteObject);
     }
 
-    void updateNote(String filename,NoteObject noteObject,Uri uri) throws IOException {
+    void updateNote(String filename, NoteObject noteObject, Uri uri) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
-        File f = new File(folder,filename);
-        try{
+        File f = new File(folder, filename);
+        try {
             fos = new FileOutputStream(f);
             oos = new ObjectOutputStream(fos);
             oos.writeObject(noteObject);
             oos.flush();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            if(fos!=null){
+        } finally {
+            if (fos != null) {
                 fos.close();
             }
-            if(oos!=null){
+            if (oos != null) {
                 oos.close();
             }
         }
-        updateInTable(noteObject.getTitle(),uri);
+        updateInTable(noteObject.getTitle(), uri);
     }
 
-    private void updateInTable(String title,Uri uri){
-        ContentValues contentValues  = new ContentValues();
-        contentValues.put(table1.mTitle,title);
-        int count = mContext.getContentResolver().update(uri,contentValues,null,null);
+    private void updateInTable(String title, Uri uri) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(table1.mTitle, title);
+        int count = mContext.getContentResolver().update(uri, contentValues, null, null);
         if (count == 0) {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.updateFailed), Toast.LENGTH_SHORT).show();
         } else {
@@ -81,7 +81,7 @@ class FileOperation {
         }
     }
 
-    private void insertInTable(String filename,NoteObject obj){
+    private void insertInTable(String filename, NoteObject obj) {
         ContentValues cv = new ContentValues();
         cv.put(table1.mTitle, obj.getTitle());
         cv.put(table1.mFileName, filename);
@@ -96,17 +96,17 @@ class FileOperation {
 
     void saveImage(String filename, Bitmap image) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
-        File f = new File(folder,filename);
+        File f = new File(folder, filename);
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(f);
-            image.compress(Bitmap.CompressFormat.JPEG,100,fos);
+            image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            if(fos!=null) fos.close();
+        } finally {
+            if (fos != null) fos.close();
         }
     }
 

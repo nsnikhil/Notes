@@ -1,45 +1,27 @@
 package com.nrs.nsnik.notes.fragments;
 
 
-import android.animation.Animator;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.adapters.FolderObserverAdapter;
-import com.nrs.nsnik.notes.adapters.NoteObserverAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
-import com.nrs.nsnik.notes.interfaces.FolderCount;
-import com.nrs.nsnik.notes.interfaces.NotesCount;
 
-import java.io.File;
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -47,12 +29,14 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class HomeFragment extends Fragment{
+public class HomeFragment extends Fragment {
 
-    @BindView(R.id.homeAdd) FloatingActionMenu mAdd;
-    @BindView(R.id.homeEmptyState)ImageView mEmpty;
-    private String mFolderName = "nofolder";
     private static final String TAG = HomeFragment.class.getSimpleName();
+    @BindView(R.id.homeAdd)
+    FloatingActionMenu mAdd;
+    @BindView(R.id.homeEmptyState)
+    ImageView mEmpty;
+    private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
 
     public HomeFragment() {
@@ -67,8 +51,8 @@ public class HomeFragment extends Fragment{
         return v;
     }
 
-    private void getArgs(){
-        if(getArguments()!=null){
+    private void getArgs() {
+        if (getArguments() != null) {
             mFolderName = getArguments().getString(getActivity().getResources().getString(R.string.homefldnm));
         }
     }
@@ -78,20 +62,20 @@ public class HomeFragment extends Fragment{
 
         NotesFragment notesFragment = new NotesFragment();
         Bundle args = new Bundle();
-        args.putString(getActivity().getResources().getString(R.string.foldernamebundle),mFolderName);
+        args.putString(getActivity().getResources().getString(R.string.foldernamebundle), mFolderName);
         notesFragment.setArguments(args);
-        getFragmentManager().beginTransaction().add(R.id.homeNotesContainer,notesFragment).commit();
+        getFragmentManager().beginTransaction().add(R.id.homeNotesContainer, notesFragment).commit();
 
         FolderFragment folderFragment = new FolderFragment();
         Bundle folderArgs = new Bundle();
-        folderArgs.putString(getActivity().getResources().getString(R.string.sunFldName),mFolderName);
+        folderArgs.putString(getActivity().getResources().getString(R.string.sunFldName), mFolderName);
         folderFragment.setArguments(folderArgs);
-        getFragmentManager().beginTransaction().add(R.id.homeNotesFolderContainer,folderFragment).commit();
+        getFragmentManager().beginTransaction().add(R.id.homeNotesFolderContainer, folderFragment).commit();
 
         setFolderFab();
         setupNoteFab();
     }
-    
+
 
     private void listeners() {
     }
@@ -109,6 +93,7 @@ public class HomeFragment extends Fragment{
             public void onClick(View view) {
                 mAdd.close(true);
                 Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
+                newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle),mFolderName);
                 startActivity(newNote);
             }
         });
@@ -131,7 +116,7 @@ public class HomeFragment extends Fragment{
         });
     }
 
-    private void createFolderDialog(){
+    private void createFolderDialog() {
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
         newFolder.setTitle(getResources().getString(R.string.folder));
         final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog, null);
@@ -157,7 +142,7 @@ public class HomeFragment extends Fragment{
         cv.put(TableNames.table2.mFolderName, name);
         Calendar c = Calendar.getInstance();
         cv.put(TableNames.table2.mFolderId, c.getTimeInMillis() + name);
-        cv.put(TableNames.table2.mParentFolderName,mFolderName);
+        cv.put(TableNames.table2.mParentFolderName, mFolderName);
         Uri u = getActivity().getContentResolver().insert(TableNames.mFolderContentUri, cv);
         if (u != null) {
             Toast.makeText(getActivity(), getResources().getString(R.string.newfoldercreated), Toast.LENGTH_SHORT).show();

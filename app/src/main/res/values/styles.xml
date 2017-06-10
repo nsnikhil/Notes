@@ -125,8 +125,8 @@
     </style>
 
     <style name="errorImage">
-        <item name="android:layout_width">@dimen/drawerWidth</item>
-        <item name="android:layout_height">@dimen/drawerWidth</item>
+        <item name="android:layout_width">@dimen/headerHeight</item>
+        <item name="android:layout_height">@dimen/headerHeight</item>
         <item name="android:visibility">gone</item>
         <item name="android:layout_centerInParent">true</item>
     </style>

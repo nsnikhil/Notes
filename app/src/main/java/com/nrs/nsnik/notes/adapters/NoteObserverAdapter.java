@@ -2,16 +2,12 @@ package com.nrs.nsnik.notes.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,21 +28,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapter.MyViewHolder> implements Observer {
 
+    private static final String TAG = NoteDataObserver.class.getSimpleName();
     private NotesCount mCount;
     private Context mContext;
     private List<NoteObject> mNotesList;
     private List<Integer> mIds;
-    private static final String TAG  = NoteDataObserver.class.getSimpleName();
 
 
-    public NoteObserverAdapter(Context context,Uri uri, LoaderManager manager,NotesCount count) {
+    public NoteObserverAdapter(Context context, Uri uri, LoaderManager manager, NotesCount count) {
         mContext = context;
         NoteDataObserver observer = new NoteDataObserver(mContext, uri, manager);
         mNotesList = new ArrayList<>();
@@ -90,7 +85,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         return mNotesList.size();
     }
 
-    public NoteObject getSingleItem(int position){
+    public NoteObject getSingleItem(int position) {
         return mNotesList.get(position);
     }
 
@@ -129,7 +124,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         File f = new File(folder, filename);
         FileInputStream fis;
-        ObjectInputStream ois ;
+        ObjectInputStream ois;
         NoteObject object = null;
         try {
             fis = new FileInputStream(f);
@@ -146,7 +141,6 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         File path = new File(folder, object.getImages().get(0));
         return BitmapFactory.decodeFile(path.toString());
     }
-
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.singleNoteTitle)
@@ -167,7 +161,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
-                    intent.setData(Uri.withAppendedPath(TableNames.mContentUri,String.valueOf(mIds.get(getAdapterPosition()))));
+                    intent.setData(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()))));
                     mContext.startActivity(intent);
                 }
             });

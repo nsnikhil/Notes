@@ -10,11 +10,8 @@ public class TableNames {
     static final int mDataBaseVersion = 7;
     static final String mTableName = "newnotetable";
     static final String mFolderTableName = "foldertable";
-
-    private static final String mScheme = "content://";
     static final String mAuthority = "com.nrs.nsnik.notes";
-
-
+    private static final String mScheme = "content://";
     private static final Uri mBaseUri = Uri.parse(mScheme + mAuthority);
     public static final Uri mContentUri = Uri.withAppendedPath(mBaseUri, mTableName);
     public static final Uri mFolderContentUri = Uri.withAppendedPath(mBaseUri, mFolderTableName);

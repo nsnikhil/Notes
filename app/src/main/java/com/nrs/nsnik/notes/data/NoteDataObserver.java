@@ -5,29 +5,28 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import com.nrs.nsnik.notes.interfaces.Observable;
 import android.support.v4.content.CursorLoader;
-import android.util.Log;
+import android.support.v4.content.Loader;
 
+import com.nrs.nsnik.notes.interfaces.Observable;
 import com.nrs.nsnik.notes.interfaces.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, Observable{
+public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, Observable {
 
+    private static final int LOADER_ID = 1;
+    private static final String TAG = NoteDataObserver.class.getSimpleName();
     private List<Observer> mObserverList;
     private Context mContext;
-    private static final int LOADER_ID = 1;
     private Uri mUri;
-    private static final String TAG = NoteDataObserver.class.getSimpleName();
 
-    public NoteDataObserver(Context context, Uri uri,LoaderManager loaderManager){
+    public NoteDataObserver(Context context, Uri uri, LoaderManager loaderManager) {
         mContext = context;
         mObserverList = new ArrayList<>();
-        mUri  = uri;
-        loaderManager.initLoader(LOADER_ID,null,this);
+        mUri = uri;
+        loaderManager.initLoader(LOADER_ID, null, this);
     }
 
 
@@ -38,19 +37,18 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
 
     @Override
     public void remove(Observer observer) {
-
     }
 
     @Override
     public void updateObserver(Cursor cursor) {
-        for(Observer observer:mObserverList){
+        for (Observer observer : mObserverList) {
             observer.updateItems(cursor);
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id){
+        switch (id) {
             case LOADER_ID:
                 return new CursorLoader(mContext, mUri, null, null, null, null);
         }
