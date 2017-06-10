@@ -43,13 +43,12 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
     private Context mContext;
     private List<NoteObject> mNotesList;
     private List<Integer> mIds;
-    private NoteDataObserver observer;
     private static final String TAG  = NoteDataObserver.class.getSimpleName();
 
 
     public NoteObserverAdapter(Context context,Uri uri, LoaderManager manager,NotesCount count) {
         mContext = context;
-        observer = new NoteDataObserver(mContext,uri, manager);
+        NoteDataObserver observer = new NoteDataObserver(mContext, uri, manager);
         mNotesList = new ArrayList<>();
         mIds = new ArrayList<>();
         mCount = count;
@@ -69,6 +68,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         if (object.getImages().size() > 0) {
             try {
                 holder.mNoteImage.setImageBitmap(getImage(object));
+                holder.mNoteImage.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 e.printStackTrace();
             }

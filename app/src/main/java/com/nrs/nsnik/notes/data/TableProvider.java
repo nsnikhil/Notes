@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.nrs.nsnik.notes.data.TableNames.table1;
-
+import com.nrs.nsnik.notes.data.TableNames.table2;
 
 
 public class TableProvider extends ContentProvider{
@@ -23,9 +23,11 @@ public class TableProvider extends ContentProvider{
 
     private static final int uAllNotes = 111;
     private static final int uSingleNote = 112;
-    private static final int uAllFolderNote = 212;
-    private static final int uAllFolder = 113;
-    private static final int uSingleFolder = 114;
+    private static final int uAllFolderNote = 113;
+
+    private static final int uAllFolder = 213;
+    private static final int uSingleFolder = 214;
+    private static final int uAllSubFolder = 215;
 
     static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -33,8 +35,10 @@ public class TableProvider extends ContentProvider{
         sUriMatcher.addURI(TableNames.mAuthority,TableNames.mTableName,uAllNotes);
         sUriMatcher.addURI(TableNames.mAuthority,TableNames.mTableName+"/#",uSingleNote);
         sUriMatcher.addURI(TableNames.mAuthority,TableNames.mTableName+"/*",uAllFolderNote);
+
         sUriMatcher.addURI(TableNames.mAuthority,TableNames.mFolderTableName,uAllFolder);
         sUriMatcher.addURI(TableNames.mAuthority,TableNames.mFolderTableName+"/#",uSingleFolder);
+        sUriMatcher.addURI(TableNames.mAuthority,TableNames.mFolderTableName+"/*",uAllSubFolder);
     }
 
     @Override
@@ -47,7 +51,7 @@ public class TableProvider extends ContentProvider{
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)  {
         SQLiteDatabase sdb = tableHelper.getReadableDatabase();
-        Cursor c ;
+        Cursor c;
         switch (sUriMatcher.match(uri)){
             case uAllNotes:
                 c = sdb.query(TableNames.mTableName,projection,selection,selectionArgs,null,null,sortOrder);
@@ -59,9 +63,9 @@ public class TableProvider extends ContentProvider{
                 break;
             case uAllFolderNote:
                 selection = table1.mFolderName + " =?";
-                String sf = uri.toString();
-                sf = sf.substring(sf.lastIndexOf('/')+1);
-                selectionArgs = new String[]{sf};
+                String sp = uri.toString();
+                sp = sp.substring(sp.lastIndexOf('/')+1);
+                selectionArgs = new String[]{sp};
                 c = sdb.query(TableNames.mTableName,projection,selection,selectionArgs,null,null,sortOrder);
                 break;
             case uAllFolder:
@@ -70,6 +74,13 @@ public class TableProvider extends ContentProvider{
             case uSingleFolder:
                 selection = TableNames.table2.mUid+" =?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                c = sdb.query(TableNames.mFolderTableName,projection,selection,selectionArgs,null,null,sortOrder);
+                break;
+            case uAllSubFolder:
+                selection = table2.mParentFolderName + " =?";
+                String sf = uri.toString();
+                sf = sf.substring(sf.lastIndexOf('/')+1);
+                selectionArgs = new String[]{sf};
                 c = sdb.query(TableNames.mFolderTableName,projection,selection,selectionArgs,null,null,sortOrder);
                 break;
             default:
@@ -131,6 +142,12 @@ public class TableProvider extends ContentProvider{
                 selection = TableNames.table2.mUid+ "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return deleteVal(uri,selection,selectionArgs,TableNames.mFolderTableName);
+            case uAllSubFolder:
+                selection = table2.mParentFolderName + " =?";
+                String sb = uri.toString();
+                sb = sb.substring(sb.lastIndexOf('/')+1);
+                selectionArgs = new String[]{sb};
+                return deleteVal(uri,selection,selectionArgs,TableNames.mFolderTableName);
             default:
                 throw new IllegalArgumentException("Invalid uri"+uri);
         }
@@ -167,6 +184,12 @@ public class TableProvider extends ContentProvider{
             case uSingleFolder:
                 selection = TableNames.table2.mUid+ "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return updateVal(uri,values,selection,selectionArgs,TableNames.mFolderTableName);
+            case uAllSubFolder:
+                selection = table2.mParentFolderName + " =?";
+                String sb = uri.toString();
+                sb = sb.substring(sb.lastIndexOf('/')+1);
+                selectionArgs = new String[]{sb};
                 return updateVal(uri,values,selection,selectionArgs,TableNames.mFolderTableName);
             default:
                 throw new IllegalArgumentException("Invalid Uri"+uri);

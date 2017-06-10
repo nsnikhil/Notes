@@ -19,13 +19,14 @@ public class TableHelper extends SQLiteOpenHelper{
     private static final String mCreateFolderTable = "CREATE TABLE "+ TableNames.mFolderTableName + " ("
             + TableNames.table2.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TableNames.table2.mFolderName + " TEXT, "
-            + TableNames.table2.mFolderId + " TEXT "
+            + TableNames.table2.mFolderId + " TEXT, "
+            + TableNames.table2.mParentFolderName + " TEXT "
             + ");";
 
     private static final String mDropFolderTable = "DROP TABLE IF EXISTS "+ TableNames.mFolderTableName;
 
 
-    public TableHelper(Context context) {
+    TableHelper(Context context) {
         super(context, TableNames.mDatabaseName, null, TableNames.mDataBaseVersion);
     }
 

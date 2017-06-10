@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import com.nrs.nsnik.notes.fragments.HomeFragment;
 import com.nrs.nsnik.notes.fragments.NotesFragment;
 
 import butterknife.BindView;
@@ -39,11 +40,11 @@ public class ContainerActivity extends AppCompatActivity {
         if(getIntent()!=null&&getIntent().getExtras()!=null){
             String folderName = getIntent().getExtras().getString(getResources().getString(R.string.intentFolderName));
             getSupportActionBar().setTitle(folderName);
-            NotesFragment fragment = new NotesFragment();
+            HomeFragment homeFragment = new HomeFragment();
             Bundle args = new Bundle();
-            args.putString(getResources().getString(R.string.foldernamebundle),folderName);
-            fragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction().add(R.id.containerSpace,fragment).commit();
+            args.putString(getResources().getString(R.string.homefldnm),folderName);
+            homeFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().add(R.id.containerSpace,homeFragment).commit();
         }
     }
 

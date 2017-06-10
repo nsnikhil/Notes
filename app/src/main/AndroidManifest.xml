@@ -23,16 +23,13 @@
             android:name=".NewNoteActivity"
             android:label="@string/addNote"
             android:parentActivityName=".MainActivity" />
-
         <provider
             android:name=".data.TableProvider"
             android:authorities="com.nrs.nsnik.notes"
             android:enabled="true"
             android:exported="false" />
-
         <receiver android:name=".NewNoteActivity$ReminderService" />
-
-        <activity android:name=".ContainerActivity"></activity>
+        <activity android:name=".ContainerActivity"/>
     </application>
 
 </manifest>

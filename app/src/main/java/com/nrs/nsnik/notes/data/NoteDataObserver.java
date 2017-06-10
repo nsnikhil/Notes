@@ -20,7 +20,7 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     private List<Observer> mObserverList;
     private Context mContext;
     private static final int LOADER_ID = 1;
-    Uri mUri;
+    private Uri mUri;
     private static final String TAG = NoteDataObserver.class.getSimpleName();
 
     public NoteDataObserver(Context context, Uri uri,LoaderManager loaderManager){

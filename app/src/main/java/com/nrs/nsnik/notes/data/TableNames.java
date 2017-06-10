@@ -6,16 +6,16 @@ import android.provider.BaseColumns;
 
 public class TableNames {
 
-    public static final String mDatabaseName = "newnotedatabase";
-    public static final int mDataBaseVersion = 6;
-    public static final String mTableName = "newnotetable";
-    public static final String mFolderTableName = "foldertable";
+    static final String mDatabaseName = "newnotedatabase";
+    static final int mDataBaseVersion = 7;
+    static final String mTableName = "newnotetable";
+    static final String mFolderTableName = "foldertable";
 
-    public static final String mScheme = "content://";
-    public static final String mAuthority = "com.nrs.nsnik.notes";
+    private static final String mScheme = "content://";
+    static final String mAuthority = "com.nrs.nsnik.notes";
 
 
-    public static final Uri mBaseUri = Uri.parse(mScheme + mAuthority);
+    private static final Uri mBaseUri = Uri.parse(mScheme + mAuthority);
     public static final Uri mContentUri = Uri.withAppendedPath(mBaseUri, mTableName);
     public static final Uri mFolderContentUri = Uri.withAppendedPath(mBaseUri, mFolderTableName);
 
@@ -31,5 +31,6 @@ public class TableNames {
         public static final String mUid = BaseColumns._ID;
         public static final String mFolderName = "foldername";
         public static final String mFolderId = "folderid";
+        public static final String mParentFolderName = "parfoldername";
     }
 }

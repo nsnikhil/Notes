@@ -1,19 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/matchParent">
-
-    <include layout="@layout/empty_state"
-        android:id="@+id/commonListEmpty"
-        android:visibility="gone"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/commonList"
-        style="@style/matchParent" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/commonAdd"
-        app:fab_size="normal"
-        android:src="@drawable/ic_add_white_48dp"
-        style="@style/fab" />
-
-</RelativeLayout>
+<android.support.v7.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/commonList"
+    style="@style/matchParent" />

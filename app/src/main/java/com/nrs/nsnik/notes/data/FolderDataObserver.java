@@ -2,6 +2,7 @@ package com.nrs.nsnik.notes.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -20,11 +21,13 @@ public class FolderDataObserver implements LoaderManager.LoaderCallbacks<Cursor>
     private List<Observer> mObserverList;
     private Context mContext;
     private static final int LOADER_ID = 2;
+    private Uri mUri;
     private static final String TAG = FolderDataObserver.class.getSimpleName();
 
-    public FolderDataObserver(Context context, LoaderManager loaderManager) {
+    public FolderDataObserver(Context context,Uri uri, LoaderManager loaderManager) {
         mContext = context;
         mObserverList = new ArrayList<>();
+        mUri = uri;
         loaderManager.initLoader(LOADER_ID, null, this);
     }
 
@@ -50,7 +53,7 @@ public class FolderDataObserver implements LoaderManager.LoaderCallbacks<Cursor>
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID:
-                return new CursorLoader(mContext, TableNames.mFolderContentUri, null, null, null, null);
+                return new CursorLoader(mContext, mUri, null, null, null, null);
         }
         return null;
     }

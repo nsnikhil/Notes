@@ -3,6 +3,7 @@ package com.nrs.nsnik.notes.adapters;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,18 +17,20 @@ import com.nrs.nsnik.notes.interfaces.SendSize;
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
 
     private Activity mContext;
-    private ArrayList<Bitmap> list;
-    private SendSize size;
+    private ArrayList<Bitmap> mList;
+    private SendSize mSize;
+    private static final String TAG = ImageAdapter.class.getSimpleName();
 
     public ImageAdapter(Activity c, ArrayList<Bitmap> arrayList, SendSize sz) {
         mContext = c;
-        list = arrayList;
-        size = sz;
+        mList = arrayList;
+        mSize = sz;
     }
 
     @Override
@@ -38,30 +41,35 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(ImageAdapter.MyViewHolder holder, int position) {
-        holder.image.setImageBitmap(list.get(position));
+        holder.image.setImageBitmap(mList.get(position));
 
     }
 
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.singleImage) ImageView image;
-        @BindView(R.id.singleImageCancel) CircularImageView remove;
+        @BindView(R.id.singleImage)
+        ImageView image;
+        @BindView(R.id.singleImageCancel)
+        CircularImageView remove;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this,itemView);
             remove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    list.remove(getAdapterPosition());
-                    notifyItemRemoved(getAdapterPosition());
-                    size.validateSize(getAdapterPosition());
+                    int pos = getAdapterPosition();
+                    mList.remove(pos);
+                    notifyItemRemoved(pos);
+                    mSize.validateSize(pos);
                 }
-            });image.setOnClickListener(new View.OnClickListener() {
+            });
+            image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(mContext.getApplicationContext(), "Will Show Full Screen Image", Toast.LENGTH_SHORT).show();

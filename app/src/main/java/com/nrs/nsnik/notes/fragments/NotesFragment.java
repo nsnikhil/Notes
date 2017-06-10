@@ -1,27 +1,16 @@
 package com.nrs.nsnik.notes.fragments;
 
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.adapters.NoteObserverAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
@@ -34,13 +23,10 @@ import butterknife.Unbinder;
 public class NotesFragment extends Fragment implements NotesCount{
 
     @BindView(R.id.commonList) RecyclerView mNotesList;
-    @BindView(R.id.commonListEmpty)ImageView mEmpty;
-    @BindView(R.id.commonAdd)FloatingActionButton mAdd;
     private Unbinder mUnbinder;
-    private MenuItem mDeleteMenu;
-    private NoteObserverAdapter mNoteAdapter;
+    private int mNotesCount;
     private static final String TAG = NotesFragment.class.getSimpleName();
-    Uri mUri;
+    private Uri mUri;
 
     public NotesFragment() {
 
@@ -52,11 +38,10 @@ public class NotesFragment extends Fragment implements NotesCount{
         mUnbinder  = ButterKnife.bind(this,v);
         initialize();
         listeners();
-        setHasOptionsMenu(true);
         return v;
     }
 
-    private void initialize(){
+    private void setUri(){
         if(getArguments()!=null){
             String folderName = getArguments().getString(getActivity().getResources().getString(R.string.foldernamebundle));
             if(folderName!=null){
@@ -67,67 +52,17 @@ public class NotesFragment extends Fragment implements NotesCount{
         }else {
             mUri  = TableNames.mContentUri;
         }
+    }
+
+    private void initialize(){
+        setUri();
         mNotesList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        mNoteAdapter = new NoteObserverAdapter(getActivity(), mUri, getLoaderManager(),this);
-        mNotesList.setAdapter(mNoteAdapter);
-        mEmpty.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.emptynotes));
+        NoteObserverAdapter adapter = new NoteObserverAdapter(getActivity(), mUri, getLoaderManager(), this);
+        mNotesList.setAdapter(adapter);
     }
 
     private void listeners(){
-        mAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
-                if(getArguments()!=null){
-                    Log.d(TAG, getArguments().getString(getActivity().getResources().getString(R.string.foldernamebundle)));
-                    newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle)
-                            ,getArguments().getString(getActivity().getResources().getString(R.string.foldernamebundle)));
-                }startActivity(newNote);
-            }
-        });
-    }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
-        mDeleteMenu = menu.getItem(1);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menuMainDeleteAll:
-                deleteDialog();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void deleteDialog(){
-        AlertDialog.Builder delete = new AlertDialog.Builder(getActivity());
-        delete.setTitle(getActivity().getResources().getString(R.string.warning))
-                .setMessage(getActivity().getResources().getString(R.string.deleteallnotesfragmentDailog))
-                .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                }).setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteNotes();
-            }
-        });
-        delete.create().show();
-    }
-
-    private void deleteNotes(){
-        if(getArguments()!=null){
-            String folderName = getArguments().getString(getActivity().getResources().getString(R.string.foldernamebundle));
-            getActivity().getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri,folderName),null,null);
-        } else {
-            getActivity().getContentResolver().delete(TableNames.mContentUri,null,null);
-        }
     }
 
     private void cleanUp() {
@@ -142,14 +77,12 @@ public class NotesFragment extends Fragment implements NotesCount{
         super.onDestroy();
     }
 
+    public int getNotesCount() {
+        return mNotesCount;
+    }
+
     @Override
     public void getNotesCount(int count) {
-        if(count==0){
-            if(mDeleteMenu!=null) mDeleteMenu.setVisible(false);
-            mEmpty.setVisibility(View.VISIBLE);
-        }else {
-            if(mDeleteMenu!=null) mDeleteMenu.setVisible(true);
-            mEmpty.setVisibility(View.GONE);
-        }
+        mNotesCount = count;
     }
 }

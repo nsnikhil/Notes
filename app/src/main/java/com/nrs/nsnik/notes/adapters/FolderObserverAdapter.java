@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,11 +39,10 @@ public class FolderObserverAdapter extends RecyclerView.Adapter<FolderObserverAd
     private Context mContext;
     private List<String> mFolderList;
     private Random r = new Random();
-    private FolderDataObserver observer;
 
-    public FolderObserverAdapter(Context context, LoaderManager manager, FolderCount count) {
+    public FolderObserverAdapter(Context context, Uri uri,LoaderManager manager, FolderCount count) {
         mContext = context;
-        observer = new FolderDataObserver(mContext, manager);
+        FolderDataObserver observer = new FolderDataObserver(mContext, uri, manager);
         mFolderList = new ArrayList<>();
         mCount = count;
         observer.add(this);

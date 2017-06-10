@@ -349,9 +349,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                         String name = makeImageName();
                         mImagesLocations.add(name);
                         mFileOperation.saveImage(name,mImage);
-                        Toast.makeText(getApplicationContext(),name,Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getApplicationContext(),mImagesArray.size()+"",Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getApplicationContext(),mImagesLocations.size()+"",Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -371,9 +368,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(getApplicationContext(),name,Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplicationContext(),mImagesArray.size()+"",Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplicationContext(),mImagesLocations.size()+"",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -407,7 +401,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.newNoteSetReminder:
                 Calendar c = Calendar.getInstance();
-
                 TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {

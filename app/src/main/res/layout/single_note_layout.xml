@@ -5,7 +5,7 @@
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    style="@style/crdv"
+    style="@style/stretchedHorizontally"
     card_view:cardCornerRadius="1dp"
     card_view:cardElevation="1dp"
     card_view:cardMaxElevation="4dp"
