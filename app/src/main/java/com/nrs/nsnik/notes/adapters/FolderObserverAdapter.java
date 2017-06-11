@@ -8,7 +8,9 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,13 +40,15 @@ public class FolderObserverAdapter extends RecyclerView.Adapter<FolderObserverAd
     private FolderCount mCount;
     private Context mContext;
     private List<String> mFolderList;
+    private String mFolderName;
     private Random r = new Random();
 
-    public FolderObserverAdapter(Context context, Uri uri, LoaderManager manager, FolderCount count) {
+    public FolderObserverAdapter(Context context, Uri uri, LoaderManager manager, FolderCount count,String folderName) {
         mContext = context;
         FolderDataObserver observer = new FolderDataObserver(mContext, uri, manager);
         mFolderList = new ArrayList<>();
         mCount = count;
+        mFolderName = folderName;
         observer.add(this);
     }
 
@@ -86,7 +90,9 @@ public class FolderObserverAdapter extends RecyclerView.Adapter<FolderObserverAd
     private void makeFolderList(Cursor cursor) {
         mFolderList.clear();
         while (cursor != null && cursor.moveToNext()) {
-            mFolderList.add(justifyName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))));
+            if(cursor.getString(cursor.getColumnIndex(TableNames.table2.mParentFolderName)).equalsIgnoreCase(mFolderName)) {
+                mFolderList.add(justifyName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))));
+            }
         }
         mCount.getFolderCount(mFolderList.size());
         notifyDataSetChanged();

@@ -7,12 +7,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
@@ -37,16 +41,18 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
     private static final String TAG = NoteDataObserver.class.getSimpleName();
     private NotesCount mCount;
     private Context mContext;
+    private String mFolderName;
     private List<NoteObject> mNotesList;
     private List<Integer> mIds;
 
 
-    public NoteObserverAdapter(Context context, Uri uri, LoaderManager manager, NotesCount count) {
+    public NoteObserverAdapter(Context context, Uri uri, LoaderManager manager, NotesCount count,String folderName) {
         mContext = context;
         NoteDataObserver observer = new NoteDataObserver(mContext, uri, manager);
         mNotesList = new ArrayList<>();
         mIds = new ArrayList<>();
         mCount = count;
+        mFolderName = folderName;
         observer.add(this);
     }
 
@@ -111,10 +117,13 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
 
     private void makeNotesList(Cursor cursor) {
         mNotesList.clear();
+        mIds.clear();
         while (cursor != null && cursor.moveToNext()) {
             mIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table1.mUid)));
             NoteObject object = openObject(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
-            mNotesList.add(object);
+            if(object.getFolderName().equalsIgnoreCase(mFolderName)){
+                mNotesList.add(object);
+            }
         }
         mCount.getNotesCount(mNotesList.size());
         notifyDataSetChanged();
@@ -154,7 +163,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         @BindView(R.id.singleNoteAudio)
         ImageView mAudIndicator;
 
-        public MyViewHolder(View itemView) {
+        public MyViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {

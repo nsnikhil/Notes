@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.data.TableNames.table2;
@@ -117,7 +118,6 @@ public class TableProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        SQLiteDatabase sdb = tableHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
             case uAllNotes:
                 return deleteVal(uri, selection, selectionArgs, TableNames.mTableName);
@@ -160,7 +160,8 @@ public class TableProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        Log.d("UpdateLog", uri.toString());
         switch (sUriMatcher.match(uri)) {
             case uAllNotes:
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mTableName);

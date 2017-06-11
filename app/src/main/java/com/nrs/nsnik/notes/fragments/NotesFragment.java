@@ -26,8 +26,7 @@ public class NotesFragment extends Fragment implements NotesCount {
     @BindView(R.id.commonList)
     RecyclerView mNotesList;
     private Unbinder mUnbinder;
-    private int mNotesCount;
-    private Uri mUri;
+    private String mFolderName = "nofolder";
 
     public NotesFragment() {
 
@@ -42,24 +41,16 @@ public class NotesFragment extends Fragment implements NotesCount {
         return v;
     }
 
-    private void setUri() {
+    private void setFolderName() {
         if (getArguments() != null) {
-            String folderName = getArguments().getString(getActivity().getResources().getString(R.string.foldernamebundle));
-            if (folderName != null) {
-                mUri = Uri.withAppendedPath(TableNames.mContentUri, folderName);
-            } else {
-                mUri = TableNames.mContentUri;
-            }
-        } else {
-            mUri = TableNames.mContentUri;
+            mFolderName =  getArguments().getString(getActivity().getResources().getString(R.string.foldernamebundle));
         }
     }
 
     private void initialize() {
-        setUri();
-        Log.d(TAG, mUri.toString());
+        setFolderName();
         mNotesList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        NoteObserverAdapter adapter = new NoteObserverAdapter(getActivity(), mUri, getLoaderManager(), this);
+        NoteObserverAdapter adapter = new NoteObserverAdapter(getActivity(), TableNames.mContentUri, getLoaderManager(), this,mFolderName);
         mNotesList.setAdapter(adapter);
     }
 
@@ -81,6 +72,6 @@ public class NotesFragment extends Fragment implements NotesCount {
 
     @Override
     public void getNotesCount(int count) {
-        mNotesCount = count;
+        Log.d(TAG, String.valueOf(count));
     }
 }

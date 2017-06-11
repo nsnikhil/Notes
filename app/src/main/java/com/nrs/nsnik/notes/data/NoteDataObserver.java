@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 
 import com.nrs.nsnik.notes.interfaces.Observable;
 import com.nrs.nsnik.notes.interfaces.Observer;
@@ -62,6 +63,6 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        Log.d(TAG, "Reset");
     }
 }

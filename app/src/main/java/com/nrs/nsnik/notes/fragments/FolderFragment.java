@@ -24,9 +24,8 @@ public class FolderFragment extends Fragment implements FolderCount {
     private static final String TAG = FolderFragment.class.getSimpleName();
     @BindView(R.id.commonList)
     RecyclerView mFolderList;
-    private Uri mUri;
-    private int mFolderCount;
     private Unbinder mUnbinder;
+    private String mFolderName = "nofolder";
 
     public FolderFragment() {
 
@@ -41,23 +40,16 @@ public class FolderFragment extends Fragment implements FolderCount {
         return v;
     }
 
-    private void setUri() {
+    private void setFolderName() {
         if (getArguments() != null) {
-            String folderName = getArguments().getString(getActivity().getResources().getString(R.string.sunFldName));
-            if (folderName != null) {
-                mUri = Uri.withAppendedPath(TableNames.mFolderContentUri, folderName);
-            } else {
-                mUri = TableNames.mFolderContentUri;
-            }
-        } else {
-            mUri = TableNames.mFolderContentUri;
+            mFolderName =  getArguments().getString(getActivity().getResources().getString(R.string.sunFldName));
         }
     }
 
     private void initialize() {
-        setUri();
+        setFolderName();
         mFolderList.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        FolderObserverAdapter adapter = new FolderObserverAdapter(getActivity(), mUri, getLoaderManager(), this);
+        FolderObserverAdapter adapter = new FolderObserverAdapter(getActivity(), TableNames.mFolderContentUri, getLoaderManager(), this,mFolderName);
         mFolderList.setAdapter(adapter);
     }
 
@@ -78,7 +70,7 @@ public class FolderFragment extends Fragment implements FolderCount {
 
     @Override
     public void getFolderCount(int count) {
-        mFolderCount = count;
+        Log.d(TAG, String.valueOf(count));
     }
 
 }

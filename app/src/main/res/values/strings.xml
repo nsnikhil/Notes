@@ -41,6 +41,7 @@
 
     <!-- IntentKeys-->
     <string name="intentFolderName">intFldNmKy</string>
+    <string name="intentFolderColor">intFldClr</string>
     <!-- -->
 
     <!-- bundle-->
@@ -92,6 +93,10 @@
     <!-- emptyNote-->
     <string name="noNote">Cannot Save Empty Note</string>
     <string name="noTitle">Cannot Save Note Without Title</string>
+    <!-- -->
+
+    <!-- popUps-->
+    <string name="popUpDelete">Delete</string>
     <!-- -->
 
     <!-- delete-->
