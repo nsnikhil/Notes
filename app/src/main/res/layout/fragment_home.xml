@@ -11,6 +11,7 @@
 
     <FrameLayout
         android:id="@+id/homeNotesContainer"
+        android:layout_below="@id/homeNotesFolderContainer"
         style="@style/stretchedHorizontally" />
 
     <include
