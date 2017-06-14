@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+<EditText
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dialogFolderName"
-    style="@style/matchParent"
-    android:layout_height="wrap_content"
+    style="@style/stretchedHorizontally"
     android:layout_margin="@dimen/sixteen"
     android:hint="@string/newfoldername"
     android:padding="@dimen/sixteen" />
-
 

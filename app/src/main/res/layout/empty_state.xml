@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/homeEmptyState"
-    style="@style/errorImage"
-    android:contentDescription="@string/imageError"
-    android:src="@drawable/emptystate" />
+    style="@style/wrapContent"
+    android:text="@string/emptyState"/>
 

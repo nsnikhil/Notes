@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:title="@string/serach"
-        android:icon="@drawable/ic_search_white_48dp"
+        android:icon="@drawable/ic_search_black_48dp"
         app:showAsAction="ifRoom|collapseActionView"
         android:id="@+id/menuMainSearch"/>
 
     <item android:title="@string/deleteall"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_delete_white_48dp"
+        android:icon="@drawable/ic_delete_black_48dp"
         android:id="@+id/menuMainDeleteAll"/>
 </menu>

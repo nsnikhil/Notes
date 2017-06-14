@@ -33,11 +33,6 @@
         <item name="android:layout_height">@dimen/twentyFour</item>
     </style>
 
-    <style name="thirtySix">
-        <item name="android:layout_width">@dimen/thirtySix</item>
-        <item name="android:layout_height">@dimen/thirtySix</item>
-    </style>
-
     <style name="verticalLinearLayout" parent="matchParent">
         <item name="android:orientation">vertical</item>
     </style>
@@ -64,27 +59,9 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
-
-    <style name="headerImage">
-        <item name="android:layout_width">@dimen/headerCircleImage</item>
-        <item name="android:layout_height">@dimen/headerCircleImage</item>
-        <item name="android:layout_marginLeft">@dimen/sixteen</item>
-        <item name="android:layout_marginTop">40dp</item>
-    </style>
-
-    <style name="headerText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">@dimen/sixteen</item>
-        <item name="android:layout_marginTop">@dimen/sixteen</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/headingText</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="newNoteHeading" parent="stretchedHorizontally">
-        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/cardview_dark_background</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:padding">@dimen/eight</item>
@@ -95,28 +72,12 @@
     <style name="newNoteContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/cardview_dark_background</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:padding">@dimen/sixteen</item>
         <item name="android:hint">@string/newNote</item>
         <item name="android:textSize">@dimen/smallHeadingText</item>
         <item name="android:gravity">start</item>
-    </style>
-
-    <style name="MenuButtonsStyle">
-        <item name="fab_size">normal</item>
-        <item name="fab_showAnimation">@anim/jump_from_down</item>
-        <item name="fab_hideAnimation">@anim/jump_to_down</item>
-        <item name="fab_shadowColor">#444</item>
-        <item name="fab_colorNormal">@color/colorAccent</item>
-        <item name="fab_colorPressed">#F2AB00</item>
-        <item name="fab_colorRipple">#D99200</item>
-    </style>
-
-    <style name="bottomToolbar">
-        <item name="android:layout_width">@dimen/zero</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:scaleType">centerInside</item>
     </style>
 
     <style name="small">
@@ -142,17 +103,6 @@
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentEnd">true</item>
         <item name="android:layout_margin">@dimen/sixteen</item>
-    </style>
-
-    <style name="addTextStyle" parent="stretchedHorizontally">
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:textSize">@dimen/twentyFour</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">sans-serif-light</item>\
-        <item name="android:padding">@dimen/sixteen</item>
-        <item name="android:textColor">@color/white</item>
     </style>
 
 </resources>

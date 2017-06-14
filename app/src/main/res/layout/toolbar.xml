@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/toolbar"
-    android:background="@color/colorPrimary"
-    android:theme="@style/whiteColorCode"
-    app:titleTextColor="@color/cardview_light_background" />
+    android:background="@color/colorBackground" />

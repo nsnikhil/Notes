@@ -1,12 +1,15 @@
 package com.nrs.nsnik.notes.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -120,17 +123,14 @@ public class FolderObserverAdapter extends RecyclerView.Adapter<FolderObserverAd
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.singleFolderName)
-        TextView mFolderName;
-        @BindView(R.id.singleFolderIcon)
-        ImageView mFolderIcon;
+        @BindView(R.id.singleFolderName) TextView mFolderName;
 
-        public MyViewHolder(View itemView) {
+        public MyViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 mFolderIcon.setImageTintList(stateList());
-            }
+            }*/
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.mikhaellopez.circularimageview.CircularImageView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 
@@ -50,11 +48,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.singleImage)
-        ImageView image;
-        @BindView(R.id.singleImageCancel)
-        CircularImageView remove;
-
+        @BindView(R.id.singleImage) ImageView image;
+        @BindView(R.id.singleImageCancel) ImageView remove;
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

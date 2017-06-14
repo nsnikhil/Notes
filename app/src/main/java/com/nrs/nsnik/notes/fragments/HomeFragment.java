@@ -2,25 +2,33 @@ package com.nrs.nsnik.notes.fragments;
 
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.TableNames;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
@@ -32,10 +40,9 @@ import butterknife.Unbinder;
 public class HomeFragment extends Fragment {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
-    @BindView(R.id.homeAdd)
-    FloatingActionMenu mAdd;
-    @BindView(R.id.homeEmptyState)
-    ImageView mEmpty;
+    @BindView(R.id.homeAdd) FloatingActionMenu mAdd;
+    @BindView(R.id.homeEmptyState) TextView mEmpty;
+    @BindView(R.id.homeContainer)RelativeLayout mHomeContainer;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
 
@@ -84,7 +91,7 @@ public class HomeFragment extends Fragment {
         final com.github.clans.fab.FloatingActionButton newFile = new com.github.clans.fab.FloatingActionButton(getActivity());
         newFile.setButtonSize(FloatingActionButton.SIZE_NORMAL);
         newFile.setLabelText("New Note");
-        newFile.setImageResource(R.drawable.newfilesmall);
+        newFile.setImageResource(R.drawable.ic_note_add_black_24dp);
         newFile.setColorNormal(ContextCompat.getColor(getActivity(), R.color.colorAccent));
         newFile.setColorPressed(ContextCompat.getColor(getActivity(), R.color.colorAccent));
         mAdd.addMenuButton(newFile);
@@ -103,7 +110,7 @@ public class HomeFragment extends Fragment {
         com.github.clans.fab.FloatingActionButton newFolder = new com.github.clans.fab.FloatingActionButton(getActivity());
         newFolder.setButtonSize(FloatingActionButton.SIZE_NORMAL);
         newFolder.setLabelText("New Folder");
-        newFolder.setImageResource(R.drawable.newfoldersmall);
+        newFolder.setImageResource(R.drawable.ic_create_new_folder_black_24dp);
         newFolder.setColorNormal(ContextCompat.getColor(getActivity(), R.color.colorAccent));
         newFolder.setColorPressed(ContextCompat.getColor(getActivity(), R.color.colorAccent));
         mAdd.addMenuButton(newFolder);
@@ -116,21 +123,26 @@ public class HomeFragment extends Fragment {
         });
     }
 
+
+
     private void createFolderDialog() {
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
-        newFolder.setTitle(getResources().getString(R.string.folder));
-        final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog, null);
+        final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog,mHomeContainer);
         newFolder.setView(v);
+        final EditText editText = (EditText) v.findViewById(R.id.dialogFolderName);
+        editText.requestFocus();
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         newFolder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             }
         });
         newFolder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                EditText editText = (EditText) v.findViewById(R.id.dialogFolderName);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                 createFolder(editText.getText().toString());
             }
         });

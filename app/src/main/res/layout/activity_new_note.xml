@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/imageDescription"
-                    android:src="@drawable/playsmall" />
+                    android:src="@drawable/ic_play_arrow_black_24dp" />
 
 
                 <SeekBar
@@ -47,14 +47,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/imageDescription"
-                    android:src="@drawable/cancelsmall" />
+                    android:src="@drawable/ic_cancel_black_24dp" />
 
             </LinearLayout>
 
 
             <EditText
+                android:labelFor="@+id/newNoteTitle"
                 android:id="@+id/newNoteTitle"
                 style="@style/newNoteHeading"
+                android:transitionName="noteTitle"
                 android:layout_below="@id/newNoteAudioContainer"
                 android:background="@android:color/transparent"
                 android:maxLines="1"
@@ -62,6 +64,7 @@
                 android:textSize="24sp" />
 
             <EditText
+                android:labelFor="@+id/newNoteContent"
                 android:id="@+id/newNoteContent"
                 style="@style/newNoteContent"
                 android:layout_below="@id/newNoteTitle"
@@ -117,7 +120,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
-                android:src="@drawable/takepicturesmall" />
+                android:tint="@color/colorAccent"
+                android:src="@drawable/ic_add_a_photo_black_24dp" />
 
             <ImageView
                 android:id="@+id/newNoteChoosePicture"
@@ -126,7 +130,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
-                android:src="@drawable/addphotosmall" />
+                android:tint="@color/colorAccent"
+                android:src="@drawable/ic_add_to_photos_black_24dp" />
 
             <ImageView
                 android:id="@+id/newNoteAddAudio"
@@ -135,7 +140,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
-                android:src="@drawable/addaudiosmall" />
+                android:tint="@color/colorAccent"
+                android:src="@drawable/ic_audiotrack_black_24dp" />
 
             <ImageView
                 android:id="@+id/newNoteSetReminder"
@@ -143,8 +149,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
+                android:tint="@color/colorAccent"
                 android:scaleType="centerInside"
-                android:src="@drawable/setremindersmall" />
+                android:src="@drawable/ic_timer_black_24dp" />
 
         </LinearLayout>
 

@@ -1,15 +1,16 @@
 package com.nrs.nsnik.notes.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +47,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
     private List<Integer> mIds;
 
 
-    public NoteObserverAdapter(Context context, Uri uri, LoaderManager manager, NotesCount count,String folderName) {
+    public NoteObserverAdapter(Context context, Uri uri, LoaderManager manager, NotesCount count, String folderName) {
         mContext = context;
         NoteDataObserver observer = new NoteDataObserver(mContext, uri, manager);
         mNotesList = new ArrayList<>();
@@ -67,12 +68,8 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         holder.mNoteTitle.setText(object.getTitle());
         holder.mNoteContent.setText(object.getNote());
         if (object.getImages().size() > 0) {
-            try {
-                holder.mNoteImage.setImageBitmap(getImage(object));
-                holder.mNoteImage.setVisibility(View.VISIBLE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            holder.mNoteImage.setImageBitmap(getImage(object));
+            holder.mNoteImage.setVisibility(View.VISIBLE);
         }
         if (object.getAudioLocation() != null) {
             holder.mAudIndicator.setVisibility(View.VISIBLE);
@@ -121,7 +118,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         while (cursor != null && cursor.moveToNext()) {
             mIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table1.mUid)));
             NoteObject object = openObject(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
-            if(object.getFolderName().equalsIgnoreCase(mFolderName)){
+            if (object.getFolderName().equalsIgnoreCase(mFolderName)) {
                 mNotesList.add(object);
             }
         }
@@ -145,7 +142,7 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         return object;
     }
 
-    private Bitmap getImage(NoteObject object) throws IOException {
+    private Bitmap getImage(NoteObject object) {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         File path = new File(folder, object.getImages().get(0));
         return BitmapFactory.decodeFile(path.toString());
@@ -171,7 +168,31 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
                     intent.setData(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()))));
-                    mContext.startActivity(intent);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
+                    mContext.startActivity(intent, options.toBundle());
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    PopupMenu menu = new PopupMenu(mContext, itemView);
+                    menu.inflate(R.menu.pop_up_menu);
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.popUpDelete:
+                                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case R.id.popUpStar:
+                                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    menu.show();
+                    return false;
                 }
             });
         }

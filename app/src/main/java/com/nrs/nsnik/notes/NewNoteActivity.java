@@ -118,17 +118,16 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             mIntentUri = getIntent().getData();
             try {
                 setNote();
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         if (getIntent().getExtras() != null) {
             mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
         }
-        Log.d(TAG, mIntentUri.toString());
     }
 
-    private void setNote() throws IOException, ClassNotFoundException {
+    private void setNote() throws IOException {
         Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
         if (c != null && c.moveToFirst()) {
             mTitle.setText(c.getString(c.getColumnIndex(table1.mTitle)));
@@ -172,7 +171,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    private void deleteNote() throws IOException {
+    private void deleteNote() {
         if (mIntentUri != null) {
             AlertDialog.Builder deleteDialog = new AlertDialog.Builder(NewNoteActivity.this);
             deleteDialog.setTitle(getResources().getString(R.string.warning));
@@ -247,17 +246,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.newNoteMenuDelete:
-                try {
-                    deleteNote();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                deleteNote();
                 break;
         }
         return true;
     }
 
-    private void updateNote() throws IOException {
+    private void updateNote() {
         Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
         if (mHour != 289 || mMinutes != 291) {
             mReminder = 1;
@@ -424,13 +419,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     mPlayer.setDataSource(String.valueOf(f));
                     mPlayer.prepare();
                     mPlayer.start();
-                    mPlayAudio.setImageResource(R.drawable.pausesmall);
+                    mPlayAudio.setImageResource(R.drawable.ic_pause_black_24dp);
                     Thread prog = new Thread(this);
                     prog.start();
                     mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mediaPlayer) {
-                            mPlayAudio.setImageResource(R.drawable.playsmall);
+                            mPlayAudio.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                         }
                     });
                 } catch (IOException e) {

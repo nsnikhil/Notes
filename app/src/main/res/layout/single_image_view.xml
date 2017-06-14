@@ -10,12 +10,14 @@
         android:contentDescription="@string/imageDescription"
         android:scaleType="centerCrop" />
 
-    <com.mikhaellopez.circularimageview.CircularImageView
+    <ImageView
+        android:contentDescription="@string/imageDescription"
         android:id="@+id/singleImageCancel"
+        android:background="@drawable/circle"
+        android:src="@drawable/ic_cancel_black_48dp"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="end"
-        android:layout_margin="@dimen/eight"
-        android:src="@drawable/ic_cancel_black_48dp" />
+        android:layout_margin="@dimen/eight" />
 
 </FrameLayout>

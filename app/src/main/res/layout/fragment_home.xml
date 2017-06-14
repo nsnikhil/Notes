@@ -3,6 +3,7 @@
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/verticalLinearLayout"
+    android:id="@+id/homeContainer"
     tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
 
     <FrameLayout

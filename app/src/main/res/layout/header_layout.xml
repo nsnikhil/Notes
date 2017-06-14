@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/matchParent"
-    android:layout_height="@dimen/headerHeight">
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/stretchedHorizontally"
+    android:layout_marginTop="@dimen/twentyFour"
+    android:gravity="center_vertical"
+    android:padding="@dimen/sixteen"
+    android:text="@string/app_name"
+    android:textColor="@color/cardview_dark_background"
+    android:textSize="36sp"
+    android:textStyle="bold" />
 
-    <ImageView
-        style="@style/matchParent"
-        android:contentDescription="@string/imageDescription"
-        android:scaleType="centerCrop"
-        android:src="@drawable/headerimage" />
-
-    <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/headerCircleView"
-        style="@style/headerImage"
-        android:src="@drawable/profile" />
-
-    <TextView
-        style="@style/headerText"
-        android:layout_below="@id/headerCircleView"
-        android:text="@string/app_name" />
-
-</RelativeLayout>
