@@ -42,7 +42,6 @@ public class HomeFragment extends Fragment {
     private static final String TAG = HomeFragment.class.getSimpleName();
     @BindView(R.id.homeAdd) FloatingActionMenu mAdd;
     @BindView(R.id.homeEmptyState) TextView mEmpty;
-    @BindView(R.id.homeContainer)RelativeLayout mHomeContainer;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
 
@@ -127,7 +126,7 @@ public class HomeFragment extends Fragment {
 
     private void createFolderDialog() {
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
-        final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog,mHomeContainer);
+        final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog,null);
         newFolder.setView(v);
         final EditText editText = (EditText) v.findViewById(R.id.dialogFolderName);
         editText.requestFocus();

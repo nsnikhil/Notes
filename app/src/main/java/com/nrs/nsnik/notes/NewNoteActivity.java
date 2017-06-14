@@ -346,8 +346,10 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case mTakePictureCode:
-                if (resultCode == RESULT_OK) {
-                    addToList();
+                if(resultCode != RESULT_CANCELED) {
+                    if (resultCode == RESULT_OK && data != null) {
+                        addToList();
+                    }
                 }
                 break;
         }
@@ -368,6 +370,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         mImagesArray.add(bitmap);
         imageRecyclerView.swapAdapter(mImageAdapter, true);
         imageRecyclerView.setVisibility(View.VISIBLE);
+
         String name = makeImageName();
         mImagesLocations.add(name);
         try {

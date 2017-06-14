@@ -23,6 +23,7 @@
         <activity
             android:name=".NewNoteActivity"
             android:label="@string/addNote"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName=".MainActivity" />
         <provider
             android:name=".data.TableProvider"
