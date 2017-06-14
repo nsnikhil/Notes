@@ -25,6 +25,7 @@
     <string name="imageError">Error</string>
     <string name="newNoteAdd">New Note</string>
     <string name="newFolderAdd">New Folder</string>
+    <string name="moreInd">....</string>
 
 
     <!-- FileType-->
@@ -97,6 +98,7 @@
 
     <!-- popUps-->
     <string name="popUpDelete">Delete</string>
+    <string name="popUpStar">Star</string>
     <!-- -->
 
     <!-- delete-->

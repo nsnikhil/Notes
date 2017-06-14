@@ -7,7 +7,6 @@
         android:id="@+id/newNoteMenuSave"/>
     <item android:title="@string/delete"
         app:showAsAction="ifRoom"
-        android:visible="false"
         android:icon="@drawable/ic_delete_white_48dp"
         android:id="@+id/newNoteMenuDelete"/>
 </menu>

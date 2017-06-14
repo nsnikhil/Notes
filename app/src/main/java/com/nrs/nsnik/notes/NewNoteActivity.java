@@ -17,17 +17,20 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,8 +51,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,6 +65,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private static final int mGetPictureCode = 205;
     private static final int mTakePictureCode = 2;
     private static final int mPermissionCode = 5142;
+    private static final int STORAGE_PERMISSION_CODE = 512;
     private static final String TAG = NewNoteActivity.class.getSimpleName();
     @BindView(R.id.newNoteToolbar)
     Toolbar mNoteToolbar;
@@ -94,6 +101,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     int mHour = 289, mMinutes = 291, mReminder = 0, mAudio = 0;
     MediaRecorder mRecorder;
     MediaPlayer mPlayer;
+    String mCurrentPhotoPath;
     ArrayList<Bitmap> mImagesArray;
     ArrayList<String> mImagesLocations;
     ImageAdapter mImageAdapter;
@@ -117,6 +125,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         if (getIntent().getExtras() != null) {
             mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
         }
+        Log.d(TAG, mIntentUri.toString());
     }
 
     private void setNote() throws IOException, ClassNotFoundException {
@@ -179,11 +188,10 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     mImagesArray.clear();
                     mImagesLocations.clear();
                     try {
-                        deleteFiles();
+                        mFileOperation.deleteFile(mIntentUri);
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-                    int count = getContentResolver().delete(mIntentUri, null, null);
+                    }int count = getContentResolver().delete(mIntentUri, null, null);
                     if (count == 0) {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletenotefailed), Toast.LENGTH_SHORT).show();
                     } else {
@@ -193,38 +201,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 }
             });
             deleteDialog.create().show();
-        }
-    }
-
-    private void deleteFiles() throws IOException {
-        Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
-        if (c != null && c.moveToFirst()) {
-            File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
-            File f = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
-            FileInputStream fis = null;
-            ObjectInputStream ois = null;
-            try {
-                fis = new FileInputStream(f);
-                ois = new ObjectInputStream(fis);
-                NoteObject obj = (NoteObject) ois.readObject();
-                for (int i = 0; i < obj.getImages().size(); i++) {
-                    File path = new File(folder, obj.getImages().get(i));
-                    path.delete();
-                }
-                File file = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
-                file.delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (fis != null) {
-                    fis.close();
-                }
-                if (ois != null) {
-                    ois.close();
-                }
-                c.close();
-            }
-
         }
     }
 
@@ -376,20 +352,33 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case mTakePictureCode:
                 if (resultCode == RESULT_OK) {
-                    Bundle extra = data.getExtras();
-                    mImage = (Bitmap) extra.get("data");
-                    mImagesArray.add(mImage);
-                    imageRecyclerView.swapAdapter(mImageAdapter, true);
-                    imageRecyclerView.setVisibility(View.VISIBLE);
-                    String name = makeImageName();
-                    mImagesLocations.add(name);
-                    try {
-                        mFileOperation.saveImage(name, mImage);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    addToList();
                 }
                 break;
+        }
+    }
+
+    private void addToList() {
+        int targetW = imageRecyclerView.getWidth();
+        int targetH = imageRecyclerView.getHeight();
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        mImagesArray.add(bitmap);
+        imageRecyclerView.swapAdapter(mImageAdapter, true);
+        imageRecyclerView.setVisibility(View.VISIBLE);
+        String name = makeImageName();
+        mImagesLocations.add(name);
+        try {
+            mFileOperation.saveImage(name, bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -401,12 +390,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 mFabTools.show();
                 break;
             case R.id.newNoteTakePicture:
-                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePicture.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(takePicture, mTakePictureCode);
-                } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.noCamera), Toast.LENGTH_SHORT).show();
-                }
+                checkStoragePermission();
                 break;
             case R.id.newNoteChoosePicture:
                 Intent chosePicture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -478,6 +462,41 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             return;
         }
         recordAudio();
+    }
+
+    private void checkStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+            return;
+        }
+        startTheCamera();
+    }
+
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg",storageDir);
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void startTheCamera(){
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this, "com.nrs.nsnik.notes.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, mTakePictureCode);
+            }
+        }
     }
 
     @Override
@@ -568,9 +587,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
 
     public static class ReminderService extends BroadcastReceiver {
-
         Context mContext;
-
         @Override
         public void onReceive(Context context, Intent intent) {
             mContext = context;

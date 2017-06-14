@@ -8,60 +8,69 @@
         android:id="@+id/newNoteToolbar"
         layout="@layout/toolbar" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/newNoteImageRecyclerView"
-        style="@style/matchParent"
-        android:layout_height="@dimen/newNoteImage"
-        android:layout_below="@id/newNoteToolbar"
-        android:visibility="gone" />
+    <ScrollView style="@style/matchParent"
+        android:layout_below="@id/newNoteToolbar">
 
-    <LinearLayout
-        android:id="@+id/newNoteAudioContainer"
-        style="@style/horizontalLinearLayout"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/newNoteImageRecyclerView"
-        android:padding="@dimen/eight"
-        android:visibility="gone">
+        <RelativeLayout style="@style/matchParent">
 
-        <ImageView
-            android:id="@+id/newNoteAudioPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/imageDescription"
-            android:src="@drawable/playsmall" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/newNoteImageRecyclerView"
+                style="@style/matchParent"
+                android:layout_height="@dimen/newNoteImage"
+                android:visibility="gone" />
 
+            <LinearLayout
+                android:id="@+id/newNoteAudioContainer"
+                style="@style/horizontalLinearLayout"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/newNoteImageRecyclerView"
+                android:padding="@dimen/eight"
+                android:visibility="gone">
 
-        <SeekBar
-            android:id="@+id/newNoteAudioSeek"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:max="100" />
-
-        <ImageView
-            android:id="@+id/newNoteAudioCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/imageDescription"
-            android:src="@drawable/cancelsmall" />
-
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/newNoteAudioPlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/imageDescription"
+                    android:src="@drawable/playsmall" />
 
 
-    <EditText
-        android:id="@+id/newNoteTitle"
-        style="@style/newNoteHeading"
-        android:layout_below="@id/newNoteAudioContainer"
-        android:background="@android:color/transparent"
-        android:maxLines="1"
-        android:padding="@dimen/sixteen"
-        android:textSize="24sp" />
+                <SeekBar
+                    android:id="@+id/newNoteAudioSeek"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:max="100" />
 
-    <EditText
-        android:id="@+id/newNoteContent"
-        style="@style/newNoteContent"
-        android:layout_below="@id/newNoteTitle"
-        android:lineSpacingExtra="10dp" />
+                <ImageView
+                    android:id="@+id/newNoteAudioCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/imageDescription"
+                    android:src="@drawable/cancelsmall" />
+
+            </LinearLayout>
+
+
+            <EditText
+                android:id="@+id/newNoteTitle"
+                style="@style/newNoteHeading"
+                android:layout_below="@id/newNoteAudioContainer"
+                android:background="@android:color/transparent"
+                android:maxLines="1"
+                android:padding="@dimen/sixteen"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/newNoteContent"
+                style="@style/newNoteContent"
+                android:layout_below="@id/newNoteTitle"
+                android:inputType="textMultiLine"
+                android:lineSpacingExtra="10dp" />
+
+        </RelativeLayout>
+
+    </ScrollView>
 
     <com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout
         android:id="@+id/fabtoolbar"

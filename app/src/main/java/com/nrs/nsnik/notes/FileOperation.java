@@ -2,6 +2,7 @@ package com.nrs.nsnik.notes;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.widget.Toast;
@@ -11,8 +12,10 @@ import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.objects.NoteObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 
@@ -111,17 +114,41 @@ class FileOperation {
     }
 
 
-    private void readFile() {
-        /*
-        @TODO READ_FUNCTION NIKHIL BY MARCH
-         */
+    private NoteObject readFile() {
+        return null;
     }
 
 
-    private void deleteFile() {
-         /*
-        @TODO DELETE_FUNCTION NIKHIL BY MARCH
-         */
+    void deleteFile(Uri uri) throws IOException {
+        Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
+        if (c != null && c.moveToFirst()) {
+            File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+            File f = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            try {
+                fis = new FileInputStream(f);
+                ois = new ObjectInputStream(fis);
+                NoteObject obj = (NoteObject) ois.readObject();
+                for (int i = 0; i < obj.getImages().size(); i++) {
+                    File path = new File(folder, obj.getImages().get(i));
+                    path.delete();
+                }
+                File file = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
+                file.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (fis != null) {
+                    fis.close();
+                }
+                if (ois != null) {
+                    ois.close();
+                }
+                c.close();
+            }
+
+        }
     }
 
 }
