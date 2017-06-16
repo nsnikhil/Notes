@@ -37,6 +37,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -95,6 +96,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     ImageView mCancelAudio;
     @BindView(R.id.newNoteAudioSeek)
     SeekBar seekAudio;
+    @BindView(R.id.activity_new_note)RelativeLayout mNoteContainer;
     String mAudioFileName, mFolderName = "nofolder";
     Uri mIntentUri = null;
     Bitmap mImage = null;
@@ -346,18 +348,18 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case mTakePictureCode:
-                if(resultCode != RESULT_CANCELED) {
-                    if (resultCode == RESULT_OK && data != null) {
-                        addToList();
-                    }
+                if (resultCode == RESULT_OK && data != null) {
+                    addToList();
                 }
                 break;
         }
     }
 
     private void addToList() {
-        int targetW = imageRecyclerView.getWidth();
-        int targetH = imageRecyclerView.getHeight();
+        
+        int targetW = mNoteContainer.getWidth();
+        int targetH = 300;
+
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);

@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -116,9 +117,9 @@ public class NoteObserverAdapter extends RecyclerView.Adapter<NoteObserverAdapte
         mNotesList.clear();
         mIds.clear();
         while (cursor != null && cursor.moveToNext()) {
-            mIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table1.mUid)));
             NoteObject object = openObject(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
             if (object.getFolderName().equalsIgnoreCase(mFolderName)) {
+                mIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table1.mUid)));
                 mNotesList.add(object);
             }
         }

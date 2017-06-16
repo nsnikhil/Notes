@@ -138,7 +138,7 @@ public class HomeFragment extends Fragment {
                 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             }
         });
-        newFolder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+        newFolder.setPositiveButton(getResources().getString(R.string.create), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);

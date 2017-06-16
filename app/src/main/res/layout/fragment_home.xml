@@ -2,18 +2,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/verticalLinearLayout"
     android:id="@+id/homeContainer"
+    style="@style/matchParent"
     tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
 
-    <FrameLayout
-        android:id="@+id/homeNotesFolderContainer"
-        style="@style/stretchedHorizontally" />
+    <android.support.v4.widget.NestedScrollView style="@style/matchParent">
 
-    <FrameLayout
-        android:id="@+id/homeNotesContainer"
-        android:layout_below="@id/homeNotesFolderContainer"
-        style="@style/stretchedHorizontally" />
+        <LinearLayout style="@style/verticalLinearLayout">
+
+            <FrameLayout
+                android:id="@+id/homeNotesFolderContainer"
+                style="@style/stretchedHorizontally" />
+
+            <FrameLayout
+                android:id="@+id/homeNotesContainer"
+                style="@style/stretchedHorizontally" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
     <include
         android:id="@+id/homeEmptyState"

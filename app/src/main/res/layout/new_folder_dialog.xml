@@ -2,8 +2,8 @@
 <EditText
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dialogFolderName"
+    android:background="@android:color/transparent"
     style="@style/stretchedHorizontally"
-    android:layout_margin="@dimen/sixteen"
     android:hint="@string/newfoldername"
-    android:padding="@dimen/sixteen" />
+    android:padding="@dimen/twentyFour" />
 
