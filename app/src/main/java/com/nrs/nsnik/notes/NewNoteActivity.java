@@ -356,7 +356,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void addToList() {
-        
+
         int targetW = mNoteContainer.getWidth();
         int targetH = 300;
 
