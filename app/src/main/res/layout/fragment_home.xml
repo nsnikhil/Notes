@@ -8,6 +8,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/commonList"
+        android:paddingBottom="72dp"
+        android:clipToPadding="false"
         style="@style/matchParent" />
 
     <include

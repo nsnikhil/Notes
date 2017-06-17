@@ -17,9 +17,11 @@
         android:id="@+id/singleFolderName"
         android:drawableTint="@color/colorAccent"
         style="@style/newNoteHeading"
+        android:textSize="18sp"
+        android:padding="6dp"
         android:drawablePadding="@dimen/eight"
         android:drawableStart="@drawable/ic_folder_black_48dp"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="monospace"
         android:maxLines="1" />
 
 

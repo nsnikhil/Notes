@@ -4,6 +4,6 @@
     style="@style/wrapContent"
     android:textSize="24sp"
     android:textStyle="bold"
-    android:fontFamily="sans-serif-light"
+    android:fontFamily="monospace"
     android:text="@string/emptyState"/>
 
