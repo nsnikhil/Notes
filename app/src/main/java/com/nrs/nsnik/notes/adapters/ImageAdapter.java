@@ -62,7 +62,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                     mSize.validateSize(pos);
                 }
             });
-            image.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(mContext.getApplicationContext(), "Will Show Full Screen Image", Toast.LENGTH_SHORT).show();

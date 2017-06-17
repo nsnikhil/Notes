@@ -67,6 +67,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private static final int mTakePictureCode = 2;
     private static final int mPermissionCode = 5142;
     private static final int STORAGE_PERMISSION_CODE = 512;
+    private static final int READ_EXTERNAL_STORAGE_PERMISSION = 513;
     private static final String TAG = NewNoteActivity.class.getSimpleName();
     @BindView(R.id.newNoteToolbar)
     Toolbar mNoteToolbar;
@@ -393,12 +394,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 checkStoragePermission();
                 break;
             case R.id.newNoteChoosePicture:
-                Intent chosePicture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                if (chosePicture.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(chosePicture, mGetPictureCode);
-                } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.noGallery), Toast.LENGTH_SHORT).show();
-                }
+                checkReadPermission();
                 break;
             case R.id.newNoteAddAudio:
                 checkPermission();
@@ -470,6 +466,23 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             return;
         }
         startTheCamera();
+    }
+
+    private void checkReadPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_PERMISSION);
+            return;
+        }
+        startGalleryIntent();
+    }
+
+    private void startGalleryIntent(){
+        Intent chosePicture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (chosePicture.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(chosePicture, mGetPictureCode);
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.noGallery), Toast.LENGTH_SHORT).show();
+        }
     }
 
 

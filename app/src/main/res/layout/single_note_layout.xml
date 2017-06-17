@@ -6,6 +6,7 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    android:transitionName="noteTitle"
     card_view:cardCornerRadius="1dp"
     card_view:cardElevation="2dp"
     card_view:cardMaxElevation="4dp"
@@ -23,7 +24,6 @@
 
         <TextView
             android:id="@+id/singleNoteTitle"
-            android:transitionName="noteTitle"
             android:fontFamily="sans-serif-light"
             style="@style/newNoteHeading"
             android:maxLines="1" />

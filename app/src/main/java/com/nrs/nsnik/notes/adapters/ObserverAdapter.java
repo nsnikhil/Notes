@@ -102,6 +102,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (object.getImages().size() > 0) {
             noteViewHolder.mNoteImage.setImageBitmap(getImage(object));
             noteViewHolder.mNoteImage.setVisibility(View.VISIBLE);
+        }else {
+            noteViewHolder.mNoteImage.setVisibility(View.GONE);
         }
         if (object.getAudioLocation() != null) {
             noteViewHolder.mAudIndicator.setVisibility(View.VISIBLE);
@@ -199,7 +201,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     class FolderViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.singleFolderName) TextView mFolderName;
-        public FolderViewHolder(View itemView) {
+        public FolderViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -207,7 +209,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ContainerActivity.class);
                     intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderName.getText().toString());
-                    mContext.startActivity(intent);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
+                    mContext.startActivity(intent,options.toBundle());
                 }
             });
         }

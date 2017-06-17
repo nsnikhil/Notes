@@ -5,6 +5,7 @@
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
+    android:transitionName="noteFolder"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardCornerRadius="1dp"
     card_view:cardElevation="2dp"

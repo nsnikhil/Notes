@@ -11,7 +11,10 @@
         style="@style/matchParent" />
 
     <include
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:id="@+id/homeEmptyState"
+        android:layout_centerInParent="true"
         layout="@layout/empty_state"
         android:visibility="gone" />
 

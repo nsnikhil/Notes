@@ -10,6 +10,7 @@
     <FrameLayout
         android:id="@+id/containerSpace"
         style="@style/matchParent"
+        android:transitionName="noteFolder"
         android:layout_marginTop="?attr/actionBarSize" />
 
 </merge>
