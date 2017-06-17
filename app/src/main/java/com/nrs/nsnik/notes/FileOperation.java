@@ -19,11 +19,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 
-class FileOperation {
+public class FileOperation {
 
     private Context mContext;
 
-    FileOperation(Context c) {
+    public FileOperation(Context c) {
         mContext = c;
     }
 
@@ -114,8 +114,20 @@ class FileOperation {
     }
 
 
-    private NoteObject readFile() {
-        return null;
+    public NoteObject readFile(String filename) {
+        File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        File f = new File(folder, filename);
+        FileInputStream fis;
+        ObjectInputStream ois;
+        NoteObject object = null;
+        try {
+            fis = new FileInputStream(f);
+            ois = new ObjectInputStream(fis);
+            object = (NoteObject) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return object;
     }
 
 

@@ -6,21 +6,9 @@
     style="@style/matchParent"
     tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
 
-    <android.support.v4.widget.NestedScrollView style="@style/matchParent">
-
-        <LinearLayout style="@style/verticalLinearLayout">
-
-            <FrameLayout
-                android:id="@+id/homeNotesFolderContainer"
-                style="@style/stretchedHorizontally" />
-
-            <FrameLayout
-                android:id="@+id/homeNotesContainer"
-                style="@style/stretchedHorizontally" />
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/commonList"
+        style="@style/matchParent" />
 
     <include
         android:id="@+id/homeEmptyState"

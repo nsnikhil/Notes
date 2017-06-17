@@ -13,6 +13,8 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +28,10 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionMenu;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.adapters.ObserverAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.interfaces.FolderCount;
+import com.nrs.nsnik.notes.interfaces.NotesCount;
 
 import org.w3c.dom.Text;
 
@@ -37,13 +42,16 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements NotesCount,FolderCount{
 
     private static final String TAG = HomeFragment.class.getSimpleName();
+    @BindView(R.id.commonList)RecyclerView mList;
     @BindView(R.id.homeAdd) FloatingActionMenu mAdd;
     @BindView(R.id.homeEmptyState) TextView mEmpty;
+    private ObserverAdapter mAdapter;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
+    private int mNotesCount,mFolderCount;
 
     public HomeFragment() {
     }
@@ -65,19 +73,9 @@ public class HomeFragment extends Fragment {
 
     private void initialize() {
         getArgs();
-
-        NotesFragment notesFragment = new NotesFragment();
-        Bundle args = new Bundle();
-        args.putString(getActivity().getResources().getString(R.string.foldernamebundle), mFolderName);
-        notesFragment.setArguments(args);
-        getFragmentManager().beginTransaction().add(R.id.homeNotesContainer, notesFragment).commit();
-
-        FolderFragment folderFragment = new FolderFragment();
-        Bundle folderArgs = new Bundle();
-        folderArgs.putString(getActivity().getResources().getString(R.string.sunFldName), mFolderName);
-        folderFragment.setArguments(folderArgs);
-        getFragmentManager().beginTransaction().add(R.id.homeNotesFolderContainer, folderFragment).commit();
-
+        mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        mAdapter = new ObserverAdapter(getActivity(), TableNames.mContentUri,TableNames.mFolderContentUri,this,this,getLoaderManager(),mFolderName);
+        mList.setAdapter(mAdapter);
         setFolderFab();
         setupNoteFab();
     }
@@ -174,4 +172,23 @@ public class HomeFragment extends Fragment {
         super.onDestroy();
     }
 
+    private void setEmpty(){
+        if(mNotesCount==0&&mFolderCount==0){
+            mEmpty.setVisibility(View.VISIBLE);
+        }else {
+            mEmpty.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void getNotesCount(int count) {
+        mNotesCount = count;
+        setEmpty();
+    }
+
+    @Override
+    public void getFolderCount(int count) {
+        mFolderCount = count;
+        setEmpty();
+    }
 }
