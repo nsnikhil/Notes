@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/stretchedHorizontally"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_gravity="end"
+        android:id="@+id/fabFolderContainer"
+        android:visibility="invisible"
+        style="@style/wrapContent"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/wrapContent"
+            android:background="@color/cardview_dark_background"
+            android:textColor="@color/cardview_light_background"
+            android:padding="4dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/createFolder"
+            android:textSize="16sp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabAddFolder"
+            style="@style/wrapContent"
+            android:layout_margin="@dimen/eight"
+            android:src="@drawable/ic_create_new_folder_black_24dp"
+            app:fabSize="normal" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/wrapContent"
+        android:id="@+id/fabNoteContainer"
+        android:visibility="invisible"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/wrapContent"
+            android:background="@color/cardview_dark_background"
+            android:textColor="@color/cardview_light_background"
+            android:padding="4dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/createNote"
+            android:textSize="16sp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabAddNote"
+            style="@style/wrapContent"
+            android:layout_margin="@dimen/eight"
+            android:src="@drawable/ic_note_add_black_24dp"
+            app:fabSize="normal" />
+
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAdd"
+        style="@style/wrapContent"
+        android:layout_gravity="end"
+        android:layout_margin="@dimen/eight"
+        android:src="@drawable/ic_add_black_48dp"
+        app:fabSize="normal" />
+
+</LinearLayout>

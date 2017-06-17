@@ -5,6 +5,8 @@
     <string name="title">Title</string>
     <string name="newNote">Note</string>
     <string name="addNote">Add Note</string>
+    <string name="createNote">New Note</string>
+    <string name="createFolder">New Folder</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="warning">Warning</string>

@@ -18,12 +18,11 @@
         layout="@layout/empty_state"
         android:visibility="gone" />
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/homeAdd"
-        style="@style/fab"
-        app:fabSize="normal"
-        fab:menu_colorNormal="@color/colorAccent"
-        fab:menu_colorPressed="@color/colorAccent"
-        fab:menu_colorRipple="#99FFFFFF" />
+    <include layout="@layout/fab_reveal"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/sixteen"
+        android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

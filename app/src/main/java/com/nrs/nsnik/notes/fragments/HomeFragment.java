@@ -5,35 +5,31 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionMenu;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.adapters.ObserverAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
-
-import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
@@ -46,8 +42,13 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     @BindView(R.id.commonList)RecyclerView mList;
-    @BindView(R.id.homeAdd) FloatingActionMenu mAdd;
     @BindView(R.id.homeEmptyState) TextView mEmpty;
+    @BindView(R.id.fabAdd)FloatingActionButton mAddSpinner;
+    @BindView(R.id.fabAddNote)FloatingActionButton mAddNote;
+    @BindView(R.id.fabAddFolder)FloatingActionButton mAddFolder;
+    @BindView(R.id.fabNoteContainer)LinearLayout mNoteContainer;
+    @BindView(R.id.fabFolderContainer)LinearLayout mFolderContainer;
+
     private ObserverAdapter mAdapter;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
@@ -76,51 +77,122 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         mAdapter = new ObserverAdapter(getActivity(), TableNames.mContentUri,TableNames.mFolderContentUri,this,this,getLoaderManager(),mFolderName);
         mList.setAdapter(mAdapter);
-        setFolderFab();
-        setupNoteFab();
     }
 
 
     private void listeners() {
-    }
-
-    private void setupNoteFab() {
-        final com.github.clans.fab.FloatingActionButton newFile = new com.github.clans.fab.FloatingActionButton(getActivity());
-        newFile.setButtonSize(FloatingActionButton.SIZE_NORMAL);
-        newFile.setLabelText("New Note");
-        newFile.setImageResource(R.drawable.ic_note_add_black_24dp);
-        newFile.setColorNormal(ContextCompat.getColor(getActivity(), R.color.colorAccent));
-        newFile.setColorPressed(ContextCompat.getColor(getActivity(), R.color.colorAccent));
-        mAdd.addMenuButton(newFile);
-        newFile.setOnClickListener(new View.OnClickListener() {
+        mAddSpinner.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                mAdd.close(true);
+            public void onClick(View v) {
+                if(mNoteContainer.getVisibility()==View.INVISIBLE
+                        ||mFolderContainer.getVisibility()==View.INVISIBLE){
+                    reveal();
+                }else {
+                    disappear();
+                }
+            }
+        });
+        mAddNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disappear();
                 Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
                 newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle),mFolderName);
                 startActivity(newNote);
             }
         });
-    }
-
-    private void setFolderFab() {
-        com.github.clans.fab.FloatingActionButton newFolder = new com.github.clans.fab.FloatingActionButton(getActivity());
-        newFolder.setButtonSize(FloatingActionButton.SIZE_NORMAL);
-        newFolder.setLabelText("New Folder");
-        newFolder.setImageResource(R.drawable.ic_create_new_folder_black_24dp);
-        newFolder.setColorNormal(ContextCompat.getColor(getActivity(), R.color.colorAccent));
-        newFolder.setColorPressed(ContextCompat.getColor(getActivity(), R.color.colorAccent));
-        mAdd.addMenuButton(newFolder);
-        newFolder.setOnClickListener(new View.OnClickListener() {
+        mAddFolder.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                mAdd.close(true);
+            public void onClick(View v) {
+                disappear();
                 createFolderDialog();
             }
         });
     }
 
+    private void reveal(){
+        RotateAnimation rotateAnimation = new RotateAnimation(0, 45, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setDuration(50);
+        rotateAnimation.setFillAfter(true);
+        rotateAnimation.setFillEnabled(true);
+        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            Animation scaleUp = AnimationUtils.loadAnimation(getActivity(),R.anim.jump_from_down);
+            @Override
+            public void onAnimationStart(Animation animation) {
 
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                scaleUp.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mFolderContainer.setVisibility(View.VISIBLE);
+                        mNoteContainer.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                mFolderContainer.startAnimation(scaleUp);
+                mNoteContainer.startAnimation(scaleUp);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mAddSpinner.startAnimation(rotateAnimation);
+    }
+
+    private void disappear(){
+        RotateAnimation rotateAnimation = new RotateAnimation(45, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setDuration(50);
+        rotateAnimation.setFillAfter(true);
+        rotateAnimation.setFillEnabled(true);
+        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            Animation scaleDown = AnimationUtils.loadAnimation(getActivity(),R.anim.jump_to_down);
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                scaleDown.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mFolderContainer.setVisibility(View.INVISIBLE);
+                        mNoteContainer.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                mFolderContainer.startAnimation(scaleDown);
+                mNoteContainer.startAnimation(scaleDown);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mAddSpinner.startAnimation(rotateAnimation);
+    }
 
     private void createFolderDialog() {
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
