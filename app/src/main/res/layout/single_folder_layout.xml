@@ -24,6 +24,16 @@
         android:fontFamily="monospace"
         android:maxLines="1" />
 
+    <ImageButton
+        android:contentDescription="@string/imageDescription"
+        android:id="@+id/singleFolderMore"
+        style="@style/wrapContent"
+        android:tint="#999999"
+        android:padding="@dimen/eight"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:layout_gravity="end|center_vertical"/>
+
 
 </android.support.v7.widget.CardView>
 

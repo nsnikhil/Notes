@@ -9,13 +9,19 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nrs.nsnik.notes.ContainerActivity;
 import com.nrs.nsnik.notes.FileOperation;
@@ -25,6 +31,7 @@ import com.nrs.nsnik.notes.data.FolderDataObserver;
 import com.nrs.nsnik.notes.data.NoteDataObserver;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.interfaces.FolderCount;
+import com.nrs.nsnik.notes.interfaces.ItemTouchListener;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
 import com.nrs.nsnik.notes.interfaces.Observer;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -37,7 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Observer{
+public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Observer,ItemTouchListener{
 
     private static final String TAG = ObserverAdapter.class.getSimpleName();
     private Context mContext;
@@ -177,12 +184,23 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return super.getItemViewType(position);
     }
 
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+
+    }
+
     class NoteViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.singleNoteTitle) TextView mNoteTitle;
         @BindView(R.id.singleNoteContent) TextView mNoteContent;
         @BindView(R.id.singleNoteImage) ImageView mNoteImage;
         @BindView(R.id.singleNoteReminder) ImageView mRemIndicator;
         @BindView(R.id.singleNoteAudio) ImageView mAudIndicator;
+        @BindView(R.id.singleNoteMore)ImageButton mMore;
         public NoteViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
@@ -196,11 +214,19 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     mContext.startActivity(intent, options.toBundle());
                 }
             });
+            mMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = mFolderList.size();
+                    inflatePopUpMenu(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()-pos))),mMore);
+                }
+            });
         }
     }
 
     class FolderViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.singleFolderName) TextView mFolderName;
+        @BindView(R.id.singleFolderMore)ImageButton mFolderMore;
         public FolderViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
@@ -213,7 +239,34 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     mContext.startActivity(intent,options.toBundle());
                 }
             });
+            mFolderMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    inflatePopUpMenu(Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName.getText().toString()),mFolderMore);
+                }
+            });
         }
+    }
+
+    private void inflatePopUpMenu(final Uri uri, View itemView){
+        PopupMenu menu = new PopupMenu(mContext,itemView, Gravity.END);
+        menu.inflate(R.menu.pop_up_menu);
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.popUpStar:
+                        Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.popUpDelete:
+                        Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
+                        //mContext.getContentResolver().delete(uri,null,null);
+                        break;
+                }
+                return false;
+            }
+        });
+        menu.show();
     }
 
 }

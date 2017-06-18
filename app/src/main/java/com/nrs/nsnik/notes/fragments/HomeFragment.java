@@ -1,6 +1,7 @@
 package com.nrs.nsnik.notes.fragments;
 
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,10 +9,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.adapters.ObserverAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.helpers.RvItemTouchHelper;
 import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
 
@@ -77,6 +81,9 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         mAdapter = new ObserverAdapter(getActivity(), TableNames.mContentUri,TableNames.mFolderContentUri,this,this,getLoaderManager(),mFolderName);
         mList.setAdapter(mAdapter);
+        ItemTouchHelper.Callback callback = new RvItemTouchHelper(mAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(mList);
     }
 
 
@@ -110,8 +117,9 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         });
     }
 
+
     private void reveal(){
-        RotateAnimation rotateAnimation = new RotateAnimation(0, 45, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation rotateAnimation = new RotateAnimation(0, 135, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(50);
         rotateAnimation.setFillAfter(true);
         rotateAnimation.setFillEnabled(true);
@@ -152,7 +160,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     }
 
     private void disappear(){
-        RotateAnimation rotateAnimation = new RotateAnimation(45, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation rotateAnimation = new RotateAnimation(135, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(50);
         rotateAnimation.setFillAfter(true);
         rotateAnimation.setFillEnabled(true);
