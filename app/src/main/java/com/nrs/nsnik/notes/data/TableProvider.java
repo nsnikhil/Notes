@@ -24,6 +24,7 @@ public class TableProvider extends ContentProvider {
     private static final int uAllFolder = 213;
     private static final int uSingleFolder = 214;
     private static final int uAllSubFolder = 215;
+    private static final int uSingleFolderName = 216;
     static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
@@ -32,6 +33,7 @@ public class TableProvider extends ContentProvider {
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/*", uAllFolderNote);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName, uAllFolder);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/#", uSingleFolder);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uSingleFolderName);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uAllSubFolder);
     }
 
@@ -46,6 +48,7 @@ public class TableProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Log.d(TAG, uri.toString());
         SQLiteDatabase sdb = tableHelper.getReadableDatabase();
         Cursor c;
         switch (sUriMatcher.match(uri)) {
@@ -70,6 +73,13 @@ public class TableProvider extends ContentProvider {
             case uSingleFolder:
                 selection = TableNames.table2.mUid + " =?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case uSingleFolderName:
+                selection = table2.mFolderName + " =?";
+                String sk = uri.toString();
+                sk = sk.substring(sk.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{sk};
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uAllSubFolder:
@@ -137,6 +147,12 @@ public class TableProvider extends ContentProvider {
                 selection = TableNames.table2.mUid + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return deleteVal(uri, selection, selectionArgs, TableNames.mFolderTableName);
+            case uSingleFolderName:
+                selection = table2.mFolderName + " =?";
+                String sk = uri.toString();
+                sk = sk.substring(sk.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{sk};
+                return deleteVal(uri, selection, selectionArgs, TableNames.mFolderTableName);
             case uAllSubFolder:
                 selection = table2.mParentFolderName + " =?";
                 String sb = uri.toString();
@@ -161,7 +177,6 @@ public class TableProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        Log.d("UpdateLog", uri.toString());
         switch (sUriMatcher.match(uri)) {
             case uAllNotes:
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mTableName);
@@ -180,6 +195,12 @@ public class TableProvider extends ContentProvider {
             case uSingleFolder:
                 selection = TableNames.table2.mUid + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return updateVal(uri, values, selection, selectionArgs, TableNames.mFolderTableName);
+            case uSingleFolderName:
+                selection = table2.mFolderName + " =?";
+                String sk = uri.toString();
+                sk = sk.substring(sk.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{sk};
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mFolderTableName);
             case uAllSubFolder:
                 selection = table2.mParentFolderName + " =?";

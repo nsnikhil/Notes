@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/popUpDelete"
-        android:id="@+id/popUpDelete"/>
-    <item android:title="@string/popUpStar"
-        android:id="@+id/popUpStar"/>
+    <item
+        android:id="@+id/popUpDelete"
+        android:title="@string/popUpDelete" />
+    <item
+        android:id="@+id/popUpStar"
+        android:title="@string/popUpStar" />
+    <item
+        android:id="@+id/popUpShare"
+        android:title="@string/popUpShare" />
 </menu>

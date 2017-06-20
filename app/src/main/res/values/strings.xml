@@ -23,7 +23,7 @@
     <!-- navigationMenu-->
     <string name="navItem1">My Notes</string>
     <string name="navItem2">Stared</string>
-    <string name="navItem3">Recents</string>
+    <string name="navItem3">Vault</string>
     <string name="navItem4">Settings</string>
     <!-- -->
 
@@ -72,11 +72,13 @@
     <!-- popUps-->
     <string name="popUpDelete">Delete</string>
     <string name="popUpStar">Star</string>
+    <string name="popUpShare">Share</string>
     <!-- -->
 
     <!-- delete-->
     <string name="deletealldialog">Are you sure you want to delete all folder and notes</string>
     <string name="deletesingledialog">Are you sure you want to delete this note</string>
+    <string name="deleteFolderSingle">Are you sure you want to delete this folder, this will also delete all notes within this folder</string>
     <string name="deletenotefailed">Error while deleting note</string>
     <!-- -->
 

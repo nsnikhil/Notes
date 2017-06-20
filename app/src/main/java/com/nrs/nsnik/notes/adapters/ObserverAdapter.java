@@ -1,7 +1,9 @@
 package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -9,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -18,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +29,7 @@ import android.widget.Toast;
 
 import com.nrs.nsnik.notes.ContainerActivity;
 import com.nrs.nsnik.notes.FileOperation;
+import com.nrs.nsnik.notes.MainActivity;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.FolderDataObserver;
@@ -51,6 +56,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<NoteObject> mNotesList;
     private List<String> mFolderList;
     private List<Integer> mIds;
+    private List<Integer> mFolderIds;
     private String mFolderName;
     private NotesCount mNotesCount;
     private FolderCount mFolderCount;
@@ -60,6 +66,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mContext = context;
         mFolderName = folderName;
         mIds = new ArrayList<>();
+        mFolderIds = new ArrayList<>();
         mNotesList = new ArrayList<>();
         mFolderList = new ArrayList<>();
         mNotesCount = notesCount;
@@ -160,8 +167,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void makeFolderList(Cursor cursor) {
         mFolderList.clear();
+        mFolderIds.clear();
         while (cursor != null && cursor.moveToNext()) {
             if(cursor.getString(cursor.getColumnIndex(TableNames.table2.mParentFolderName)).equalsIgnoreCase(mFolderName)) {
+                mFolderIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table2.mUid)));
                 mFolderList.add(justifyName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))));
             }
         }
@@ -218,7 +227,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View v) {
                     int pos = mFolderList.size();
-                    inflatePopUpMenu(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()-pos))),mMore);
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deletesingledialog),false,"",
+                            Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()-pos))),mMore);
                 }
             });
         }
@@ -242,31 +252,56 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mFolderMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    inflatePopUpMenu(Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName.getText().toString()),mFolderMore);
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteFolderSingle),true,mFolderName.getText().toString(),
+                            Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(mFolderIds.get(getAdapterPosition()))),mFolderMore);
                 }
             });
         }
     }
 
-    private void inflatePopUpMenu(final Uri uri, View itemView){
-        PopupMenu menu = new PopupMenu(mContext,itemView, Gravity.END);
+    private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName , final Uri uri, View itemView){
+        PopupMenu menu = new PopupMenu(mContext,itemView, Gravity.START);
         menu.inflate(R.menu.pop_up_menu);
         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.popUpStar:
-                        Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext,"TO-DO",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.popUpShare:
+                        Toast.makeText(mContext,"TO-DO",Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.popUpDelete:
-                        Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
-                        //mContext.getContentResolver().delete(uri,null,null);
+                        makeDeleteDialog(message,uri,isFolder,folderName);
                         break;
                 }
                 return false;
             }
         });
         menu.show();
+    }
+
+    private void makeDeleteDialog(String message, final Uri uri, final boolean isFolder, final String folderName){
+        AlertDialog.Builder delete = new AlertDialog.Builder(mContext);
+        delete.setTitle(mContext.getResources().getString(R.string.warning))
+                .setMessage(message)
+                .setNegativeButton(mContext.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setPositiveButton(mContext.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(isFolder){
+                            mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri,folderName),null,null);
+                        }
+                        mContext.getContentResolver().delete(uri,null,null);
+                    }
+                });
+        delete.create().show();
     }
 
 }

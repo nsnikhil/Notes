@@ -7,6 +7,6 @@
     <dimen name="headerHeight">180dp</dimen>
     <dimen name="headingText">20sp</dimen>
     <dimen name="smallHeadingText">18sp</dimen>
-    <dimen name="newNoteImage">300dp</dimen>
+    <dimen name="newNoteImage">200dp</dimen>
     <dimen name="small">24dp</dimen>
 </resources>

@@ -12,7 +12,8 @@ public class TableHelper extends SQLiteOpenHelper {
             + table1.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + table1.mTitle + " TEXT, "
             + table1.mFileName + " TEXT NOT NULL, "
-            + table1.mFolderName + " TEXT "
+            + table1.mFolderName + " TEXT, "
+            + table1.mStarIndicator + " INTEGER "
             + ");";
 
     private static final String mDropTable = "DROP TABLE IF EXISTS " + TableNames.mTableName;
@@ -21,7 +22,8 @@ public class TableHelper extends SQLiteOpenHelper {
             + TableNames.table2.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TableNames.table2.mFolderName + " TEXT, "
             + TableNames.table2.mFolderId + " TEXT, "
-            + TableNames.table2.mParentFolderName + " TEXT "
+            + TableNames.table2.mParentFolderName + " TEXT, "
+            + TableNames.table2.mStarIndicator + " INTEGER "
             + ");";
 
     private static final String mDropFolderTable = "DROP TABLE IF EXISTS " + TableNames.mFolderTableName;

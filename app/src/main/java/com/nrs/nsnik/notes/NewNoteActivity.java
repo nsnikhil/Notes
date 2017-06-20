@@ -359,7 +359,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private void addToList() {
 
         int targetW = mNoteContainer.getWidth();
-        int targetH = 300;
+        int targetH = 200;
 
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;

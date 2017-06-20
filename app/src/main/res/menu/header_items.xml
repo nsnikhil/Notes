@@ -16,7 +16,7 @@
         android:id="@+id/navItem3"
         android:checkable="true"
         android:checked="false"
-        android:icon="@drawable/ic_history_white_48dp"
+        android:icon="@drawable/ic_lock_black_48dp"
         android:title="@string/navItem3" />
 
     <item
