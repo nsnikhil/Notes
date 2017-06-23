@@ -47,6 +47,8 @@ import com.nrs.nsnik.notes.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 import com.nrs.nsnik.notes.objects.NoteObject;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -576,6 +578,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     public void run() {
         int currentPosition = mPlayer.getCurrentPosition();
         int total = mPlayer.getDuration();
+        seekAudio.setMax(total);
         while (mPlayer != null && currentPosition < total) {
             try {
                 Thread.sleep(1000);
@@ -616,6 +619,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             mNotificationManager.notify(1, notfifcationBuilder.build());
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApplication.getRefWatcher(this);
+        refWatcher.watch(this);
     }
 
 }

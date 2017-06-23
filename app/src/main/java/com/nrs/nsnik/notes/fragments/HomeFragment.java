@@ -1,7 +1,6 @@
 package com.nrs.nsnik.notes.fragments;
 
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.adapters.ObserverAdapter;
@@ -34,6 +33,7 @@ import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.helpers.RvItemTouchHelper;
 import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.util.Calendar;
 
@@ -52,8 +52,6 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     @BindView(R.id.fabAddFolder)FloatingActionButton mAddFolder;
     @BindView(R.id.fabNoteContainer)LinearLayout mNoteContainer;
     @BindView(R.id.fabFolderContainer)LinearLayout mFolderContainer;
-
-    private ObserverAdapter mAdapter;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
     private int mNotesCount,mFolderCount;
@@ -79,9 +77,9 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     private void initialize() {
         getArgs();
         mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        mAdapter = new ObserverAdapter(getActivity(), TableNames.mContentUri,TableNames.mFolderContentUri,this,this,getLoaderManager(),mFolderName);
-        mList.setAdapter(mAdapter);
-        ItemTouchHelper.Callback callback = new RvItemTouchHelper(mAdapter);
+        ObserverAdapter adapter = new ObserverAdapter(getActivity(), TableNames.mContentUri, TableNames.mFolderContentUri, this, this, getLoaderManager(), mFolderName);
+        mList.setAdapter(adapter);
+        ItemTouchHelper.Callback callback = new RvItemTouchHelper(adapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mList);
     }
@@ -250,6 +248,8 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     public void onDestroy() {
         cleanUp();
         super.onDestroy();
+        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     private void setEmpty(){

@@ -34,5 +34,8 @@ dependencies {
     compile 'com.google.guava:guava:20.0'
     compile 'com.github.fafaldo:fab-toolbar:1.2.0'
     testCompile 'junit:junit:4.12'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }

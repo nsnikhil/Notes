@@ -1,6 +1,7 @@
 package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +33,7 @@ import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.FolderDataObserver;
 import com.nrs.nsnik.notes.data.NoteDataObserver;
 import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.fragments.HomeFragment;
 import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.ItemTouchListener;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
@@ -52,8 +54,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context mContext;
     private List<NoteObject> mNotesList;
     private List<String> mFolderList;
-    private List<Integer> mIds;
-    private List<Integer> mFolderIds;
+    private List<Integer> mIds,mFolderIds;
     private String mFolderName;
     private NotesCount mNotesCount;
     private FolderCount mFolderCount;
@@ -200,10 +201,6 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             shiftItems(fromPosition,toPosition,TableNames.mFolderContentUri,true);
         }if(viewHolder.getItemViewType()==NOTES){
            shiftItems(fromPosition,toPosition,TableNames.mContentUri,false);
-            /*int tempFromPos = fromPosition - mFolderList.size();
-            int tempToPos = toPosition - mFolderList.size();
-            Log.d("fromUri",Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(tempFromPos))).toString());
-            Log.d("toUri",Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(tempToPos))).toString());*/
         }
         notifyItemMoved(fromPosition,toPosition);
     }

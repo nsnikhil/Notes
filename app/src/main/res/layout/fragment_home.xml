@@ -1,30 +1,32 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/homeContainer"
     style="@style/matchParent"
     tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
 
-    <android.support.v7.widget.RecyclerView
+    <include layout="@layout/recycler_view"
+        style="@style/matchParent"
         android:id="@+id/commonList"
-        android:paddingBottom="72dp"
         android:clipToPadding="false"
-        style="@style/matchParent" />
+        android:paddingBottom="72dp"/>
 
     <include
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
         android:id="@+id/homeEmptyState"
-        android:layout_centerInParent="true"
         layout="@layout/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:visibility="gone" />
 
-    <include layout="@layout/fab_reveal"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/sixteen"
+    <include
+        layout="@layout/fab_reveal"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/sixteen" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

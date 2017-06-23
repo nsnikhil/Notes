@@ -22,6 +22,9 @@ import android.widget.Toast;
 
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.fragments.HomeFragment;
+import com.squareup.haha.perflib.Main;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.io.File;
 
@@ -186,4 +189,10 @@ public class MainActivity extends AppCompatActivity {
         ft.commit();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApplication.getRefWatcher(this);
+        refWatcher.watch(this);
+    }
 }

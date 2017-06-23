@@ -63,7 +63,6 @@ public class FolderDataObserver implements LoaderManager.LoaderCallbacks<Cursor>
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d(TAG, "Reset");
     }
 
 }
