@@ -1,7 +1,6 @@
 package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,14 +14,12 @@ import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,7 +27,6 @@ import android.widget.Toast;
 
 import com.nrs.nsnik.notes.ContainerActivity;
 import com.nrs.nsnik.notes.FileOperation;
-import com.nrs.nsnik.notes.MainActivity;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.FolderDataObserver;
@@ -152,6 +148,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    /*
+    adds item from notes table to
+     a list - @mNotesList
+     */
     private void makeNotesList(Cursor cursor) {
         mNotesList.clear();
         mIds.clear();
@@ -197,17 +197,34 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onItemMove(int fromPosition, int toPosition,RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
         if(viewHolder.getItemViewType()==FOLDER){
-            //shiftFolders(fromPosition,toPosition);
+            shiftItems(fromPosition,toPosition,TableNames.mFolderContentUri,true);
         }if(viewHolder.getItemViewType()==NOTES){
-            //shiftNotes(fromPosition,toPosition);
+           shiftItems(fromPosition,toPosition,TableNames.mContentUri,false);
+            /*int tempFromPos = fromPosition - mFolderList.size();
+            int tempToPos = toPosition - mFolderList.size();
+            Log.d("fromUri",Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(tempFromPos))).toString());
+            Log.d("toUri",Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(tempToPos))).toString());*/
         }
         notifyItemMoved(fromPosition,toPosition);
     }
 
-    private void shiftFolders(int fromPosition, int toPosition){
+    /*
+    Gets the id of selected folder using or note
+    @mIs.get(position) and then swaps them with replace folder or note
+     */
+    private void shiftItems(int fromPosition, int toPosition,Uri uri,boolean isFolder){
         int tempOld = 0;int tempNew = 0;
-        Uri fromUri = Uri.withAppendedPath(TableNames.mFolderContentUri,String.valueOf(mFolderIds.get(fromPosition)));
-        Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri,String.valueOf(mFolderIds.get(toPosition)));
+        Uri fromUri,toUri;
+        Uri newFrom,newTo;
+        if(isFolder) {
+            fromUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(fromPosition)));
+            toUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(toPosition)));
+        }else {
+            int tempFromPos = fromPosition - mFolderList.size();
+            int tempToPos = toPosition - mFolderList.size();
+            fromUri = Uri.withAppendedPath(uri, String.valueOf(mIds.get(tempFromPos)));
+            toUri = Uri.withAppendedPath(uri, String.valueOf(mIds.get(tempToPos)));
+        }
         Cursor fromQuery  = mContext.getContentResolver().query(fromUri,null,null,null,null);
         Cursor toQuery  = mContext.getContentResolver().query(toUri,null,null,null,null);
         try{
@@ -226,13 +243,28 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if(fromQuery!=null){fromQuery.close();}
             if(toQuery!=null){toQuery.close();}
         }
-        //shiftInDatabase(fromUri,TableNames.table2.mUid,tempNew);
-        //shiftInDatabase(toUri,TableNames.table2.mUid,tempOld);
+
+        if(isFolder) {
+            shiftInDatabase(fromUri, TableNames.table2.mUid, 9002);
+            shiftInDatabase(toUri, TableNames.table2.mUid, 9003);
+
+            newFrom = Uri.withAppendedPath(uri, String.valueOf(9002));
+            newTo = Uri.withAppendedPath(uri, String.valueOf(9003));
+
+            shiftInDatabase(newFrom, TableNames.table2.mUid, tempNew);
+            shiftInDatabase(newTo, TableNames.table2.mUid, tempOld);
+        }else {
+            shiftInDatabase(fromUri, TableNames.table1.mUid, 9004);
+            shiftInDatabase(toUri, TableNames.table1.mUid, 9005);
+
+            newFrom = Uri.withAppendedPath(uri, String.valueOf(9004));
+            newTo = Uri.withAppendedPath(uri, String.valueOf(9005));
+
+            shiftInDatabase(newFrom, TableNames.table1.mUid, tempNew);
+            shiftInDatabase(newTo, TableNames.table1.mUid, tempOld);
+        }
     }
 
-    private void shiftNotes(int fromPosition, int toPosition){
-
-    }
 
     private void shiftInDatabase(Uri uri,String uidKey,int newId){
         ContentValues contentValues = new ContentValues();
