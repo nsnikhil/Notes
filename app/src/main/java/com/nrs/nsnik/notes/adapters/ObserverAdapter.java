@@ -61,17 +61,17 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int NOTES = 0, FOLDER = 1;
 
     public ObserverAdapter(Context context, Uri noteUri, Uri folderUri, NotesCount notesCount,FolderCount folderCount, LoaderManager manager, String folderName){
-        mContext = context;
-        mFolderName = folderName;
-        mIds = new ArrayList<>();
         mFolderIds = new ArrayList<>();
         mNotesList = new ArrayList<>();
         mFolderList = new ArrayList<>();
+        mIds = new ArrayList<>();
+        mContext = context;
+        mFolderName = folderName;
         mNotesCount = notesCount;
         mFolderCount = folderCount;
         NoteDataObserver noteDataObserver = new NoteDataObserver(mContext,noteUri,manager);
-        FolderDataObserver folderDataObserver = new FolderDataObserver(mContext,folderUri,manager);
         noteDataObserver.add(this);
+        FolderDataObserver folderDataObserver = new FolderDataObserver(mContext,folderUri,manager);
         folderDataObserver.add(this);
     }
 

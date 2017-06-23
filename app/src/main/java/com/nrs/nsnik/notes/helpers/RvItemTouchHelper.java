@@ -35,18 +35,6 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback{
     }
 
     @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            float width = (float) viewHolder.itemView.getWidth();
-            float alpha = 1.0f - Math.abs(dX) / width;
-            viewHolder.itemView.setAlpha(alpha);
-            viewHolder.itemView.setTranslationX(dX);
-        } else {
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
-    }
-
-    @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
         mListener.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition(),viewHolder,target);
         return true;

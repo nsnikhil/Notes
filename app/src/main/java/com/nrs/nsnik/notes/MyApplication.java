@@ -21,6 +21,6 @@ public class MyApplication extends Application{
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
-        refWatcher = LeakCanary.install(this);
+        if(BuildConfig.DEBUG){refWatcher = LeakCanary.install(this);}
     }
 }
