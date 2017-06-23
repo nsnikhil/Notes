@@ -2,6 +2,7 @@ package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -194,13 +195,54 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onItemMove(int fromPosition, int toPosition) {
+    public void onItemMove(int fromPosition, int toPosition,RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+        if(viewHolder.getItemViewType()==FOLDER){
+            //shiftFolders(fromPosition,toPosition);
+        }if(viewHolder.getItemViewType()==NOTES){
+            //shiftNotes(fromPosition,toPosition);
+        }
+        notifyItemMoved(fromPosition,toPosition);
+    }
 
+    private void shiftFolders(int fromPosition, int toPosition){
+        int tempOld = 0;int tempNew = 0;
+        Uri fromUri = Uri.withAppendedPath(TableNames.mFolderContentUri,String.valueOf(mFolderIds.get(fromPosition)));
+        Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri,String.valueOf(mFolderIds.get(toPosition)));
+        Cursor fromQuery  = mContext.getContentResolver().query(fromUri,null,null,null,null);
+        Cursor toQuery  = mContext.getContentResolver().query(toUri,null,null,null,null);
+        try{
+            if (fromQuery != null) {
+                if(fromQuery.moveToFirst()) {
+                    tempOld = fromQuery.getInt(fromQuery.getColumnIndex(TableNames.table2.mUid));
+                }
+            }if (toQuery != null) {
+                if(toQuery.moveToFirst()) {
+                    tempNew = toQuery.getInt(toQuery.getColumnIndex(TableNames.table2.mUid));
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(fromQuery!=null){fromQuery.close();}
+            if(toQuery!=null){toQuery.close();}
+        }
+        //shiftInDatabase(fromUri,TableNames.table2.mUid,tempNew);
+        //shiftInDatabase(toUri,TableNames.table2.mUid,tempOld);
+    }
+
+    private void shiftNotes(int fromPosition, int toPosition){
+
+    }
+
+    private void shiftInDatabase(Uri uri,String uidKey,int newId){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(uidKey,newId);
+        mContext.getContentResolver().update(uri,contentValues,null,null);
     }
 
     @Override
     public void onItemDismiss(int position) {
-
+        //notifyItemRemoved(position);
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder{
