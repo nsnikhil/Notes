@@ -4,7 +4,8 @@
 
     <item android:title="@string/serach"
         android:icon="@drawable/ic_search_black_48dp"
-        app:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.widget.SearchView"
         android:id="@+id/menuMainSearch"/>
 
     <item android:title="@string/deleteall"
