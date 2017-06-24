@@ -105,7 +105,6 @@ public class FileOperation {
             fos = new FileOutputStream(f);
             image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -113,12 +112,11 @@ public class FileOperation {
         }
     }
 
-
-    public NoteObject readFile(String filename) {
+    public NoteObject readFile(String filename) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         File f = new File(folder, filename);
-        FileInputStream fis;
-        ObjectInputStream ois;
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
         NoteObject object = null;
         try {
             fis = new FileInputStream(f);
@@ -126,6 +124,9 @@ public class FileOperation {
             object = (NoteObject) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+        }finally {
+            if(fis!=null){fis.close();}
+            if(ois!=null){ois.close();}
         }
         return object;
     }
@@ -159,7 +160,6 @@ public class FileOperation {
                 }
                 c.close();
             }
-
         }
     }
 

@@ -1,7 +1,5 @@
 package com.nrs.nsnik.notes.adapters;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.v4.app.ActivityOptionsCompat;
+import android.os.AsyncTask;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
@@ -33,7 +31,6 @@ import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.FolderDataObserver;
 import com.nrs.nsnik.notes.data.NoteDataObserver;
 import com.nrs.nsnik.notes.data.TableNames;
-import com.nrs.nsnik.notes.fragments.HomeFragment;
 import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.ItemTouchListener;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
@@ -41,6 +38,7 @@ import com.nrs.nsnik.notes.interfaces.Observer;
 import com.nrs.nsnik.notes.objects.NoteObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,7 +110,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         noteViewHolder.mNoteTitle.setText(object.getTitle());
         noteViewHolder.mNoteContent.setText(object.getNote());
         if (object.getImages().size() > 0) {
-            noteViewHolder.mNoteImage.setImageBitmap(getImage(object));
+            GetBitmapAsync getImageAsync = new GetBitmapAsync(noteViewHolder.mNoteImage);
+            getImageAsync.execute(object);
             noteViewHolder.mNoteImage.setVisibility(View.VISIBLE);
         }else {
             noteViewHolder.mNoteImage.setVisibility(View.GONE);
@@ -129,10 +128,25 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private Bitmap getImage(NoteObject object) {
-        File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
-        File path = new File(folder, object.getImages().get(0));
-        return BitmapFactory.decodeFile(path.toString());
+    private class GetBitmapAsync extends AsyncTask<NoteObject,Void,Bitmap>{
+
+        ImageView mImageView;
+
+        GetBitmapAsync(ImageView imageView){
+            mImageView = imageView;
+        }
+
+        @Override
+        protected Bitmap doInBackground(NoteObject... noteObjects) {
+            File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+            File path = new File(folder, noteObjects[0].getImages().get(0));
+            return BitmapFactory.decodeFile(path.toString());
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            mImageView.setImageBitmap(bitmap);
+        }
     }
 
     @Override
@@ -157,8 +171,12 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mNotesList.clear();
         mIds.clear();
         while (cursor != null && cursor.moveToNext()) {
-            NoteObject object = new FileOperation(mContext).readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
-            if (object.getFolderName().equalsIgnoreCase(mFolderName)) {
+            NoteObject object = null;
+            try {
+                object = new FileOperation(mContext).readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }if (object!=null&&object.getFolderName().equalsIgnoreCase(mFolderName)) {
                 mIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table1.mUid)));
                 mNotesList.add(object);
             }
@@ -290,8 +308,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     int pos = mFolderList.size();
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
                     intent.setData(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()-pos))));
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
-                    mContext.startActivity(intent, options.toBundle());
+                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
+                    mContext.startActivity(intent/*, options.toBundle()*/);
                 }
             });
             mMore.setOnClickListener(new View.OnClickListener() {
@@ -316,8 +334,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ContainerActivity.class);
                     intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderName.getText().toString());
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
-                    mContext.startActivity(intent,options.toBundle());
+                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
+                    mContext.startActivity(intent/*,options.toBundle()*/);
                 }
             });
             mFolderMore.setOnClickListener(new View.OnClickListener() {
@@ -374,5 +392,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 });
         delete.create().show();
     }
+
+
 
 }
