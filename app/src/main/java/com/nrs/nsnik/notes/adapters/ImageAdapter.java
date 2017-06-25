@@ -1,6 +1,7 @@
 package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.nrs.nsnik.notes.ImageFullActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 
@@ -65,7 +68,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext.getApplicationContext(), "Will Show Full Screen Image", Toast.LENGTH_SHORT).show();
+                    Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
+                    mContext.startActivity(fullScreen);
                 }
             });
         }

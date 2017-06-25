@@ -26,6 +26,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
@@ -53,6 +57,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     @BindView(R.id.fabAddFolder)FloatingActionButton mAddFolder;
     @BindView(R.id.fabNoteContainer)LinearLayout mNoteContainer;
     @BindView(R.id.fabFolderContainer)LinearLayout mFolderContainer;
+    @BindView(R.id.homeAdView)AdView mAdView;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
     private int mNotesCount,mFolderCount;
@@ -63,6 +68,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
+        MobileAds.initialize(getActivity(), getActivity().getResources().getString(R.string.adAdMobId));
         mUnbinder = ButterKnife.bind(this, v);
         initialize();
         listeners();
@@ -83,6 +89,8 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         ItemTouchHelper.Callback callback = new RvItemTouchHelper(adapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mList);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
 
@@ -246,9 +254,14 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
-        cleanUp();
         super.onDestroy();
+        cleanUp();
         RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
         refWatcher.watch(this);
     }

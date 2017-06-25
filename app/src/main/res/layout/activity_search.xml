@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/verticalLinearLayout"
+    tools:context="com.nrs.nsnik.notes.SearchActivity">
+
+    <include layout="@layout/toolbar"
+        android:id="@+id/searchToolBar"/>
+
+    <include layout="@layout/recycler_view"
+        style="@style/matchParent"
+        android:id="@+id/searchList"/>
+
+</LinearLayout>

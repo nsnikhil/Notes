@@ -1,6 +1,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:id="@+id/homeContainer"
     style="@style/matchParent"
     tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
@@ -28,5 +29,13 @@
         android:layout_alignParentEnd="true"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/sixteen" />
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/homeAdView"
+        android:visibility="gone"
+        style="@style/wrapContent"
+        ads:adSize="BANNER"
+        ads:adUnitId ="@string/adAdUnitId"
+        android:layout_gravity="bottom|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,5 +1,6 @@
 package com.nrs.nsnik.notes.adapters;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
@@ -46,36 +48,36 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Observer,ItemTouchListener{
+public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Observer, ItemTouchListener {
 
     private static final String TAG = ObserverAdapter.class.getSimpleName();
     private Context mContext;
     private List<NoteObject> mNotesList;
     private List<String> mFolderList;
-    private List<Integer> mIds,mFolderIds;
+    private List<Integer> mNoteIds, mFolderIds;
     private String mFolderName;
     private NotesCount mNotesCount;
     private FolderCount mFolderCount;
     private static final int NOTES = 0, FOLDER = 1;
 
-    public ObserverAdapter(Context context, Uri noteUri, Uri folderUri, NotesCount notesCount,FolderCount folderCount, LoaderManager manager, String folderName){
+    public ObserverAdapter(Context context, Uri noteUri, Uri folderUri, NotesCount notesCount, FolderCount folderCount, LoaderManager manager, String folderName) {
         mFolderIds = new ArrayList<>();
         mNotesList = new ArrayList<>();
         mFolderList = new ArrayList<>();
-        mIds = new ArrayList<>();
+        mNoteIds = new ArrayList<>();
         mContext = context;
         mFolderName = folderName;
         mNotesCount = notesCount;
         mFolderCount = folderCount;
-        NoteDataObserver noteDataObserver = new NoteDataObserver(mContext,noteUri,manager);
+        NoteDataObserver noteDataObserver = new NoteDataObserver(mContext, noteUri, manager);
         noteDataObserver.add(this);
-        FolderDataObserver folderDataObserver = new FolderDataObserver(mContext,folderUri,manager);
+        FolderDataObserver folderDataObserver = new FolderDataObserver(mContext, folderUri, manager);
         folderDataObserver.add(this);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType){
+        switch (viewType) {
             case FOLDER:
                 return new FolderViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_folder_layout, parent, false));
             case NOTES:
@@ -87,24 +89,24 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int pos = mFolderList.size();
-        switch (holder.getItemViewType()){
+        switch (holder.getItemViewType()) {
             case FOLDER:
-                bindFolderData(holder,position);
+                bindFolderData(holder, position);
                 break;
             case NOTES:
-                pos = position-pos;
-                bindNotesData(holder,pos);
+                pos = position - pos;
+                bindNotesData(holder, pos);
                 --pos;
                 break;
         }
     }
 
-    private void bindFolderData(RecyclerView.ViewHolder holder,int position){
+    private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
         folderViewHolder.mFolderName.setText(mFolderList.get(position));
     }
 
-    private void bindNotesData(RecyclerView.ViewHolder holder,int position){
+    private void bindNotesData(RecyclerView.ViewHolder holder, int position) {
         NoteViewHolder noteViewHolder = (NoteViewHolder) holder;
         NoteObject object = mNotesList.get(position);
         noteViewHolder.mNoteTitle.setText(object.getTitle());
@@ -113,7 +115,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             GetBitmapAsync getImageAsync = new GetBitmapAsync(noteViewHolder.mNoteImage);
             getImageAsync.execute(object);
             noteViewHolder.mNoteImage.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             noteViewHolder.mNoteImage.setVisibility(View.GONE);
         }
         if (object.getAudioLocation() != null) {
@@ -128,11 +130,11 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private class GetBitmapAsync extends AsyncTask<NoteObject,Void,Bitmap>{
+    private class GetBitmapAsync extends AsyncTask<NoteObject, Void, Bitmap> {
 
         ImageView mImageView;
 
-        GetBitmapAsync(ImageView imageView){
+        GetBitmapAsync(ImageView imageView) {
             mImageView = imageView;
         }
 
@@ -151,14 +153,14 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return mNotesList.size()+mFolderList.size();
+        return mNotesList.size() + mFolderList.size();
     }
 
     @Override
     public void updateItems(Cursor cursor) {
-        if(cursor.getColumnIndex(TableNames.table1.mTitle)!=-1){
+        if (cursor.getColumnIndex(TableNames.table1.mTitle) != -1) {
             makeNotesList(cursor);
-        }else {
+        } else {
             makeFolderList(cursor);
         }
     }
@@ -169,15 +171,16 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      */
     private void makeNotesList(Cursor cursor) {
         mNotesList.clear();
-        mIds.clear();
+        mNoteIds.clear();
         while (cursor != null && cursor.moveToNext()) {
             NoteObject object = null;
             try {
                 object = new FileOperation(mContext).readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
             } catch (IOException e) {
                 e.printStackTrace();
-            }if (object!=null&&object.getFolderName().equalsIgnoreCase(mFolderName)) {
-                mIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table1.mUid)));
+            }
+            if (object != null && object.getFolderName().equalsIgnoreCase(mFolderName)) {
+                mNoteIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table1.mUid)));
                 mNotesList.add(object);
             }
         }
@@ -189,7 +192,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mFolderList.clear();
         mFolderIds.clear();
         while (cursor != null && cursor.moveToNext()) {
-            if(cursor.getString(cursor.getColumnIndex(TableNames.table2.mParentFolderName)).equalsIgnoreCase(mFolderName)) {
+
+            if (cursor.getString(cursor.getColumnIndex(TableNames.table2.mParentFolderName)).equalsIgnoreCase(mFolderName)) {
                 mFolderIds.add(cursor.getInt(cursor.getColumnIndex(TableNames.table2.mUid)));
                 mFolderList.add(justifyName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))));
             }
@@ -205,61 +209,81 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemViewType(int position) {
-        if(position>=0&&position<mFolderList.size()){
+        if (position >= 0 && position < mFolderList.size()) {
             return FOLDER;
-        }else if(position>=mFolderList.size()&&position<mNotesList.size()) {
+        } else if (position >= mFolderList.size() && position < mNotesList.size()) {
             return NOTES;
         }
         return super.getItemViewType(position);
     }
 
     @Override
-    public void onItemMove(int fromPosition, int toPosition,RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        if(viewHolder.getItemViewType()==FOLDER){
-            shiftItems(fromPosition,toPosition,TableNames.mFolderContentUri,true);
-        }if(viewHolder.getItemViewType()==NOTES){
-           shiftItems(fromPosition,toPosition,TableNames.mContentUri,false);
+    public void onItemMove(int fromPosition, int toPosition, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+        if (viewHolder.getItemViewType() == FOLDER) {
+            shiftIds(fromPosition, toPosition, true);
         }
-        notifyItemMoved(fromPosition,toPosition);
+        if (viewHolder.getItemViewType() == NOTES) {
+            shiftIds(fromPosition, toPosition, false);
+        }
+        notifyItemMoved(fromPosition, toPosition);
     }
 
-    /*
-    Gets the id of selected folder using or note
-    @mIs.get(position) and then swaps them with replace folder or note
-     */
-    private void shiftItems(int fromPosition, int toPosition,Uri uri,boolean isFolder){
-        int tempOld = 0;int tempNew = 0;
-        Uri fromUri,toUri;
-        Uri newFrom,newTo;
-        if(isFolder) {
-            fromUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(fromPosition)));
-            toUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(toPosition)));
-        }else {
+    private void shiftIds(int fromPosition, int toPosition, boolean isFolder) {
+        if (isFolder) {
+            mFolderIds.set(fromPosition, toPosition);
+            mFolderIds.set(toPosition, fromPosition);
+        } else {
             int tempFromPos = fromPosition - mFolderList.size();
             int tempToPos = toPosition - mFolderList.size();
-            fromUri = Uri.withAppendedPath(uri, String.valueOf(mIds.get(tempFromPos)));
-            toUri = Uri.withAppendedPath(uri, String.valueOf(mIds.get(tempToPos)));
+            int actFromPos = mNoteIds.get(tempFromPos);
+            int actTosPos = mNoteIds.get(tempToPos);
+            mNoteIds.set(tempFromPos, actTosPos);
+            mNoteIds.set(tempToPos, actFromPos);
         }
-        Cursor fromQuery  = mContext.getContentResolver().query(fromUri,null,null,null,null);
-        Cursor toQuery  = mContext.getContentResolver().query(toUri,null,null,null,null);
-        try{
-            if (fromQuery != null) {
-                if(fromQuery.moveToFirst()) {
+    }
+
+    private void shiftItems(int fromPosition, int toPosition, Uri uri, boolean isFolder) {
+        int tempOld = 0;
+        int tempNew = 0;
+        Uri fromUri, toUri;
+        Uri newFrom, newTo;
+        if (isFolder) {
+            fromUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(fromPosition)));
+            toUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(toPosition)));
+        } else {
+            int tempFromPos = fromPosition - mFolderList.size();
+            int tempToPos = toPosition - mFolderList.size();
+            fromUri = Uri.withAppendedPath(uri, String.valueOf(mNoteIds.get(tempFromPos)));
+            toUri = Uri.withAppendedPath(uri, String.valueOf(mNoteIds.get(tempToPos)));
+        }
+        Cursor fromQuery = mContext.getContentResolver().query(fromUri, null, null, null, null);
+        Cursor toQuery = mContext.getContentResolver().query(toUri, null, null, null, null);
+        try {
+            if (fromQuery != null && fromQuery.moveToFirst()) {
+                if (isFolder) {
                     tempOld = fromQuery.getInt(fromQuery.getColumnIndex(TableNames.table2.mUid));
-                }
-            }if (toQuery != null) {
-                if(toQuery.moveToFirst()) {
-                    tempNew = toQuery.getInt(toQuery.getColumnIndex(TableNames.table2.mUid));
+                } else {
+                    tempOld = fromQuery.getInt(fromQuery.getColumnIndex(TableNames.table1.mUid));
                 }
             }
-        }catch (Exception e){
+            if (toQuery != null && toQuery.moveToFirst()) {
+                if (isFolder) {
+                    tempNew = toQuery.getInt(toQuery.getColumnIndex(TableNames.table2.mUid));
+                } else {
+                    tempNew = toQuery.getInt(toQuery.getColumnIndex(TableNames.table1.mUid));
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(fromQuery!=null){fromQuery.close();}
-            if(toQuery!=null){toQuery.close();}
+        } finally {
+            if (fromQuery != null) {
+                fromQuery.close();
+            }
+            if (toQuery != null) {
+                toQuery.close();
+            }
         }
-
-        if(isFolder) {
+        if (isFolder) {
             shiftInDatabase(fromUri, TableNames.table2.mUid, 9002);
             shiftInDatabase(toUri, TableNames.table2.mUid, 9003);
 
@@ -268,7 +292,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             shiftInDatabase(newFrom, TableNames.table2.mUid, tempNew);
             shiftInDatabase(newTo, TableNames.table2.mUid, tempOld);
-        }else {
+        } else {
             shiftInDatabase(fromUri, TableNames.table1.mUid, 9004);
             shiftInDatabase(toUri, TableNames.table1.mUid, 9005);
 
@@ -280,11 +304,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-
-    private void shiftInDatabase(Uri uri,String uidKey,int newId){
+    private void shiftInDatabase(Uri uri, String uidKey, int newId) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(uidKey,newId);
-        mContext.getContentResolver().update(uri,contentValues,null,null);
+        contentValues.put(uidKey, newId);
+        mContext.getContentResolver().update(uri, contentValues, null, null);
     }
 
     @Override
@@ -292,77 +315,87 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         //notifyItemRemoved(position);
     }
 
-    class NoteViewHolder extends RecyclerView.ViewHolder{
-        @BindView(R.id.singleNoteTitle) TextView mNoteTitle;
-        @BindView(R.id.singleNoteContent) TextView mNoteContent;
-        @BindView(R.id.singleNoteImage) ImageView mNoteImage;
-        @BindView(R.id.singleNoteReminder) ImageView mRemIndicator;
-        @BindView(R.id.singleNoteAudio) ImageView mAudIndicator;
-        @BindView(R.id.singleNoteMore)ImageButton mMore;
+    class NoteViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.singleNoteTitle)
+        TextView mNoteTitle;
+        @BindView(R.id.singleNoteContent)
+        TextView mNoteContent;
+        @BindView(R.id.singleNoteImage)
+        ImageView mNoteImage;
+        @BindView(R.id.singleNoteReminder)
+        ImageView mRemIndicator;
+        @BindView(R.id.singleNoteAudio)
+        ImageView mAudIndicator;
+        @BindView(R.id.singleNoteMore)
+        ImageButton mMore;
+
         public NoteViewHolder(final View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int pos = mFolderList.size();
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
-                    intent.setData(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()-pos))));
-                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
-                    mContext.startActivity(intent/*, options.toBundle()*/);
+                    intent.setData(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mNoteIds.get(getAdapterPosition() - pos))));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
+                    mContext.startActivity(intent, options.toBundle());
                 }
             });
             mMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int pos = mFolderList.size();
-                    inflatePopUpMenu(mContext.getResources().getString(R.string.deletesingledialog),false,"",
-                            Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mIds.get(getAdapterPosition()-pos))),mMore);
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deletesingledialog), false, "",
+                            Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mNoteIds.get(getAdapterPosition() - pos))), mMore);
                 }
             });
         }
     }
 
-    class FolderViewHolder extends RecyclerView.ViewHolder{
-        @BindView(R.id.singleFolderName) TextView mFolderName;
-        @BindView(R.id.singleFolderMore)ImageButton mFolderMore;
+    class FolderViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.singleFolderName)
+        TextView mFolderName;
+        @BindView(R.id.singleFolderMore)
+        ImageButton mFolderMore;
+
         public FolderViewHolder(final View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ContainerActivity.class);
                     intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderName.getText().toString());
-                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
-                    mContext.startActivity(intent/*,options.toBundle()*/);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
+                    mContext.startActivity(intent, options.toBundle());
                 }
             });
             mFolderMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteFolderSingle),true,mFolderName.getText().toString(),
-                            Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(mFolderIds.get(getAdapterPosition()))),mFolderMore);
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteFolderSingle), true, mFolderName.getText().toString(),
+                            Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(mFolderIds.get(getAdapterPosition()))), mFolderMore);
                 }
             });
         }
     }
 
-    private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName , final Uri uri, View itemView){
-        PopupMenu menu = new PopupMenu(mContext,itemView, Gravity.START);
+    private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName, final Uri uri, View itemView) {
+        PopupMenu menu = new PopupMenu(mContext, itemView, Gravity.START);
         menu.inflate(R.menu.pop_up_menu);
         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.popUpStar:
-                        Toast.makeText(mContext,"TO-DO",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.popUpShare:
-                        Toast.makeText(mContext,"TO-DO",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.popUpDelete:
-                        makeDeleteDialog(message,uri,isFolder,folderName);
+                        makeDeleteDialog(message, uri, isFolder, folderName);
                         break;
                 }
                 return false;
@@ -371,7 +404,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         menu.show();
     }
 
-    private void makeDeleteDialog(String message, final Uri uri, final boolean isFolder, final String folderName){
+    private void makeDeleteDialog(String message, final Uri uri, final boolean isFolder, final String folderName) {
         AlertDialog.Builder delete = new AlertDialog.Builder(mContext);
         delete.setTitle(mContext.getResources().getString(R.string.warning))
                 .setMessage(message)
@@ -384,15 +417,14 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .setPositiveButton(mContext.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(isFolder){
-                            mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri,folderName),null,null);
+                        if (isFolder) {
+                            mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
                         }
-                        mContext.getContentResolver().delete(uri,null,null);
+                        mContext.getContentResolver().delete(uri, null, null);
                     }
                 });
         delete.create().show();
     }
-
 
 
 }
