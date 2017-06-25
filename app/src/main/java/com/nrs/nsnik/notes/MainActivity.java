@@ -1,11 +1,15 @@
 package com.nrs.nsnik.notes;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -34,12 +38,9 @@ import io.fabric.sdk.android.Fabric;
 public class MainActivity extends AppCompatActivity {
 
     private static final String[] mFragTags = {"home", "starred", "recent"};
-    @BindView(R.id.mainToolbar)
-    Toolbar mMainToolbar;
-    @BindView(R.id.mainDrawerLayout)
-    DrawerLayout mDrawerLayout;
-    @BindView(R.id.mainNaviagtionView)
-    NavigationView mNavigationView;
+    @BindView(R.id.mainToolbar) Toolbar mMainToolbar;
+    @BindView(R.id.mainDrawerLayout) DrawerLayout mDrawerLayout;
+    @BindView(R.id.mainNaviagtionView) NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +51,32 @@ public class MainActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        initialize();
-        initializeDrawer();
-        getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
+        addOnConnection();
+    }
+
+    private void addOnConnection(){
+        if(isConnected()){
+            initialize();
+            initializeDrawer();
+            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
+        }else {
+            removeOffConnection();
+        }
+    }
+
+    private void removeOffConnection(){
+        Snackbar.make(mDrawerLayout,"No Internet",Snackbar.LENGTH_INDEFINITE).setAction("Retry", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addOnConnection();
+            }
+        }).show();
+    }
+
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     @Override

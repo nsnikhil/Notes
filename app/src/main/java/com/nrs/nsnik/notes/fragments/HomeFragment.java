@@ -7,8 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -57,6 +59,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     @BindView(R.id.fabAddFolder)FloatingActionButton mAddFolder;
     @BindView(R.id.fabNoteContainer)LinearLayout mNoteContainer;
     @BindView(R.id.fabFolderContainer)LinearLayout mFolderContainer;
+    @BindView(R.id.commonListSwipe)SwipeRefreshLayout mSwipeRefresh;
     @BindView(R.id.homeAdView)AdView mAdView;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
@@ -120,6 +123,18 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
             public void onClick(View v) {
                 disappear();
                 createFolderDialog();
+            }
+        });
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefresh.setRefreshing(false);
+                    }
+                },1000);
+
             }
         });
     }

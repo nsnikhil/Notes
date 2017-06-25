@@ -1,16 +1,21 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/homeContainer"
     style="@style/matchParent"
     tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
 
-    <include layout="@layout/recycler_view"
-        style="@style/matchParent"
-        android:id="@+id/commonList"
-        android:clipToPadding="false"
-        android:paddingBottom="72dp"/>
+    <android.support.v4.widget.SwipeRefreshLayout style="@style/matchParent"
+        android:id="@+id/commonListSwipe">
+
+        <include
+            android:id="@+id/commonList"
+            style="@style/matchParent"
+            layout="@layout/recycler_view"
+            android:clipToPadding="false"
+            android:paddingBottom="72dp" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <include
         android:id="@+id/homeEmptyState"
@@ -32,10 +37,10 @@
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/homeAdView"
-        android:visibility="gone"
         style="@style/wrapContent"
+        android:layout_gravity="bottom|center_horizontal"
+        android:visibility="gone"
         ads:adSize="BANNER"
-        ads:adUnitId ="@string/adAdUnitId"
-        android:layout_gravity="bottom|center_horizontal" />
+        ads:adUnitId="@string/adAdUnitId" />
 
 </android.support.design.widget.CoordinatorLayout>
