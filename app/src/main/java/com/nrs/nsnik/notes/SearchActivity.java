@@ -31,7 +31,9 @@ public class SearchActivity extends AppCompatActivity {
 
     private void initialize(){
         setSupportActionBar(mSearchToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void listeners(){

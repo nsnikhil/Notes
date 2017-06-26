@@ -2,15 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/matchParent"
+    android:background="@color/black"
     tools:context="com.nrs.nsnik.notes.ImageFullActivity">
-
-    <include
-        android:id="@+id/fullToolBar"
-        layout="@layout/toolbar" />
 
     <include
         android:id="@+id/fullImage"
         style="@style/matchParent"
+        android:transitionName="fullImage"
         layout="@layout/recycler_view" />
 
 </FrameLayout>

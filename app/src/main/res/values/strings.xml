@@ -29,7 +29,6 @@
 
     <!-- IntentKeys-->
     <string name="intentFolderName">intFldNmKy</string>
-    <string name="intentArrayListPosition">intImgPos</string>
     <!-- -->
 
     <!-- bundle-->
@@ -37,6 +36,10 @@
     <string name="foldernamebundle">foldbund</string>
     <string name="sunFldName">sbflbnm</string>
     <string name="newnotefolderbundle">newntbd</string>
+    <string name="bundleStringImageArray">bundImgArr</string>
+    <string name="bundleImagePosition">bundimgpos</string>
+    <string name="bundleIntentImage">bndImgs</string>
+    <string name="bundleArrayListPosition">intImgPos</string>
     <!-- -->
 
     <!-- menuStrings-->

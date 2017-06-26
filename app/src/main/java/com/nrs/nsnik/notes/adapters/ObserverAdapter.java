@@ -220,10 +220,14 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onItemMove(int fromPosition, int toPosition, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
         if (viewHolder.getItemViewType() == FOLDER) {
-            shiftIds(fromPosition, toPosition, true);
+            if(viewHolder.getItemViewType()==target.getItemViewType()) {
+                shiftIds(fromPosition, toPosition, true);
+            }
         }
         if (viewHolder.getItemViewType() == NOTES) {
-            shiftIds(fromPosition, toPosition, false);
+            if(viewHolder.getItemViewType()==target.getItemViewType()) {
+                shiftIds(fromPosition, toPosition, false);
+            }
         }
         notifyItemMoved(fromPosition, toPosition);
     }

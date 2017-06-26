@@ -130,6 +130,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         if (getIntent().getExtras() != null) {
             mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
         }
+        Object ONJ;
+        Object ON;
+        Object ON2J;
+        Object ON3;
+        Object ON4J;
+        Object ON6;
     }
 
     private void setNote() throws IOException {
@@ -152,6 +158,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                         File path = new File(folder, obj.getImages().get(i));
                         mImagesArray.add(BitmapFactory.decodeFile(path.toString()));
                     }
+                    mImageAdapter.modifyList(mImagesLocations);
                 }
                 if (obj.getAudioLocation() != null) {
                     newNoteAudioContainer.setVisibility(View.VISIBLE);
@@ -306,11 +313,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void initialize() {
         setSupportActionBar(mNoteToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         imageRecyclerView.setLayoutManager(layoutManager);
         mImagesArray = new ArrayList<>();
-        mImageAdapter = new ImageAdapter(NewNoteActivity.this, mImagesArray, this);
+        mImageAdapter = new ImageAdapter(NewNoteActivity.this, mImagesLocations,this,false);
         imageRecyclerView.setAdapter(mImageAdapter);
         mImagesLocations = new ArrayList<>();
         seekAudio.incrementProgressBy(10);

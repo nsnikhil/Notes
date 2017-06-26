@@ -3,6 +3,11 @@
     style="@style/matchParent"
     android:clipToPadding="false">
 
+    <ProgressBar
+        style="@style/progressBar"
+        android:id="@+id/singleImageProgress"/>
+
+
     <ImageView
         android:id="@+id/singleImage"
         style="@style/matchParent"
@@ -14,6 +19,7 @@
         android:contentDescription="@string/imageDescription"
         android:id="@+id/singleImageCancel"
         android:background="@drawable/circle"
+        android:transitionName="fullImage"
         android:src="@drawable/ic_cancel_black_48dp"
         android:layout_width="48dp"
         android:layout_height="48dp"

@@ -1,7 +1,6 @@
 package com.nrs.nsnik.notes;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -23,12 +21,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.ads.MobileAds;
-import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.fragments.HomeFragment;
 import com.squareup.leakcanary.RefWatcher;
-
-import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -95,45 +89,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isNotEmpty() {
-        return getContentResolver().query(TableNames.mContentUri, null, null, null, null).getCount() != 0 ||
-                getContentResolver().query(TableNames.mFolderContentUri, null, null, null, null).getCount() != 0;
-    }
-
-    private void deleteAll() {
-        AlertDialog.Builder delete = new AlertDialog.Builder(MainActivity.this);
-        delete.setTitle(getResources().getString(R.string.warning))
-                .setMessage(getResources().getString(R.string.deletealldialog))
-                .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                }).setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                clearDatabase();
-            }
-        });
-        delete.create().show();
-    }
-
-    private void clearDatabase() {
-        getContentResolver().delete(TableNames.mFolderContentUri, null, null);
-        getContentResolver().delete(TableNames.mContentUri, null, null);
-        deleteAllFiles();
-    }
-
-    private void deleteAllFiles() {
-        File folder = new File(String.valueOf(MainActivity.this.getExternalFilesDir(getResources().getString(R.string.folderName))));
-        String child[] = folder.list();
-        if (folder.isDirectory()) {
-            for (String s : child) {
-                new File(folder, s).delete();
-            }
-        }
-    }
-
     private void initializeDrawer() {
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mMainToolbar, R.string.drawerOpen, R.string.drawerClose) {
             @Override
@@ -182,7 +137,9 @@ public class MainActivity extends AppCompatActivity {
         switch (key) {
             case 0:
                 notes.setChecked(true);
-                getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+                }
                 break;
             case 1:
                 starred.setChecked(true);
