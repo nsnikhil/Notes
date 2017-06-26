@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,21 @@ import com.nrs.nsnik.notes.interfaces.SendSize;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
@@ -35,6 +48,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private File mFolder;
     private SendSize mSize;
     private boolean mFullScreen;
+    CompositeDisposable mDisposable;
 
     public ImageAdapter(Activity c, ArrayList<String> imageLocations, SendSize sz,boolean forFullScreen) {
         mContext = c;
@@ -52,30 +66,72 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(ImageAdapter.MyViewHolder holder, int position) {
-        GetImage image = new GetImage(holder);
+        /*GetImage image = new GetImage(holder);
         if (mImageLoc != null) {
             image.execute(mImageLoc.get(position));
-        }
+        }*/
+        //getImage(position,holder);
+        setImage(position,holder);
     }
 
-    private class GetImage extends AsyncTask<String,Void,Bitmap>{
+    private void setImage(final int position, final ImageAdapter.MyViewHolder holder){
+        Single<Bitmap>  singleObservable = Single.fromCallable(new Callable<Bitmap>() {
+            @Override
+            public Bitmap call() throws Exception {
+                return BitmapFactory.decodeFile(new File(mFolder,mImageLoc.get(position)).toString());
+            }
+        });
+        singleObservable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Bitmap>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.d(TAG, d.toString());
+                    }
 
-        ImageAdapter.MyViewHolder mHolder;
+                    @Override
+                    public void onSuccess(@NonNull Bitmap bitmap) {
+                        holder.image.setImageBitmap(bitmap);
+                        holder.mProgress.setVisibility(View.GONE);
+                    }
 
-        GetImage(ImageAdapter.MyViewHolder holder){
-            mHolder  = holder;
-        }
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.d(TAG, e.getMessage());
+                    }
+                });
+    }
 
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            return BitmapFactory.decodeFile(new File(mFolder,strings[0]).toString());
-        }
+    private void getImage(final int position, final ImageAdapter.MyViewHolder holder){
+       Observable<Bitmap> observable = Observable.fromCallable(new Callable<Bitmap>() {
+           @Override
+           public Bitmap call() throws Exception {
+               return BitmapFactory.decodeFile(new File(mFolder,mImageLoc.get(position)).toString());
+           }
+       });
+        observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(new Observer<Bitmap>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+                Log.d(TAG, d.toString());
+            }
 
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            mHolder.image.setImageBitmap(bitmap);
-            mHolder.mProgress.setVisibility(View.GONE);
-        }
+            @Override
+            public void onNext(@NonNull Bitmap bitmap) {
+                holder.image.setImageBitmap(bitmap);
+                holder.mProgress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                Log.d(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     public void modifyList(ArrayList<String> imageLoc){
@@ -117,7 +173,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                         bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
                         fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, itemView, "fullImage");
-                        mContext.startActivity(fullScreen, options.toBundle());
+                        mContext.startActivity(fullScreen);
                     }
                 });
             }

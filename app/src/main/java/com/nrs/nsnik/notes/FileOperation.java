@@ -17,6 +17,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class FileOperation {
@@ -129,6 +137,33 @@ public class FileOperation {
             if(ois!=null){ois.close();}
         }
         return object;
+    }
+
+    private NoteObject getFile(final String fileName){
+        Single<NoteObject> objectSingle = Single.fromCallable(new Callable<NoteObject>() {
+            @Override
+            public NoteObject call() throws Exception {
+                return readFile(fileName);
+            }
+        });
+        objectSingle.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<NoteObject>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull NoteObject object) {
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+                });
+        return null;
     }
 
 
