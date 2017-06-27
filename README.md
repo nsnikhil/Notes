@@ -1,2 +1,2 @@
 # Notes
-Everything Broken will fix after 18th jan
+Adapter completely borken
