@@ -159,7 +159,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         noteViewHolder.mNoteTitle.setText(object.getTitle());
         noteViewHolder.mNoteContent.setText(object.getNote());
         if (object.getImages().size() > 0) {
-            setImage((NoteViewHolder) holder, object.getImages().get(position));
+            setImage((NoteViewHolder) holder, object.getImages().get(0));
         } else {
             noteViewHolder.mNoteImage.setVisibility(View.GONE);
         }
@@ -192,7 +192,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     @Override
                     public void onSuccess(@NonNull Bitmap bitmap) {
-                       holder.mNoteImage.setImageBitmap(bitmap);
+                        holder.mNoteImage.setImageBitmap(bitmap);
+                        holder.mNoteImage.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -265,74 +266,6 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if(viewHolder.getItemViewType()==target.getItemViewType()) {
             notifyItemMoved(fromPosition, toPosition);
         }
-    }
-
-    /*private void shiftItems(int fromPosition, int toPosition, Uri uri, boolean isFolder) {
-        int tempOld = 0;
-        int tempNew = 0;
-        Uri fromUri, toUri;
-        Uri newFrom, newTo;
-        if (isFolder) {
-            fromUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(fromPosition)));
-            toUri = Uri.withAppendedPath(uri, String.valueOf(mFolderIds.get(toPosition)));
-        } else {
-            int tempFromPos = fromPosition - mFolderList.size();
-            int tempToPos = toPosition - mFolderList.size();
-            fromUri = Uri.withAppendedPath(uri, String.valueOf(mNoteIds.get(tempFromPos)));
-            toUri = Uri.withAppendedPath(uri, String.valueOf(mNoteIds.get(tempToPos)));
-        }
-        Cursor fromQuery = mContext.getContentResolver().query(fromUri, null, null, null, null);
-        Cursor toQuery = mContext.getContentResolver().query(toUri, null, null, null, null);
-        try {
-            if (fromQuery != null && fromQuery.moveToFirst()) {
-                if (isFolder) {
-                    tempOld = fromQuery.getInt(fromQuery.getColumnIndex(TableNames.table2.mUid));
-                } else {
-                    tempOld = fromQuery.getInt(fromQuery.getColumnIndex(TableNames.table1.mUid));
-                }
-            }
-            if (toQuery != null && toQuery.moveToFirst()) {
-                if (isFolder) {
-                    tempNew = toQuery.getInt(toQuery.getColumnIndex(TableNames.table2.mUid));
-                } else {
-                    tempNew = toQuery.getInt(toQuery.getColumnIndex(TableNames.table1.mUid));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fromQuery != null) {
-                fromQuery.close();
-            }
-            if (toQuery != null) {
-                toQuery.close();
-            }
-        }
-        if (isFolder) {
-            shiftInDatabase(fromUri, TableNames.table2.mUid, 9002);
-            shiftInDatabase(toUri, TableNames.table2.mUid, 9003);
-
-            newFrom = Uri.withAppendedPath(uri, String.valueOf(9002));
-            newTo = Uri.withAppendedPath(uri, String.valueOf(9003));
-
-            shiftInDatabase(newFrom, TableNames.table2.mUid, tempNew);
-            shiftInDatabase(newTo, TableNames.table2.mUid, tempOld);
-        } else {
-            shiftInDatabase(fromUri, TableNames.table1.mUid, 9004);
-            shiftInDatabase(toUri, TableNames.table1.mUid, 9005);
-
-            newFrom = Uri.withAppendedPath(uri, String.valueOf(9004));
-            newTo = Uri.withAppendedPath(uri, String.valueOf(9005));
-
-            shiftInDatabase(newFrom, TableNames.table1.mUid, tempNew);
-            shiftInDatabase(newTo, TableNames.table1.mUid, tempOld);
-        }
-    }*/
-
-    private void shiftInDatabase(Uri uri, String uidKey, int newId) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(uidKey, newId);
-        mContext.getContentResolver().update(uri, contentValues, null, null);
     }
 
     @Override
@@ -465,11 +398,6 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public HeaderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
-            Point size = new Point();
-            ((Activity)mContext).getWindowManager().getDefaultDisplay().getSize(size);
-            int width = size.x;
-            int height = size.y;
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(width, RecyclerView.LayoutParams.WRAP_CONTENT));
         }
     }
 }

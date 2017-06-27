@@ -351,6 +351,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                         String name = makeImageName();
                         mImagesLocations.add(name);
                         mFileOperation.saveImage(name, mImage);
+                        mImageAdapter.modifyList(mImagesLocations);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -389,6 +390,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mImageAdapter.modifyList(mImagesLocations);
     }
 
 
@@ -599,12 +601,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void validateSize(int position) {
-        if (mImagesArray.size() <= 0) {
+        if (mImagesLocations.size() <= 0) {
             imageRecyclerView.setVisibility(View.GONE);
         } else {
             imageRecyclerView.setVisibility(View.VISIBLE);
         }
-        mImagesLocations.remove(position);
+        //mImagesLocations.remove(position);
     }
 
 

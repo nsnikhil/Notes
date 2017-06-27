@@ -50,7 +50,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private File mFolder;
     private SendSize mSize;
     private boolean mFullScreen;
-    CompositeDisposable mDisposable;
 
     public ImageAdapter(Activity c, ArrayList<String> imageLocations, SendSize sz,boolean forFullScreen) {
         mContext = c;
@@ -106,7 +105,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @Override
     public int getItemCount() {
-        return mImageLoc.size();
+        if (mImageLoc != null) {
+            return mImageLoc.size();
+        }
+      return 0;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

@@ -97,8 +97,8 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         ItemTouchHelper.Callback callback = new RvItemTouchHelper(adapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mList);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        //AdRequest adRequest = new AdRequest.Builder().build();
+        //mAdView.loadAd(adRequest);
     }
 
 
