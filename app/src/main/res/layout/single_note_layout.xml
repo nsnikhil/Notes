@@ -24,13 +24,15 @@
 
         <TextView
             android:id="@+id/singleNoteTitle"
-            android:fontFamily="monospace"
             style="@style/newNoteHeading"
+            android:textStyle="bold"
+            android:fontFamily="serif-monospace"
             android:maxLines="1" />
 
         <TextView
             android:id="@+id/singleNoteContent"
             style="@style/newNoteContent"
+            android:fontFamily="serif-monospace"
             android:lineSpacingExtra="5dp"
             android:maxLines="6" />
 

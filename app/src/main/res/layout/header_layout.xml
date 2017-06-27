@@ -3,7 +3,6 @@
     style="@style/stretchedHorizontally"
     android:layout_marginTop="@dimen/twentyFour"
     android:typeface="normal"
-    android:fontFamily="sans-serif-light"
     android:textStyle="bold"
     android:gravity="center_vertical"
     android:padding="@dimen/sixteen"

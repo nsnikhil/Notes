@@ -71,38 +71,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         setImage(position,holder);
     }
 
-    private void testMethod(){
-        PublishSubject<Bitmap> subject = PublishSubject.create();
-        subject.subscribe(new Observer<Bitmap>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(@NonNull Bitmap bitmap) {
-
-            }
-
-            @Override
-            public void onError(@NonNull Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
-        Single.just(5).map(new Function<Integer, String>() {
-            @Override
-            public String apply(@NonNull Integer integer) throws Exception {
-                return null;
-            }
-        });
-    }
-
     private void setImage(final int position, final ImageAdapter.MyViewHolder holder){
         Single<Bitmap>  singleObservable = Single.fromCallable(new Callable<Bitmap>() {
             @Override

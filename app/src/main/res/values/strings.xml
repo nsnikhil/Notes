@@ -19,6 +19,10 @@
     <string name="imageDescription">Image</string>
     <string name="imageError">Error</string>
     <string name="emptyState">No Notes found here…</string>
+    <string name="headingNotes">Notes</string>
+    <string name="headingFolder">Folders</string>"
+
+
 
     <!-- navigationMenu-->
     <string name="navItem1">My Notes</string>

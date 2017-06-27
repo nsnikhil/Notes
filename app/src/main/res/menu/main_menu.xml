@@ -7,9 +7,4 @@
         app:showAsAction="collapseActionView|ifRoom"
         android:id="@+id/menuMainSearch"/>
 
-    <item android:title="@string/deleteall"
-        app:showAsAction="ifRoom"
-        android:visible="false"
-        android:icon="@drawable/ic_delete_black_48dp"
-        android:id="@+id/menuMainDeleteAll"/>
 </menu>

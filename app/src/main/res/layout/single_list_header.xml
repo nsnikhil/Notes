@@ -5,15 +5,15 @@
     <TextView
         android:id="@+id/itemHeader"
         style="@style/matchParent"
-        android:background="@color/colorAccent"
-        android:fontFamily="monospace"
+        android:fontFamily="serif-monospace"
         android:padding="@dimen/sixteen"
         android:text="@string/app_name"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <ImageButton
         android:id="@+id/itemHeaderMore"
+        android:visibility="gone"
         android:contentDescription="@string/imageDescription"
         android:src="@drawable/ic_arrow_drop_up_black_48dp"
         android:layout_gravity="end|center_vertical"

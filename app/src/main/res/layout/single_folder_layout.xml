@@ -15,13 +15,13 @@
 
     <TextView
         android:id="@+id/singleFolderName"
-        android:drawableTint="@color/colorAccent"
         style="@style/newNoteHeading"
         android:textSize="18sp"
         android:padding="4dp"
         android:drawablePadding="@dimen/eight"
+        android:textStyle="bold"
+        android:fontFamily="serif-monospace"
         android:drawableStart="@drawable/ic_folder_black_48dp"
-        android:fontFamily="monospace"
         android:maxLines="1" />
 
     <ImageButton

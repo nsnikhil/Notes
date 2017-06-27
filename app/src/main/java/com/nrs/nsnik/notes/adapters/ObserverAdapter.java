@@ -108,17 +108,25 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int pos = mFolderList.size()+2;
+        int tempPOS = position-1;
         switch (holder.getItemViewType()) {
             case FOLDER:
-                //bindFolderData(holder, position);
+                bindFolderData(holder, tempPOS);
                 break;
             case NOTES:
                 pos = position - pos;
-                //bindNotesData(holder, pos);
-                --pos;
+                Log.d(TAG, pos+"");
+                bindNotesData(holder, pos);
+                //--pos;
                 break;
             case HEADER:
-                //bindHeaderData(holder,position);
+                try {
+                    StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+                    layoutParams.setFullSpan(true);
+                }catch (ClassCastException e) {
+                    e.printStackTrace();
+                }
+                bindHeaderData(holder,position);
                 break;
         }
     }
@@ -126,9 +134,19 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void bindHeaderData(RecyclerView.ViewHolder holder, int position){
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
         if(position==0){
-            headerViewHolder.mItemHeader.setText("Folders");
+            if(mFolderList.size()>0) {
+                headerViewHolder.mItemHeader.setVisibility(View.VISIBLE);
+                headerViewHolder.mItemHeader.setText(mContext.getResources().getString(R.string.headingFolder));
+            }else {
+                headerViewHolder.mItemHeader.setVisibility(View.GONE);
+            }
         } else {
-            headerViewHolder.mItemHeader.setText("Notes");
+            if(mNotesList.size()>0) {
+                headerViewHolder.mItemHeader.setVisibility(View.VISIBLE);
+                headerViewHolder.mItemHeader.setText(mContext.getResources().getString(R.string.headingNotes));
+            }else {
+                headerViewHolder.mItemHeader.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -263,7 +281,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 shiftIds(fromPosition, toPosition, false);
             }
         }*/
-        notifyItemMoved(fromPosition, toPosition);
+        if(viewHolder.getItemViewType()==target.getItemViewType()) {
+            notifyItemMoved(fromPosition, toPosition);
+        }
+        //notifyItemMoved(fromPosition, toPosition);
     }
 
     private void shiftIds(int fromPosition, int toPosition, boolean isFolder) {
@@ -373,9 +394,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int pos = mFolderList.size();
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
-                    //intent.setData(Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mNoteIds.get(getAdapterPosition() - pos))));
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
                     mContext.startActivity(intent);
                 }
@@ -383,7 +402,6 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int pos = mFolderList.size();
                 }
             });
         }
