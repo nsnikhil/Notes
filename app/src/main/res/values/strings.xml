@@ -5,6 +5,7 @@
     <string name="title">Title</string>
     <string name="newNote">Note</string>
     <string name="addNote">Add Note</string>
+    <string name="editNote">Edit Note</string>
     <string name="createNote">New Note</string>
     <string name="createFolder">New Folder</string>
     <string name="yes">Yes</string>
@@ -84,10 +85,9 @@
     <!-- -->
 
     <!-- delete-->
-    <string name="deletealldialog">Are you sure you want to delete all folder and notes</string>
-    <string name="deletesingledialog">Are you sure you want to delete this note</string>
-    <string name="deleteFolderSingle">Are you sure you want to delete this folder, this will also delete all notes within this folder</string>
-    <string name="deletenotefailed">Error while deleting note</string>
+    <string name="deleteSingleNoteWarning">Are you sure you want to delete this note</string>
+    <string name="deleteSingleFolderWarning">Are you sure you want to delete this folder, this will also delete all notes within this folder</string>
+    <string name="deleteNoteFailed">Error while deleting note</string>
     <!-- -->
 
 

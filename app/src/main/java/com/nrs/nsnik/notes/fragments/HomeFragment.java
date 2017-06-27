@@ -43,7 +43,9 @@ import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
 import com.squareup.leakcanary.RefWatcher;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

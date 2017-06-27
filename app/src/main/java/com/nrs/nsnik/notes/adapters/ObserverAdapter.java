@@ -115,9 +115,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case NOTES:
                 pos = position - pos;
-                Log.d(TAG, pos+"");
                 bindNotesData(holder, pos);
-                //--pos;
                 break;
             case HEADER:
                 try {
@@ -218,10 +216,6 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    /*
-    adds item from notes table to
-     a list - @mNotesList
-     */
     private void makeNotesList(Cursor cursor) {
         mNotesList.clear();
         while (cursor != null && cursor.moveToNext()) {
@@ -230,8 +224,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 object = new FileOperation(mContext).readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            if (object != null && object.getFolderName().equalsIgnoreCase(mFolderName)) {
+            }if (object != null && object.getFolderName().equalsIgnoreCase(mFolderName)) {
                 mNotesList.add(object);
             }
         }
@@ -259,11 +252,9 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         if(position==0||position==mFolderList.size()+1){
             return HEADER;
-        }
-        else if (position > 0 && position <= mFolderList.size()) {
+        } else if (position > 0 && position <= mFolderList.size()) {
             return FOLDER;
-        }
-        else if (position > mFolderList.size()+1 && position < mNotesList.size()) {
+        } else if (position > mFolderList.size()+1 && position < mNotesList.size()) {
             return NOTES;
         }
         return super.getItemViewType(position);
@@ -271,33 +262,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onItemMove(int fromPosition, int toPosition, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        /*if (viewHolder.getItemViewType() == FOLDER) {
-            if(viewHolder.getItemViewType()==target.getItemViewType()) {
-                shiftIds(fromPosition, toPosition, true);
-            }
-        }
-        if (viewHolder.getItemViewType() == NOTES) {
-            if(viewHolder.getItemViewType()==target.getItemViewType()) {
-                shiftIds(fromPosition, toPosition, false);
-            }
-        }*/
         if(viewHolder.getItemViewType()==target.getItemViewType()) {
             notifyItemMoved(fromPosition, toPosition);
-        }
-        //notifyItemMoved(fromPosition, toPosition);
-    }
-
-    private void shiftIds(int fromPosition, int toPosition, boolean isFolder) {
-        if (isFolder) {
-            //mFolderIds.set(fromPosition, toPosition);
-            //mFolderIds.set(toPosition, fromPosition);
-        } else {
-            int tempFromPos = fromPosition - mFolderList.size();
-            int tempToPos = toPosition - mFolderList.size();
-            //int actFromPos = mNoteIds.get(tempFromPos);
-            //int actTosPos = mNoteIds.get(tempToPos);
-            //mNoteIds.set(tempFromPos, actTosPos);
-            //mNoteIds.set(tempToPos, actFromPos);
         }
     }
 
@@ -375,18 +341,12 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.singleNoteTitle)
-        TextView mNoteTitle;
-        @BindView(R.id.singleNoteContent)
-        TextView mNoteContent;
-        @BindView(R.id.singleNoteImage)
-        ImageView mNoteImage;
-        @BindView(R.id.singleNoteReminder)
-        ImageView mRemIndicator;
-        @BindView(R.id.singleNoteAudio)
-        ImageView mAudIndicator;
-        @BindView(R.id.singleNoteMore)
-        ImageButton mMore;
+        @BindView(R.id.singleNoteTitle) TextView mNoteTitle;
+        @BindView(R.id.singleNoteContent) TextView mNoteContent;
+        @BindView(R.id.singleNoteImage) ImageView mNoteImage;
+        @BindView(R.id.singleNoteReminder) ImageView mRemIndicator;
+        @BindView(R.id.singleNoteAudio) ImageView mAudIndicator;
+        @BindView(R.id.singleNoteMore) ImageButton mMore;
 
         public NoteViewHolder(final View itemView) {
             super(itemView);
@@ -394,9 +354,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, NewNoteActivity.class);
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
-                    mContext.startActivity(intent);
+                    Toast.makeText(mContext,"Bug",Toast.LENGTH_SHORT).show();
+                    //Intent intent = new Intent(mContext, NewNoteActivity.class);
+                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
+                    //mContext.startActivity(intent);
                 }
             });
             mMore.setOnClickListener(new View.OnClickListener() {
@@ -425,10 +386,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     class FolderViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.singleFolderName)
-        TextView mFolderName;
-        @BindView(R.id.singleFolderMore)
-        ImageButton mFolderMore;
+        @BindView(R.id.singleFolderName) TextView mFolderName;
+        @BindView(R.id.singleFolderMore) ImageButton mFolderMore;
 
         public FolderViewHolder(final View itemView) {
             super(itemView);
@@ -441,13 +400,15 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ContainerActivity.class);
                     intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderName.getText().toString());
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
+                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
                     mContext.startActivity(intent);
                 }
             });
             mFolderMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning),false,mFolderName.getText().toString()
+                            , Uri.withAppendedPath(TableNames.mFolderContentUri,mFolderName.getText().toString()),mFolderMore);
                 }
             });
         }
@@ -511,5 +472,4 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             itemView.setLayoutParams(new RecyclerView.LayoutParams(width, RecyclerView.LayoutParams.WRAP_CONTENT));
         }
     }
-
 }

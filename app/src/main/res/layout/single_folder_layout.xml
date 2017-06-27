@@ -24,7 +24,7 @@
         android:drawableStart="@drawable/ic_folder_black_48dp"
         android:maxLines="1" />
 
-    <ImageButton
+  <ImageButton
         android:contentDescription="@string/imageDescription"
         android:id="@+id/singleFolderMore"
         style="@style/wrapContent"

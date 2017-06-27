@@ -8,6 +8,5 @@
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:fontFamily">serif-monospace</item>
     </style>
 </resources>

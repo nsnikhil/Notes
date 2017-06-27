@@ -122,6 +122,9 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         if (getIntent().getData() != null) {
             mIntentUri = getIntent().getData();
             try {
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
+                }
                 setNote();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -130,12 +133,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         if (getIntent().getExtras() != null) {
             mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
         }
-        Object ONJ;
-        Object ON;
-        Object ON2J;
-        Object ON3;
-        Object ON4J;
-        Object ON6;
     }
 
     private void setNote() throws IOException {
@@ -187,7 +184,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         if (mIntentUri != null) {
             AlertDialog.Builder deleteDialog = new AlertDialog.Builder(NewNoteActivity.this);
             deleteDialog.setTitle(getResources().getString(R.string.warning));
-            deleteDialog.setMessage(getResources().getString(R.string.deletesingledialog));
+            deleteDialog.setMessage(getResources().getString(R.string.deleteSingleNoteWarning));
             deleteDialog.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -204,7 +201,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                         e.printStackTrace();
                     }int count = getContentResolver().delete(mIntentUri, null, null);
                     if (count == 0) {
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deletenotefailed), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteNoteFailed), Toast.LENGTH_SHORT).show();
                     } else {
                         finish();
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.delete), Toast.LENGTH_SHORT).show();
