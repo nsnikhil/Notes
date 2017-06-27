@@ -139,33 +139,6 @@ public class FileOperation {
         return object;
     }
 
-    private NoteObject getFile(final String fileName){
-        Single<NoteObject> objectSingle = Single.fromCallable(new Callable<NoteObject>() {
-            @Override
-            public NoteObject call() throws Exception {
-                return readFile(fileName);
-            }
-        });
-        objectSingle.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<NoteObject>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(@NonNull NoteObject object) {
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-
-                    }
-                });
-        return null;
-    }
-
 
     void deleteFile(Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);

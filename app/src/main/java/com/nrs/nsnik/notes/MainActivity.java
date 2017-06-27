@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.mainToolbar) Toolbar mMainToolbar;
     @BindView(R.id.mainDrawerLayout) DrawerLayout mDrawerLayout;
     @BindView(R.id.mainNaviagtionView) NavigationView mNavigationView;
+    @BindView(R.id.mainToolBarText)TextView mToolbarText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initialize() {
         setSupportActionBar(mMainToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        mToolbarText.setText(getResources().getString(R.string.app_name));
     }
 
     public void replaceFragment(Fragment fragment, String tag) {

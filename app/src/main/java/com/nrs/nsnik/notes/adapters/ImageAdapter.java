@@ -37,7 +37,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
@@ -66,12 +68,39 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(ImageAdapter.MyViewHolder holder, int position) {
-        /*GetImage image = new GetImage(holder);
-        if (mImageLoc != null) {
-            image.execute(mImageLoc.get(position));
-        }*/
-        //getImage(position,holder);
         setImage(position,holder);
+    }
+
+    private void testMethod(){
+        PublishSubject<Bitmap> subject = PublishSubject.create();
+        subject.subscribe(new Observer<Bitmap>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(@NonNull Bitmap bitmap) {
+
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+        Single.just(5).map(new Function<Integer, String>() {
+            @Override
+            public String apply(@NonNull Integer integer) throws Exception {
+                return null;
+            }
+        });
     }
 
     private void setImage(final int position, final ImageAdapter.MyViewHolder holder){
@@ -100,38 +129,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                         Log.d(TAG, e.getMessage());
                     }
                 });
-    }
-
-    private void getImage(final int position, final ImageAdapter.MyViewHolder holder){
-       Observable<Bitmap> observable = Observable.fromCallable(new Callable<Bitmap>() {
-           @Override
-           public Bitmap call() throws Exception {
-               return BitmapFactory.decodeFile(new File(mFolder,mImageLoc.get(position)).toString());
-           }
-       });
-        observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-        observable.subscribe(new Observer<Bitmap>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {
-                Log.d(TAG, d.toString());
-            }
-
-            @Override
-            public void onNext(@NonNull Bitmap bitmap) {
-                holder.image.setImageBitmap(bitmap);
-                holder.mProgress.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onError(@NonNull Throwable e) {
-                Log.d(TAG, e.getMessage());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
     }
 
     public void modifyList(ArrayList<String> imageLoc){

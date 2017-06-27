@@ -21,6 +21,7 @@ public class TableProvider extends ContentProvider {
     private static final int uAllNotes = 111;
     private static final int uSingleNote = 112;
     private static final int uAllFolderNote = 113;
+    private static final int uSingleFileNote = 114;
     private static final int uAllFolder = 213;
     private static final int uSingleFolder = 214;
     private static final int uAllSubFolder = 215;
@@ -31,6 +32,7 @@ public class TableProvider extends ContentProvider {
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName, uAllNotes);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/#", uSingleNote);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/*", uAllFolderNote);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/*", uSingleFileNote);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName, uAllFolder);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/#", uSingleFolder);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uSingleFolderName);
@@ -65,6 +67,13 @@ public class TableProvider extends ContentProvider {
                 String sp = uri.toString();
                 sp = sp.substring(sp.lastIndexOf('/') + 1);
                 selectionArgs = new String[]{sp};
+                c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case uSingleFileNote:
+                selection = table1.mFileName + " =?";
+                String sfl = uri.toString();
+                sfl = sfl.substring(sfl.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{sfl};
                 c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uAllFolder:

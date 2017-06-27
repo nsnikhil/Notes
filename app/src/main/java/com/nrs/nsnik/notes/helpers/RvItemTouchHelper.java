@@ -11,6 +11,7 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback{
 
     private ItemTouchListener mListener;
     private static final String TAG = RvItemTouchHelper.class.getSimpleName();
+    private static final int NOTES = 0, FOLDER = 1,HEADER = 2;
 
     public RvItemTouchHelper(ItemTouchListener listener){
         mListener = listener;
@@ -28,11 +29,15 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback{
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-        int swipeFlags = 0;
-        //int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        return makeMovementFlags(dragFlags, swipeFlags);
+        if(viewHolder.getItemViewType()==NOTES||viewHolder.getItemViewType()==FOLDER) {
+            int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            int swipeFlags = 0;
+            //int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+            return makeMovementFlags(dragFlags, swipeFlags);
+        }
+        return 0;
     }
+
 
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {

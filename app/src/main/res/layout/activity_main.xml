@@ -9,9 +9,24 @@
 
     <FrameLayout style="@style/matchParent">
 
-        <include
+        <!--<include
             android:id="@+id/mainToolbar"
-            layout="@layout/toolbar" />
+            layout="@layout/toolbar"/>-->
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/mainToolbar"
+            style="@style/toolbar">
+
+            <TextView
+                android:id="@+id/mainToolBarText"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:layout_gravity="center"
+                android:text="@string/app_name" />
+
+        </android.support.v7.widget.Toolbar>
 
         <FrameLayout
             android:id="@+id/mainContainer"

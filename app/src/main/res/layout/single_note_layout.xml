@@ -7,9 +7,9 @@
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
     android:transitionName="noteTitle"
-    card_view:cardCornerRadius="1dp"
-    card_view:cardElevation="2dp"
-    card_view:cardMaxElevation="4dp"
+    card_view:cardCornerRadius="2dp"
+    card_view:cardElevation="1dp"
+    card_view:cardMaxElevation="1dp"
     card_view:cardUseCompatPadding="true">
 
     <LinearLayout style="@style/verticalLinearLayout">
