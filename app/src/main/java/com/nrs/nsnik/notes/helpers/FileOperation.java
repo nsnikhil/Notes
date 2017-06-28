@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.data.TableHelper;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -239,6 +240,27 @@ public class FileOperation {
         mContext.getContentResolver().update(newFomUri,newFromContentValues,null,null);
         mContext.getContentResolver().update(newToUri,newToContentValues,null,null);
 
+    }
+
+    public int getId(Uri uri,int position){
+        int uid=-1;
+        Cursor tempCursor = mContext.getContentResolver().query(uri,null,null,null,null);
+        try {
+            if (tempCursor != null) {
+                for (int i = 0; i <tempCursor.getCount() ; i++) {
+                    if(i<=position&&tempCursor.moveToNext()) {
+                        uid = tempCursor.getInt(tempCursor.getColumnIndex(TableNames.table1.mUid));
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(tempCursor!=null){
+                tempCursor.close();
+            }
+        }
+        return uid;
     }
 
 }

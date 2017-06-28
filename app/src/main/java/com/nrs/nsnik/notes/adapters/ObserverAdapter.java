@@ -1,5 +1,6 @@
 package com.nrs.nsnik.notes.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nrs.nsnik.notes.ContainerActivity;
+import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.FolderDataObserver;
@@ -147,7 +150,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
-        folderViewHolder.mFolderName.setText(mFolderList.get(position));
+        folderViewHolder.mFolderNameText.setText(mFolderList.get(position));
     }
 
     private void bindNotesData(RecyclerView.ViewHolder holder, int position) {
@@ -267,39 +270,45 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onItemMoved(int fromPosition, int toPosition, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        int startPos = -100;
+        Uri getIdUri = null;
 
-        int startPos = mFolderList.size()+2;
+        if(viewHolder.getItemViewType()==NOTES){
+            startPos =  mFolderList.size()+2;
+            getIdUri =Uri.withAppendedPath(TableNames.mContentUri,mFolderName);
+        }if(viewHolder.getItemViewType()==FOLDER){
+            startPos = 1;
+            getIdUri =Uri.withAppendedPath(TableNames.mFolderContentUri,mFolderName);
+        }
 
         List<Integer> idList = new ArrayList<>();
-
         int fromPos = fromPosition-startPos;
         int toPos = toPosition-startPos;
-
         int tempFrom = fromPos;
         int tempTo = toPos;
-
         if(tempFrom>tempTo){
             while (tempFrom-tempTo>=0){
-                idList.add(getId(tempFrom));
+                idList.add(mFileOperations.getId(getIdUri,tempFrom));
                 --tempFrom;
             }
         }else {
             while (tempTo-tempFrom>=0){
-                idList.add(getId(tempFrom));
+                idList.add(mFileOperations.getId(getIdUri,tempFrom));
                 ++tempFrom;
             }
         }
-
         for (int i = 0; i < idList.size()-1; i++) {
-            //Log.d("swap", getId(fromPos)+"-"+idList.get(i+1));
-            mFileOperations.switchNoteId(getId(fromPos),idList.get(i+1));
+            if(viewHolder.getItemViewType()==NOTES) {
+                mFileOperations.switchNoteId(mFileOperations.getId(getIdUri, fromPos), idList.get(i + 1));
+            }if(viewHolder.getItemViewType()==FOLDER){
+                mFileOperations.switchFolderId(mFileOperations.getId(getIdUri, fromPos), idList.get(i + 1));
+            }
             if(fromPos>toPos) {
                 --fromPos;
             }else {
                 ++fromPos;
             }
         }
-
     }
 
     @Override
@@ -323,40 +332,23 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     int startPos = mFolderList.size()+2;
                     int currPos = getAdapterPosition()-startPos;
-                    getId(currPos);
-                    //Intent intent = new Intent(mContext, NewNoteActivity.class);
+                    Intent intent = new Intent(mContext, NewNoteActivity.class);
+                    intent.setData(Uri.withAppendedPath(TableNames.mContentUri,
+                            String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri,mFolderName),currPos))));
                     //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
-                    //mContext.startActivity(intent);
+                    mContext.startActivity(intent);
                 }
             });
             mMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    int startPos = mFolderList.size()+2;
+                    int currPos = getAdapterPosition()-startPos;
+                    Uri uri =  Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri,mFolderName),currPos)));
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning),false,"",uri,mMore);
                 }
             });
         }
-    }
-
-    private int getId(int position){
-        int uid=-1;
-        Cursor tempCursor = mContext.getContentResolver().query(Uri.withAppendedPath(TableNames.mContentUri,mFolderName),null,null,null,null);
-        try {
-            if (tempCursor != null) {
-                for (int i = 0; i <tempCursor.getCount() ; i++) {
-                    if(i<=position&&tempCursor.moveToNext()) {
-                        uid = tempCursor.getInt(tempCursor.getColumnIndex(TableNames.table1.mUid));
-                    }
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(tempCursor!=null){
-                tempCursor.close();
-            }
-        }
-        Log.d("idVal", uid+"");
-        return uid;
     }
 
     private int getRandom() {
@@ -377,20 +369,20 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     class FolderViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.singleFolderName) TextView mFolderName;
+        @BindView(R.id.singleFolderName) TextView mFolderNameText;
         @BindView(R.id.singleFolderMore) ImageButton mFolderMore;
 
         public FolderViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mFolderName.setCompoundDrawableTintList(stateList());
+                mFolderNameText.setCompoundDrawableTintList(stateList());
             }
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ContainerActivity.class);
-                    intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderName.getText().toString());
+                    intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderNameText.getText().toString());
                     //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
                     mContext.startActivity(intent);
                 }
@@ -398,15 +390,12 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mFolderMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning),false,mFolderName.getText().toString()
-                            , Uri.withAppendedPath(TableNames.mFolderContentUri,mFolderName.getText().toString()),mFolderMore);
-                }
-            });
-            itemView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                    return false;
+                    int startPos = 1;
+                    int currPos = getAdapterPosition()-startPos;
+                    Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri,mFolderName);
+                    int id = mFileOperations.getId(baseUri, currPos);
+                    Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(id));
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning),true,mFolderNameText.getText().toString(), uri,mFolderMore);
                 }
             });
         }

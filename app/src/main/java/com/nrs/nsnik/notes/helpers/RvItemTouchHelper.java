@@ -68,7 +68,7 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback{
         super.clearView(recyclerView, viewHolder);
         if(mDragFromList.size()>0){mDragFromPosition = getMax();}
         if(mDragToList.size()>0){mDragToPosition = getMin();}
-        if(viewHolder.getItemViewType()==NOTES&& mDragFromPosition!=-1&&mDragToPosition!=-1){
+        if(mDragFromPosition!=-1&&mDragToPosition!=-1){
             mListener.onItemMoved(mDragFromPosition,mDragToPosition,recyclerView,viewHolder);
         }
         mDragFromList.clear();
