@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import com.nrs.nsnik.notes.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.interfaces.SendSize;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.security.interfaces.RSAKey;
 import java.util.ArrayList;
@@ -55,5 +56,14 @@ public class ImageFullActivity extends AppCompatActivity implements SendSize{
     @Override
     public void validateSize(int position) {
         Log.d(TAG, String.valueOf(position));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(BuildConfig.DEBUG) {
+            RefWatcher refWatcher = MyApplication.getRefWatcher(this);
+            refWatcher.watch(this);
+        }
     }
 }

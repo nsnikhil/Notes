@@ -21,18 +21,23 @@ public class TableProvider extends ContentProvider {
     private static final int uAllNotes = 111;
     private static final int uSingleNote = 112;
     private static final int uAllFolderNote = 113;
+    private static final int uAllSearchNote = 114;
     private static final int uAllFolder = 213;
     private static final int uSingleFolder = 214;
     private static final int uAllSubFolder = 215;
     private static final int uSingleFolderName = 216;
+    private static final int uSearchFolderName = 217;
     static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName, uAllNotes);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/#", uSingleNote);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/search/*", uAllSearchNote);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/*", uAllFolderNote);
+
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName, uAllFolder);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/#", uSingleFolder);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/search/*", uSearchFolderName);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uSingleFolderName);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uAllSubFolder);
     }
@@ -48,6 +53,7 @@ public class TableProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Log.d(TAG, uri.toString());
         SQLiteDatabase sdb = tableHelper.getReadableDatabase();
         Cursor c;
         switch (sUriMatcher.match(uri)) {
@@ -66,6 +72,13 @@ public class TableProvider extends ContentProvider {
                 selectionArgs = new String[]{sp};
                 c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
+            case uAllSearchNote:
+                selection = table1.mTitle + " LIKE ?";
+                String srn = uri.toString();
+                srn = srn.substring(srn.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{srn+"%"};
+                c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
             case uAllFolder:
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -75,13 +88,23 @@ public class TableProvider extends ContentProvider {
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uSingleFolderName:
+                Log.d(TAG, "here1");
                 selection = table2.mFolderName + " =?";
                 String sk = uri.toString();
                 sk = sk.substring(sk.lastIndexOf('/') + 1);
                 selectionArgs = new String[]{sk};
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
+            case uSearchFolderName:
+                Log.d(TAG, "here2");
+                selection = table2.mFolderName + " LIKE ?";
+                String src = uri.toString();
+                src = src.substring(src.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{src+"%"};
+                c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
             case uAllSubFolder:
+                Log.d(TAG, "here3");
                 selection = table2.mParentFolderName + " =?";
                 String sf = uri.toString();
                 sf = sf.substring(sf.lastIndexOf('/') + 1);

@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.WindowManager;
 
+import com.squareup.leakcanary.RefWatcher;
+
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -20,5 +22,14 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }
         }, 1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(BuildConfig.DEBUG) {
+            RefWatcher refWatcher = MyApplication.getRefWatcher(this);
+            refWatcher.watch(this);
+        }
     }
 }

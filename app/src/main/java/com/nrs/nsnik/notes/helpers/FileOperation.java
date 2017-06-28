@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.data.TableHelper;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -19,19 +19,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.concurrent.Callable;
-
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class FileOperation {
 
     private Context mContext;
+    private static final String TAG = FileOperation.class.getSimpleName();
 
     public FileOperation(Context c) {
         mContext = c;
@@ -247,7 +240,7 @@ public class FileOperation {
         Cursor tempCursor = mContext.getContentResolver().query(uri,null,null,null,null);
         try {
             if (tempCursor != null) {
-                for (int i = 0; i <tempCursor.getCount() ; i++) {
+                for (int i = 0; i <=tempCursor.getCount() ; i++) {
                     if(i<=position&&tempCursor.moveToNext()) {
                         uid = tempCursor.getInt(tempCursor.getColumnIndex(TableNames.table1.mUid));
                     }

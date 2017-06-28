@@ -33,6 +33,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
@@ -89,8 +90,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
 
     private void initialize() {
         getArgs();
-        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mList.setLayoutManager(staggeredGridLayoutManager);
+        mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         ObserverAdapter adapter = new ObserverAdapter(getActivity(), TableNames.mContentUri, TableNames.mFolderContentUri
                 , this, this, getLoaderManager(), mFolderName);
         mList.setAdapter(adapter);
@@ -282,8 +282,10 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     public void onDestroy() {
         super.onDestroy();
         cleanUp();
-        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
-        refWatcher.watch(this);
+        if(BuildConfig.DEBUG) {
+            RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
+            refWatcher.watch(this);
+        }
     }
 
     private void setEmpty(){
