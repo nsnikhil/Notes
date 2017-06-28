@@ -1,7 +1,5 @@
 package com.nrs.nsnik.notes.adapters;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,31 +8,28 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nrs.nsnik.notes.ContainerActivity;
-import com.nrs.nsnik.notes.FileOperation;
-import com.nrs.nsnik.notes.NewNoteActivity;
+import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.FolderDataObserver;
 import com.nrs.nsnik.notes.data.NoteDataObserver;
@@ -72,6 +67,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private NotesCount mNotesCount;
     private FolderCount mFolderCount;
     private File mFolder;
+    FileOperation mFileOperations;
     private static final String[] colorArray = {"#D32F2F", "#C2185B", "#7B1FA2", "#512DA8", "#303F9F", "#1976D2", "#0288D1",
             "#0097A7", "#00796B", "#388E3C", "#689F38", "#AFB42B", "#FBC02D", "#FFA000", "#F57C00", "#E64A19"};
     private Random r = new Random();
@@ -86,6 +82,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mNotesCount = notesCount;
         mFolderCount = folderCount;
         mFolder =  mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        mFileOperations = new FileOperation(mContext);
         NoteDataObserver noteDataObserver = new NoteDataObserver(mContext, noteUri, manager);
         noteDataObserver.add(this);
         FolderDataObserver folderDataObserver = new FolderDataObserver(mContext, folderUri, manager);
@@ -269,6 +266,43 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
+    public void onItemMoved(int fromPosition, int toPosition, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+
+        int startPos = mFolderList.size()+2;
+
+        List<Integer> idList = new ArrayList<>();
+
+        int fromPos = fromPosition-startPos;
+        int toPos = toPosition-startPos;
+
+        int tempFrom = fromPos;
+        int tempTo = toPos;
+
+        if(tempFrom>tempTo){
+            while (tempFrom-tempTo>=0){
+                idList.add(getId(tempFrom));
+                --tempFrom;
+            }
+        }else {
+            while (tempTo-tempFrom>=0){
+                idList.add(getId(tempFrom));
+                ++tempFrom;
+            }
+        }
+
+        for (int i = 0; i < idList.size()-1; i++) {
+            //Log.d("swap", getId(fromPos)+"-"+idList.get(i+1));
+            mFileOperations.switchNoteId(getId(fromPos),idList.get(i+1));
+            if(fromPos>toPos) {
+                --fromPos;
+            }else {
+                ++fromPos;
+            }
+        }
+
+    }
+
+    @Override
     public void onItemDismiss(int position) {
         //notifyItemRemoved(position);
     }
@@ -287,7 +321,9 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext,"Bug",Toast.LENGTH_SHORT).show();
+                    int startPos = mFolderList.size()+2;
+                    int currPos = getAdapterPosition()-startPos;
+                    getId(currPos);
                     //Intent intent = new Intent(mContext, NewNoteActivity.class);
                     //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteTitle");
                     //mContext.startActivity(intent);
@@ -299,6 +335,28 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
         }
+    }
+
+    private int getId(int position){
+        int uid=-1;
+        Cursor tempCursor = mContext.getContentResolver().query(Uri.withAppendedPath(TableNames.mContentUri,mFolderName),null,null,null,null);
+        try {
+            if (tempCursor != null) {
+                for (int i = 0; i <tempCursor.getCount() ; i++) {
+                    if(i<=position&&tempCursor.moveToNext()) {
+                        uid = tempCursor.getInt(tempCursor.getColumnIndex(TableNames.table1.mUid));
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(tempCursor!=null){
+                tempCursor.close();
+            }
+        }
+        Log.d("idVal", uid+"");
+        return uid;
     }
 
     private int getRandom() {
@@ -342,6 +400,13 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning),false,mFolderName.getText().toString()
                             , Uri.withAppendedPath(TableNames.mFolderContentUri,mFolderName.getText().toString()),mFolderMore);
+                }
+            });
+            itemView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                    return false;
                 }
             });
         }

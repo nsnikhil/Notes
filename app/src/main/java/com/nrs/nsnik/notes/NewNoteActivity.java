@@ -30,7 +30,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,9 +44,9 @@ import android.widget.Toast;
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.nrs.nsnik.notes.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.data.TableNames.table1;
+import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 import com.nrs.nsnik.notes.objects.NoteObject;
-import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 import java.io.File;

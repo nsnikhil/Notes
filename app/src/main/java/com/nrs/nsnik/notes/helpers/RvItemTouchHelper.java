@@ -4,17 +4,27 @@ import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.util.SparseIntArray;
 
 import com.nrs.nsnik.notes.interfaces.ItemTouchListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RvItemTouchHelper extends ItemTouchHelper.Callback{
 
     private ItemTouchListener mListener;
     private static final String TAG = RvItemTouchHelper.class.getSimpleName();
     private static final int NOTES = 0, FOLDER = 1,HEADER = 2;
+    private int mDragFromPosition  = -1, mDragToPosition = -1;
+    private List<Integer> mDragFromList,mDragToList;
 
     public RvItemTouchHelper(ItemTouchListener listener){
         mListener = listener;
+        mDragFromList = new ArrayList<>();
+        mDragToList  = new ArrayList<>();
     }
 
     @Override
@@ -38,11 +48,53 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback{
         return 0;
     }
 
-
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+        //mDragFromPosition =  viewHolder.getAdapterPosition();
+        //mDragToPosition = target.getAdapterPosition();
+        mDragFromList.add(viewHolder.getAdapterPosition());
+        mDragToList.add(target.getAdapterPosition());
         mListener.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition(),viewHolder,target);
         return true;
+    }
+
+    @Override
+    public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+        super.onSelectedChanged(viewHolder, actionState);
+    }
+
+    @Override
+    public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        super.clearView(recyclerView, viewHolder);
+        if(mDragFromList.size()>0){mDragFromPosition = getMax();}
+        if(mDragToList.size()>0){mDragToPosition = getMin();}
+        if(viewHolder.getItemViewType()==NOTES&& mDragFromPosition!=-1&&mDragToPosition!=-1){
+            mListener.onItemMoved(mDragFromPosition,mDragToPosition,recyclerView,viewHolder);
+        }
+        mDragFromList.clear();
+        mDragToList.clear();
+        mDragFromPosition = -1;
+        mDragToPosition = -1;
+    }
+
+    private int getMax(){
+        int max = mDragFromList.get(0);
+        for (int i = 1; i < mDragFromList.size(); i++) {
+            if(max<mDragFromList.get(i)){
+                max = mDragFromList.get(i);
+            }
+        }
+        return max;
+    }
+
+    private int getMin(){
+        int min = mDragToList.get(0);
+        for (int i = 1; i < mDragToList.size(); i++) {
+            if(min>mDragToList.get(i)){
+                min = mDragToList.get(i);
+            }
+        }
+        return min;
     }
 
     @Override

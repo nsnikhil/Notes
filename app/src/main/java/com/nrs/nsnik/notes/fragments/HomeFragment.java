@@ -233,7 +233,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
         final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog,null);
         newFolder.setView(v);
-        final EditText editText = (EditText) v.findViewById(R.id.dialogFolderName);
+        final EditText editText = v.findViewById(R.id.dialogFolderName);
         editText.requestFocus();
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);

@@ -1,4 +1,4 @@
-package com.nrs.nsnik.notes;
+package com.nrs.nsnik.notes.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -35,7 +36,7 @@ public class FileOperation {
         mContext = c;
     }
 
-    void saveNote(String filename, NoteObject noteObject) throws IOException {
+    public void saveNote(String filename, NoteObject noteObject) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -58,7 +59,7 @@ public class FileOperation {
         insertInTable(filename, noteObject);
     }
 
-    void updateNote(String filename, NoteObject noteObject, Uri uri) throws IOException {
+    public void updateNote(String filename, NoteObject noteObject, Uri uri) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -105,7 +106,7 @@ public class FileOperation {
         }
     }
 
-    void saveImage(String filename, Bitmap image) throws IOException {
+    public void saveImage(String filename, Bitmap image) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         File f = new File(folder, filename);
         FileOutputStream fos = null;
@@ -140,7 +141,7 @@ public class FileOperation {
     }
 
 
-    void deleteFile(Uri uri) throws IOException {
+    public void deleteFile(Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
         if (c != null && c.moveToFirst()) {
             File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
@@ -169,6 +170,75 @@ public class FileOperation {
                 c.close();
             }
         }
+    }
+
+    public void switchNoteId(int fromId,int toId){
+        int tempFromId = 5647,tempToID  =5648;
+
+        //Change actual to temp
+
+        Uri fromUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(fromId));
+        Uri toUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(toId));
+
+        ContentValues fromContentValues = new ContentValues();
+        fromContentValues.put(table1.mUid,tempFromId);
+
+        ContentValues toContentValues = new ContentValues();
+        toContentValues.put(table1.mUid,tempToID);
+
+        mContext.getContentResolver().update(fromUri,fromContentValues,null,null);
+        mContext.getContentResolver().update(toUri,toContentValues,null,null);
+
+
+        //Change temp To Actual
+
+        Uri newFomUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempFromId));
+        Uri newToUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempToID));
+
+        ContentValues newFromContentValues = new ContentValues();
+        newFromContentValues.put(table1.mUid,toId);
+
+        ContentValues newToContentValues = new ContentValues();
+        newToContentValues.put(table1.mUid,fromId);
+
+        mContext.getContentResolver().update(newFomUri,newFromContentValues,null,null);
+        mContext.getContentResolver().update(newToUri,newToContentValues,null,null);
+
+    }
+
+
+    public void switchFolderId(int fromId,int toId){
+        int tempFromId = 6647,tempToID  =6648;
+
+        //Change actual to temp
+
+        Uri fromUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(fromId));
+        Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(toId));
+
+        ContentValues fromContentValues = new ContentValues();
+        fromContentValues.put(TableNames.table2.mUid,tempFromId);
+
+        ContentValues toContentValues = new ContentValues();
+        toContentValues.put(TableNames.table2.mUid,tempToID);
+
+        mContext.getContentResolver().update(fromUri,fromContentValues,null,null);
+        mContext.getContentResolver().update(toUri,toContentValues,null,null);
+
+
+        //Change temp To Actual
+
+        Uri newFomUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempFromId));
+        Uri newToUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempToID));
+
+        ContentValues newFromContentValues = new ContentValues();
+        newFromContentValues.put(TableNames.table2.mUid,toId);
+
+        ContentValues newToContentValues = new ContentValues();
+        newToContentValues.put(TableNames.table2.mUid,fromId);
+
+        mContext.getContentResolver().update(newFomUri,newFromContentValues,null,null);
+        mContext.getContentResolver().update(newToUri,newToContentValues,null,null);
+
     }
 
 }

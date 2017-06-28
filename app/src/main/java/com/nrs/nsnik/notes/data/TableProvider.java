@@ -48,7 +48,6 @@ public class TableProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(TAG, uri.toString());
         SQLiteDatabase sdb = tableHelper.getReadableDatabase();
         Cursor c;
         switch (sUriMatcher.match(uri)) {
