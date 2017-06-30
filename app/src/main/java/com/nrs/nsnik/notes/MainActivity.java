@@ -33,10 +33,14 @@ import io.fabric.sdk.android.Fabric;
 public class MainActivity extends AppCompatActivity {
 
     private static final String[] mFragTags = {"home", "starred", "recent"};
-    @BindView(R.id.mainToolbar) Toolbar mMainToolbar;
-    @BindView(R.id.mainDrawerLayout) DrawerLayout mDrawerLayout;
-    @BindView(R.id.mainNaviagtionView) NavigationView mNavigationView;
-    @BindView(R.id.mainToolBarText)TextView mToolbarText;
+    @BindView(R.id.mainToolbar)
+    Toolbar mMainToolbar;
+    @BindView(R.id.mainDrawerLayout)
+    DrawerLayout mDrawerLayout;
+    @BindView(R.id.mainNaviagtionView)
+    NavigationView mNavigationView;
+    @BindView(R.id.mainToolBarText)
+    TextView mToolbarText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,32 +51,30 @@ public class MainActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        addOnConnection();
+        initialize();
+        initializeDrawer();
+        getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
     }
 
-    private void addOnConnection(){
-        if(isConnected()){
-            initialize();
-            initializeDrawer();
-            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
-        }else {
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    private void addOnConnection() {
+        if (!isConnected()) {
             removeOffConnection();
         }
     }
 
-    private void removeOffConnection(){
-        Snackbar.make(mDrawerLayout,"No Internet",Snackbar.LENGTH_INDEFINITE).setAction("Retry", new View.OnClickListener() {
+    private void removeOffConnection() {
+        Snackbar.make(mDrawerLayout, "No Internet", Snackbar.LENGTH_INDEFINITE).setAction("Retry", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addOnConnection();
             }
         }).show();
-    }
-
-    private boolean isConnected(){
-        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     @Override
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuMainSearch:
-                startActivity(new Intent(MainActivity.this,SearchActivity.class));
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -169,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);
         }

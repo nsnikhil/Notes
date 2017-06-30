@@ -27,7 +27,7 @@ public class TableProvider extends ContentProvider {
     private static final int uAllSubFolder = 215;
     private static final int uSingleFolderName = 216;
     private static final int uSearchFolderName = 217;
-    static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName, uAllNotes);
@@ -42,7 +42,7 @@ public class TableProvider extends ContentProvider {
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uAllSubFolder);
     }
 
-    TableHelper tableHelper;
+    private TableHelper tableHelper;
 
     @Override
     public boolean onCreate() {
@@ -53,7 +53,6 @@ public class TableProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(TAG, uri.toString());
         SQLiteDatabase sdb = tableHelper.getReadableDatabase();
         Cursor c;
         switch (sUriMatcher.match(uri)) {
@@ -76,7 +75,7 @@ public class TableProvider extends ContentProvider {
                 selection = table1.mTitle + " LIKE ?";
                 String srn = uri.toString();
                 srn = srn.substring(srn.lastIndexOf('/') + 1);
-                selectionArgs = new String[]{srn+"%"};
+                selectionArgs = new String[]{srn + "%"};
                 c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uAllFolder:
@@ -100,7 +99,7 @@ public class TableProvider extends ContentProvider {
                 selection = table2.mFolderName + " LIKE ?";
                 String src = uri.toString();
                 src = src.substring(src.lastIndexOf('/') + 1);
-                selectionArgs = new String[]{src+"%"};
+                selectionArgs = new String[]{src + "%"};
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uAllSubFolder:
@@ -114,7 +113,10 @@ public class TableProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Invalid Uri " + uri);
         }
-        c.setNotificationUri(getContext().getContentResolver(), uri);
+
+        if (getContext() != null && getContext().getContentResolver() != null) {
+            c.setNotificationUri(getContext().getContentResolver(), uri);
+        }
         return c;
     }
 
@@ -143,7 +145,9 @@ public class TableProvider extends ContentProvider {
         if (id == -1) {
             return null;
         } else {
-            getContext().getContentResolver().notifyChange(u, null);
+            if (getContext() != null && getContext().getContentResolver() != null) {
+                getContext().getContentResolver().notifyChange(u, null);
+            }
             return Uri.withAppendedPath(u, String.valueOf(id));
         }
     }
@@ -190,7 +194,9 @@ public class TableProvider extends ContentProvider {
         SQLiteDatabase sdb = tableHelper.getWritableDatabase();
         int count = sdb.delete(tableName, sel, selArgs);
         if (count > 0) {
-            getContext().getContentResolver().notifyChange(Uri.withAppendedPath(u, String.valueOf(count)), null);
+            if (getContext() != null && getContext().getContentResolver() != null) {
+                getContext().getContentResolver().notifyChange(Uri.withAppendedPath(u, String.valueOf(count)), null);
+            }
             return count;
         } else {
             return 0;
@@ -241,7 +247,9 @@ public class TableProvider extends ContentProvider {
         if (count == 0) {
             return 0;
         } else {
-            getContext().getContentResolver().notifyChange(u, null);
+            if (getContext() != null && getContext().getContentResolver() != null) {
+                getContext().getContentResolver().notifyChange(u, null);
+            }
             return count;
         }
     }

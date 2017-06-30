@@ -16,16 +16,16 @@ import com.nrs.nsnik.notes.R;
 
 public class PageIndicator extends View {
 
-    Paint mPaint;
+    private Paint mPaint;
 
     public PageIndicator(Context context) {
         super(context);
     }
 
-    public PageIndicator(Context context, AttributeSet attributeSet){
+    public PageIndicator(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         TypedArray typedArray = getContext().obtainStyledAttributes(attributeSet, R.styleable.PageIndicator);
-        int count = typedArray.getInt(R.styleable.PageIndicator_piv_count,0);
+        int count = typedArray.getInt(R.styleable.PageIndicator_piv_count, 0);
         typedArray.recycle();
         mPaint = new Paint();
     }
@@ -36,15 +36,15 @@ public class PageIndicator extends View {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        setMeasuredDimension(widthSize,heightSize);
+        setMeasuredDimension(widthSize, heightSize);
     }
 
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int x = getWidth()/2;
-        int y = getHeight()/2;
+        int x = getWidth() / 2;
+        int y = getHeight() / 2;
         mPaint.setColor(Color.parseColor("#FFFFFFFF"));
-        canvas.drawCircle(x,y, y,mPaint);
+        canvas.drawCircle(x, y, y, mPaint);
     }
 }

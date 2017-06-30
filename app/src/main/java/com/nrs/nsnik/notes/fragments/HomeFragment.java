@@ -8,15 +8,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.nrs.nsnik.notes.BuildConfig;
@@ -44,30 +42,39 @@ import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.NotesCount;
 import com.squareup.leakcanary.RefWatcher;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class HomeFragment extends Fragment implements NotesCount,FolderCount{
+public class HomeFragment extends Fragment implements NotesCount, FolderCount {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
-    @BindView(R.id.commonList)RecyclerView mList;
-    @BindView(R.id.homeEmptyState) TextView mEmpty;
-    @BindView(R.id.fabAdd)FloatingActionButton mAddSpinner;
-    @BindView(R.id.fabAddNote)FloatingActionButton mAddNote;
-    @BindView(R.id.fabAddFolder)FloatingActionButton mAddFolder;
-    @BindView(R.id.fabNoteContainer)LinearLayout mNoteContainer;
-    @BindView(R.id.fabFolderContainer)LinearLayout mFolderContainer;
-    @BindView(R.id.commonListSwipe)SwipeRefreshLayout mSwipeRefresh;
-    @BindView(R.id.homeAdView)AdView mAdView;
+    @BindView(R.id.commonList)
+    RecyclerView mList;
+    @BindView(R.id.homeEmptyState)
+    TextView mEmpty;
+    @BindView(R.id.fabAdd)
+    FloatingActionButton mAddSpinner;
+    @BindView(R.id.fabAddNote)
+    FloatingActionButton mAddNote;
+    @BindView(R.id.fabAddFolder)
+    FloatingActionButton mAddFolder;
+    @BindView(R.id.fabNoteContainer)
+    LinearLayout mNoteContainer;
+    @BindView(R.id.fabFolderContainer)
+    LinearLayout mFolderContainer;
+    @BindView(R.id.commonListSwipe)
+    SwipeRefreshLayout mSwipeRefresh;
+    @BindView(R.id.homeAdView)
+    AdView mAdView;
+    @BindView(R.id.homeContainer)
+    CoordinatorLayout mHomeContainer;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
-    private int mNotesCount,mFolderCount;
+    private int mNotesCount, mFolderCount;
 
     public HomeFragment() {
     }
@@ -97,8 +104,10 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         ItemTouchHelper.Callback callback = new RvItemTouchHelper(adapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mList);
-        //AdRequest adRequest = new AdRequest.Builder().build();
-        //mAdView.loadAd(adRequest);
+        if (!BuildConfig.DEBUG) {
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }
     }
 
 
@@ -106,10 +115,9 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         mAddSpinner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mNoteContainer.getVisibility()==View.INVISIBLE
-                        ||mFolderContainer.getVisibility()==View.INVISIBLE){
+                if (mNoteContainer.getVisibility() == View.INVISIBLE || mFolderContainer.getVisibility() == View.INVISIBLE) {
                     reveal();
-                }else {
+                } else {
                     disappear();
                 }
             }
@@ -119,7 +127,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
             public void onClick(View v) {
                 disappear();
                 Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
-                newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle),mFolderName);
+                newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle), mFolderName);
                 startActivity(newNote);
             }
         });
@@ -138,24 +146,26 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
                     public void run() {
                         mSwipeRefresh.setRefreshing(false);
                     }
-                },1000);
+                }, 1000);
 
             }
         });
     }
 
 
-    private void reveal(){
+    private void reveal() {
         RotateAnimation rotateAnimation = new RotateAnimation(0, 135, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(50);
         rotateAnimation.setFillAfter(true);
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
-            Animation scaleUp = AnimationUtils.loadAnimation(getActivity(),R.anim.jump_from_down);
+            Animation scaleUp = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_from_down);
+
             @Override
             public void onAnimationStart(Animation animation) {
 
             }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 scaleUp.setAnimationListener(new Animation.AnimationListener() {
@@ -178,6 +188,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
                 mFolderContainer.startAnimation(scaleUp);
                 mNoteContainer.startAnimation(scaleUp);
             }
+
             @Override
             public void onAnimationRepeat(Animation animation) {
 
@@ -186,13 +197,14 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
         mAddSpinner.startAnimation(rotateAnimation);
     }
 
-    private void disappear(){
+    private void disappear() {
         RotateAnimation rotateAnimation = new RotateAnimation(135, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(50);
         rotateAnimation.setFillAfter(true);
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
-            Animation scaleDown = AnimationUtils.loadAnimation(getActivity(),R.anim.jump_to_down);
+            Animation scaleDown = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_to_down);
+
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -231,7 +243,7 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
 
     private void createFolderDialog() {
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
-        final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog,null);
+        final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog, null);
         newFolder.setView(v);
         final EditText editText = v.findViewById(R.id.dialogFolderName);
         editText.requestFocus();
@@ -274,24 +286,19 @@ public class HomeFragment extends Fragment implements NotesCount,FolderCount{
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         cleanUp();
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
             refWatcher.watch(this);
         }
     }
 
-    private void setEmpty(){
-        if(mNotesCount==0&&mFolderCount==0){
+    private void setEmpty() {
+        if (mNotesCount == 0 && mFolderCount == 0) {
             mEmpty.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             mEmpty.setVisibility(View.GONE);
         }
     }

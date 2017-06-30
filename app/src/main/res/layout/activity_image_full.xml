@@ -8,7 +8,7 @@
     <include
         android:id="@+id/fullImage"
         style="@style/matchParent"
-        android:transitionName="fullImage"
-        layout="@layout/recycler_view" />
+        layout="@layout/recycler_view"
+        android:transitionName="fullImage" />
 
 </FrameLayout>

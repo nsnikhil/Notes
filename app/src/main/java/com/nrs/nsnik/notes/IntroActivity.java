@@ -1,7 +1,7 @@
 package com.nrs.nsnik.notes;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.squareup.leakcanary.RefWatcher;
 
@@ -16,7 +16,7 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);
         }

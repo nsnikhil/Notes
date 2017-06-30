@@ -7,9 +7,9 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class NoteObject implements Serializable ,Parcelable{
+public class NoteObject implements Serializable, Parcelable {
 
-    private String title,note,audioLocation,folderName;
+    private String title, note, audioLocation, folderName;
     private ArrayList<String> images;
     private int reminder;
 
@@ -17,7 +17,7 @@ public class NoteObject implements Serializable ,Parcelable{
     TODO REPLACE WITH AUTO VALUE
      */
 
-    public NoteObject(String title,String note,ArrayList<String> images,String audioLocation,int reminder,String folderName){
+    public NoteObject(String title, String note, ArrayList<String> images, String audioLocation, int reminder, String folderName) {
         this.note = note;
         this.title = title;
         this.images = images;

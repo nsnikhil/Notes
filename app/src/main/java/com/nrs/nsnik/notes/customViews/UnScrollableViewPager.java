@@ -5,13 +5,13 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-public class UnScrollableViewPager extends ViewPager{
+public class UnScrollableViewPager extends ViewPager {
 
     public UnScrollableViewPager(Context context) {
         super(context);
     }
 
-    public UnScrollableViewPager (Context context, AttributeSet attrs) {
+    public UnScrollableViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

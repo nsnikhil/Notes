@@ -5,19 +5,19 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_gravity="end"
         android:id="@+id/fabFolderContainer"
-        android:visibility="invisible"
         style="@style/wrapContent"
-        android:orientation="horizontal">
+        android:layout_gravity="end"
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <TextView
             style="@style/wrapContent"
-            android:background="@color/cardview_dark_background"
-            android:textColor="@color/cardview_light_background"
-            android:padding="4dp"
             android:layout_gravity="center_vertical"
+            android:background="@color/cardview_dark_background"
+            android:padding="4dp"
             android:text="@string/createFolder"
+            android:textColor="@color/cardview_light_background"
             android:textSize="16sp" />
 
         <android.support.design.widget.FloatingActionButton
@@ -31,19 +31,19 @@
     </LinearLayout>
 
     <LinearLayout
-        style="@style/wrapContent"
         android:id="@+id/fabNoteContainer"
-        android:visibility="invisible"
+        style="@style/wrapContent"
         android:layout_gravity="end"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <TextView
             style="@style/wrapContent"
-            android:background="@color/cardview_dark_background"
-            android:textColor="@color/cardview_light_background"
-            android:padding="4dp"
             android:layout_gravity="center_vertical"
+            android:background="@color/cardview_dark_background"
+            android:padding="4dp"
             android:text="@string/createNote"
+            android:textColor="@color/cardview_light_background"
             android:textSize="16sp" />
 
         <android.support.design.widget.FloatingActionButton

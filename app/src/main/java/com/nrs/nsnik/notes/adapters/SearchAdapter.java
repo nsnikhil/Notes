@@ -40,13 +40,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        if(mSearchList.get(position).ismIsFolder()){
-            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48dp,0,0,0);
+        if (mSearchList.get(position).ismIsFolder()) {
+            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48dp, 0, 0, 0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 holder.mSearchName.setCompoundDrawableTintList(stateList());
             }
-        }else {
-            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48dp,0,0,0);
+        } else {
+            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48dp, 0, 0, 0);
             holder.mSearchName.setCompoundDrawableTintList(stateList());
         }
         holder.mSearchName.setText(mSearchList.get(position).getmName());
@@ -60,7 +60,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
                 new int[]{-android.R.attr.state_checked},
                 new int[]{android.R.attr.state_pressed}
         };
-        int color = ContextCompat.getColor(mContext,R.color.grey);
+        int color = ContextCompat.getColor(mContext, R.color.grey);
         int[] colors = new int[]{color, color, color, color};
         return new ColorStateList(states, colors);
     }
@@ -79,13 +79,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.searchItemName)
         TextView mSearchName;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext,"TO-DO",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
                 }
             });
         }

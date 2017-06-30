@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.nrs.nsnik.notes.data.TableNames.table1;
 
-public class TableHelper extends SQLiteOpenHelper {
+class TableHelper extends SQLiteOpenHelper {
 
     private static final String mCreateTable = "CREATE TABLE IF NOT EXISTS " + TableNames.mTableName + " ("
             + table1.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "

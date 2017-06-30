@@ -6,7 +6,7 @@ import android.content.Context;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
-public class MyApplication extends Application{
+public class MyApplication extends Application {
 
     private RefWatcher refWatcher;
 
@@ -21,6 +21,8 @@ public class MyApplication extends Application{
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
-        if(BuildConfig.DEBUG){refWatcher = LeakCanary.install(this);}
+        if (BuildConfig.DEBUG) {
+            refWatcher = LeakCanary.install(this);
+        }
     }
 }

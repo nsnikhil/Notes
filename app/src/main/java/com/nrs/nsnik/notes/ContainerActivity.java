@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.nrs.nsnik.notes.fragments.HomeFragment;
-import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.BindView;
@@ -34,13 +33,17 @@ public class ContainerActivity extends AppCompatActivity {
 
     private void initialize() {
         setSupportActionBar(mContainerToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setFolderValues() {
         if (getIntent() != null && getIntent().getExtras() != null) {
             String folderName = getIntent().getExtras().getString(getResources().getString(R.string.intentFolderName));
-            getSupportActionBar().setTitle(folderName);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(folderName);
+            }
             HomeFragment homeFragment = new HomeFragment();
             Bundle args = new Bundle();
             args.putString(getResources().getString(R.string.homefldnm), folderName);
@@ -55,7 +58,7 @@ public class ContainerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);
         }

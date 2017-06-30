@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/verticalLinearLayout"
     tools:context="com.nrs.nsnik.notes.SearchActivity">
@@ -9,14 +9,15 @@
         style="@style/toolbar">
 
         <EditText
-            style="@style/matchParent"
             android:id="@+id/searchText"
-            android:imeOptions="actionSearch"
-            android:maxLines="1"
-            android:inputType="textAutoComplete"
+            style="@style/matchParent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="9"
             android:background="@android:color/transparent"
-            android:hint="@string/searchHint"/>
-
+            android:hint="@string/searchHint"
+            android:imeOptions="actionSearch"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1" />
 
     </android.support.v7.widget.Toolbar>
 
@@ -29,10 +30,10 @@
         android:visibility="gone" />
 
     <include
+        android:id="@+id/searchList"
+        layout="@layout/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/searchList"
-        android:layout_marginTop="?attr/actionBarSize"
-        layout="@layout/recycler_view" />
+        android:layout_marginTop="?attr/actionBarSize" />
 
-</FrameLayout>
+</merge>

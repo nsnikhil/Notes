@@ -4,9 +4,8 @@
     android:clipToPadding="false">
 
     <ProgressBar
-        style="@style/progressBar"
-        android:id="@+id/singleImageProgress"/>
-
+        android:id="@+id/singleImageProgress"
+        style="@style/progressBar" />
 
     <ImageView
         android:id="@+id/singleImage"
@@ -16,14 +15,14 @@
         android:scaleType="centerCrop" />
 
     <ImageView
-        android:contentDescription="@string/imageDescription"
         android:id="@+id/singleImageCancel"
-        android:background="@drawable/circle"
-        android:transitionName="fullImage"
-        android:src="@drawable/ic_cancel_black_48dp"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="end"
-        android:layout_margin="@dimen/eight" />
+        android:layout_margin="@dimen/eight"
+        android:background="@drawable/circle"
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/ic_cancel_black_48dp"
+        android:transitionName="fullImage" />
 
 </FrameLayout>

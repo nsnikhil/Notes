@@ -25,9 +25,9 @@
         <TextView
             android:id="@+id/singleNoteTitle"
             style="@style/newNoteHeading"
-            android:textStyle="bold"
             android:fontFamily="serif-monospace"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/singleNoteContent"
@@ -46,29 +46,29 @@
                 android:id="@+id/singleNoteReminder"
                 style="@style/small"
                 android:contentDescription="@string/imageDescription"
-                android:tint="@color/colorAccent"
                 android:src="@drawable/ic_timer_black_24dp"
+                android:tint="@color/colorAccent"
                 android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/singleNoteAudio"
                 style="@style/small"
                 android:contentDescription="@string/imageDescription"
-                android:tint="@color/colorAccent"
                 android:src="@drawable/ic_audiotrack_black_24dp"
+                android:tint="@color/colorAccent"
                 android:visibility="gone" />
 
         </LinearLayout>
 
         <ImageButton
-            android:contentDescription="@string/imageDescription"
             android:id="@+id/singleNoteMore"
             style="@style/wrapContent"
-            android:padding="@dimen/eight"
-            android:tint="#999999"
+            android:layout_gravity="end|center_vertical"
             android:background="@android:color/transparent"
+            android:contentDescription="@string/imageDescription"
+            android:padding="@dimen/eight"
             android:src="@drawable/ic_more_vert_black_24dp"
-            android:layout_gravity="end|center_vertical"/>
+            android:tint="#999999" />
 
     </LinearLayout>
 

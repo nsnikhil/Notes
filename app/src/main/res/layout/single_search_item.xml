@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/stretchedHorizontally"
+    android:layout_height="?attr/listPreferredItemHeight"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true"
-    android:layout_height="?attr/listPreferredItemHeight">
+    android:focusable="true">
 
     <TextView
-        android:padding="@dimen/eight"
-        android:layout_gravity="center_vertical"
-        android:textSize="20sp"
-        android:drawableStart="@drawable/ic_folder_black_48dp"
-        android:drawablePadding="@dimen/eight"
-        android:gravity="center_vertical"
         android:id="@+id/searchItemName"
+        style="@style/matchParent"
+        android:layout_gravity="center_vertical"
+        android:drawablePadding="@dimen/eight"
+        android:drawableStart="@drawable/ic_folder_black_48dp"
         android:fontFamily="serif-monospace"
-        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:padding="@dimen/eight"
         android:text="@string/app_name"
-        style="@style/matchParent" />
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 </FrameLayout>

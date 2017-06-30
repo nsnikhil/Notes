@@ -5,8 +5,9 @@
     style="@style/matchParent"
     tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
 
-    <android.support.v4.widget.SwipeRefreshLayout style="@style/matchParent"
-        android:id="@+id/commonListSwipe">
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/commonListSwipe"
+        style="@style/matchParent">
 
         <include
             android:id="@+id/commonList"

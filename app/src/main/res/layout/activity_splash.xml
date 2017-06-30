@@ -6,13 +6,13 @@
     tools:context="com.nrs.nsnik.notes.SplashActivity">
 
     <ImageView
-        android:contentDescription="@string/imageDescription"
         style="@style/errorImage"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/imageDescription"
         android:src="@drawable/splash_logo"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

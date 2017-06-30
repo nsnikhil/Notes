@@ -2,44 +2,31 @@ package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.nrs.nsnik.notes.ImageFullActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
@@ -51,12 +38,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private SendSize mSize;
     private boolean mFullScreen;
 
-    public ImageAdapter(Activity c, ArrayList<String> imageLocations, SendSize sz,boolean forFullScreen) {
+    public ImageAdapter(Activity c, ArrayList<String> imageLocations, SendSize sz, boolean forFullScreen) {
         mContext = c;
-        mImageLoc  = imageLocations;
+        mImageLoc = imageLocations;
         mSize = sz;
         mFullScreen = forFullScreen;
-        mFolder =  mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        mFolder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
     }
 
     @Override
@@ -66,39 +53,28 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ImageAdapter.MyViewHolder holder, int position) {
-        setImage(position,holder);
-    }
-
-    private void setImage(final int position, final ImageAdapter.MyViewHolder holder){
-        Single<Bitmap>  singleObservable = Single.fromCallable(new Callable<Bitmap>() {
-            @Override
-            public Bitmap call() throws Exception {
-                return BitmapFactory.decodeFile(new File(mFolder,mImageLoc.get(position)).toString());
-            }
-        });
-        singleObservable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Bitmap>() {
+    public void onBindViewHolder(final ImageAdapter.MyViewHolder holder, int position) {
+        Glide.with(mContext)
+                .load(new File(mFolder, mImageLoc.get(position)).toString())
+                .listener(new RequestListener<Drawable>() {
                     @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        Log.d(TAG, d.toString());
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
                     }
 
                     @Override
-                    public void onSuccess(@NonNull Bitmap bitmap) {
-                        holder.image.setImageBitmap(bitmap);
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        holder.image.setVisibility(View.VISIBLE);
                         holder.mProgress.setVisibility(View.GONE);
+                        return false;
                     }
+                })
+                .into(holder.image);
 
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.d(TAG, e.getMessage());
-                    }
-                });
+
     }
 
-    public void modifyList(ArrayList<String> imageLoc){
+    public void modifyList(ArrayList<String> imageLoc) {
         mImageLoc = imageLoc;
         notifyDataSetChanged();
     }
@@ -108,20 +84,24 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         if (mImageLoc != null) {
             return mImageLoc.size();
         }
-      return 0;
+        return 0;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.singleImage) ImageView image;
-        @BindView(R.id.singleImageCancel) ImageView remove;
-        @BindView(R.id.singleImageProgress)ProgressBar mProgress;
+        @BindView(R.id.singleImage)
+        ImageView image;
+        @BindView(R.id.singleImageCancel)
+        ImageView remove;
+        @BindView(R.id.singleImageProgress)
+        ProgressBar mProgress;
+
         public MyViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            if(mFullScreen){
+            if (mFullScreen) {
                 remove.setVisibility(View.GONE);
                 image.setScaleType(ImageView.ScaleType.CENTER);
-            }else {
+            } else {
                 remove.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -140,7 +120,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                         bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
                         fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, itemView, "fullImage");
-                        mContext.startActivity(fullScreen);
+                        mContext.startActivity(fullScreen, options.toBundle());
                     }
                 });
             }

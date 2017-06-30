@@ -14,7 +14,6 @@
     <string name="folderName">notes</string>
     <string name="newfoldername">Folder Name</string>
     <string name="cancel">Cancel</string>
-    <string name="ok">OK</string>
     <string name="create">Create</string>
     <string name="serach">Search</string>
     <string name="searchHint">Search folder and notes…</string>
@@ -23,7 +22,6 @@
     <string name="emptyState">No Notes found here…</string>
     <string name="headingNotes">Notes</string>
     <string name="headingFolder">Folders</string>"
-
 
 
     <!-- navigationMenu-->
@@ -39,11 +37,8 @@
 
     <!-- bundle-->
     <string name="homefldnm">hmfldnm</string>
-    <string name="foldernamebundle">foldbund</string>
-    <string name="sunFldName">sbflbnm</string>
     <string name="newnotefolderbundle">newntbd</string>
     <string name="bundleStringImageArray">bundImgArr</string>
-    <string name="bundleImagePosition">bundimgpos</string>
     <string name="bundleIntentImage">bndImgs</string>
     <string name="bundleArrayListPosition">intImgPos</string>
     <!-- -->
@@ -51,7 +46,6 @@
     <!-- menuStrings-->
     <string name="save">Save</string>
     <string name="delete">Delete</string>
-    <string name="deleteall">Delete All</string>
     <!-- -->
 
     <!-- folder-->
@@ -101,8 +95,9 @@
     <string name="adAdUnitId">ca-app-pub-7505114900190126/9104286220</string>
     <!-- -->
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- notificationChannels-->
+    <string name="notificationChannelReminder">notiChnRmder</string>
+    <!-- -->
 
 
 </resources>

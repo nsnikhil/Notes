@@ -2,14 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_new_note"
-    android:transitionName="noteTitle"
-    style="@style/verticalLinearLayout">
+    style="@style/verticalLinearLayout"
+    android:transitionName="noteTitle">
 
     <include
         android:id="@+id/newNoteToolbar"
         layout="@layout/toolbar" />
 
-    <ScrollView style="@style/matchParent"
+    <ScrollView
+        style="@style/matchParent"
         android:layout_below="@id/newNoteToolbar">
 
         <RelativeLayout style="@style/matchParent">
@@ -54,21 +55,21 @@
 
 
             <EditText
-                android:labelFor="@+id/newNoteTitle"
                 android:id="@+id/newNoteTitle"
                 style="@style/newNoteHeading"
                 android:layout_below="@id/newNoteAudioContainer"
                 android:background="@android:color/transparent"
+                android:labelFor="@+id/newNoteTitle"
                 android:maxLines="1"
                 android:padding="@dimen/sixteen"
                 android:textSize="24sp" />
 
             <EditText
-                android:labelFor="@+id/newNoteContent"
                 android:id="@+id/newNoteContent"
                 style="@style/newNoteContent"
                 android:layout_below="@id/newNoteTitle"
                 android:inputType="textMultiLine"
+                android:labelFor="@+id/newNoteContent"
                 android:lineSpacingExtra="10dp" />
 
         </RelativeLayout>
@@ -99,7 +100,7 @@
                 android:id="@+id/fabtoolbar_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_attach_file_white_48dp"
+                android:src="@drawable/ic_attach_file_black_48dp"
                 app:borderWidth="0dp"
                 app:fabSize="normal" />
 
@@ -120,8 +121,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
-                android:tint="@color/colorAccent"
-                android:src="@drawable/ic_add_a_photo_black_24dp" />
+                android:src="@drawable/ic_add_a_photo_black_24dp"
+                android:tint="@color/colorAccent" />
 
             <ImageView
                 android:id="@+id/newNoteChoosePicture"
@@ -130,8 +131,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
-                android:tint="@color/colorAccent"
-                android:src="@drawable/ic_add_to_photos_black_24dp" />
+                android:src="@drawable/ic_add_to_photos_black_24dp"
+                android:tint="@color/colorAccent" />
 
             <ImageView
                 android:id="@+id/newNoteAddAudio"
@@ -140,8 +141,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
                 android:scaleType="centerInside"
-                android:tint="@color/colorAccent"
-                android:src="@drawable/ic_audiotrack_black_24dp" />
+                android:src="@drawable/ic_audiotrack_black_24dp"
+                android:tint="@color/colorAccent" />
 
             <ImageView
                 android:id="@+id/newNoteSetReminder"
@@ -149,9 +150,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/imageDescription"
-                android:tint="@color/colorAccent"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_timer_black_24dp" />
+                android:src="@drawable/ic_timer_black_24dp"
+                android:tint="@color/colorAccent" />
 
         </LinearLayout>
 

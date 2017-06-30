@@ -13,13 +13,13 @@
 
     <ImageButton
         android:id="@+id/itemHeaderMore"
-        android:visibility="gone"
-        android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_arrow_drop_up_black_48dp"
+        style="@style/twentyFour"
         android:layout_gravity="end|center_vertical"
         android:layout_margin="@dimen/sixteen"
-        android:tint="#999999"
         android:background="@android:color/transparent"
-        style="@style/twentyFour" />
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/ic_arrow_drop_up_black_48dp"
+        android:tint="#999999"
+        android:visibility="gone" />
 
 </FrameLayout>

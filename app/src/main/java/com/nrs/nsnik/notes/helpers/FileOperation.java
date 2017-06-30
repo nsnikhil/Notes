@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Random;
 
 
 public class FileOperation {
@@ -127,9 +128,13 @@ public class FileOperation {
             object = (NoteObject) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        }finally {
-            if(fis!=null){fis.close();}
-            if(ois!=null){ois.close();}
+        } finally {
+            if (fis != null) {
+                fis.close();
+            }
+            if (ois != null) {
+                ois.close();
+            }
         }
         return object;
     }
@@ -142,16 +147,23 @@ public class FileOperation {
             File f = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
             FileInputStream fis = null;
             ObjectInputStream ois = null;
+            boolean isDeleted;
             try {
                 fis = new FileInputStream(f);
                 ois = new ObjectInputStream(fis);
                 NoteObject obj = (NoteObject) ois.readObject();
                 for (int i = 0; i < obj.getImages().size(); i++) {
                     File path = new File(folder, obj.getImages().get(i));
-                    path.delete();
+                    isDeleted = path.delete();
+                    if (!isDeleted) {
+                        Log.d(TAG, "Error while deleting " + path.toString());
+                    }
                 }
                 File file = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
-                file.delete();
+                isDeleted = file.delete();
+                if (!isDeleted) {
+                    Log.d(TAG, "Error while deleting " + file.toString());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -166,8 +178,8 @@ public class FileOperation {
         }
     }
 
-    public void switchNoteId(int fromId,int toId){
-        int tempFromId = 5647,tempToID  =5648;
+    public void switchNoteId(int fromId, int toId) {
+        int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
 
         //Change actual to temp
 
@@ -175,13 +187,13 @@ public class FileOperation {
         Uri toUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(toId));
 
         ContentValues fromContentValues = new ContentValues();
-        fromContentValues.put(table1.mUid,tempFromId);
+        fromContentValues.put(table1.mUid, tempFromId);
 
         ContentValues toContentValues = new ContentValues();
-        toContentValues.put(table1.mUid,tempToID);
+        toContentValues.put(table1.mUid, tempToID);
 
-        mContext.getContentResolver().update(fromUri,fromContentValues,null,null);
-        mContext.getContentResolver().update(toUri,toContentValues,null,null);
+        mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
+        mContext.getContentResolver().update(toUri, toContentValues, null, null);
 
 
         //Change temp To Actual
@@ -190,19 +202,19 @@ public class FileOperation {
         Uri newToUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempToID));
 
         ContentValues newFromContentValues = new ContentValues();
-        newFromContentValues.put(table1.mUid,toId);
+        newFromContentValues.put(table1.mUid, toId);
 
         ContentValues newToContentValues = new ContentValues();
-        newToContentValues.put(table1.mUid,fromId);
+        newToContentValues.put(table1.mUid, fromId);
 
-        mContext.getContentResolver().update(newFomUri,newFromContentValues,null,null);
-        mContext.getContentResolver().update(newToUri,newToContentValues,null,null);
+        mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
+        mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
 
     }
 
 
-    public void switchFolderId(int fromId,int toId){
-        int tempFromId = 6647,tempToID  =6648;
+    public void switchFolderId(int fromId, int toId) {
+        int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
 
         //Change actual to temp
 
@@ -210,13 +222,13 @@ public class FileOperation {
         Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(toId));
 
         ContentValues fromContentValues = new ContentValues();
-        fromContentValues.put(TableNames.table2.mUid,tempFromId);
+        fromContentValues.put(TableNames.table2.mUid, tempFromId);
 
         ContentValues toContentValues = new ContentValues();
-        toContentValues.put(TableNames.table2.mUid,tempToID);
+        toContentValues.put(TableNames.table2.mUid, tempToID);
 
-        mContext.getContentResolver().update(fromUri,fromContentValues,null,null);
-        mContext.getContentResolver().update(toUri,toContentValues,null,null);
+        mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
+        mContext.getContentResolver().update(toUri, toContentValues, null, null);
 
 
         //Change temp To Actual
@@ -225,35 +237,41 @@ public class FileOperation {
         Uri newToUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempToID));
 
         ContentValues newFromContentValues = new ContentValues();
-        newFromContentValues.put(TableNames.table2.mUid,toId);
+        newFromContentValues.put(TableNames.table2.mUid, toId);
 
         ContentValues newToContentValues = new ContentValues();
-        newToContentValues.put(TableNames.table2.mUid,fromId);
+        newToContentValues.put(TableNames.table2.mUid, fromId);
 
-        mContext.getContentResolver().update(newFomUri,newFromContentValues,null,null);
-        mContext.getContentResolver().update(newToUri,newToContentValues,null,null);
+        mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
+        mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
 
     }
 
-    public int getId(Uri uri,int position){
-        int uid=-1;
-        Cursor tempCursor = mContext.getContentResolver().query(uri,null,null,null,null);
+    public int getId(Uri uri, int position) {
+        int uid = -1;
+        Cursor tempCursor = mContext.getContentResolver().query(uri, null, null, null, null);
         try {
             if (tempCursor != null) {
-                for (int i = 0; i <=tempCursor.getCount() ; i++) {
-                    if(i<=position&&tempCursor.moveToNext()) {
+                for (int i = 0; i <= tempCursor.getCount(); i++) {
+                    if (i <= position && tempCursor.moveToNext()) {
                         uid = tempCursor.getInt(tempCursor.getColumnIndex(TableNames.table1.mUid));
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(tempCursor!=null){
+        } finally {
+            if (tempCursor != null) {
                 tempCursor.close();
             }
         }
         return uid;
     }
+
+    private int generateRandom(int max, int min) {
+        Random random = new Random();
+        return random.nextInt((max - min) + 1) + min;
+    }
+
 
 }

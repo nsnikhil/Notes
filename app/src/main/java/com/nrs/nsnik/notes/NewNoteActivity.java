@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -99,7 +100,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     ImageView mCancelAudio;
     @BindView(R.id.newNoteAudioSeek)
     SeekBar seekAudio;
-    @BindView(R.id.activity_new_note)RelativeLayout mNoteContainer;
+    @BindView(R.id.activity_new_note)
+    RelativeLayout mNoteContainer;
     String mAudioFileName, mFolderName = "nofolder";
     Uri mIntentUri = null;
     Bitmap mImage = null;
@@ -199,7 +201,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                         mFileOperation.deleteFile(mIntentUri);
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }int count = getContentResolver().delete(mIntentUri, null, null);
+                    }
+                    int count = getContentResolver().delete(mIntentUri, null, null);
                     if (count == 0) {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteNoteFailed), Toast.LENGTH_SHORT).show();
                     } else {
@@ -316,11 +319,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         imageRecyclerView.setLayoutManager(layoutManager);
         mImagesArray = new ArrayList<>();
-        mImageAdapter = new ImageAdapter(NewNoteActivity.this, mImagesLocations,this,false);
+        mImageAdapter = new ImageAdapter(NewNoteActivity.this, mImagesLocations, this, false);
         imageRecyclerView.setAdapter(mImageAdapter);
         mImagesLocations = new ArrayList<>();
         seekAudio.incrementProgressBy(10);
         mFileOperation = new FileOperation(getApplicationContext());
+        mTitle.setTypeface(Typeface.create("serif-monospace", Typeface.BOLD));
+        mNote.setTypeface(Typeface.create("serif-monospace", Typeface.NORMAL));
     }
 
     @Override
@@ -368,14 +373,14 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private void addToList() {
 
         int targetW = mNoteContainer.getWidth();
-        int targetH = 200;
+        int targetH = 400;
 
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
@@ -457,8 +462,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private void deleteAudioFile() {
         File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
         File f = new File(folder, mAudioFileName);
+        boolean isDeleted = false;
         if (f.exists()) {
-            f.delete();
+            isDeleted = f.delete();
+        }
+        if (!isDeleted) {
+            Log.d(TAG, "Error while deleting " + f.toString());
         }
     }
 
@@ -486,7 +495,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         startGalleryIntent();
     }
 
-    private void startGalleryIntent(){
+    private void startGalleryIntent() {
         Intent chosePicture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         if (chosePicture.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(chosePicture, mGetPictureCode);
@@ -500,12 +509,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg",storageDir);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
 
-    private void startTheCamera(){
+    private void startTheCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
@@ -606,12 +615,20 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             imageRecyclerView.setVisibility(View.VISIBLE);
         }
-        //mImagesLocations.remove(position);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (BuildConfig.DEBUG) {
+            RefWatcher refWatcher = MyApplication.getRefWatcher(this);
+            refWatcher.watch(this);
+        }
+    }
 
     public static class ReminderService extends BroadcastReceiver {
         Context mContext;
+
         @Override
         public void onReceive(Context context, Intent intent) {
             mContext = context;
@@ -619,23 +636,14 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         private void buildNotification(Intent i) {
-            NotificationCompat.Builder notfifcationBuilder = new NotificationCompat.Builder(mContext);
-            notfifcationBuilder.setSmallIcon(R.drawable.ic_add_alarm_white_48dp);
-            notfifcationBuilder.setContentTitle(i.getExtras().getString(mContext.getResources().getString(R.string.notificationtitle)));
-            notfifcationBuilder.setContentText(i.getExtras().getString(mContext.getResources().getString(R.string.notificationcontent)));
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mContext, mContext.getResources().getString(R.string.notificationChannelReminder));
+            notificationBuilder.setSmallIcon(R.drawable.ic_add_alarm_white_48dp);
+            notificationBuilder.setContentTitle(i.getExtras().getString(mContext.getResources().getString(R.string.notificationtitle)));
+            notificationBuilder.setContentText(i.getExtras().getString(mContext.getResources().getString(R.string.notificationcontent)));
             NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(1, notfifcationBuilder.build());
+            mNotificationManager.notify(1, notificationBuilder.build());
         }
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(BuildConfig.DEBUG) {
-            RefWatcher refWatcher = MyApplication.getRefWatcher(this);
-            refWatcher.watch(this);
-        }
     }
 
 }

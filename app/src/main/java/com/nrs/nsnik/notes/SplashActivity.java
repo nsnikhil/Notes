@@ -1,10 +1,9 @@
 package com.nrs.nsnik.notes;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.WindowManager;
 
 import com.squareup.leakcanary.RefWatcher;
 
@@ -27,7 +26,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);
         }
