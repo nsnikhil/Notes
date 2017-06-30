@@ -168,11 +168,11 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
         try {
             while (folderCursor != null && folderCursor.moveToNext()) {
                 String folderName = folderCursor.getString(folderCursor.getColumnIndex(TableNames.table2.mFolderName));
-                mList.add(new SearchObject(folderName, false));
+                mList.add(new SearchObject(folderName, true));
             }
             while ((noteCursor != null && noteCursor.moveToNext())) {
                 String noteTitle = noteCursor.getString(noteCursor.getColumnIndex(TableNames.table1.mTitle));
-                mList.add(new SearchObject(noteTitle, true));
+                mList.add(new SearchObject(noteTitle, false));
             }
         } catch (Exception e) {
             e.printStackTrace();

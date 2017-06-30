@@ -3,7 +3,6 @@ package com.nrs.nsnik.notes.adapters;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,16 +36,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_search_item, parent, false));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         if (mSearchList.get(position).ismIsFolder()) {
-            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48dp, 0, 0, 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                holder.mSearchName.setCompoundDrawableTintList(stateList());
-            }
-        } else {
             holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48dp, 0, 0, 0);
+        } else {
+            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48dp, 0, 0, 0);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             holder.mSearchName.setCompoundDrawableTintList(stateList());
         }
         holder.mSearchName.setText(mSearchList.get(position).getmName());
