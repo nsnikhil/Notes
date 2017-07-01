@@ -12,7 +12,8 @@
         style="@style/matchParent"
         android:background="@color/cardview_dark_background"
         android:contentDescription="@string/imageDescription"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:transitionName="fullImage" />
 
     <ImageView
         android:id="@+id/singleImageCancel"
@@ -21,8 +22,8 @@
         android:layout_gravity="end"
         android:layout_margin="@dimen/eight"
         android:background="@drawable/circle"
+        android:backgroundTint="@color/materialWhite"
         android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_cancel_black_48dp"
-        android:transitionName="fullImage" />
+        android:src="@drawable/ic_cancel_black_48dp" />
 
 </FrameLayout>

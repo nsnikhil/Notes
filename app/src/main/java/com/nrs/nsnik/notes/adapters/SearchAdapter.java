@@ -1,6 +1,7 @@
 package com.nrs.nsnik.notes.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -11,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nrs.nsnik.notes.ContainerActivity;
+import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.objects.SearchObject;
 
@@ -57,7 +60,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
                 new int[]{-android.R.attr.state_checked},
                 new int[]{android.R.attr.state_pressed}
         };
-        int color = ContextCompat.getColor(mContext, R.color.grey);
+        int color = ContextCompat.getColor(mContext, R.color.colorAccentLight);
         int[] colors = new int[]{color, color, color, color};
         return new ColorStateList(states, colors);
     }
@@ -83,7 +86,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                    SearchObject object = mSearchList.get(getAdapterPosition());
+                    if (object.ismIsFolder()) {
+                        Intent folderIntent = new Intent(mContext, ContainerActivity.class);
+                        Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
+                        //mContext.startActivity(folderIntent);
+                    } else {
+                        Intent noteIntent = new Intent(mContext, NewNoteActivity.class);
+                        Toast.makeText(mContext, "Will open note", Toast.LENGTH_LONG).show();
+                        //mContext.startActivity(noteIntent);
+                    }
                 }
             });
         }

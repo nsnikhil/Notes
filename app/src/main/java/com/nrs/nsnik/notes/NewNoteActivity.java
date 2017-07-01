@@ -13,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -324,8 +323,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         mImagesLocations = new ArrayList<>();
         seekAudio.incrementProgressBy(10);
         mFileOperation = new FileOperation(getApplicationContext());
-        mTitle.setTypeface(Typeface.create("serif-monospace", Typeface.BOLD));
-        mNote.setTypeface(Typeface.create("serif-monospace", Typeface.NORMAL));
     }
 
     @Override

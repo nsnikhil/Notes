@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.data.TableNames.table2;
@@ -87,7 +86,6 @@ public class TableProvider extends ContentProvider {
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uSingleFolderName:
-                Log.d(TAG, "here1");
                 selection = table2.mFolderName + " =?";
                 String sk = uri.toString();
                 sk = sk.substring(sk.lastIndexOf('/') + 1);
@@ -95,7 +93,6 @@ public class TableProvider extends ContentProvider {
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uSearchFolderName:
-                Log.d(TAG, "here2");
                 selection = table2.mFolderName + " LIKE ?";
                 String src = uri.toString();
                 src = src.substring(src.lastIndexOf('/') + 1);
@@ -103,7 +100,6 @@ public class TableProvider extends ContentProvider {
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case uAllSubFolder:
-                Log.d(TAG, "here3");
                 selection = table2.mParentFolderName + " =?";
                 String sf = uri.toString();
                 sf = sf.substring(sf.lastIndexOf('/') + 1);

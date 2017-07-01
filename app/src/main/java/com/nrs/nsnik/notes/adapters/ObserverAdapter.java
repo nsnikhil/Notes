@@ -155,7 +155,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void bindNotesData(RecyclerView.ViewHolder holder, int position) {
         NoteViewHolder noteViewHolder = (NoteViewHolder) holder;
         NoteObject object = mNotesList.get(position);
-        noteViewHolder.mNoteTitle.setText(object.getTitle());
+        noteViewHolder.mNoteTitle.setText(justifyName(object.getTitle()));
         noteViewHolder.mNoteContent.setText(object.getNote());
         if (object.getImages().size() > 0) {
             setImage((NoteViewHolder) holder, object.getImages().get(0));
@@ -331,7 +331,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 new int[]{android.R.attr.state_pressed}
         };
         //int color = getRandom();
-        int color = ContextCompat.getColor(mContext,R.color.grey);
+        int color = ContextCompat.getColor(mContext, R.color.colorAccentLight);
         int[] colors = new int[]{color, color, color, color};
         return new ColorStateList(states, colors);
     }
@@ -372,23 +372,24 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .setPositiveButton(mContext.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        delete(uri,isFolder,folderName);
+                        delete(uri, isFolder, folderName);
                     }
                 });
         delete.create().show();
     }
 
-    private void delete(Uri uri,boolean isFolder,String folderName){
+    private void delete(Uri uri, boolean isFolder, String folderName) {
         Uri noteUri;
         if (isFolder) {
-            noteUri = Uri.withAppendedPath(TableNames.mContentUri,folderName);
-        }else {
+            noteUri = Uri.withAppendedPath(TableNames.mContentUri, folderName);
+        } else {
             noteUri = uri;
-        }try {
+        }
+        try {
             mFileOperations.deleteFile(noteUri);
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (isFolder) {
                 mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
             }

@@ -24,7 +24,7 @@
             android:id="@+id/fabAddFolder"
             style="@style/wrapContent"
             android:layout_margin="@dimen/eight"
-            android:src="@drawable/ic_create_new_folder_black_24dp"
+            android:src="@drawable/ic_create_new_folder_white_48dp"
             app:fabSize="normal" />
 
 
@@ -50,7 +50,7 @@
             android:id="@+id/fabAddNote"
             style="@style/wrapContent"
             android:layout_margin="@dimen/eight"
-            android:src="@drawable/ic_note_add_black_24dp"
+            android:src="@drawable/ic_note_add_white_48dp"
             app:fabSize="normal" />
 
 
@@ -62,7 +62,7 @@
         style="@style/wrapContent"
         android:layout_gravity="end"
         android:layout_margin="@dimen/eight"
-        android:src="@drawable/ic_add_black_48dp"
+        android:src="@drawable/ic_add_white_48dp"
         app:fabSize="normal" />
 
 </LinearLayout>

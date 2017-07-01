@@ -9,8 +9,6 @@
     <style name="toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:fontFamily">monospace</item>
-        <item name="android:typeface">monospace</item>
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
