@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -329,7 +330,8 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 new int[]{-android.R.attr.state_checked},
                 new int[]{android.R.attr.state_pressed}
         };
-        int color = getRandom();
+        //int color = getRandom();
+        int color = ContextCompat.getColor(mContext,R.color.grey);
         int[] colors = new int[]{color, color, color, color};
         return new ColorStateList(states, colors);
     }
@@ -370,13 +372,28 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .setPositiveButton(mContext.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (isFolder) {
-                            mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
-                        }
-                        mContext.getContentResolver().delete(uri, null, null);
+                        delete(uri,isFolder,folderName);
                     }
                 });
         delete.create().show();
+    }
+
+    private void delete(Uri uri,boolean isFolder,String folderName){
+        Uri noteUri;
+        if (isFolder) {
+            noteUri = Uri.withAppendedPath(TableNames.mContentUri,folderName);
+        }else {
+            noteUri = uri;
+        }try {
+            mFileOperations.deleteFile(noteUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (isFolder) {
+                mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
+            }
+        }
+        mContext.getContentResolver().delete(uri, null, null);
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder {
@@ -414,7 +431,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     int startPos = mFolderList.size() + 2;
                     int currPos = getAdapterPosition() - startPos;
                     Uri uri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos)));
-                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning), false, "", uri, mMore);
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleNoteWarning), false, "", uri, mMore);
                 }
             });
         }

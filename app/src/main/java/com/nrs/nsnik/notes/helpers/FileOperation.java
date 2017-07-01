@@ -139,10 +139,9 @@ public class FileOperation {
         return object;
     }
 
-
     public void deleteFile(Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
-        if (c != null && c.moveToFirst()) {
+        while (c != null && c.moveToNext()) {
             File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
             File f = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
             FileInputStream fis = null;
@@ -155,13 +154,13 @@ public class FileOperation {
                 for (int i = 0; i < obj.getImages().size(); i++) {
                     File path = new File(folder, obj.getImages().get(i));
                     isDeleted = path.delete();
-                    if (!isDeleted) {
+                    if (path.exists()&&!isDeleted) {
                         Log.d(TAG, "Error while deleting " + path.toString());
                     }
                 }
                 File file = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
                 isDeleted = file.delete();
-                if (!isDeleted) {
+                if (file.exists()&&!isDeleted) {
                     Log.d(TAG, "Error while deleting " + file.toString());
                 }
             } catch (Exception e) {
@@ -179,71 +178,84 @@ public class FileOperation {
     }
 
     public void switchNoteId(int fromId, int toId) {
-        int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
+        if(fromId!=-1&&toId!=-1) {
+            int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
 
-        //Change actual to temp
+            //Change actual to temp
 
-        Uri fromUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(fromId));
-        Uri toUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(toId));
+            Uri fromUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(fromId));
+            Uri toUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(toId));
 
-        ContentValues fromContentValues = new ContentValues();
-        fromContentValues.put(table1.mUid, tempFromId);
+            ContentValues fromContentValues = new ContentValues();
+            fromContentValues.put(table1.mUid, tempFromId);
 
-        ContentValues toContentValues = new ContentValues();
-        toContentValues.put(table1.mUid, tempToID);
+            ContentValues toContentValues = new ContentValues();
+            toContentValues.put(table1.mUid, tempToID);
 
-        mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
-        mContext.getContentResolver().update(toUri, toContentValues, null, null);
+            mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
+            mContext.getContentResolver().update(toUri, toContentValues, null, null);
 
 
-        //Change temp To Actual
+            //Change temp To Actual
 
-        Uri newFomUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempFromId));
-        Uri newToUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempToID));
+            Uri newFomUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempFromId));
+            Uri newToUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempToID));
 
-        ContentValues newFromContentValues = new ContentValues();
-        newFromContentValues.put(table1.mUid, toId);
+            ContentValues newFromContentValues = new ContentValues();
+            newFromContentValues.put(table1.mUid, toId);
 
-        ContentValues newToContentValues = new ContentValues();
-        newToContentValues.put(table1.mUid, fromId);
+            ContentValues newToContentValues = new ContentValues();
+            newToContentValues.put(table1.mUid, fromId);
 
-        mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
-        mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
-
+            mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
+            mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
+        }else {
+            Log.d(TAG, "Database Error");
+        }
     }
 
 
     public void switchFolderId(int fromId, int toId) {
-        int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
 
-        //Change actual to temp
+        if(fromId!=-1&&toId!=-1) {
 
-        Uri fromUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(fromId));
-        Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(toId));
+            int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
 
-        ContentValues fromContentValues = new ContentValues();
-        fromContentValues.put(TableNames.table2.mUid, tempFromId);
+            //Change actual to temp
 
-        ContentValues toContentValues = new ContentValues();
-        toContentValues.put(TableNames.table2.mUid, tempToID);
+            Uri fromUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(fromId));
+            Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(toId));
 
-        mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
-        mContext.getContentResolver().update(toUri, toContentValues, null, null);
+            //8336085805
+            ContentValues fromContentValues = new ContentValues();
+            fromContentValues.put(TableNames.table2.mUid, tempFromId);
+
+            ContentValues toContentValues = new ContentValues();
+            toContentValues.put(TableNames.table2.mUid, tempToID);
 
 
-        //Change temp To Actual
+            mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
+            mContext.getContentResolver().update(toUri, toContentValues, null, null);
 
-        Uri newFomUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempFromId));
-        Uri newToUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempToID));
 
-        ContentValues newFromContentValues = new ContentValues();
-        newFromContentValues.put(TableNames.table2.mUid, toId);
+            //Change temp To Actual
 
-        ContentValues newToContentValues = new ContentValues();
-        newToContentValues.put(TableNames.table2.mUid, fromId);
+            Uri newFomUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempFromId));
+            Uri newToUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempToID));
 
-        mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
-        mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
+            ContentValues newFromContentValues = new ContentValues();
+            newFromContentValues.put(TableNames.table2.mUid, toId);
+
+            ContentValues newToContentValues = new ContentValues();
+            newToContentValues.put(TableNames.table2.mUid, fromId);
+
+
+            mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
+            mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
+        }else {
+            Toast.makeText(mContext,"Database Error",Toast.LENGTH_LONG).show();
+            Log.d(TAG, "Database Error");
+        }
 
     }
 
