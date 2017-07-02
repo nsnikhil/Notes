@@ -29,6 +29,7 @@
     <string name="navItem2">Stared</string>
     <string name="navItem3">Vault</string>
     <string name="navItem4">Settings</string>
+    <string name="navItem5">About</string>
     <!-- -->
 
     <!-- IntentKeys-->
@@ -97,6 +98,11 @@
 
     <!-- notificationChannels-->
     <string name="notificationChannelReminder">notiChnRmder</string>
+
+    <!-- aboutStrings-->
+    <string name="aboutLibraries">Third party library used</string>
+    <string name="aboutLicense">License Info</string>
+    <string name="aboutLicenseUrl">https://github.com/nsnikhil/Notes/blob/master/LICENSE</string>
     <!-- -->
 
 

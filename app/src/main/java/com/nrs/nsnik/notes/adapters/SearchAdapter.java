@@ -22,13 +22,22 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/*
+this adapter takes of list of search object which
+contains two fields, first the name of and second a
+boolean that specifies if the item is folder
+or note
+ */
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
 
     private Context mContext;
     private List<SearchObject> mSearchList;
 
-
+    /*
+    @param context          the context object
+    @param searchList       the list of search objects
+     */
     public SearchAdapter(Context context, List<SearchObject> searchList) {
         mContext = context;
         mSearchList = searchList;
@@ -41,6 +50,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        /*
+        binder chekcs if the item at position
+        has true for its isFolder field and
+        appropriately attaches the icon to text
+         */
         if (mSearchList.get(position).ismIsFolder()) {
             holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48dp, 0, 0, 0);
         } else {
@@ -52,7 +66,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         holder.mSearchName.setText(mSearchList.get(position).getmName());
     }
 
-
+    /*
+    @return new ColorStateList
+     */
     private ColorStateList stateList() {
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_enabled},
@@ -70,6 +86,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         return mSearchList.size();
     }
 
+    /*
+    called to chnage the content of searchable list
+    and notify the adapter
+
+    @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
+     */
     public void modifyList(List<SearchObject> list) {
         mSearchList = list;
         notifyDataSetChanged();

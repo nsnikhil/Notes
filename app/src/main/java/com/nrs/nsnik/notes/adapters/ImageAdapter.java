@@ -28,6 +28,16 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/*
+IMAGE ADAPTER TAKES IN LIST OF STRING WHERE EACH
+ STRING REPRESENTS A FILE NAME, IT USES THIS FILENAME TO
+ CREATE A NEW BITMAP FILE AND DISPLAY EACH IMAGE IN ITS
+ RECYCLER VIEW, IT ALSO TAKES A SENDSIZE INTERFACE WHICH
+ IS RESPONSIBLE FOR LETTING THE RECYCLER VIEWS ACTIVITY/FRAGMENT
+ KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
+  @author  Nikhil Soni
+  @version   1.0
+ */
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
 
@@ -38,6 +48,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private SendSize mSize;
     private boolean mFullScreen;
 
+    /*
+     @param c               the context object
+     @param imageLocation   list of image file names
+     @param sz              SendSize interface
+     @param forFullScreen   if the adapter is used in full screen or not
+     */
     public ImageAdapter(Activity c, ArrayList<String> imageLocations, SendSize sz, boolean forFullScreen) {
         mContext = c;
         mImageLoc = imageLocations;
@@ -72,6 +88,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 .into(holder.image);
     }
 
+    /*
+    modify the file name list with
+    new items and notify about data change
+    to adapter
+
+    @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
+     */
     public void modifyList(ArrayList<String> imageLoc) {
         mImageLoc = imageLoc;
         notifyDataSetChanged();
@@ -96,6 +119,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         public MyViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            /*
+            if the adapter is set for a full screen
+            activity/fragment then remove the option
+            remove the image or click on image
+             */
             if (mFullScreen) {
                 remove.setVisibility(View.GONE);
                 image.setScaleType(ImageView.ScaleType.CENTER);

@@ -8,6 +8,7 @@ import com.nrs.nsnik.notes.data.TableNames.table1;
 
 class TableHelper extends SQLiteOpenHelper {
 
+    //string representation of create table command on sqlite
     private static final String mCreateTable = "CREATE TABLE IF NOT EXISTS " + TableNames.mTableName + " ("
             + table1.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + table1.mTitle + " TEXT, "
@@ -16,8 +17,10 @@ class TableHelper extends SQLiteOpenHelper {
             + table1.mStarIndicator + " INTEGER "
             + ");";
 
+    //string representation of drop table command on sqlite
     private static final String mDropTable = "DROP TABLE IF EXISTS " + TableNames.mTableName;
 
+    //string representation of create table command on sqlite
     private static final String mCreateFolderTable = "CREATE TABLE " + TableNames.mFolderTableName + " ("
             + TableNames.table2.mUid + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TableNames.table2.mFolderName + " TEXT, "
@@ -26,6 +29,7 @@ class TableHelper extends SQLiteOpenHelper {
             + TableNames.table2.mStarIndicator + " INTEGER "
             + ");";
 
+    //string representation of create table command on sqlite
     private static final String mDropFolderTable = "DROP TABLE IF EXISTS " + TableNames.mFolderTableName;
 
 

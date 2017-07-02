@@ -49,6 +49,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/*
+this fragment passes the uri to the adapter upon
+which adapter queries and makes a list to display
+ */
 
 public class HomeFragment extends Fragment implements NotesCount, FolderCount {
 
@@ -90,6 +94,11 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         return v;
     }
 
+    /*
+    if the fragment if attached to activity which was
+    launch via intent then get the folder name
+    and append to base content uri
+     */
     private void getArgs() {
         if (getArguments() != null) {
             mFolderName = getArguments().getString(getActivity().getResources().getString(R.string.homefldnm));
@@ -115,6 +124,9 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     }
 
     private void listeners() {
+        /*
+        fab add button
+         */
         mAddSpinner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,7 +167,10 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         });
     }
 
-
+    /*
+    if the add folder and folder fab is not visible
+    the perform animation and then make them visible
+     */
     private void reveal() {
         RotateAnimation rotateAnimation = new RotateAnimation(0, 135, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(50);
@@ -200,6 +215,10 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         mAddSpinner.startAnimation(rotateAnimation);
     }
 
+    /*
+    if the add folder and folder fab is visible
+    the perform animation and then make them in visible
+     */
     private void disappear() {
         RotateAnimation rotateAnimation = new RotateAnimation(135, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(50);
@@ -244,6 +263,10 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         mAddSpinner.startAnimation(rotateAnimation);
     }
 
+    /*
+    create a alert dialog with custom view
+    to take a name from field
+     */
     private void createFolderDialog() {
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
         final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog, null);
@@ -268,6 +291,10 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         newFolder.create().show();
     }
 
+    /*
+    @param name     create a folder of name = name
+                    by adding the entry to database
+     */
     private void createFolder(String name) {
         ContentValues cv = new ContentValues();
         cv.put(TableNames.table2.mFolderName, name);
@@ -298,6 +325,10 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         }
     }
 
+    /*
+    if size of note and folder list is 0
+    then display the empty view
+     */
     private void setEmpty() {
         if (mNotesCount == 0 && mFolderCount == 0) {
             mEmpty.setVisibility(View.VISIBLE);
@@ -316,5 +347,31 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     public void getFolderCount(int count) {
         mFolderCount = count;
         setEmpty();
+    }
+
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        Animation animation = super.onCreateAnimation(transit, enter, nextAnim);
+        if (animation == null && nextAnim != 0) {
+            animation = AnimationUtils.loadAnimation(getActivity(), nextAnim);
+        }if (animation != null) {
+            if (getView() != null) {
+                getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+                public void onAnimationEnd(Animation animation) {
+                    if (getView() != null) {
+                        getView().setLayerType(View.LAYER_TYPE_NONE, null);
+                    }
+                }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+        return animation;
     }
 }

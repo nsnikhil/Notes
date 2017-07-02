@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.nrs.nsnik.notes.fragments.AboutFragment;
 import com.nrs.nsnik.notes.fragments.HomeFragment;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -32,7 +33,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String[] mFragTags = {"home", "starred", "recent"};
+    private static final String[] mFragTags = {"home", "starred", "recent","about"};
     @BindView(R.id.mainToolbar)
     Toolbar mMainToolbar;
     @BindView(R.id.mainDrawerLayout)
@@ -128,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navItem4:
                         Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
                         break;
+                    case R.id.navItem5:
+                        if (getSupportFragmentManager().findFragmentByTag(mFragTags[3]) == null) {
+                            replaceFragment(new AboutFragment(), mFragTags[3]);
+                            drawerAction(0);
+                        }
+                        break;
                 }
                 return true;
             }
@@ -137,19 +144,23 @@ public class MainActivity extends AppCompatActivity {
     private void drawerAction(int key) {
         MenuItem notes = mNavigationView.getMenu().getItem(0).setChecked(false);
         MenuItem starred = mNavigationView.getMenu().getItem(1).setChecked(false);
-        MenuItem recants = mNavigationView.getMenu().getItem(2).setChecked(false);
+        MenuItem recent = mNavigationView.getMenu().getItem(2).setChecked(false);
+        MenuItem about = mNavigationView.getMenu().getItem(3).setChecked(false);
         switch (key) {
             case 0:
                 notes.setChecked(true);
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
-                }
+                mToolbarText.setText(getResources().getString(R.string.app_name));
                 break;
             case 1:
                 starred.setChecked(true);
                 break;
             case 2:
-                recants.setChecked(true);
+                recent.setChecked(true);
+                break;
+            case 3:
+                about.setChecked(true);
+                mToolbarText.setText(getResources().getString(R.string.navItem5));
+                break;
         }
     }
 

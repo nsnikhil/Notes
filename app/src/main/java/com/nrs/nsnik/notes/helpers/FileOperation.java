@@ -24,6 +24,10 @@ import java.util.Random;
 
 public class FileOperation {
 
+    /*
+    TODO FILE OPERATIONS DOCUMENTATION
+     */
+
     private Context mContext;
     private static final String TAG = FileOperation.class.getSimpleName();
 

@@ -10,6 +10,10 @@ import java.util.List;
 
 public class RvItemTouchHelper extends ItemTouchHelper.Callback {
 
+    /*
+    TODO ITEM TOUCH HELPER CALL BACK DOCUMENTATION
+     */
+
     private ItemTouchListener mListener;
     private static final String TAG = RvItemTouchHelper.class.getSimpleName();
     private static final int NOTES = 0, FOLDER = 1, HEADER = 2;

@@ -48,6 +48,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/*
+This adapter takes in a uri queries the uri and
+registers for change in uri i.e. if any items in
+that uri changes the adapter is notified and then
+adapters clear the old list re draws the entire list
+with the new data set
+ */
 
 public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Observer, ItemTouchListener {
 
@@ -63,6 +70,15 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private FileOperation mFileOperations;
     private LayoutInflater mLayoutInflater;
 
+    /*
+    @param context      the context object
+    @param noteUri      the uri to which queries the note table
+    @param folderUri    the uri which queries the folder table
+    @param notesCount   a interface which notifies about change in note list
+    @param folderCount  a interface which notifies about change in folder list
+    @param manager      the loader manager object used in data observers
+    @param folderName   the name of the folder associated with the uri(note or folder)
+     */
     public ObserverAdapter(Context context, Uri noteUri, Uri folderUri, NotesCount notesCount, FolderCount folderCount
             , LoaderManager manager, String folderName) {
         mNotesList = new ArrayList<>();
@@ -117,6 +133,15 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    /*
+    @param holder       HeaderViewHolder object
+    @param position     Position of/in the list
+
+    this function binds the data for header view-holder type
+    it check if folder or note list is size is greater than 0
+    if yes than shows the appropriate headers otherwise
+    hides them
+     */
     private void bindHeaderData(RecyclerView.ViewHolder holder, int position) {
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
         if (position == 0) {
@@ -136,11 +161,27 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    /*
+    @param holder       FolderViewHolder object
+    @param position     Position of/in the list
+
+    this function binds the data for FolderViewHolder type
+    it takes data from folder list and sets them on textview of
+    FolderViewHolder
+     */
     private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
         folderViewHolder.mFolderNameText.setText(mFolderList.get(position));
     }
 
+    /*
+   @param holder       NoteViewHolder object
+   @param position     Position of/in the list
+
+   this function binds the data for NoteViewHolder type
+   it takes data from Notes list and sets title and
+   note content on textviews and others values.
+    */
     private void bindNotesData(RecyclerView.ViewHolder holder, int position) {
         final NoteViewHolder noteViewHolder = (NoteViewHolder) holder;
         NoteObject object = mNotesList.get(position);
@@ -180,6 +221,15 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    /*
+    @param cursor   represents the cursor received after querying the noteUri
+
+    this function add the content of each row of the cursor to the
+    note list and clear the old list if any and also notifies the
+    adapter about the change in data
+
+    @TODO CHANGE NOTIFYDATASETCHANGE WITH DIFF UTIL
+     */
     private void makeNotesList(Cursor cursor) {
         mNotesList.clear();
         while (cursor != null && cursor.moveToNext()) {
@@ -197,6 +247,15 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    /*
+   @param cursor   represents the cursor received after querying the FOLDERuRI
+
+   this function add the content of each row of the cursor to the
+   folder list and clear the old list if any and also notifies the
+   adapter about the change in data
+
+   @TODO CHANGE NOTIFYDATASETCHANGE WITH DIFF UTIL
+    */
     private void makeFolderList(Cursor cursor) {
         mFolderList.clear();
         while (cursor != null && cursor.moveToNext()) {
@@ -208,6 +267,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    /*
+    @param name  takes a string as a argument
+    @return String with first letter in upper case
+     */
     private String justifyName(String name) {
         return Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
     }
@@ -233,23 +296,56 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onItemMoved(int fromPosition, int toPosition, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        /*
+        After items are moved id for each
+         */
         int startPos = -100;
         Uri getIdUri = null;
 
+        /*
+        if item is a note than start position is
+        folder size + 2 (folder size + the two header)
+        getUri-->base uri is for note
+         */
         if (viewHolder.getItemViewType() == NOTES) {
             startPos = mFolderList.size() + 2;
             getIdUri = Uri.withAppendedPath(TableNames.mContentUri, mFolderName);
         }
+
+         /*
+        if item is a folder than start position is
+        1 (1st position is the folder header)
+         getUri-->base uri is for folder
+         */
         if (viewHolder.getItemViewType() == FOLDER) {
             startPos = 1;
             getIdUri = Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName);
         }
 
+        /*
+        if an item has been move for a certain range than
+        calculate the id of each item in range and
+        store them in a list
+
+        @fromPos    actual starting position of that item view type
+                    fromPosition    = adapter Position
+                    startPos        = position from which this view type starts
+
+        @tpPos      position to which the item was scrolled
+                    toPosition      = Position to which the item was scrolled
+                    startPos        = position from which this view type starts
+         */
         List<Integer> idList = new ArrayList<>();
         int fromPos = fromPosition - startPos;
         int toPos = toPosition - startPos;
         int tempFrom = fromPos;
         int tempTo = toPos;
+        /*
+        add the id from starting position to the
+        end position and if movement was from
+        bottom to top decrement the tempFrom else
+        increment it
+         */
         if (tempFrom > tempTo) {
             while (tempFrom - tempTo >= 0) {
                 idList.add(mFileOperations.getId(getIdUri, tempFrom));
@@ -261,6 +357,12 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ++tempFrom;
             }
         }
+
+        /*
+        swap id of each item from starting position with
+        the id of the previous or next item depending upon
+        if item was going upwards or downwards
+         */
         for (int i = 0; i < idList.size() - 1; i++) {
             if (viewHolder.getItemViewType() == NOTES) {
                 mFileOperations.switchNoteId(mFileOperations.getId(getIdUri, fromPos), idList.get(i + 1));
@@ -268,6 +370,11 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (viewHolder.getItemViewType() == FOLDER) {
                 mFileOperations.switchFolderId(mFileOperations.getId(getIdUri, fromPos), idList.get(i + 1));
             }
+            /*
+            if starting position is greater i.e. going
+            from bottom to top decrement the value of
+            starting position else increment
+             */
             if (fromPos > toPos) {
                 --fromPos;
             } else {
@@ -281,6 +388,9 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         //notifyItemRemoved(position);
     }
 
+    /*
+    @return new ColorSateList
+     */
     private ColorStateList stateList() {
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_enabled},
@@ -293,6 +403,16 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return new ColorStateList(states, colors);
     }
 
+    /*
+     @param message         message to be displayed in dialog box while deleting
+     @param isFolder        check if folder inflated the menu or not
+     @param folderName      name of the folder that inflated the menu
+     @param uri             uri of the item upon which actions will be taken
+     @param itemView        view to which the particular menu will be attached
+
+     @TODO POP UP STAR THE IETM
+     @TODO POP UP MENU SHARE THE ITEM
+     */
     private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName, final Uri uri, View itemView) {
         PopupMenu menu = new PopupMenu(mContext, itemView, Gravity.START);
         menu.inflate(R.menu.pop_up_menu);
@@ -316,6 +436,12 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         menu.show();
     }
 
+    /*
+     @param message         message to be displayed in dialog box while deleting
+     @param uri             uri of the item upon which delete operation will be taken
+     @param isFolder        check if uri corresponds to folder
+     @param folderName      name of the folder
+     */
     private void makeDeleteDialog(String message, final Uri uri, final boolean isFolder, final String folderName) {
         AlertDialog.Builder delete = new AlertDialog.Builder(mContext);
         delete.setTitle(mContext.getResources().getString(R.string.warning))
@@ -335,6 +461,11 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         delete.create().show();
     }
 
+    /*
+     @param uri             uri of the item upon which delete operation will be taken
+     @param isFolder        check if uri corresponds to folder
+     @param folderName      name of the folder
+     */
     private void delete(Uri uri, boolean isFolder, String folderName) {
         Uri noteUri;
         if (isFolder) {
@@ -376,8 +507,14 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @SuppressWarnings("unchecked")
                 @Override
                 public void onClick(View v) {
-                    int startPos = mFolderList.size() + 2;
+                    //check if position is valid
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        /*
+                        get the id for the note at the particular
+                        position and attach it to content uri and
+                        pass it to new note activity
+                         */
+                        int startPos = mFolderList.size() + 2;
                         int currPos = getAdapterPosition() - startPos;
                         Intent intent = new Intent(mContext, NewNoteActivity.class);
                         intent.setData(Uri.withAppendedPath(TableNames.mContentUri,
@@ -392,7 +529,13 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //check if position is valid
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        /*
+                        calculate the id for the particular position and
+                        use it create a uri that is passed to inflate menu
+                        function
+                         */
                         int startPos = mFolderList.size() + 2;
                         int currPos = getAdapterPosition() - startPos;
                         Uri uri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos)));
@@ -418,7 +561,13 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //check if position is valid
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        /*
+                          get the id for the folder at the particular
+                          position and attach it to folder content uri and
+                          pass it to container activity
+                        */
                         Intent intent = new Intent(mContext, ContainerActivity.class);
                         intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderNameText.getText().toString());
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
@@ -429,7 +578,13 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mFolderMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //check if position is valid
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                         /*
+                        calculate the id for the particular position and
+                        use it create a uri that is passed to inflate menu
+                        function
+                         */
                         int startPos = 1;
                         int currPos = getAdapterPosition() - startPos;
                         Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName);

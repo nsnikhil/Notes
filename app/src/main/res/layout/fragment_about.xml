@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/verticalLinearLayout"
+    android:gravity="center"
+    tools:context="com.nrs.nsnik.notes.fragments.AboutFragment">
+
+    <ImageView
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/splash_logo"
+        android:visibility="visible"
+        android:layout_marginBottom="@dimen/sixteen"
+        style="@style/errorImage" />
+
+    <TextView
+        style="@style/wrapContent"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/app_name"/>
+
+    <TextView
+        style="@style/wrapContent"
+        android:textSize="14sp"
+        android:id="@+id/aboutVersionInfo"
+        android:textAllCaps="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/sixteen"
+        android:text="@string/app_name"/>
+
+    <Button
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:id="@+id/aboutLibraries"
+        android:text="@string/aboutLibraries"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:id="@+id/aboutLicense"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/aboutLicense"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
