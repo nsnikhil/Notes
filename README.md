@@ -25,3 +25,10 @@
 
 - Crashes when going back to home after creating lot of new folder and notes inside a folder due shared element not behaving properly.
 - Draging and Droping items over a huge distance might sometime lead to some unexpected swapping to items.
+
+
+## License
+
+Licensed under the GNU General Public License v3.0 you may not use this file except in compliance with the [License](https://github.com/nsnikhil/Notes/blob/master/LICENSE)
+
+
