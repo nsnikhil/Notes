@@ -7,6 +7,10 @@ import java.util.List;
 
 public class FolderDiffCallback extends DiffUtil.Callback {
 
+    /*
+    TODO DIFFERENCE UTILITY CLASS FOR FOLDER LIST
+     */
+
     private List<String> mOldList, mNewList;
 
     public FolderDiffCallback(List<String> oldList, List<String> newList) {
