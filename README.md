@@ -2,6 +2,8 @@
 
 ![Notes Logo](https://lh4.googleusercontent.com/4c_dXG0fKgvyCnkR8nSUdFfkBmqgLlkHMporXbi3ub3wyvUeXuvJHpNwkxfvJdpkb1V-pGnL=w1920-h986)
 
+[![PLay Store Link](https://lh4.googleusercontent.com/WBgKxhkKlFcgJliosv7cfeST_bUoBBar_-uMFMEGSBQZycTUpoacTG1HD576F2nJCoEdBZpV=w1920-h986)](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
+
 ## Info
 
 ### This project demonstrates the use of following concepts and classes 
