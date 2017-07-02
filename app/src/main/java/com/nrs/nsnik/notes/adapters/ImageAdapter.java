@@ -70,8 +70,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                     }
                 })
                 .into(holder.image);
-
-
     }
 
     public void modifyList(ArrayList<String> imageLoc) {

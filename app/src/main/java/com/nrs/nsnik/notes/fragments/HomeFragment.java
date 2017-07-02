@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -100,6 +101,9 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         ObserverAdapter adapter = new ObserverAdapter(getActivity(), TableNames.mContentUri, TableNames.mFolderContentUri
                 , this, this, getLoaderManager(), mFolderName);
+        mList.setHasFixedSize(true);
+        DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
+        mList.setItemAnimator(itemAnimator);
         mList.setAdapter(adapter);
         ItemTouchHelper.Callback callback = new RvItemTouchHelper(adapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -109,7 +113,6 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
             mAdView.loadAd(adRequest);
         }
     }
-
 
     private void listeners() {
         mAddSpinner.setOnClickListener(new View.OnClickListener() {

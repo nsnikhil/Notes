@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_new_note"
     style="@style/verticalLinearLayout"
-    android:transitionName="noteTitle">
+    android:transitionName="noteContainer">
 
     <include
         android:id="@+id/newNoteToolbar"
@@ -61,7 +61,8 @@
                 android:labelFor="@+id/newNoteTitle"
                 android:maxLines="1"
                 android:padding="@dimen/sixteen"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:transitionName="noteTitle" />
 
             <EditText
                 android:id="@+id/newNoteContent"

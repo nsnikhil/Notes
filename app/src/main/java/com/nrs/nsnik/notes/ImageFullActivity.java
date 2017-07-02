@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.nrs.nsnik.notes.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.interfaces.SendSize;
@@ -26,6 +27,7 @@ public class ImageFullActivity extends AppCompatActivity implements SendSize {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_full);
         ButterKnife.bind(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         initialize();
     }
 

@@ -141,44 +141,46 @@ public class FileOperation {
 
     public void deleteFile(Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
-        while (c != null && c.moveToNext()) {
-            File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
-            File f = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
-            FileInputStream fis = null;
-            ObjectInputStream ois = null;
-            boolean isDeleted;
-            try {
+        File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+        boolean isDeleted;
+        try {
+            while (c != null && c.moveToNext()) {
+                File f = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
                 fis = new FileInputStream(f);
                 ois = new ObjectInputStream(fis);
                 NoteObject obj = (NoteObject) ois.readObject();
                 for (int i = 0; i < obj.getImages().size(); i++) {
                     File path = new File(folder, obj.getImages().get(i));
                     isDeleted = path.delete();
-                    if (path.exists()&&!isDeleted) {
+                    if (path.exists() && !isDeleted) {
                         Log.d(TAG, "Error while deleting " + path.toString());
                     }
                 }
-                File file = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
-                isDeleted = file.delete();
-                if (file.exists()&&!isDeleted) {
-                    Log.d(TAG, "Error while deleting " + file.toString());
+                isDeleted = f.delete();
+                if (f.exists() && !isDeleted) {
+                    Log.d(TAG, "Error while deleting " + f.toString());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (fis != null) {
-                    fis.close();
-                }
-                if (ois != null) {
-                    ois.close();
-                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                fis.close();
+            }
+            if (ois != null) {
+                ois.close();
+            }
+            if (c != null) {
                 c.close();
             }
         }
+
     }
 
     public void switchNoteId(int fromId, int toId) {
-        if(fromId!=-1&&toId!=-1) {
+        if (fromId != -1 && toId != -1) {
             int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
 
             //Change actual to temp
@@ -209,7 +211,7 @@ public class FileOperation {
 
             mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
             mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
-        }else {
+        } else {
             Log.d(TAG, "Database Error");
         }
     }
@@ -217,7 +219,7 @@ public class FileOperation {
 
     public void switchFolderId(int fromId, int toId) {
 
-        if(fromId!=-1&&toId!=-1) {
+        if (fromId != -1 && toId != -1) {
 
             int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
 
@@ -252,8 +254,8 @@ public class FileOperation {
 
             mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
             mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
-        }else {
-            Toast.makeText(mContext,"Database Error",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(mContext, "Database Error", Toast.LENGTH_LONG).show();
             Log.d(TAG, "Database Error");
         }
 
@@ -284,6 +286,4 @@ public class FileOperation {
         Random random = new Random();
         return random.nextInt((max - min) + 1) + min;
     }
-
-
 }
