@@ -1,5 +1,7 @@
 # Notes
 
+![Image of Yaktocat](https://lh4.googleusercontent.com/4c_dXG0fKgvyCnkR8nSUdFfkBmqgLlkHMporXbi3ub3wyvUeXuvJHpNwkxfvJdpkb1V-pGnL=w1920-h986)
+
 ## Info
 
 ### This project demonstrates the use of following concepts and classes 
