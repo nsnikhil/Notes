@@ -10,6 +10,13 @@ import com.squareup.leakcanary.RefWatcher;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/*
+  this activity is usually called by folder click and
+  the name of the folder is passed as extras
+  which is appended to a uri upon which query is performed to
+  get data list
+ */
+
 public class ContainerActivity extends AppCompatActivity {
 
     @BindView(R.id.containerToolbar)
@@ -38,6 +45,12 @@ public class ContainerActivity extends AppCompatActivity {
         }
     }
 
+
+    /*
+    this function get the folder name from intent
+    passes it to fragment which displays the notes list
+    in that folder
+     */
     private void setFolderValues() {
         if (getIntent() != null && getIntent().getExtras() != null) {
             String folderName = getIntent().getExtras().getString(getResources().getString(R.string.intentFolderName));

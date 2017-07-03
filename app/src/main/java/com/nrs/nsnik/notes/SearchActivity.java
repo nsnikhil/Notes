@@ -77,6 +77,11 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
         mSearchList.setLayoutManager(new LinearLayoutManager(this));
         mSearchAdapter = new SearchAdapter(this, mQueryList);
         mSearchList.setAdapter(mSearchAdapter);
+        /*
+        Subject is special in a sense that its is both the
+        observer and observable i.e. you can pass data using
+        subject and get data using subject
+         */
         mSubject = PublishSubject.create();
     }
 
@@ -111,6 +116,10 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
         });
     }
 
+    /*
+    @param text             the search query text
+    @param fromKeyPress     flag to check if search button on keyboard was clicked or not
+     */
     private void performSearch(String text, boolean fromKeyPress) {
         mQueryList.clear();
         mSearchAdapter.modifyList(mQueryList);
@@ -119,9 +128,13 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
             InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
         }
+        //Class the next method on subject
         mSubject.onNext(text);
     }
 
+    /*
+
+     */
     private void initializeSubject() {
         mSubject.subscribeOn(Schedulers.io())
                 .map(new Function<String, List<SearchObject>>() {
@@ -160,6 +173,9 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
 
     }
 
+    /*
+    @param s        the folder name or note tile that will be searched
+     */
     private List<SearchObject> getSearchList(String s) {
         List<SearchObject> mList = new ArrayList<>();
         String query = "search/" + s;

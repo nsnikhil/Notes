@@ -24,22 +24,28 @@ import java.util.Random;
 
 public class FileOperation {
 
-    /*
-    TODO FILE OPERATIONS DOCUMENTATION
-     */
 
     private Context mContext;
     private static final String TAG = FileOperation.class.getSimpleName();
 
+    /*
+    @param c    the context object
+     */
     public FileOperation(Context c) {
         mContext = c;
     }
 
-    public void saveNote(String filename, NoteObject noteObject) throws IOException {
+
+    /*
+    @param fileName     the name by which the file wil be saved
+                        each new notes has a different file name
+    @param noteObject   the object that is written to file
+     */
+    public void saveNote(String fileName, NoteObject noteObject) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
-        File f = new File(folder, filename);
+        File f = new File(folder, fileName);
         try {
             fos = new FileOutputStream(f);
             oos = new ObjectOutputStream(fos);
@@ -55,14 +61,20 @@ public class FileOperation {
                 oos.close();
             }
         }
-        insertInTable(filename, noteObject);
+        insertInTable(fileName, noteObject);
     }
 
-    public void updateNote(String filename, NoteObject noteObject, Uri uri) throws IOException {
+    /*
+    @param fileName         the name by which the file wil be saved
+    @param noteObject       the object that will be written to file
+    @param uri              the uri ton which the update operation will be
+                            performed
+     */
+    public void updateNote(String fileName, NoteObject noteObject, Uri uri) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
-        File f = new File(folder, filename);
+        File f = new File(folder, fileName);
         try {
             fos = new FileOutputStream(f);
             oos = new ObjectOutputStream(fos);
@@ -81,6 +93,10 @@ public class FileOperation {
         updateInTable(noteObject.getTitle(), uri);
     }
 
+    /*
+    @param title    the title of the note to be updated
+    @param uri      the uri on which update operation will be performed
+     */
     private void updateInTable(String title, Uri uri) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(table1.mTitle, title);
@@ -92,11 +108,15 @@ public class FileOperation {
         }
     }
 
-    private void insertInTable(String filename, NoteObject obj) {
+    /*
+    @param fileName     the name of the fie which contains the note object
+    @param noteObject   the note object that represents a single note
+     */
+    private void insertInTable(String fileName, NoteObject noteObject) {
         ContentValues cv = new ContentValues();
-        cv.put(table1.mTitle, obj.getTitle());
-        cv.put(table1.mFileName, filename);
-        cv.put(table1.mFolderName, obj.getFolderName());
+        cv.put(table1.mTitle, noteObject.getTitle());
+        cv.put(table1.mFileName, fileName);
+        cv.put(table1.mFolderName, noteObject.getFolderName());
         Uri u = mContext.getContentResolver().insert(TableNames.mContentUri, cv);
         if (u == null) {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.insertFailed), Toast.LENGTH_SHORT).show();
@@ -105,9 +125,13 @@ public class FileOperation {
         }
     }
 
-    public void saveImage(String filename, Bitmap image) throws IOException {
+    /*
+    @param fileName     the name of image file
+    @param image        the image
+     */
+    public void saveImage(String fileName, Bitmap image) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
-        File f = new File(folder, filename);
+        File f = new File(folder, fileName);
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(f);
@@ -120,9 +144,12 @@ public class FileOperation {
         }
     }
 
-    public NoteObject readFile(String filename) throws IOException {
+    /*
+    @param fileName     the name of that file that contains a note object
+     */
+    public NoteObject readFile(String fileName) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
-        File f = new File(folder, filename);
+        File f = new File(folder, fileName);
         FileInputStream fis = null;
         ObjectInputStream ois = null;
         NoteObject object = null;
@@ -143,6 +170,10 @@ public class FileOperation {
         return object;
     }
 
+    /*
+    @param uri      the uri that will be used to get all the images and the file Name
+                    of a note and then be deleted
+     */
     public void deleteFile(Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
@@ -183,6 +214,15 @@ public class FileOperation {
 
     }
 
+    /*
+
+    This method takes id of two notes and swaps them by
+    first assigning a temporary id to them and then finally swapping
+    the temporary with the actual
+
+    @param fromId       the id of the first note
+    @param toId         the id of second note
+     */
     public void switchNoteId(int fromId, int toId) {
         if (fromId != -1 && toId != -1) {
             int tempFromId = generateRandom(9999, 5000), tempToID = generateRandom(4999, 1000);
@@ -221,6 +261,14 @@ public class FileOperation {
     }
 
 
+    /*
+    This method takes id of two folders and swaps them by
+    first assigning a temporary id to them and then finally swapping
+    the temporary with the actual
+
+    @param fromId       the id of the first folder
+    @param toId         the id of second folder
+     */
     public void switchFolderId(int fromId, int toId) {
 
         if (fromId != -1 && toId != -1) {
@@ -265,6 +313,14 @@ public class FileOperation {
 
     }
 
+    /*
+    this method takes a uri and
+    provides the id of a note or folder in
+    particular position
+
+    @param uri          the uri which will be searched
+    @param position     the position at which the search will end
+     */
     public int getId(Uri uri, int position) {
         int uid = -1;
         Cursor tempCursor = mContext.getContentResolver().query(uri, null, null, null, null);
@@ -286,6 +342,13 @@ public class FileOperation {
         return uid;
     }
 
+    /*
+     takes max and min and finds a random no
+     between that range
+
+    @param max      the maximum range value
+    @param min      the minimum range value
+     */
     private int generateRandom(int max, int min) {
         Random random = new Random();
         return random.nextInt((max - min) + 1) + min;

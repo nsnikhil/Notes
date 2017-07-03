@@ -10,16 +10,15 @@ import java.util.List;
 
 public class RvItemTouchHelper extends ItemTouchHelper.Callback {
 
-    /*
-    TODO ITEM TOUCH HELPER CALL BACK DOCUMENTATION
-     */
-
     private ItemTouchListener mListener;
     private static final String TAG = RvItemTouchHelper.class.getSimpleName();
     private static final int NOTES = 0, FOLDER = 1, HEADER = 2;
     private int mDragFromPosition = -1, mDragToPosition = -1;
     private List<Integer> mDragFromList, mDragToList;
 
+    /*
+    @param listener     instance of ItemTouchListener
+     */
     public RvItemTouchHelper(ItemTouchListener listener) {
         mListener = listener;
         mDragFromList = new ArrayList<>();
@@ -38,6 +37,10 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        /*
+        if view type if note or folder
+        then only allow dragging or swiping
+         */
         if (viewHolder.getItemViewType() == NOTES || viewHolder.getItemViewType() == FOLDER) {
             int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
             int swipeFlags = 0;
@@ -48,15 +51,28 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
 
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+        /*
+         as the item is dragged add each starting
+         and ending position of that item in a list
+         */
         mDragFromList.add(viewHolder.getAdapterPosition());
         mDragToList.add(target.getAdapterPosition());
         mListener.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition(), viewHolder, target);
         return true;
     }
 
+    /*
+    clearView is called once the user have complete the dragging
+    or swiping operations
+     */
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+        /*
+        get the maximum and minimum position i.e.
+        the range upto whihc the item was dragged
+         and pass that range to adapter
+         */
         if (mDragFromList.size() > 0) {
             mDragFromPosition = getMax();
         }
@@ -66,12 +82,20 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
         if (mDragFromPosition != -1 && mDragToPosition != -1) {
             mListener.onItemMoved(mDragFromPosition, mDragToPosition, recyclerView, viewHolder);
         }
+        /*
+        clear the list and values after passing to adapter
+         */
         mDragFromList.clear();
         mDragToList.clear();
         mDragFromPosition = -1;
         mDragToPosition = -1;
     }
 
+    /*
+    returns the maximum value from starting index
+    indicates from which index should the
+    id swapping start
+     */
     private int getMax() {
         int max = mDragFromList.get(0);
         for (int i = 1; i < mDragFromList.size(); i++) {
@@ -82,6 +106,11 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
         return max;
     }
 
+    /*
+    returns the minimum value from ending index
+    indicates to which index should the
+    id swapping end
+    */
     private int getMin() {
         int min = mDragToList.get(0);
         for (int i = 1; i < mDragToList.size(); i++) {

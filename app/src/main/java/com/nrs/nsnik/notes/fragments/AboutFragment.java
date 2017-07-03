@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /*
-this fragments shows
+ this fragments shows
  info about the app and all the
  3rd party libraries used to make this app
  and also the license info

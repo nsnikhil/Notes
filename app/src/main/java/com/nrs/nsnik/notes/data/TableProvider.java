@@ -21,6 +21,11 @@ public class TableProvider extends ContentProvider {
      */
 
     private static final String TAG = TableProvider.class.getSimpleName();
+
+    /*
+    INTEGER CONSTANTS THAT CORRESPONDS TO A
+    PARTICULAR URI
+     */
     private static final int uAllNotes = 111;
     private static final int uSingleNote = 112;
     private static final int uAllFolderNote = 113;
@@ -32,6 +37,9 @@ public class TableProvider extends ContentProvider {
     private static final int uSearchFolderName = 217;
     private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
+    /*
+    Adding list of uri to uri matcher
+     */
     static {
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName, uAllNotes);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/#", uSingleNote);
@@ -139,6 +147,12 @@ public class TableProvider extends ContentProvider {
         }
     }
 
+    /*
+    @param u            the uri to be notified after change
+    @param cv           the values to insert
+    @param tableName    the table to insert value into
+     */
+    @Nullable
     private Uri insertVal(Uri u, ContentValues cv, String tableName) {
         SQLiteDatabase sdb = tableHelper.getWritableDatabase();
         long id = sdb.insert(tableName, null, cv);
@@ -190,6 +204,12 @@ public class TableProvider extends ContentProvider {
         }
     }
 
+    /*
+    @param u            the uri to be notified after deletion
+    @param sel          the column selected
+    @param selArgs      the condition
+    @param tableName    the table on which delete operation will be performed
+     */
     private int deleteVal(Uri u, String sel, String[] selArgs, String tableName) {
         SQLiteDatabase sdb = tableHelper.getWritableDatabase();
         int count = sdb.delete(tableName, sel, selArgs);
@@ -241,6 +261,13 @@ public class TableProvider extends ContentProvider {
         }
     }
 
+    /*
+    @param u            the uri to be notified after updating
+    @param cv           the new value used for updating
+    @param sel          the column selected
+    @param selArgs      the condition
+    @param tableName    the table on which update operation will be performed
+   */
     private int updateVal(Uri u, ContentValues cv, String selection, String[] selectionArgs, String tableName) {
         SQLiteDatabase sdb = tableHelper.getWritableDatabase();
         int count = sdb.update(tableName, cv, selection, selectionArgs);

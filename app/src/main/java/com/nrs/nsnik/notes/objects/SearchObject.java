@@ -6,6 +6,11 @@ public class SearchObject {
     private String mName;
     private boolean mIsFolder;
 
+
+    /*
+    TODO REPLACE WITH AUTO VALUE
+     */
+
     public SearchObject(String name, boolean isFolder) {
         mName = name;
         mIsFolder = isFolder;

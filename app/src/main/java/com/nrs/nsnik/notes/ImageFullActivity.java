@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/*
+Receives list of file names as intent which are passed to adapter
+that get the bitmap/images of that file and displays them in full
+screen
+ */
 public class ImageFullActivity extends AppCompatActivity implements SendSize {
 
     @BindView(R.id.fullImage)

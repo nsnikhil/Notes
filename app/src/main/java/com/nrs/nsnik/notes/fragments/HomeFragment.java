@@ -117,6 +117,10 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         ItemTouchHelper.Callback callback = new RvItemTouchHelper(adapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mList);
+        /*
+        if the build is not debug
+        enable ads
+         */
         if (!BuildConfig.DEBUG) {
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
@@ -124,9 +128,6 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     }
 
     private void listeners() {
-        /*
-        fab add button
-         */
         mAddSpinner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,7 +169,7 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     }
 
     /*
-    if the add folder and folder fab is not visible
+    if the add notes and folder fab is not visible
     the perform animation and then make them visible
      */
     private void reveal() {
@@ -216,8 +217,8 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     }
 
     /*
-    if the add folder and folder fab is visible
-    the perform animation and then make them in visible
+    if the add notes and folder fab is visible
+    the perform animation and then make them in-visible
      */
     private void disappear() {
         RotateAnimation rotateAnimation = new RotateAnimation(135, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);

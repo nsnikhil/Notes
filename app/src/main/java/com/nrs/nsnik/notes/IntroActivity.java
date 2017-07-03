@@ -7,6 +7,10 @@ import com.squareup.leakcanary.RefWatcher;
 
 public class IntroActivity extends AppCompatActivity {
 
+    /*
+    TODO INTRO ACTIVITY
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

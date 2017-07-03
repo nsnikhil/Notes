@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
     }
 
+    /*
+    @return true if connected to interned else flase
+     */
     private boolean isConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -94,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    initialize the navigation drawer by attaching the
+    listeners and item click listeners
+     */
     private void initializeDrawer() {
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mMainToolbar, R.string.drawerOpen, R.string.drawerClose) {
             @Override
@@ -141,6 +148,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*
+    @param key  the position of the navigation menu that was clicked
+     */
     private void drawerAction(int key) {
         MenuItem notes = mNavigationView.getMenu().getItem(0).setChecked(false);
         MenuItem starred = mNavigationView.getMenu().getItem(1).setChecked(false);
@@ -172,6 +182,10 @@ public class MainActivity extends AppCompatActivity {
         mToolbarText.setText(getResources().getString(R.string.app_name));
     }
 
+    /*
+    @param fragment     the new fragment that will replace the old fragment
+    @param tag          the tag for the new fragment
+     */
     public void replaceFragment(Fragment fragment, String tag) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainContainer, fragment, tag);

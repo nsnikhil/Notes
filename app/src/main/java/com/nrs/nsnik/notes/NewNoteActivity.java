@@ -113,6 +113,10 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     ImageAdapter mImageAdapter;
     FileOperation mFileOperation;
 
+    /*
+    TODO DOCUMENTATION AFTER REVIEWING THE ENTIRE CODE IN THIS CLASS
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
