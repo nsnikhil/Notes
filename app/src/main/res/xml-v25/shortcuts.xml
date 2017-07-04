@@ -1,0 +1,30 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/launcheradd"
+        android:shortcutDisabledMessage="@string/shortcutAddNoteDisabledMsg"
+        android:shortcutId="addNote"
+        android:shortcutLongLabel="@string/shortcutAddNoteLongMsg"
+        android:shortcutShortLabel="@string/shortcutAddNoteShortMsg">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.nrs.nsnik.notes.NewNoteActivity"
+            android:targetPackage="com.nrs.nsnik.notes" />
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/launchersearch"
+        android:shortcutDisabledMessage="@string/shortcutSearchDisabledMsg"
+        android:shortcutId="searchNote"
+        android:shortcutLongLabel="@string/shortcutSearchLongMsg"
+        android:shortcutShortLabel="@string/shortcutSearchShortMsg">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.nrs.nsnik.notes.SearchActivity"
+            android:targetPackage="com.nrs.nsnik.notes" />
+    </shortcut>
+
+</shortcuts>
+

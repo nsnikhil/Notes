@@ -25,7 +25,6 @@ import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -59,7 +58,7 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     @BindView(R.id.commonList)
     RecyclerView mList;
     @BindView(R.id.homeEmptyState)
-    TextView mEmpty;
+    LinearLayout mEmpty;
     @BindView(R.id.fabAdd)
     FloatingActionButton mAddSpinner;
     @BindView(R.id.fabAddNote)

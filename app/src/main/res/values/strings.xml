@@ -19,9 +19,24 @@
     <string name="searchHint">Search folder and notes…</string>
     <string name="imageDescription">Image</string>
     <string name="imageError">Error</string>
-    <string name="emptyState">No Notes found here…</string>
     <string name="headingNotes">Notes</string>
     <string name="headingFolder">Folders</string>"
+
+    <!-- emptyStateStrings-->
+    <string name="emptyStateEmpty">No notes yet\n Tap the "+" to get started</string>
+    <string name="emptyStateSearch">No notes or folder matched to\u0020</string>
+    <string name="emptyStateSearchNoString">Enter a word to start the search</string>
+    <!-- -->
+
+    <!-- launcherShortcuts-->
+    <string name="shortcutAddNoteShortMsg">Add Note</string>
+    <string name="shortcutAddNoteLongMsg">Add Note</string>
+    <string name="shortcutAddNoteDisabledMsg">Error</string>
+
+    <string name="shortcutSearchShortMsg">Search</string>
+    <string name="shortcutSearchLongMsg">Search</string>
+    <string name="shortcutSearchDisabledMsg">Error</string>
+    <!-- -->
 
 
     <!-- navigationMenu-->

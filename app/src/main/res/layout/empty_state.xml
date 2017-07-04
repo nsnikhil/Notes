@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/homeEmptyState"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/wrapContent"
-    android:text="@string/emptyState"
-    android:textSize="24sp"
-    android:textStyle="bold" />
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/emptyStateImage"
+        style="@style/wrapContent"
+        android:layout_gravity="center"
+        android:padding="@dimen/sixteen"
+        android:src="@drawable/noresults"
+        android:visibility="visible" />
+
+
+    <TextView
+        android:id="@+id/emptyStateText"
+        style="@style/wrapContent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/emptyStateEmpty"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
 

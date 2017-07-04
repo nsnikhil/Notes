@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nrs.nsnik.notes.adapters.SearchAdapter;
@@ -45,8 +47,13 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
     @BindView(R.id.searchText)
     EditText mSearchText;
     @BindView(R.id.searchEmptyState)
-    TextView mEmptyState;
+    LinearLayout mEmptyState;
+    @BindView(R.id.emptyStateText)
+    TextView mEmptyStateText;
+    @BindView(R.id.emptyStateImage)
+    ImageView mEmptyStateImage;
     private PublishSubject<String> mSubject;
+    private String mCurrentSearch;
     private SearchAdapter mSearchAdapter;
     private List<SearchObject> mQueryList;
 
@@ -75,6 +82,7 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
         mSearchList.setLayoutManager(new LinearLayoutManager(this));
         mSearchAdapter = new SearchAdapter(this, mQueryList);
         mSearchList.setAdapter(mSearchAdapter);
+        mEmptyStateText.setText(getResources().getString(R.string.emptyStateSearch));
         /*
         Subject is special in a sense that its is both the
         observer and observable i.e. you can pass data using
@@ -97,14 +105,26 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!editable.toString().isEmpty() && editable.toString().length() > 0)
-                    performSearch(editable.toString(), false);
+                if (!editable.toString().isEmpty() && editable.toString().length() > 0) {
+                    mEmptyStateImage.setVisibility(View.VISIBLE);
+                    mCurrentSearch = editable.toString();
+                    performSearch(mCurrentSearch, false);
+                } else {
+                    mEmptyStateImage.setVisibility(View.GONE);
+                    mEmptyStateText.setText(getResources().getString(R.string.emptyStateSearchNoString));
+                }
             }
         });
         mSearchText.setOnEditorActionListener((textView, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if (!textView.getText().toString().isEmpty() && textView.getText().toString().length() > 0)
-                    performSearch(textView.getText().toString(), true);
+                if (!textView.getText().toString().isEmpty() && textView.getText().toString().length() > 0) {
+                    mEmptyStateImage.setVisibility(View.VISIBLE);
+                    mCurrentSearch = textView.getText().toString();
+                    performSearch(mCurrentSearch, true);
+                } else {
+                    mEmptyStateImage.setVisibility(View.GONE);
+                    mEmptyStateText.setText(getResources().getString(R.string.emptyStateSearchNoString));
+                }
                 return true;
             }
             return false;
@@ -146,6 +166,7 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
                             mQueryList = searchObjects;
                             mSearchAdapter.modifyList(mQueryList);
                         } else {
+                            mEmptyStateText.setText(getResources().getString(R.string.emptyStateSearch) + mCurrentSearch);
                             mEmptyState.setVisibility(View.VISIBLE);
                         }
                     }
