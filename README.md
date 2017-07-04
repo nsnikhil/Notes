@@ -1,6 +1,6 @@
 # Notes
 
-[![PLay Store Link](https://lh4.googleusercontent.com/WBgKxhkKlFcgJliosv7cfeST_bUoBBar_-uMFMEGSBQZycTUpoacTG1HD576F2nJCoEdBZpV=w1920-h986)](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
+[![PLay Store Link](http://www21.filehosting.org/f0a70b091397c67320d2318a8106a267/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
 
 ## Info
 
@@ -14,12 +14,14 @@
 
 ## To-Do
 
+- [ ] Replace Notify set data change with diff util in all the adapters.
 - [ ] Implmentation of the starred and vault fragments.
 - [ ] Finish the share and star menu items.
-- [ ] Replace Note Object Class with AutoValue Library.
+- [ ] Replace Object Class with AutoValue Library.
 - [ ] Complete the Page indicator custom view class.
 - [ ] Complete custom animation fro RecycelrView.
 - [ ] Complete Diff.Util callback class for Notes and Folders.
+- [ ] Complete intro activity.
 
 ## Issues 
 
