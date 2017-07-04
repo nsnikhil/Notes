@@ -44,11 +44,11 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
         loaderManager.initLoader(LOADER_ID, null, this);
     }
 
-     /*
-      @param observers    the observers which are interested on data emitted
-                          by this observable and want ot be notified every time
-                          data changes
-     */
+    /*
+     @param observers    the observers which are interested on data emitted
+                         by this observable and want ot be notified every time
+                         data changes
+    */
     @Override
     public void add(Observer observer) {
         mObserverList.add(observer);

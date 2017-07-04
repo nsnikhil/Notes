@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/matchParent"
-    android:clipToPadding="false"
-    android:transitionName="fullImage">
+    android:clipToPadding="false">
 
     <ProgressBar
         android:id="@+id/singleImageProgress"
@@ -13,7 +12,8 @@
         style="@style/matchParent"
         android:background="@color/cardview_dark_background"
         android:contentDescription="@string/imageDescription"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:transitionName="fullImage" />
 
     <ImageView
         android:id="@+id/singleImageCancel"

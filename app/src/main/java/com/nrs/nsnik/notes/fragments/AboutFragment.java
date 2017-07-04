@@ -1,6 +1,5 @@
 package com.nrs.nsnik.notes.fragments;
 
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
@@ -34,40 +33,33 @@ import butterknife.Unbinder;
 
 public class AboutFragment extends Fragment {
 
-    @BindView(R.id.aboutVersionInfo)TextView mVersionNo;
-    @BindView(R.id.aboutLibraries)Button mLibraries;
-    @BindView(R.id.aboutLicense)Button mLicense;
+    private final String[] mLibraryNames = {"Butter Knife", "FABToolbar", "RxAndroid", "RxJava", "Glide", "LeakCanary"};
+    private final String[] mLibraryLinks = {"https://github.com/JakeWharton/butterknife", "https://github.com/fafaldo/FABToolbar", "https://github.com/ReactiveX/RxAndroid",
+            "https://github.com/ReactiveX/RxJava", "https://github.com/bumptech/glide", "https://github.com/square/leakcanary"};
+    @BindView(R.id.aboutVersionInfo)
+    TextView mVersionNo;
+    @BindView(R.id.aboutLibraries)
+    Button mLibraries;
+    @BindView(R.id.aboutLicense)
+    Button mLicense;
     private Unbinder mUnbinder;
-    private final String[] mLibraryNames = {"Butter Knife","FABToolbar","RxAndroid","RxJava","Glide","LeakCanary"};
-    private final String[] mLibraryLinks = {"https://github.com/JakeWharton/butterknife","https://github.com/fafaldo/FABToolbar","https://github.com/ReactiveX/RxAndroid",
-                                            "https://github.com/ReactiveX/RxJava","https://github.com/bumptech/glide","https://github.com/square/leakcanary"};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.fragment_about, container, false);
-        mUnbinder = ButterKnife.bind(this,v);
+        View v = inflater.inflate(R.layout.fragment_about, container, false);
+        mUnbinder = ButterKnife.bind(this, v);
         initialize();
         listeners();
         return v;
     }
 
-    private void initialize(){
+    private void initialize() {
         mVersionNo.setText(BuildConfig.VERSION_NAME);
     }
 
-    private void listeners(){
-        mLibraries.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showLibrariesList();
-            }
-        });
-        mLicense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               chromeCustomTab( getActivity().getResources().getString(R.string.aboutLicenseUrl));
-            }
-        });
+    private void listeners() {
+        mLibraries.setOnClickListener(view -> showLibrariesList());
+        mLicense.setOnClickListener(view -> chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl)));
     }
 
     /*
@@ -79,7 +71,7 @@ public class AboutFragment extends Fragment {
         builder.setSecondaryToolbarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
         builder.setExitAnimations(getActivity(), android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(getActivity(),Uri.parse(url));
+        customTabsIntent.launchUrl(getActivity(), Uri.parse(url));
     }
 
     /*
@@ -93,17 +85,12 @@ public class AboutFragment extends Fragment {
         for (String aLibraryName : mLibraryNames) {
             arrayAdapter.add(aLibraryName);
         }
-        choosePath.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int position) {
-                chromeCustomTab(mLibraryLinks[position]);
-            }
-        });
+        choosePath.setAdapter(arrayAdapter, (dialog, position) -> chromeCustomTab(mLibraryLinks[position]));
         choosePath.create().show();
     }
 
-    private void cleanUp(){
-        if(mUnbinder!=null){
+    private void cleanUp() {
+        if (mUnbinder != null) {
             mUnbinder.unbind();
         }
     }
@@ -123,18 +110,22 @@ public class AboutFragment extends Fragment {
         Animation animation = super.onCreateAnimation(transit, enter, nextAnim);
         if (animation == null && nextAnim != 0) {
             animation = AnimationUtils.loadAnimation(getActivity(), nextAnim);
-        }if (animation != null) {
+        }
+        if (animation != null) {
             if (getView() != null) {
                 getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            }animation.setAnimationListener(new Animation.AnimationListener() {
+            }
+            animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
                 }
+
                 public void onAnimationEnd(Animation animation) {
                     if (getView() != null) {
                         getView().setLayerType(View.LAYER_TYPE_NONE, null);
                     }
                 }
+
                 @Override
                 public void onAnimationRepeat(Animation animation) {
 

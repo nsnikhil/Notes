@@ -25,8 +25,8 @@ import java.util.Random;
 public class FileOperation {
 
 
-    private Context mContext;
     private static final String TAG = FileOperation.class.getSimpleName();
+    private Context mContext;
 
     /*
     @param c    the context object
@@ -211,7 +211,6 @@ public class FileOperation {
                 c.close();
             }
         }
-
     }
 
     /*
@@ -260,7 +259,6 @@ public class FileOperation {
         }
     }
 
-
     /*
     This method takes id of two folders and swaps them by
     first assigning a temporary id to them and then finally swapping
@@ -307,7 +305,6 @@ public class FileOperation {
             mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
             mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
         } else {
-            Toast.makeText(mContext, "Database Error", Toast.LENGTH_LONG).show();
             Log.d(TAG, "Database Error");
         }
 
@@ -350,7 +347,6 @@ public class FileOperation {
     @param min      the minimum range value
      */
     private int generateRandom(int max, int min) {
-        Random random = new Random();
-        return random.nextInt((max - min) + 1) + min;
+        return new Random().nextInt((max - min) + 1) + min;
     }
 }

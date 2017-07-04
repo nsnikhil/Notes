@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -33,7 +31,8 @@ import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String[] mFragTags = {"home", "starred", "recent","about"};
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String[] mFragTags = {"home", "starred", "recent", "about"};
     @BindView(R.id.mainToolbar)
     Toolbar mMainToolbar;
     @BindView(R.id.mainDrawerLayout)
@@ -46,9 +45,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setTheme(R.style.transparentStatusBar);
-        }
+        setTheme(R.style.transparentStatusBar);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -73,12 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void removeOffConnection() {
-        Snackbar.make(mDrawerLayout, "No Internet", Snackbar.LENGTH_INDEFINITE).setAction("Retry", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addOnConnection();
-            }
-        }).show();
+        Snackbar.make(mDrawerLayout, "No Internet", Snackbar.LENGTH_INDEFINITE).setAction("Retry", view -> addOnConnection()).show();
     }
 
     @Override
@@ -116,35 +108,32 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         mNavigationView.getMenu().getItem(0).setChecked(true);
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                mDrawerLayout.closeDrawers();
-                switch (item.getItemId()) {
-                    case R.id.navItem1:
-                        if (getSupportFragmentManager().findFragmentByTag(mFragTags[0]) == null) {
-                            replaceFragment(new HomeFragment(), mFragTags[0]);
-                            drawerAction(0);
-                        }
-                        break;
-                    case R.id.navItem2:
-                        Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-                        break;
-                    case R.id.navItem3:
-                        Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-                        break;
-                    case R.id.navItem4:
-                        Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-                        break;
-                    case R.id.navItem5:
-                        if (getSupportFragmentManager().findFragmentByTag(mFragTags[3]) == null) {
-                            replaceFragment(new AboutFragment(), mFragTags[3]);
-                            drawerAction(0);
-                        }
-                        break;
-                }
-                return true;
+        mNavigationView.setNavigationItemSelectedListener(item -> {
+            mDrawerLayout.closeDrawers();
+            switch (item.getItemId()) {
+                case R.id.navItem1:
+                    if (getSupportFragmentManager().findFragmentByTag(mFragTags[0]) == null) {
+                        replaceFragment(new HomeFragment(), mFragTags[0]);
+                        drawerAction(0);
+                    }
+                    break;
+                case R.id.navItem2:
+                    Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.navItem3:
+                    Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.navItem4:
+                    Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.navItem5:
+                    if (getSupportFragmentManager().findFragmentByTag(mFragTags[3]) == null) {
+                        replaceFragment(new AboutFragment(), mFragTags[3]);
+                        drawerAction(3);
+                    }
+                    break;
             }
+            return true;
         });
     }
 

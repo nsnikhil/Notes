@@ -3,7 +3,6 @@ package com.nrs.nsnik.notes.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -51,7 +50,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         /*
-        binder chekcs if the item at position
+        binder checks if the item at position
         has true for its isFolder field and
         appropriately attaches the icon to text
          */
@@ -60,9 +59,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         } else {
             holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48dp, 0, 0, 0);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            holder.mSearchName.setCompoundDrawableTintList(stateList());
-        }
+        holder.mSearchName.setCompoundDrawableTintList(stateList());
         holder.mSearchName.setText(mSearchList.get(position).getmName());
     }
 
@@ -105,19 +102,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SearchObject object = mSearchList.get(getAdapterPosition());
-                    if (object.ismIsFolder()) {
-                        Intent folderIntent = new Intent(mContext, ContainerActivity.class);
-                        Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
-                        //mContext.startActivity(folderIntent);
-                    } else {
-                        Intent noteIntent = new Intent(mContext, NewNoteActivity.class);
-                        Toast.makeText(mContext, "Will open note", Toast.LENGTH_LONG).show();
-                        //mContext.startActivity(noteIntent);
-                    }
+            itemView.setOnClickListener(view -> {
+                SearchObject object = mSearchList.get(getAdapterPosition());
+                if (object.ismIsFolder()) {
+                    Intent folderIntent = new Intent(mContext, ContainerActivity.class);
+                    Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
+                    //mContext.startActivity(folderIntent);
+                } else {
+                    Intent noteIntent = new Intent(mContext, NewNoteActivity.class);
+                    Toast.makeText(mContext, "Will open note", Toast.LENGTH_LONG).show();
+                    //mContext.startActivity(noteIntent);
                 }
             });
         }

@@ -3,7 +3,6 @@ package com.nrs.nsnik.notes.fragments;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -128,44 +127,29 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     }
 
     private void listeners() {
-        mAddSpinner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mNoteContainer.getVisibility() == View.INVISIBLE || mFolderContainer.getVisibility() == View.INVISIBLE) {
-                    reveal();
-                } else {
-                    disappear();
-                }
-            }
-        });
-        mAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mAddSpinner.setOnClickListener(v -> {
+            if (mNoteContainer.getVisibility() == View.INVISIBLE || mFolderContainer.getVisibility() == View.INVISIBLE) {
+                reveal();
+            } else {
                 disappear();
-                Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
-                newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle), mFolderName);
-                startActivity(newNote);
             }
         });
-        mAddFolder.setOnClickListener(new View.OnClickListener() {
+        mAddNote.setOnClickListener(v -> {
+            disappear();
+            Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
+            newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle), mFolderName);
+            startActivity(newNote);
+        });
+        mAddFolder.setOnClickListener(v -> {
+            disappear();
+            createFolderDialog();
+        });
+        mSwipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(new Runnable() {
             @Override
-            public void onClick(View v) {
-                disappear();
-                createFolderDialog();
+            public void run() {
+                mSwipeRefresh.setRefreshing(false);
             }
-        });
-        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSwipeRefresh.setRefreshing(false);
-                    }
-                }, 1000);
-
-            }
-        });
+        }, 1000));
     }
 
     /*
@@ -276,18 +260,10 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         editText.requestFocus();
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-        newFolder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-            }
-        });
-        newFolder.setPositiveButton(getResources().getString(R.string.create), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                createFolder(editText.getText().toString());
-            }
+        newFolder.setNegativeButton(getResources().getString(R.string.cancel), (dialogInterface, i) -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));
+        newFolder.setPositiveButton(getResources().getString(R.string.create), (dialogInterface, i) -> {
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            createFolder(editText.getText().toString());
         });
         newFolder.create().show();
     }
@@ -355,18 +331,22 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         Animation animation = super.onCreateAnimation(transit, enter, nextAnim);
         if (animation == null && nextAnim != 0) {
             animation = AnimationUtils.loadAnimation(getActivity(), nextAnim);
-        }if (animation != null) {
+        }
+        if (animation != null) {
             if (getView() != null) {
                 getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            }animation.setAnimationListener(new Animation.AnimationListener() {
+            }
+            animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
                 }
+
                 public void onAnimationEnd(Animation animation) {
                     if (getView() != null) {
                         getView().setLayerType(View.LAYER_TYPE_NONE, null);
                     }
                 }
+
                 @Override
                 public void onAnimationRepeat(Animation animation) {
 

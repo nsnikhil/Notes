@@ -1,5 +1,6 @@
 package com.nrs.nsnik.notes.customViews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -38,6 +39,7 @@ public class UnScrollableViewPager extends ViewPager {
     /*
     returns false i.e. no implementation to handle touch screen motion events.
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return false;

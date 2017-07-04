@@ -2,12 +2,10 @@ package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -18,7 +16,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -416,22 +413,19 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName, final Uri uri, View itemView) {
         PopupMenu menu = new PopupMenu(mContext, itemView, Gravity.START);
         menu.inflate(R.menu.pop_up_menu);
-        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.popUpStar:
-                        Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.popUpShare:
-                        Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.popUpDelete:
-                        makeDeleteDialog(message, uri, isFolder, folderName);
-                        break;
-                }
-                return false;
+        menu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.popUpStar:
+                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.popUpShare:
+                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.popUpDelete:
+                    makeDeleteDialog(message, uri, isFolder, folderName);
+                    break;
             }
+            return false;
         });
         menu.show();
     }
@@ -446,18 +440,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         AlertDialog.Builder delete = new AlertDialog.Builder(mContext);
         delete.setTitle(mContext.getResources().getString(R.string.warning))
                 .setMessage(message)
-                .setNegativeButton(mContext.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                .setNegativeButton(mContext.getResources().getString(R.string.no), (dialogInterface, i) -> {
 
-                    }
                 })
-                .setPositiveButton(mContext.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        delete(uri, isFolder, folderName);
-                    }
-                });
+                .setPositiveButton(mContext.getResources().getString(R.string.yes), (dialogInterface, i) -> delete(uri, isFolder, folderName));
         delete.create().show();
     }
 
@@ -503,44 +489,38 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @SuppressWarnings("unchecked")
-                @Override
-                public void onClick(View v) {
-                    //check if position is valid
-                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        /*
-                        get the id for the note at the particular
-                        position and attach it to content uri and
-                        pass it to new note activity
-                         */
-                        int startPos = mFolderList.size() + 2;
-                        int currPos = getAdapterPosition() - startPos;
-                        Intent intent = new Intent(mContext, NewNoteActivity.class);
-                        intent.setData(Uri.withAppendedPath(TableNames.mContentUri,
-                                String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos))));
-                        Pair<View, String> p1 = Pair.create(itemView, "noteContainer");
-                        Pair<View, String> p2 = Pair.create((View) mNoteTitle, "noteTitle");
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, p1, p2);
-                        mContext.startActivity(intent, options.toBundle());
-                    }
+
+            itemView.setOnClickListener(v -> {
+                //check if position is valid
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    /*
+                    get the id for the note at the particular
+                    position and attach it to content uri and
+                    pass it to new note activity
+                     */
+                    int startPos = mFolderList.size() + 2;
+                    int currPos = getAdapterPosition() - startPos;
+                    Intent intent = new Intent(mContext, NewNoteActivity.class);
+                    intent.setData(Uri.withAppendedPath(TableNames.mContentUri,
+                            String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos))));
+                    Pair<View, String> p1 = Pair.create(itemView, "noteContainer");
+                    Pair<View, String> p2 = Pair.create((View) mNoteTitle, "noteTitle");
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, p1, p2);
+                    mContext.startActivity(intent, options.toBundle());
                 }
             });
-            mMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //check if position is valid
-                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        /*
-                        calculate the id for the particular position and
-                        use it create a uri that is passed to inflate menu
-                        function
-                         */
-                        int startPos = mFolderList.size() + 2;
-                        int currPos = getAdapterPosition() - startPos;
-                        Uri uri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos)));
-                        inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleNoteWarning), false, "", uri, mMore);
-                    }
+            mMore.setOnClickListener(v -> {
+                //check if position is valid
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    /*
+                    calculate the id for the particular position and
+                    use it create a uri that is passed to inflate menu
+                    function
+                     */
+                    int startPos = mFolderList.size() + 2;
+                    int currPos = getAdapterPosition() - startPos;
+                    Uri uri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos)));
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleNoteWarning), false, "", uri, mMore);
                 }
             });
         }
@@ -555,43 +535,35 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public FolderViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mFolderNameText.setCompoundDrawableTintList(stateList());
-            }
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //check if position is valid
-                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        /*
-                          get the id for the folder at the particular
-                          position and attach it to folder content uri and
-                          pass it to container activity
-                        */
-                        Intent intent = new Intent(mContext, ContainerActivity.class);
-                        intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderNameText.getText().toString());
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
-                        mContext.startActivity(intent, options.toBundle());
-                    }
+            mFolderNameText.setCompoundDrawableTintList(stateList());
+            itemView.setOnClickListener(v -> {
+                //check if position is valid
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    /*
+                      get the id for the folder at the particular
+                      position and attach it to folder content uri and
+                      pass it to container activity
+                    */
+                    Intent intent = new Intent(mContext, ContainerActivity.class);
+                    intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderNameText.getText().toString());
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
+                    mContext.startActivity(intent, options.toBundle());
                 }
             });
-            mFolderMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //check if position is valid
-                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                         /*
-                        calculate the id for the particular position and
-                        use it create a uri that is passed to inflate menu
-                        function
-                         */
-                        int startPos = 1;
-                        int currPos = getAdapterPosition() - startPos;
-                        Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName);
-                        int id = mFileOperations.getId(baseUri, currPos);
-                        Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(id));
-                        inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning), true, mFolderNameText.getText().toString(), uri, mFolderMore);
-                    }
+            mFolderMore.setOnClickListener(v -> {
+                //check if position is valid
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                     /*
+                    calculate the id for the particular position and
+                    use it create a uri that is passed to inflate menu
+                    function
+                     */
+                    int startPos = 1;
+                    int currPos = getAdapterPosition() - startPos;
+                    Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName);
+                    int id = mFileOperations.getId(baseUri, currPos);
+                    Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(id));
+                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning), true, mFolderNameText.getText().toString(), uri, mFolderMore);
                 }
             });
         }

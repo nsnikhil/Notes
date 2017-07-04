@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -33,12 +32,12 @@ import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class SearchActivity extends AppCompatActivity implements NotesCount, FolderCount {
 
+    private static final String TAG = SearchActivity.class.getSimpleName();
     @BindView(R.id.searchToolBar)
     Toolbar mSearchToolbar;
     @BindView(R.id.searchList)
@@ -50,7 +49,6 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
     private PublishSubject<String> mSubject;
     private SearchAdapter mSearchAdapter;
     private List<SearchObject> mQueryList;
-    private static final String TAG = SearchActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,16 +101,13 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
                     performSearch(editable.toString(), false);
             }
         });
-        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    if (!textView.getText().toString().isEmpty() && textView.getText().toString().length() > 0)
-                        performSearch(textView.getText().toString(), true);
-                    return true;
-                }
-                return false;
+        mSearchText.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (!textView.getText().toString().isEmpty() && textView.getText().toString().length() > 0)
+                    performSearch(textView.getText().toString(), true);
+                return true;
             }
+            return false;
         });
     }
 
@@ -137,12 +132,7 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
      */
     private void initializeSubject() {
         mSubject.subscribeOn(Schedulers.io())
-                .map(new Function<String, List<SearchObject>>() {
-                    @Override
-                    public List<SearchObject> apply(@NonNull String s) throws Exception {
-                        return getSearchList(s);
-                    }
-                }).observeOn(AndroidSchedulers.mainThread())
+                .map(this::getSearchList).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new io.reactivex.Observer<List<SearchObject>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {

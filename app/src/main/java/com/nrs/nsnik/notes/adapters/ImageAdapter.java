@@ -35,8 +35,6 @@ IMAGE ADAPTER TAKES IN LIST OF STRING WHERE EACH
  RECYCLER VIEW, IT ALSO TAKES A SENDSIZE INTERFACE WHICH
  IS RESPONSIBLE FOR LETTING THE RECYCLER VIEWS ACTIVITY/FRAGMENT
  KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
-  @author  Nikhil Soni
-  @version   1.0
  */
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
@@ -128,26 +126,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 remove.setVisibility(View.GONE);
                 image.setScaleType(ImageView.ScaleType.CENTER);
             } else {
-                remove.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int pos = getAdapterPosition();
-                        mImageLoc.remove(pos);
-                        notifyItemRemoved(pos);
-                        mSize.validateSize(pos);
-                    }
+                remove.setOnClickListener(view -> {
+                    int pos = getAdapterPosition();
+                    mImageLoc.remove(pos);
+                    notifyItemRemoved(pos);
+                    mSize.validateSize(pos);
                 });
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), mImageLoc);
-                        bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
-                        fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, itemView, "fullImage");
-                        mContext.startActivity(fullScreen, options.toBundle());
-                    }
+                itemView.setOnClickListener(view -> {
+                    Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), mImageLoc);
+                    bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
+                    fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, itemView, "fullImage");
+                    mContext.startActivity(fullScreen, options.toBundle());
                 });
             }
         }

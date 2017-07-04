@@ -16,9 +16,6 @@ import com.nrs.nsnik.notes.data.TableNames.table2;
 
 public class TableProvider extends ContentProvider {
 
-    /*
-    TODO  WRITE DOCUMENTATION FOR PROVIDER CLASS
-     */
 
     private static final String TAG = TableProvider.class.getSimpleName();
 

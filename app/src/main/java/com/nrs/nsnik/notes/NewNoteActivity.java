@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -39,7 +38,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
@@ -190,28 +188,22 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             AlertDialog.Builder deleteDialog = new AlertDialog.Builder(NewNoteActivity.this);
             deleteDialog.setTitle(getResources().getString(R.string.warning));
             deleteDialog.setMessage(getResources().getString(R.string.deleteSingleNoteWarning));
-            deleteDialog.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+            deleteDialog.setNegativeButton(getResources().getString(R.string.no), (dialog, which) -> {
 
+            }).setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {
+                mImagesArray.clear();
+                mImagesLocations.clear();
+                try {
+                    mFileOperation.deleteFile(mIntentUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }).setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    mImagesArray.clear();
-                    mImagesLocations.clear();
-                    try {
-                        mFileOperation.deleteFile(mIntentUri);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    int count = getContentResolver().delete(mIntentUri, null, null);
-                    if (count == 0) {
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteNoteFailed), Toast.LENGTH_SHORT).show();
-                    } else {
-                        finish();
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.delete), Toast.LENGTH_SHORT).show();
-                    }
+                int count = getContentResolver().delete(mIntentUri, null, null);
+                if (count == 0) {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteNoteFailed), Toast.LENGTH_SHORT).show();
+                } else {
+                    finish();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.delete), Toast.LENGTH_SHORT).show();
                 }
             });
             deleteDialog.create().show();
@@ -417,12 +409,9 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.newNoteSetReminder:
                 Calendar c = Calendar.getInstance();
-                TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        mHour = i;
-                        mMinutes = i1;
-                    }
+                TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, (timePicker, i, i1) -> {
+                    mHour = i;
+                    mMinutes = i1;
                 }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true);
                 time.show();
 
@@ -439,12 +428,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     mPlayAudio.setImageResource(R.drawable.ic_pause_black_24dp);
                     Thread prog = new Thread(this);
                     prog.start();
-                    mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            mPlayAudio.setImageResource(R.drawable.ic_play_arrow_black_24dp);
-                        }
-                    });
+                    mPlayer.setOnCompletionListener(mediaPlayer -> mPlayAudio.setImageResource(R.drawable.ic_play_arrow_black_24dp));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -564,15 +548,12 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             e.printStackTrace();
         }
         mRecorder.start();
-        record.setNeutralButton("Stop Recording", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                mRecorder.stop();
-                mRecorder.release();
-                mRecorder = null;
-                newNoteAudioContainer.setVisibility(View.VISIBLE);
-                mAudio = 1;
-            }
+        record.setNeutralButton("Stop Recording", (dialogInterface, i) -> {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+            newNoteAudioContainer.setVisibility(View.VISIBLE);
+            mAudio = 1;
         });
         recordDialog = record.create();
         recordDialog.setCancelable(false);
