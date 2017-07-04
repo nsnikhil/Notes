@@ -1,10 +1,14 @@
 package com.nrs.nsnik.notes.helpers;
 
+import android.annotation.SuppressLint;
+import android.content.AsyncQueryHandler;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,6 +24,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Random;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class FileOperation {
@@ -27,12 +38,55 @@ public class FileOperation {
 
     private static final String TAG = FileOperation.class.getSimpleName();
     private Context mContext;
+    private AsyncQueryHandler mAsyncQueryHandler;
 
     /*
     @param c    the context object
      */
+    @SuppressLint("HandlerLeak")
     public FileOperation(Context c) {
         mContext = c;
+    }
+
+    @SuppressLint("HandlerLeak")
+    public FileOperation(Context context, boolean requireAsyncDb) {
+        mContext = context;
+        mAsyncQueryHandler = new AsyncQueryHandler(mContext.getContentResolver()) {
+            @Override
+            protected Handler createHandler(Looper looper) {
+                return super.createHandler(looper);
+            }
+
+            @Override
+            protected void onInsertComplete(int token, Object cookie, Uri uri) {
+                if (uri == null) {
+                    Toast.makeText(mContext, mContext.getResources().getString(R.string.insertFailed), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, mContext.getResources().getString(R.string.insertedNote), Toast.LENGTH_SHORT).show();
+                }
+                super.onInsertComplete(token, cookie, uri);
+            }
+
+            @Override
+            protected void onUpdateComplete(int token, Object cookie, int result) {
+                if (result == 0) {
+                    Toast.makeText(mContext, mContext.getResources().getString(R.string.updateFailed), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, mContext.getResources().getString(R.string.updateNote), Toast.LENGTH_SHORT).show();
+                }
+                super.onUpdateComplete(token, cookie, result);
+            }
+
+            @Override
+            protected void onDeleteComplete(int token, Object cookie, int result) {
+                super.onDeleteComplete(token, cookie, result);
+            }
+
+            @Override
+            protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+                super.onQueryComplete(token, cookie, cursor);
+            }
+        };
     }
 
 
@@ -100,13 +154,15 @@ public class FileOperation {
     private void updateInTable(String title, Uri uri) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(table1.mTitle, title);
-        int count = mContext.getContentResolver().update(uri, contentValues, null, null);
+        mAsyncQueryHandler.startUpdate(1, null, uri, contentValues, null, null);
+        /*int count = mContext.getContentResolver().update(uri, contentValues, null, null);
         if (count == 0) {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.updateFailed), Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.updateNote), Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
+
 
     /*
     @param fileName     the name of the fie which contains the note object
@@ -117,12 +173,13 @@ public class FileOperation {
         cv.put(table1.mTitle, noteObject.getTitle());
         cv.put(table1.mFileName, fileName);
         cv.put(table1.mFolderName, noteObject.getFolderName());
-        Uri u = mContext.getContentResolver().insert(TableNames.mContentUri, cv);
+        mAsyncQueryHandler.startInsert(1, null, TableNames.mContentUri, cv);
+       /* Uri u = mContext.getContentResolver().insert(TableNames.mContentUri, cv);
         if (u == null) {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.insertFailed), Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.insertedNote), Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     /*
@@ -174,7 +231,7 @@ public class FileOperation {
     @param uri      the uri that will be used to get all the images and the file Name
                     of a note and then be deleted
      */
-    public void deleteFile(Uri uri) throws IOException {
+    private void deleteFileBack(Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileInputStream fis = null;
@@ -211,6 +268,39 @@ public class FileOperation {
                 c.close();
             }
         }
+    }
+
+    /*
+    TODO FIX THE BUG IN COMPLETABLE
+     */
+    public void deleteFile(Uri uri) {
+        Completable completable = Completable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                deleteFileBack(uri);
+                return null;
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        completable.subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "deletion Completed");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, e.getMessage());
+            }
+        });
+    }
+
+    public void deleteFromDb(Uri uri, String selection, String[] selectionArguments) {
+        mAsyncQueryHandler.startDelete(1, null, uri, selection, selectionArguments);
     }
 
     /*

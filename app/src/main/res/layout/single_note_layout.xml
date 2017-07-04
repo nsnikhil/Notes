@@ -2,6 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     style="@style/stretchedHorizontally"
+    android:animateLayoutChanges="true"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
@@ -24,10 +25,10 @@
 
         <TextView
             android:id="@+id/singleNoteTitle"
-            android:transitionName="noteTitle"
             style="@style/newNoteHeading"
             android:maxLines="1"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:transitionName="noteTitle" />
 
         <TextView
             android:id="@+id/singleNoteContent"

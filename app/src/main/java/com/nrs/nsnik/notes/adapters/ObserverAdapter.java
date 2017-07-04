@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /*
 This adapter takes in a uri queries the uri and
@@ -66,6 +72,10 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private File mFolder;
     private FileOperation mFileOperations;
     private LayoutInflater mLayoutInflater;
+
+    /*
+    TODO ENABLE SHOW TRANSITIONING OF LAYOUT CHANGES
+     */
 
     /*
     @param context      the context object
@@ -228,20 +238,43 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @TODO CHANGE NOTIFYDATASETCHANGE WITH DIFF UTIL
      */
     private void makeNotesList(Cursor cursor) {
-        mNotesList.clear();
-        while (cursor != null && cursor.moveToNext()) {
+        Single<List<NoteObject>> listSingle = Single.fromCallable(() -> {
+            List<NoteObject> tempList = new ArrayList<>();
             NoteObject object = null;
-            try {
-                object = new FileOperation(mContext).readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
-            } catch (IOException e) {
-                e.printStackTrace();
+            FileOperation operation = new FileOperation(mContext);
+            while (cursor != null && cursor.moveToNext()) {
+                try {
+                    object = operation.readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (object != null && object.getFolderName().equalsIgnoreCase(mFolderName)) {
+                    tempList.add(object);
+                }
             }
-            if (object != null && object.getFolderName().equalsIgnoreCase(mFolderName)) {
-                mNotesList.add(object);
+            return tempList;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        listSingle.subscribe(new SingleObserver<List<NoteObject>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
             }
-        }
-        mNotesCount.getNotesCount(mNotesList.size());
-        notifyDataSetChanged();
+
+            @Override
+            public void onSuccess(List<NoteObject> noteObjects) {
+                if (noteObjects != null) {
+                    mNotesList.clear();
+                    mNotesList.addAll(noteObjects);
+                    mNotesCount.getNotesCount(mNotesList.size());
+                    notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, e.getMessage());
+            }
+        });
     }
 
     /*
@@ -254,14 +287,35 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
    @TODO CHANGE NOTIFYDATASETCHANGE WITH DIFF UTIL
     */
     private void makeFolderList(Cursor cursor) {
-        mFolderList.clear();
-        while (cursor != null && cursor.moveToNext()) {
-            if (cursor.getString(cursor.getColumnIndex(TableNames.table2.mParentFolderName)).equalsIgnoreCase(mFolderName)) {
-                mFolderList.add(justifyName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))));
+        Single<List<String>> listSingle = Single.fromCallable(() -> {
+            List<String> tempList = new ArrayList<>();
+            while (cursor != null && cursor.moveToNext()) {
+                if (cursor.getString(cursor.getColumnIndex(TableNames.table2.mParentFolderName)).equalsIgnoreCase(mFolderName)) {
+                    tempList.add(justifyName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))));
+                }
             }
-        }
-        mFolderCount.getFolderCount(mFolderList.size());
-        notifyDataSetChanged();
+            return tempList;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        listSingle.subscribe(new SingleObserver<List<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onSuccess(List<String> folderNames) {
+                if (folderNames != null) {
+                    mFolderList.clear();
+                    mFolderList.addAll(folderNames);
+                    mFolderCount.getFolderCount(mFolderList.size());
+                    notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, e.getMessage());
+            }
+        });
     }
 
     /*
@@ -453,22 +507,20 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      @param folderName      name of the folder
      */
     private void delete(Uri uri, boolean isFolder, String folderName) {
+        FileOperation operation = new FileOperation(mContext, true);
         Uri noteUri;
         if (isFolder) {
             noteUri = Uri.withAppendedPath(TableNames.mContentUri, folderName);
         } else {
             noteUri = uri;
         }
-        try {
-            mFileOperations.deleteFile(noteUri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (isFolder) {
-                mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
-            }
+        operation.deleteFile(noteUri);
+        if (isFolder) {
+            operation.deleteFromDb(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
+            //mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
         }
-        mContext.getContentResolver().delete(uri, null, null);
+        operation.deleteFromDb(uri, null, null);
+        //mContext.getContentResolver().delete(uri, null, null);
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder {

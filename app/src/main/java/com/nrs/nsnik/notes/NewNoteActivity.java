@@ -193,18 +193,16 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             }).setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {
                 mImagesArray.clear();
                 mImagesLocations.clear();
-                try {
-                    mFileOperation.deleteFile(mIntentUri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                int count = getContentResolver().delete(mIntentUri, null, null);
+                mFileOperation.deleteFile(mIntentUri);
+                mFileOperation.deleteFromDb(mIntentUri, null, null);
+                finish();
+                /*int count = getContentResolver().delete(mIntentUri, null, null);
                 if (count == 0) {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteNoteFailed), Toast.LENGTH_SHORT).show();
                 } else {
                     finish();
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.delete), Toast.LENGTH_SHORT).show();
-                }
+                }*/
             });
             deleteDialog.create().show();
         }
@@ -318,7 +316,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         imageRecyclerView.setAdapter(mImageAdapter);
         mImagesLocations = new ArrayList<>();
         seekAudio.incrementProgressBy(10);
-        mFileOperation = new FileOperation(getApplicationContext());
+        mFileOperation = new FileOperation(getApplicationContext(), true);
     }
 
     @Override
