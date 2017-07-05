@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -508,19 +509,11 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      */
     private void delete(Uri uri, boolean isFolder, String folderName) {
         FileOperation operation = new FileOperation(mContext, true);
-        Uri noteUri;
         if (isFolder) {
-            noteUri = Uri.withAppendedPath(TableNames.mContentUri, folderName);
+            operation.deleteFolder(uri, folderName);
         } else {
-            noteUri = uri;
+            operation.deleteNote(uri);
         }
-        operation.deleteFile(noteUri);
-        if (isFolder) {
-            operation.deleteFromDb(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
-            //mContext.getContentResolver().delete(Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
-        }
-        operation.deleteFromDb(uri, null, null);
-        //mContext.getContentResolver().delete(uri, null, null);
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder {
@@ -547,16 +540,22 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     /*
                     get the id for the note at the particular
-                    position and attach it to content uri and
-                    pass it to new note activity
+                    position and pass it along with the serialized
+                    note object to the new note activity
                      */
                     int startPos = mFolderList.size() + 2;
                     int currPos = getAdapterPosition() - startPos;
+                    int noteId = mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos);
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
-                    intent.setData(Uri.withAppendedPath(TableNames.mContentUri,
-                            String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos))));
+
+                    Bundle noteArgs = new Bundle();
+                    noteArgs.putSerializable(mContext.getResources().getString(R.string.bundleNoteSerialObject), mNotesList.get(currPos));
+                    noteArgs.putInt(mContext.getResources().getString(R.string.bundleNoteSerialId), noteId);
+
+                    intent.putExtras(noteArgs);
+
                     Pair<View, String> p1 = Pair.create(itemView, "noteContainer");
-                    Pair<View, String> p2 = Pair.create((View) mNoteTitle, "noteTitle");
+                    Pair<View, String> p2 = Pair.create(mNoteTitle, "noteTitle");
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, p1, p2);
                     mContext.startActivity(intent, options.toBundle());
                 }

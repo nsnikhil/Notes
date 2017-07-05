@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.nrs.nsnik.notes.adapters.ImageAdapter;
+import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.SendSize;
@@ -49,9 +50,7 @@ import com.nrs.nsnik.notes.objects.NoteObject;
 import com.squareup.leakcanary.RefWatcher;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -122,63 +121,42 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         ButterKnife.bind(this);
         initialize();
         setClickListener();
-        if (getIntent().getData() != null) {
-            mIntentUri = getIntent().getData();
-            try {
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
-                }
-                setNote();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+            setNote();
+        } else {
+            if (getIntent().getExtras() != null) {
+                mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
             }
-        }
-        if (getIntent().getExtras() != null) {
-            mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
         }
     }
 
-    private void setNote() throws IOException {
-        Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
-        if (c != null && c.moveToFirst()) {
-            mTitle.setText(c.getString(c.getColumnIndex(table1.mTitle)));
-            File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
-            File f = new File(folder, c.getString(c.getColumnIndex(table1.mFileName)));
-            FileInputStream fis = null;
-            ObjectInputStream ois = null;
-            try {
-                fis = new FileInputStream(f);
-                ois = new ObjectInputStream(fis);
-                NoteObject obj = (NoteObject) ois.readObject();
-                mNote.setText(obj.getNote());
-                if (obj.getImages().size() > 0) {
+    private void setNote() {
+        if (getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+            Bundle args = getIntent().getExtras();
+            mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(args.getInt(getResources().getString(R.string.bundleNoteSerialId))));
+            NoteObject object = (NoteObject) args.getSerializable(getResources().getString(R.string.bundleNoteSerialObject));
+            if (object != null) {
+                File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
+                mTitle.setText(object.getTitle());
+                mNote.setText(object.getNote());
+                mFolderName = object.getFolderName();
+                if (object.getImages().size() > 0) {
                     imageRecyclerView.setVisibility(View.VISIBLE);
-                    for (int i = 0; i < obj.getImages().size(); i++) {
-                        mImagesLocations.add(obj.getImages().get(i));
-                        File path = new File(folder, obj.getImages().get(i));
+                    for (int i = 0; i < object.getImages().size(); i++) {
+                        mImagesLocations.add(object.getImages().get(i));
+                        File path = new File(folder, object.getImages().get(i));
                         mImagesArray.add(BitmapFactory.decodeFile(path.toString()));
                     }
                     mImageAdapter.modifyList(mImagesLocations);
                 }
-                if (obj.getAudioLocation() != null) {
+                if (object.getAudioLocation() != null) {
                     newNoteAudioContainer.setVisibility(View.VISIBLE);
-                    mAudioFileName = obj.getAudioLocation();
+                    mAudioFileName = object.getAudioLocation();
                 }
-                if (obj.getReminder() != 0) {
+                if (object.getReminder() != 0) {
                     mHour = 292;
                     mMinutes = 392;
                 }
-                mFolderName = obj.getFolderName();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (fis != null) {
-                    fis.close();
-                }
-                if (ois != null) {
-                    ois.close();
-                }
-                c.close();
             }
         }
     }
@@ -193,16 +171,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             }).setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {
                 mImagesArray.clear();
                 mImagesLocations.clear();
-                mFileOperation.deleteFile(mIntentUri);
-                mFileOperation.deleteFromDb(mIntentUri, null, null);
+                mFileOperation.deleteNote(mIntentUri);
                 finish();
-                /*int count = getContentResolver().delete(mIntentUri, null, null);
-                if (count == 0) {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleteNoteFailed), Toast.LENGTH_SHORT).show();
-                } else {
-                    finish();
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.delete), Toast.LENGTH_SHORT).show();
-                }*/
             });
             deleteDialog.create().show();
         }

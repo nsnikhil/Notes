@@ -57,6 +57,8 @@
     <string name="bundleStringImageArray">bundImgArr</string>
     <string name="bundleIntentImage">bndImgs</string>
     <string name="bundleArrayListPosition">intImgPos</string>
+    <string name="bundleNoteSerialObject">bndSrNtObj</string>
+    <string name="bundleNoteSerialId">bndSrNtId</string>
     <!-- -->
 
     <!-- menuStrings-->

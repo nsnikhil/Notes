@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -43,11 +42,14 @@ public class FileOperation {
     /*
     @param c    the context object
      */
-    @SuppressLint("HandlerLeak")
     public FileOperation(Context c) {
         mContext = c;
     }
 
+    /*
+    @param c                    the context object
+    @param requireAsyncDb       boolean which indicates if the classes need asyncdb
+     */
     @SuppressLint("HandlerLeak")
     public FileOperation(Context context, boolean requireAsyncDb) {
         mContext = context;
@@ -271,25 +273,24 @@ public class FileOperation {
     }
 
     /*
-    TODO FIX THE BUG IN COMPLETABLE
+    @param uri  the uri of the bot that is to be deleted
+
+    first the resources related to note are deleted by calling the function
+    @function deleteFileBack(Uri) then the note data is deleted from database
      */
-    public void deleteFile(Uri uri) {
-        Completable completable = Completable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                deleteFileBack(uri);
-                return null;
-            }
+    public void deleteNote(Uri uri) {
+        Completable completable = Completable.fromCallable(() -> {
+            deleteFileBack(uri);
+            return null;
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
         completable.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
-
             }
 
             @Override
             public void onComplete() {
-                Log.d(TAG, "deletion Completed");
+                mAsyncQueryHandler.startDelete(0, null, uri, null, null);
             }
 
             @Override
@@ -299,8 +300,37 @@ public class FileOperation {
         });
     }
 
-    public void deleteFromDb(Uri uri, String selection, String[] selectionArguments) {
-        mAsyncQueryHandler.startDelete(1, null, uri, selection, selectionArguments);
+    /*
+    @param uri      the uri of the folder that is to be deleted
+    @param folderName   the name of the folder that is to deleted
+    
+    folder name is to delete all the notes and their
+    resources that arw within that folder, first the
+    resources related to all notes in folder is deleted then
+    all the notes in the database that are stored in that
+    folder and finally the folder
+     */
+    public void deleteFolder(Uri uri, String folderName) {
+        Completable completable = Completable.fromCallable(() -> {
+            deleteFileBack(Uri.withAppendedPath(TableNames.mContentUri, folderName));
+            return null;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        completable.subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onComplete() {
+                mAsyncQueryHandler.startDelete(0, null, Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
+                mAsyncQueryHandler.startDelete(0, null, uri, null, null);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, e.getMessage());
+            }
+        });
     }
 
     /*
