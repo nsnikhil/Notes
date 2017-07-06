@@ -61,8 +61,7 @@
                 android:labelFor="@+id/newNoteTitle"
                 android:maxLines="1"
                 android:padding="@dimen/sixteen"
-                android:textSize="24sp"
-                android:transitionName="noteTitle" />
+                android:textSize="24sp" />
 
             <EditText
                 android:id="@+id/newNoteContent"

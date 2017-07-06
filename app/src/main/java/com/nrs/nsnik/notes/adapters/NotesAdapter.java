@@ -4,18 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,28 +25,17 @@ import com.bumptech.glide.Glide;
 import com.nrs.nsnik.notes.ContainerActivity;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.data.FolderDataObserver;
-import com.nrs.nsnik.notes.data.NoteDataObserver;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.helpers.FileOperation;
-import com.nrs.nsnik.notes.interfaces.FolderCount;
 import com.nrs.nsnik.notes.interfaces.ItemTouchListener;
-import com.nrs.nsnik.notes.interfaces.NotesCount;
-import com.nrs.nsnik.notes.interfaces.Observer;
 import com.nrs.nsnik.notes.objects.NoteObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /*
 This adapter takes in a uri queries the uri and
@@ -60,16 +45,14 @@ adapters clear the old list re draws the entire list
 with the new data set
  */
 
-public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Observer, ItemTouchListener {
+public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchListener {
 
-    private static final String TAG = ObserverAdapter.class.getSimpleName();
+    private static final String TAG = NotesAdapter.class.getSimpleName();
     private static final int NOTES = 0, FOLDER = 1, HEADER = 2;
     private Context mContext;
     private List<NoteObject> mNotesList;
     private List<String> mFolderList;
     private String mFolderName;
-    private NotesCount mNotesCount;
-    private FolderCount mFolderCount;
     private File mFolder;
     private FileOperation mFileOperations;
     private LayoutInflater mLayoutInflater;
@@ -87,21 +70,14 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @param manager      the loader manager object used in data observers
     @param folderName   the name of the folder associated with the uri(note or folder)
      */
-    public ObserverAdapter(Context context, Uri noteUri, Uri folderUri, NotesCount notesCount, FolderCount folderCount
-            , LoaderManager manager, String folderName) {
-        mNotesList = new ArrayList<>();
-        mFolderList = new ArrayList<>();
+    public NotesAdapter(Context context, List<NoteObject> noteList, List<String> folderList, String folderName) {
+        mNotesList = noteList;
+        mFolderList = folderList;
         mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
         mFolderName = folderName;
-        mNotesCount = notesCount;
-        mFolderCount = folderCount;
         mFolder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         mFileOperations = new FileOperation(mContext);
-        NoteDataObserver noteDataObserver = new NoteDataObserver(mContext, noteUri, manager);
-        noteDataObserver.add(this);
-        FolderDataObserver folderDataObserver = new FolderDataObserver(mContext, folderUri, manager);
-        folderDataObserver.add(this);
     }
 
     @Override
@@ -220,111 +196,22 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return mNotesList.size() + mFolderList.size() + 2;
     }
 
-    @Override
-    public void updateItems(Cursor cursor) {
-        if (cursor.getColumnIndex(TableNames.table1.mTitle) != -1) {
-            makeNotesList(cursor);
-        } else {
-            makeFolderList(cursor);
-        }
-    }
-
     /*
-    @param cursor   represents the cursor received after querying the noteUri
-
-    this function add the content of each row of the cursor to the
-    note list and clear the old list if any and also notifies the
-    adapter about the change in data
-
-    @TODO CHANGE NOTIFYDATASETCHANGE WITH DIFF UTIL
+    @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
-    private void makeNotesList(Cursor cursor) {
-        Single<List<NoteObject>> listSingle = Single.fromCallable(() -> {
-            List<NoteObject> tempList = new ArrayList<>();
-            NoteObject object = null;
-            FileOperation operation = new FileOperation(mContext);
-            while (cursor != null && cursor.moveToNext()) {
-                try {
-                    object = operation.readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (object != null && object.getFolderName().equalsIgnoreCase(mFolderName)) {
-                    tempList.add(object);
-                }
-            }
-            return tempList;
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-        listSingle.subscribe(new SingleObserver<List<NoteObject>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onSuccess(List<NoteObject> noteObjects) {
-                if (noteObjects != null) {
-                    mNotesList.clear();
-                    mNotesList.addAll(noteObjects);
-                    mNotesCount.getNotesCount(mNotesList.size());
-                    notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, e.getMessage());
-            }
-        });
+    public void updateNotesList(List<NoteObject> noteList) {
+        mNotesList.clear();
+        mNotesList.addAll(noteList);
+        notifyDataSetChanged();
     }
 
     /*
-   @param cursor   represents the cursor received after querying the FOLDERuRI
-
-   this function add the content of each row of the cursor to the
-   folder list and clear the old list if any and also notifies the
-   adapter about the change in data
-
-   @TODO CHANGE NOTIFYDATASETCHANGE WITH DIFF UTIL
-    */
-    private void makeFolderList(Cursor cursor) {
-        Single<List<String>> listSingle = Single.fromCallable(() -> {
-            List<String> tempList = new ArrayList<>();
-            while (cursor != null && cursor.moveToNext()) {
-                if (cursor.getString(cursor.getColumnIndex(TableNames.table2.mParentFolderName)).equalsIgnoreCase(mFolderName)) {
-                    tempList.add(justifyName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))));
-                }
-            }
-            return tempList;
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-        listSingle.subscribe(new SingleObserver<List<String>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-            }
-
-            @Override
-            public void onSuccess(List<String> folderNames) {
-                if (folderNames != null) {
-                    mFolderList.clear();
-                    mFolderList.addAll(folderNames);
-                    mFolderCount.getFolderCount(mFolderList.size());
-                    notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, e.getMessage());
-            }
-        });
-    }
-
-    /*
-    @param name  takes a string as a argument
-    @return String with first letter in upper case
+    @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
-    private String justifyName(String name) {
-        return Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+    public void updateFolderList(List<String> folderList) {
+        mFolderList.clear();
+        mFolderList.addAll(folderList);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -554,9 +441,7 @@ public class ObserverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     intent.putExtras(noteArgs);
 
-                    Pair<View, String> p1 = Pair.create(itemView, "noteContainer");
-                    Pair<View, String> p2 = Pair.create(mNoteTitle, "noteTitle");
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, p1, p2);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteContainer");
                     mContext.startActivity(intent, options.toBundle());
                 }
             });

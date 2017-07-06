@@ -122,6 +122,9 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         initialize();
         setClickListener();
         if (getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
+            }
             setNote();
         } else {
             if (getIntent().getExtras() != null) {

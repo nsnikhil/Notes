@@ -4,6 +4,7 @@ package com.nrs.nsnik.notes.fragments;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,25 +36,36 @@ import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.adapters.ObserverAdapter;
+import com.nrs.nsnik.notes.adapters.NotesAdapter;
+import com.nrs.nsnik.notes.data.FolderDataObserver;
+import com.nrs.nsnik.notes.data.NoteDataObserver;
 import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.helpers.RvItemTouchHelper;
-import com.nrs.nsnik.notes.interfaces.FolderCount;
-import com.nrs.nsnik.notes.interfaces.NotesCount;
+import com.nrs.nsnik.notes.interfaces.Observer;
+import com.nrs.nsnik.notes.objects.NoteObject;
 import com.squareup.leakcanary.RefWatcher;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /*
 this fragment passes the uri to the adapter upon
 which adapter queries and makes a list to display
  */
 
-public class HomeFragment extends Fragment implements NotesCount, FolderCount {
+public class HomeFragment extends Fragment implements Observer {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     @BindView(R.id.commonList)
@@ -77,7 +90,9 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
     CoordinatorLayout mHomeContainer;
     private String mFolderName = "nofolder";
     private Unbinder mUnbinder;
-    private int mNotesCount, mFolderCount;
+    private List<NoteObject> mNotesList;
+    private List<String> mFolderList;
+    private NotesAdapter mNotesAdapter;
 
     public HomeFragment() {
     }
@@ -105,16 +120,21 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
 
     private void initialize() {
         getArgs();
+        mNotesList = new ArrayList<>();
+        mFolderList = new ArrayList<>();
         mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        ObserverAdapter adapter = new ObserverAdapter(getActivity(), TableNames.mContentUri, TableNames.mFolderContentUri
-                , this, this, getLoaderManager(), mFolderName);
+        mNotesAdapter = new NotesAdapter(getActivity(), mNotesList, mFolderList, mFolderName);
         mList.setHasFixedSize(true);
         DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
         mList.setItemAnimator(itemAnimator);
-        mList.setAdapter(adapter);
-        ItemTouchHelper.Callback callback = new RvItemTouchHelper(adapter);
+        mList.setAdapter(mNotesAdapter);
+        ItemTouchHelper.Callback callback = new RvItemTouchHelper(mNotesAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mList);
+        NoteDataObserver noteDataObserver = new NoteDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mContentUri, mFolderName), getLoaderManager());
+        noteDataObserver.add(this);
+        FolderDataObserver folderDataObserver = new FolderDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName), getLoaderManager());
+        folderDataObserver.add(this);
         /*
         if the build is not debug
         enable ads
@@ -143,12 +163,7 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
             disappear();
             createFolderDialog();
         });
-        mSwipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefresh.setRefreshing(false);
-            }
-        }, 1000));
+        mSwipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(() -> mSwipeRefresh.setRefreshing(false), 1000));
     }
 
     /*
@@ -301,30 +316,6 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
         }
     }
 
-    /*
-    if size of note and folder list is 0
-    then display the empty view
-     */
-    private void setEmpty() {
-        if (mNotesCount == 0 && mFolderCount == 0) {
-            mEmpty.setVisibility(View.VISIBLE);
-        } else {
-            mEmpty.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void getNotesCount(int count) {
-        mNotesCount = count;
-        setEmpty();
-    }
-
-    @Override
-    public void getFolderCount(int count) {
-        mFolderCount = count;
-        setEmpty();
-    }
-
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         Animation animation = super.onCreateAnimation(transit, enter, nextAnim);
@@ -345,7 +336,6 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
                         getView().setLayerType(View.LAYER_TYPE_NONE, null);
                     }
                 }
-
                 @Override
                 public void onAnimationRepeat(Animation animation) {
 
@@ -353,5 +343,107 @@ public class HomeFragment extends Fragment implements NotesCount, FolderCount {
             });
         }
         return animation;
+    }
+
+    @Override
+    public void updateItems(Cursor cursor) {
+        if (cursor.getColumnIndex(TableNames.table1.mTitle) != -1) {
+            makeNotesList(cursor);
+        } else {
+            makeFolderList(cursor);
+        }
+    }
+
+    private void setEmpty() {
+        if (mFolderList.size() <= 0 && mNotesList.size() <= 0) {
+            mEmpty.setVisibility(View.VISIBLE);
+        } else {
+            mEmpty.setVisibility(View.GONE);
+        }
+    }
+
+    /*
+    @param cursor   represents the cursor received after querying the noteUri
+
+    this function add the content of each row of the cursor to the
+    note list and clear the old list if any and also notifies the
+    adapter about the change in data
+
+     */
+    private void makeNotesList(Cursor cursor) {
+        Single<List<NoteObject>> listSingle = Single.fromCallable(() -> {
+            List<NoteObject> tempList = new ArrayList<>();
+            NoteObject object = null;
+            FileOperation operation = new FileOperation(getActivity());
+            while (cursor != null && cursor.moveToNext()) {
+                try {
+                    object = operation.readFile(cursor.getString(cursor.getColumnIndex(TableNames.table1.mFileName)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (object != null) {
+                    tempList.add(object);
+                }
+            }
+            return tempList;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        listSingle.subscribe(new SingleObserver<List<NoteObject>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onSuccess(List<NoteObject> noteObjects) {
+                if (noteObjects != null) {
+                    mNotesList.clear();
+                    mNotesList.addAll(noteObjects);
+                    mNotesAdapter.updateNotesList(noteObjects);
+                    setEmpty();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, e.getMessage());
+            }
+        });
+    }
+
+    /*
+   @param cursor   represents the cursor received after querying the folderUri
+
+   this function add the content of each row of the cursor to the
+   folder list and clear the old list if any and also notifies the
+   adapter about the change in data
+
+    */
+    private void makeFolderList(Cursor cursor) {
+        Single<List<String>> listSingle = Single.fromCallable(() -> {
+            List<String> tempList = new ArrayList<>();
+            while (cursor != null && cursor.moveToNext()) {
+                tempList.add(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName)));
+            }
+            return tempList;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        listSingle.subscribe(new SingleObserver<List<String>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onSuccess(List<String> folderNames) {
+                if (folderNames != null) {
+                    mFolderList.clear();
+                    mFolderList.addAll(folderNames);
+                    mNotesAdapter.updateFolderList(folderNames);
+                    setEmpty();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, e.getMessage());
+            }
+        });
     }
 }

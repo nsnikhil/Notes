@@ -12,9 +12,7 @@
         <include
             android:id="@+id/commonList"
             style="@style/matchParent"
-            layout="@layout/recycler_view"
-            android:clipToPadding="false"
-            android:paddingBottom="72dp" />
+            layout="@layout/recycler_view" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
