@@ -18,9 +18,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.FrameMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
@@ -59,13 +61,14 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /*
 this fragment passes the uri to the adapter upon
 which adapter queries and makes a list to display
  */
 
-public class HomeFragment extends Fragment implements Observer {
+public class HomeFragment extends Fragment implements Observer, Window.OnFrameMetricsAvailableListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     @BindView(R.id.commonList)
@@ -118,10 +121,13 @@ public class HomeFragment extends Fragment implements Observer {
         }
     }
 
+
     private void initialize() {
         getArgs();
         mNotesList = new ArrayList<>();
         mFolderList = new ArrayList<>();
+
+        //Setting up recycler view
         mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         mNotesAdapter = new NotesAdapter(getActivity(), mNotesList, mFolderList, mFolderName);
         mList.setHasFixedSize(true);
@@ -131,6 +137,8 @@ public class HomeFragment extends Fragment implements Observer {
         ItemTouchHelper.Callback callback = new RvItemTouchHelper(mNotesAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mList);
+
+        //setting up observer
         NoteDataObserver noteDataObserver = new NoteDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mContentUri, mFolderName), getLoaderManager());
         noteDataObserver.add(this);
         FolderDataObserver folderDataObserver = new FolderDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName), getLoaderManager());
@@ -445,5 +453,13 @@ public class HomeFragment extends Fragment implements Observer {
                 Log.d(TAG, e.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onFrameMetricsAvailable(Window window, FrameMetrics frameMetrics, int i) {
+        Timber.d("Drop Count ", i);
+        Timber.d("Total Duration ", frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION));
+        Timber.d("Unknown Delay ", frameMetrics.getMetric(FrameMetrics.UNKNOWN_DELAY_DURATION));
+
     }
 }

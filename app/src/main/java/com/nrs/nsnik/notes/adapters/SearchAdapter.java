@@ -3,6 +3,7 @@ package com.nrs.nsnik.notes.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -66,6 +67,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     /*
     @return new ColorStateList
      */
+    @NonNull
     private ColorStateList stateList() {
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_enabled},

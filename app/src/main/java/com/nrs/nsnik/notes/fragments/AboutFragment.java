@@ -33,9 +33,10 @@ import butterknife.Unbinder;
 
 public class AboutFragment extends Fragment {
 
-    private final String[] mLibraryNames = {"Butter Knife", "FABToolbar", "RxAndroid", "RxJava", "Glide", "LeakCanary"};
+    private final String[] mLibraryNames = {"Butter Knife", "FABToolbar", "RxAndroid", "RxJava", "Glide", "LeakCanary", "Timber"};
     private final String[] mLibraryLinks = {"https://github.com/JakeWharton/butterknife", "https://github.com/fafaldo/FABToolbar", "https://github.com/ReactiveX/RxAndroid",
-            "https://github.com/ReactiveX/RxJava", "https://github.com/bumptech/glide", "https://github.com/square/leakcanary"};
+            "https://github.com/ReactiveX/RxJava", "https://github.com/bumptech/glide", "https://github.com/square/leakcanary"
+            , "https://github.com/JakeWharton/timber"};
     @BindView(R.id.aboutVersionInfo)
     TextView mVersionNo;
     @BindView(R.id.aboutLibraries)

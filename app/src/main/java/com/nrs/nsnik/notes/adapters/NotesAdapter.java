@@ -71,8 +71,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @param folderName   the name of the folder associated with the uri(note or folder)
      */
     public NotesAdapter(Context context, List<NoteObject> noteList, List<String> folderList, String folderName) {
-        mNotesList = noteList;
-        mFolderList = folderList;
+        mNotesList = new ArrayList<>();
+        mFolderList = new ArrayList<>();
+        mNotesList.addAll(noteList);
+        mFolderList.addAll(folderList);
         mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
         mFolderName = folderName;
@@ -117,15 +119,20 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    /*
-    @param holder       HeaderViewHolder object
-    @param position     Position of/in the list
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+    }
 
-    this function binds the data for header view-holder type
-    it check if folder or note list is size is greater than 0
-    if yes than shows the appropriate headers otherwise
-    hides them
-     */
+    /*
+        @param holder       HeaderViewHolder object
+        @param position     Position of/in the list
+
+        this function binds the data for header view-holder type
+        it check if folder or note list is size is greater than 0
+        if yes than shows the appropriate headers otherwise
+        hides them
+         */
     private void bindHeaderData(RecyclerView.ViewHolder holder, int position) {
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
         if (position == 0) {
@@ -146,13 +153,13 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /*
-    @param holder       FolderViewHolder object
-    @param position     Position of/in the list
+        @param holder       FolderViewHolder object
+        @param position     Position of/in the list
 
-    this function binds the data for FolderViewHolder type
-    it takes data from folder list and sets them on textview of
-    FolderViewHolder
-     */
+        this function binds the data for FolderViewHolder type
+        it takes data from folder list and sets them on textview of
+        FolderViewHolder
+         */
     private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
         folderViewHolder.mFolderNameText.setText(mFolderList.get(position));
