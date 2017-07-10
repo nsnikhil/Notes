@@ -69,9 +69,7 @@
         <item name="android:textSize">@dimen/headingText</item>
     </style>
 
-    <style name="newNoteContent">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+    <style name="newNoteContent" parent="matchParent">
         <item name="android:textColor">@color/cardview_dark_background</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:padding">@dimen/sixteen</item>
@@ -103,6 +101,17 @@
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentEnd">true</item>
         <item name="android:layout_margin">@dimen/sixteen</item>
+    </style>
+
+    <style name="bottomToolText" parent="stretchedHorizontally">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:layout_height">?attr/listPreferredItemHeight</item>
+        <item name="android:drawablePadding">@dimen/eight</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/eight</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
 </resources>

@@ -3,24 +3,24 @@ package com.nrs.nsnik.notes.interfaces;
 import android.database.Cursor;
 
 /*
-Observable emits item and observer can be added
+NoteObservable emits item and observer can be added
 to to observables once observable emit new item their
 update method is called which notifies all the
 registered observers that a change has occured and they
 pass any new data to the observers if any
  */
 
-public interface Observable {
+public interface NoteObservable {
 
     /*
-    @param observer     instance of observer that wants to register to listen for changes
+    @param noteObserver     instance of noteObserver that wants to register to listen for changes
      */
-    void add(Observer observer);
+    void add(NoteObserver noteObserver);
 
     /*
-    @param observer     unregister this observer
+    @param noteObserver     unregister this noteObserver
      */
-    void remove(Observer observer);
+    void remove(NoteObserver noteObserver);
 
     /*
     @param cursor   on new data available pass the new cursor to all the

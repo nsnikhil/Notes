@@ -21,8 +21,6 @@ import android.widget.TextView;
 
 import com.nrs.nsnik.notes.adapters.SearchAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
-import com.nrs.nsnik.notes.interfaces.FolderCount;
-import com.nrs.nsnik.notes.interfaces.NotesCount;
 import com.nrs.nsnik.notes.objects.SearchObject;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -37,7 +35,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
-public class SearchActivity extends AppCompatActivity implements NotesCount, FolderCount {
+public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
     @BindView(R.id.searchToolBar)
@@ -229,16 +227,6 @@ public class SearchActivity extends AppCompatActivity implements NotesCount, Fol
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);
         }
-    }
-
-    @Override
-    public void getNotesCount(int count) {
-
-    }
-
-    @Override
-    public void getFolderCount(int count) {
-
     }
 
 }

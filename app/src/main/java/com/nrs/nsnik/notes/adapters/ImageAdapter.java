@@ -24,6 +24,7 @@ import com.nrs.nsnik.notes.interfaces.SendSize;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +42,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     private static final String TAG = ImageAdapter.class.getSimpleName();
     private Activity mContext;
-    private ArrayList<String> mImageLoc;
+    private List<String> mImageLoc;
     private File mFolder;
     private SendSize mSize;
     private boolean mFullScreen;
@@ -52,7 +53,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
      @param sz              SendSize interface
      @param forFullScreen   if the adapter is used in full screen or not
      */
-    public ImageAdapter(Activity c, ArrayList<String> imageLocations, SendSize sz, boolean forFullScreen) {
+    public ImageAdapter(Activity c, List<String> imageLocations, SendSize sz, boolean forFullScreen) {
         mContext = c;
         mImageLoc = imageLocations;
         mSize = sz;
@@ -93,7 +94,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
      */
-    public void modifyList(ArrayList<String> imageLoc) {
+    public void modifyList(List<String> imageLoc) {
         mImageLoc = imageLoc;
         notifyDataSetChanged();
     }
@@ -135,7 +136,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 itemView.setOnClickListener(view -> {
                     Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), mImageLoc);
+                    bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), (ArrayList<String>) mImageLoc);
                     bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
                     fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, itemView, "fullImage");

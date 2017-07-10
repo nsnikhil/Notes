@@ -44,7 +44,7 @@ import com.nrs.nsnik.notes.data.NoteDataObserver;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.helpers.RvItemTouchHelper;
-import com.nrs.nsnik.notes.interfaces.Observer;
+import com.nrs.nsnik.notes.interfaces.NoteObserver;
 import com.nrs.nsnik.notes.objects.NoteObject;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -68,7 +68,7 @@ this fragment passes the uri to the adapter upon
 which adapter queries and makes a list to display
  */
 
-public class HomeFragment extends Fragment implements Observer, Window.OnFrameMetricsAvailableListener {
+public class HomeFragment extends Fragment implements NoteObserver, Window.OnFrameMetricsAvailableListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     @BindView(R.id.commonList)
@@ -139,10 +139,15 @@ public class HomeFragment extends Fragment implements Observer, Window.OnFrameMe
         touchHelper.attachToRecyclerView(mList);
 
         //setting up observer
-        NoteDataObserver noteDataObserver = new NoteDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mContentUri, mFolderName), getLoaderManager());
+        String noteQuery = "parentFolderName/" + mFolderName;
+        NoteDataObserver noteDataObserver = new NoteDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mContentUri, noteQuery), getLoaderManager());
         noteDataObserver.add(this);
-        FolderDataObserver folderDataObserver = new FolderDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName), getLoaderManager());
+
+        String folderQuery = "parentFolderName/" + mFolderName;
+        FolderDataObserver folderDataObserver = new FolderDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mFolderContentUri, folderQuery), getLoaderManager());
         folderDataObserver.add(this);
+
+
         /*
         if the build is not debug
         enable ads
@@ -409,7 +414,6 @@ public class HomeFragment extends Fragment implements Observer, Window.OnFrameMe
                     setEmpty();
                 }
             }
-
             @Override
             public void onError(Throwable e) {
                 Log.d(TAG, e.getMessage());
@@ -437,7 +441,6 @@ public class HomeFragment extends Fragment implements Observer, Window.OnFrameMe
             @Override
             public void onSubscribe(Disposable d) {
             }
-
             @Override
             public void onSuccess(List<String> folderNames) {
                 if (folderNames != null) {
@@ -447,7 +450,6 @@ public class HomeFragment extends Fragment implements Observer, Window.OnFrameMe
                     setEmpty();
                 }
             }
-
             @Override
             public void onError(Throwable e) {
                 Log.d(TAG, e.getMessage());
@@ -460,6 +462,5 @@ public class HomeFragment extends Fragment implements Observer, Window.OnFrameMe
         Timber.d("Drop Count ", i);
         Timber.d("Total Duration ", frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION));
         Timber.d("Unknown Delay ", frameMetrics.getMetric(FrameMetrics.UNKNOWN_DELAY_DURATION));
-
     }
 }

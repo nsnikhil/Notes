@@ -1,10 +1,7 @@
 package com.nrs.nsnik.notes;
 
 import android.Manifest;
-import android.app.AlarmManager;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,14 +9,12 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -34,16 +29,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.nrs.nsnik.notes.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
-import com.nrs.nsnik.notes.data.TableNames.table1;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -55,19 +45,22 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, Runnable, SendSize {
+public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, SendSize {
 
     private static final int mGetPictureCode = 205;
     private static final int mTakePictureCode = 2;
     private static final int mPermissionCode = 5142;
     private static final int STORAGE_PERMISSION_CODE = 512;
     private static final int READ_EXTERNAL_STORAGE_PERMISSION = 513;
+
     private static final String TAG = NewNoteActivity.class.getSimpleName();
+
     @BindView(R.id.newNoteToolbar)
     Toolbar mNoteToolbar;
     @BindView(R.id.newNoteContent)
@@ -76,37 +69,23 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     EditText mTitle;
     @BindView(R.id.newNoteImageRecyclerView)
     RecyclerView imageRecyclerView;
-    @BindView(R.id.newNoteAudioContainer)
-    LinearLayout newNoteAudioContainer;
-    @BindView(R.id.fabtoolbar)
-    FABToolbarLayout mFabTools;
-    @BindView(R.id.fabtoolbar_fab)
-    FloatingActionButton mNoteTools;
-    @BindView(R.id.newNoteTakePicture)
-    ImageView mTakePicture;
-    @BindView(R.id.newNoteChoosePicture)
-    ImageView mAddImage;
-    @BindView(R.id.newNoteAddAudio)
-    ImageView mAddAudio;
-    @BindView(R.id.newNoteSetReminder)
-    ImageView mAddReminder;
-    @BindView(R.id.newNoteAudioPlay)
-    ImageView mPlayAudio;
-    @BindView(R.id.newNoteAudioCancel)
-    ImageView mCancelAudio;
-    @BindView(R.id.newNoteAudioSeek)
-    SeekBar seekAudio;
     @BindView(R.id.activity_new_note)
-    RelativeLayout mNoteContainer;
+    CoordinatorLayout mNoteContainer;
+
+    @BindView(R.id.toolsDate)
+    TextView mBottomDate;
+
     String mAudioFileName, mFolderName = "nofolder";
+
     Uri mIntentUri = null;
+
     Bitmap mImage = null;
-    int mHour = 289, mMinutes = 291, mReminder = 0, mAudio = 0;
-    MediaRecorder mRecorder;
-    MediaPlayer mPlayer;
+
     String mCurrentPhotoPath;
-    ArrayList<Bitmap> mImagesArray;
-    ArrayList<String> mImagesLocations;
+
+    List<Bitmap> mImagesArray;
+    List<String> mImagesLocations;
+
     ImageAdapter mImageAdapter;
     FileOperation mFileOperation;
 
@@ -152,14 +131,14 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     }
                     mImageAdapter.modifyList(mImagesLocations);
                 }
-                if (object.getAudioLocation() != null) {
+                /*if (object.getAudioLocation() != null) {
                     newNoteAudioContainer.setVisibility(View.VISIBLE);
                     mAudioFileName = object.getAudioLocation();
                 }
                 if (object.getReminder() != 0) {
                     mHour = 292;
                     mMinutes = 392;
-                }
+                }*/
             }
         }
     }
@@ -182,13 +161,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setClickListener() {
-        mTakePicture.setOnClickListener(this);
-        mAddImage.setOnClickListener(this);
-        mAddAudio.setOnClickListener(this);
-        mAddReminder.setOnClickListener(this);
-        mNoteTools.setOnClickListener(this);
-        mPlayAudio.setOnClickListener(this);
-        mCancelAudio.setOnClickListener(this);
     }
 
     @Override
@@ -232,10 +204,10 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void updateNote() {
         Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
-        if (mHour != 289 || mMinutes != 291) {
+       /* if (mHour != 289 || mMinutes != 291) {
             mReminder = 1;
-        }
-        try {
+        }*/
+        /*try {
             if (c != null && c.moveToFirst()) {
                 NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
                 mFileOperation.updateNote(c.getString(c.getColumnIndex(table1.mFileName)), noteObject, mIntentUri);
@@ -244,7 +216,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             e.printStackTrace();
         } finally {
             if (c != null) c.close();
-        }
+        }*/
     }
 
     private boolean verifyAndSave() {
@@ -259,11 +231,11 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void saveNote() throws IOException {
-        if (mHour != 289 || mMinutes != 291) {
+        /*if (mHour != 289 || mMinutes != 291) {
             mReminder = 1;
-        }
-        NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
-        mFileOperation.saveNote(makeNoteName(), noteObject);
+        }*/
+      /*  NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
+        mFileOperation.saveNote(makeNoteName(), noteObject);*/
     }
 
     private String makeNoteName() {
@@ -288,17 +260,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         mImageAdapter = new ImageAdapter(NewNoteActivity.this, mImagesLocations, this, false);
         imageRecyclerView.setAdapter(mImageAdapter);
         mImagesLocations = new ArrayList<>();
-        seekAudio.incrementProgressBy(10);
+        //seekAudio.incrementProgressBy(10);
         mFileOperation = new FileOperation(getApplicationContext(), true);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!mFabTools.isFab()) {
-            mFabTools.hide();
-        } else {
-            super.onBackPressed();
-        }
     }
 
     private String makeImageName() {
@@ -366,53 +329,47 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.fabtoolbar_fab:
-                mFabTools.show();
-                break;
-            case R.id.newNoteTakePicture:
-                checkStoragePermission();
-                break;
-            case R.id.newNoteChoosePicture:
-                checkReadPermission();
-                break;
-            case R.id.newNoteAddAudio:
-                checkPermission();
-                break;
-            case R.id.newNoteSetReminder:
-                Calendar c = Calendar.getInstance();
-                TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, (timePicker, i, i1) -> {
-                    mHour = i;
-                    mMinutes = i1;
-                }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true);
-                time.show();
-
-                setNotification();
-                break;
-            case R.id.newNoteAudioPlay:
-                mPlayer = new MediaPlayer();
-                try {
-                    File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-                    File f = new File(folder, mAudioFileName);
-                    mPlayer.setDataSource(String.valueOf(f));
-                    mPlayer.prepare();
-                    mPlayer.start();
-                    mPlayAudio.setImageResource(R.drawable.ic_pause_black_24dp);
-                    Thread prog = new Thread(this);
-                    prog.start();
-                    mPlayer.setOnCompletionListener(mediaPlayer -> mPlayAudio.setImageResource(R.drawable.ic_play_arrow_black_24dp));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.newNoteAudioCancel:
-                deleteAudioFile();
-                mPlayer = null;
-                mRecorder = null;
-                mAudio = 0;
-                mAudioFileName = null;
-                newNoteAudioContainer.setVisibility(View.GONE);
+            case R.id.toolsDate:
+                Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    private void playAudio() {
+        /*mPlayer = new MediaPlayer();
+        try {
+            File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
+            File f = new File(folder, mAudioFileName);
+            mPlayer.setDataSource(String.valueOf(f));
+            mPlayer.prepare();
+            mPlayer.start();
+            mPlayAudio.setImageResource(R.drawable.ic_pause_black_24dp);
+            Thread prog = new Thread(this);
+            prog.start();
+            mPlayer.setOnCompletionListener(mediaPlayer -> mPlayAudio.setImageResource(R.drawable.ic_play_arrow_black_24dp));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+    }
+
+    private void pauseAudio() {
+      /*  deleteAudioFile();
+        mPlayer = null;
+        mRecorder = null;
+        mAudio = 0;
+        mAudioFileName = null;
+        newNoteAudioContainer.setVisibility(View.GONE);*/
+    }
+
+    private void setReminder() {
+     /*   Calendar c = Calendar.getInstance();
+        TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, (timePicker, i, i1) -> {
+            mHour = i;
+            mMinutes = i1;
+        }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true);
+        time.show();
+
+        setNotification();*/
     }
 
     private void deleteAudioFile() {
@@ -499,7 +456,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void recordAudio() {
-        File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
+       /* File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
         Calendar c = Calendar.getInstance();
         if (mAudioFileName == null) {
             mAudioFileName = c.getTimeInMillis() + "audio.3gp";
@@ -528,11 +485,11 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         });
         recordDialog = record.create();
         recordDialog.setCancelable(false);
-        recordDialog.show();
+        recordDialog.show();*/
     }
 
     private void setNotification() {
-        Intent myIntent = new Intent(this, ReminderService.class);
+      /*  Intent myIntent = new Intent(this, ReminderService.class);
         myIntent.putExtra(getResources().getString(R.string.notificationtitle), mTitle.getText().toString());
         myIntent.putExtra(getResources().getString(R.string.notificationcontent), mNote.getText().toString());
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -541,23 +498,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         calendar.set(java.util.Calendar.HOUR_OF_DAY, mHour);
         calendar.set(java.util.Calendar.MINUTE, mMinutes);
         calendar.set(java.util.Calendar.SECOND, 0);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-    }
-
-    @Override
-    public void run() {
-        int currentPosition = mPlayer.getCurrentPosition();
-        int total = mPlayer.getDuration();
-        seekAudio.setMax(total);
-        while (mPlayer != null && currentPosition < total) {
-            try {
-                Thread.sleep(1000);
-                currentPosition = mPlayer.getCurrentPosition();
-            } catch (Exception e) {
-                return;
-            }
-            seekAudio.setProgress(currentPosition);
-        }
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);*/
     }
 
 

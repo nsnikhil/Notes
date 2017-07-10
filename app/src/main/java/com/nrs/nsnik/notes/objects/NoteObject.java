@@ -6,22 +6,34 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class NoteObject implements Serializable, Parcelable {
 
-    private String title, note, audioLocation, folderName;
-    private ArrayList<String> images;
-    private int reminder;
+    public static final Creator<NoteObject> CREATOR = new Creator<NoteObject>() {
+        @Override
+        public NoteObject createFromParcel(Parcel in) {
+            return new NoteObject(in);
+        }
+
+        @Override
+        public NoteObject[] newArray(int size) {
+            return new NoteObject[size];
+        }
+    };
+    private String title, note, folderName;
+    private List<String> images, audioLocations;
 
     /*
     TODO REPLACE WITH AUTO VALUE
      */
+    private int reminder;
 
-    public NoteObject(String title, String note, ArrayList<String> images, String audioLocation, int reminder, String folderName) {
+    public NoteObject(String title, String note, ArrayList<String> images, List<String> audioLocations, int reminder, String folderName) {
         this.note = note;
         this.title = title;
         this.images = images;
-        this.audioLocation = audioLocation;
+        this.audioLocations = audioLocations;
         this.reminder = reminder;
         this.folderName = folderName;
     }
@@ -29,7 +41,7 @@ public class NoteObject implements Serializable, Parcelable {
     private NoteObject(Parcel in) {
         title = in.readString();
         note = in.readString();
-        audioLocation = in.readString();
+        audioLocations = in.createStringArrayList();
         folderName = in.readString();
         images = in.createStringArrayList();
         reminder = in.readInt();
@@ -43,12 +55,12 @@ public class NoteObject implements Serializable, Parcelable {
         return note;
     }
 
-    public ArrayList<String> getImages() {
+    public List<String> getImages() {
         return images;
     }
 
-    public String getAudioLocation() {
-        return audioLocation;
+    public List<String> getAudioLocations() {
+        return audioLocations;
     }
 
     public int getReminder() {
@@ -59,18 +71,6 @@ public class NoteObject implements Serializable, Parcelable {
         return folderName;
     }
 
-    public static final Creator<NoteObject> CREATOR = new Creator<NoteObject>() {
-        @Override
-        public NoteObject createFromParcel(Parcel in) {
-            return new NoteObject(in);
-        }
-
-        @Override
-        public NoteObject[] newArray(int size) {
-            return new NoteObject[size];
-        }
-    };
-
     @Override
     public int describeContents() {
         return 0;
@@ -80,7 +80,7 @@ public class NoteObject implements Serializable, Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(title);
         parcel.writeString(note);
-        parcel.writeString(audioLocation);
+        parcel.writeStringList(audioLocations);
         parcel.writeString(folderName);
         parcel.writeStringList(images);
         parcel.writeInt(reminder);

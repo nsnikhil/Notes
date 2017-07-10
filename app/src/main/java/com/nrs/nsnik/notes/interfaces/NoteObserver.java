@@ -10,7 +10,7 @@ received they call the update method to perform
 operation with new data
  */
 
-public interface Observer {
+public interface NoteObserver {
     /*
     @param cursor   the new data/cursor received from observables
      */

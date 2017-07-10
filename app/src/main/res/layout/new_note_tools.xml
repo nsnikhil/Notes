@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/matchParent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBackground"
+    android:elevation="16dp"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="?attr/listPreferredItemHeight"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <TextView
+        android:id="@+id/toolsDate"
+        style="@style/bottomToolText"
+        android:drawableEnd="@drawable/ic_add_box_black_24dp"
+        android:text="@string/noteToolsDate" />
+
+    <TextView
+        android:id="@+id/toolsCheckList"
+        style="@style/bottomToolText"
+        android:drawableStart="@drawable/ic_playlist_add_check_black_24dp"
+        android:text="@string/noteToolCheckList" />
+
+    <TextView
+        android:id="@+id/toolsCamera"
+        style="@style/bottomToolText"
+        android:drawableStart="@drawable/ic_camera_alt_black_24dp"
+        android:text="@string/noteToolCamera" />
+
+    <TextView
+        android:id="@+id/toolsAttachment"
+        style="@style/bottomToolText"
+        android:drawableStart="@drawable/ic_attach_file_black_24dp"
+        android:text="@string/noteToolAttachment" />
+
+    <TextView
+        android:id="@+id/toolsReminder"
+        style="@style/bottomToolText"
+        android:drawableStart="@drawable/ic_alarm_add_black_24dp"
+        android:text="@string/noteToolReminder" />
+
+    <TextView
+        android:id="@+id/toolsAudio"
+        style="@style/bottomToolText"
+        android:drawableStart="@drawable/ic_music_note_black_24dp"
+        android:text="@string/noteToolAudio" />
+
+    <TextView
+        android:id="@+id/toolsColor"
+        style="@style/bottomToolText"
+        android:drawableStart="@drawable/ic_color_lens_black_24dp"
+        android:text="@string/noteToolColor" />
+
+</LinearLayout>
+

@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navItem1:
                     if (getSupportFragmentManager().findFragmentByTag(mFragTags[0]) == null) {
                         replaceFragment(new HomeFragment(), mFragTags[0]);
-                        drawerAction(0);
+                        //drawerAction(0);
                     }
                     break;
                 case R.id.navItem2:
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navItem5:
                     if (getSupportFragmentManager().findFragmentByTag(mFragTags[3]) == null) {
                         replaceFragment(new AboutFragment(), mFragTags[3]);
-                        drawerAction(3);
+                        //drawerAction(3);
                     }
                     break;
             }

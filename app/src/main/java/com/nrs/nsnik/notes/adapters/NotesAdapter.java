@@ -186,11 +186,11 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else {
             noteViewHolder.mNoteImage.setVisibility(View.GONE);
         }
-        if (object.getAudioLocation() != null) {
+        /*if (object.getAudioLocation() != null) {
             noteViewHolder.mAudIndicator.setVisibility(View.VISIBLE);
         } else {
             noteViewHolder.mAudIndicator.setVisibility(View.GONE);
-        }
+        }*/
         if (object.getReminder() != 0) {
             noteViewHolder.mRemIndicator.setVisibility(View.VISIBLE);
         } else {

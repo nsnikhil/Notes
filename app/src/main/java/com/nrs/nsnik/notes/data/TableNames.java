@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 public class TableNames {
 
     static final String mDatabaseName = "newnotedatabase";
-    static final int mDataBaseVersion = 8;
+    static final int mDataBaseVersion = 9;
     static final String mTableName = "newnotetable";
     static final String mFolderTableName = "foldertable";
     static final String mAuthority = "com.nrs.nsnik.notes";
@@ -27,8 +27,11 @@ public class TableNames {
         public static final String mUid = BaseColumns._ID;
         public static final String mTitle = "title";
         public static final String mFileName = "filename";
-        public static final String mFolderName = "foldername";
-        public static final String mStarIndicator = "isStarred";
+        public static final String mFolderName = "folderName";
+        public static final String mIsPinned = "isPinned";
+        public static final String mIsLocked = "isLocked";
+        public static final String mDataModified = "dateModified";
+        public static final String mColor = "color";
     }
 
     /*
@@ -43,6 +46,8 @@ public class TableNames {
         public static final String mFolderName = "foldername";
         public static final String mFolderId = "folderid";
         public static final String mParentFolderName = "parfoldername";
-        public static final String mStarIndicator = "isStarred";
+        public static final String mIsPinned = "isPinned";
+        public static final String mIsLocked = "isLocked";
+        public static final String mColor = "color";
     }
 }

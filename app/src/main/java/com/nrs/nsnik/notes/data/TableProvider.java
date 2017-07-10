@@ -20,34 +20,63 @@ public class TableProvider extends ContentProvider {
     private static final String TAG = TableProvider.class.getSimpleName();
 
     /*
-    INTEGER CONSTANTS THAT CORRESPONDS TO A
-    PARTICULAR URI
-     */
+    @uAllNotes                      return all notes
+    @uSingleNoteByNoteId            return a note of specific id
+    @uAllNoteByParentFolderName     return notes with a specific parent name supplied as arguments
+    @uAllNoteBySearchQuery          return notes whose title begin with the argument supplied
+    @uAllNotesThatArePinned         return all notes that are pinned
+    @uAllNotesThatAreLocked         return all notes that are locked
+    @uAllNotesByColor               return note of specific color supplied as argument
+
+    @uAllFolder                     return all folders
+    @uSingleFolderByFolderId        return folder of a specific id
+    @uSingleFolderByName            return folder with a specific name supplied as argument
+    @uAllFolderByParentName         return folders with a specific parent name supplied as argument
+    @uAllFolderBySearchQuery        return folders whose name begin with the argument supplied
+    @uAllFoldersThatArePinned       return all folders that are pinned
+    @uAllFoldersThatAreLocked       return all folder that are locked
+    @uAllFoldersByColor             return folder by a specific color supplied as argument
+    */
     private static final int uAllNotes = 111;
-    private static final int uSingleNote = 112;
-    private static final int uAllFolderNote = 113;
-    private static final int uAllSearchNote = 114;
-    private static final int uAllFolder = 213;
-    private static final int uSingleFolder = 214;
-    private static final int uAllSubFolder = 215;
-    private static final int uSingleFolderName = 216;
-    private static final int uSearchFolderName = 217;
+    private static final int uSingleNoteByNoteId = 112;
+    private static final int uAllNoteByParentFolderName = 113;
+    private static final int uAllNoteBySearchQuery = 114;
+    private static final int uAllNotesThatArePinned = 115;
+    private static final int uAllNotesThatAreLocked = 116;
+    private static final int uAllNotesByColor = 117;
+
+
+    private static final int uAllFolder = 211;
+    private static final int uSingleFolderByFolderId = 212;
+    private static final int uSingleFolderByName = 213;
+    private static final int uAllFolderByParentName = 214;
+    private static final int uAllFolderBySearchQuery = 215;
+    private static final int uAllFoldersThatArePinned = 216;
+    private static final int uAllFoldersThatAreLocked = 217;
+    private static final int uAllFoldersByColor = 218;
+
     private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     /*
-    Adding list of uri to uri matcher
+    Adding list of uri to UriMatcher
      */
     static {
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/noteId/#", uSingleNoteByNoteId);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/parentFolderName/*", uAllNoteByParentFolderName);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/pinned/#", uAllNotesThatArePinned);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/locked/#", uAllNotesThatAreLocked);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/color/*", uAllNotesByColor);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/search/*", uAllNoteBySearchQuery);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName, uAllNotes);
-        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/#", uSingleNote);
-        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/search/*", uAllSearchNote);
-        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/*", uAllFolderNote);
 
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/folderId/#", uSingleFolderByFolderId);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/folderName/*", uSingleFolderByName);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/parentFolderName/*", uAllFolderByParentName);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/pinned/#", uAllFoldersThatArePinned);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/locked/#", uAllFoldersThatAreLocked);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/color/*", uAllFoldersByColor);
+        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/search/*", uAllFolderBySearchQuery);
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName, uAllFolder);
-        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/#", uSingleFolder);
-        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/search/*", uSearchFolderName);
-        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uSingleFolderName);
-        sUriMatcher.addURI(TableNames.mAuthority, TableNames.mFolderTableName + "/*", uAllSubFolder);
     }
 
     private TableHelper tableHelper;
@@ -64,61 +93,101 @@ public class TableProvider extends ContentProvider {
         SQLiteDatabase sdb = tableHelper.getReadableDatabase();
         Cursor c;
         switch (sUriMatcher.match(uri)) {
+
+            //NOTES MATCH
             case uAllNotes:
                 c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case uSingleNote:
+            case uSingleNoteByNoteId:
                 selection = table1.mUid + " =?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case uAllFolderNote:
+            case uAllNoteByParentFolderName:
                 selection = table1.mFolderName + " =?";
-                String sp = uri.toString();
-                sp = sp.substring(sp.lastIndexOf('/') + 1);
-                selectionArgs = new String[]{sp};
+                String noteParentFolderName = uri.toString();
+                noteParentFolderName = noteParentFolderName.substring(noteParentFolderName.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{noteParentFolderName};
                 c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case uAllSearchNote:
+            case uAllNoteBySearchQuery:
                 selection = table1.mTitle + " LIKE ?";
-                String srn = uri.toString();
-                srn = srn.substring(srn.lastIndexOf('/') + 1);
-                selectionArgs = new String[]{srn + "%"};
+                String noteSearchQuery = uri.toString();
+                noteSearchQuery = noteSearchQuery.substring(noteSearchQuery.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{noteSearchQuery + "%"};
                 c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
+            case uAllNotesThatArePinned:
+                selection = table1.mIsPinned + " =?";
+                selectionArgs = new String[]{String.valueOf(1)};
+                c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case uAllNotesThatAreLocked:
+                selection = table1.mIsLocked + " =?";
+                selectionArgs = new String[]{String.valueOf(1)};
+                c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case uAllNotesByColor:
+                selection = table1.mColor + " LIKE ?";
+                String noteColorValue = uri.toString();
+                noteColorValue = noteColorValue.substring(noteColorValue.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{noteColorValue};
+                c = sdb.query(TableNames.mTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+
+
+            //FOLDER MATCH
             case uAllFolder:
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case uSingleFolder:
+            case uSingleFolderByFolderId:
                 selection = TableNames.table2.mUid + " =?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case uSingleFolderName:
+            case uSingleFolderByName:
                 selection = table2.mFolderName + " =?";
-                String sk = uri.toString();
-                sk = sk.substring(sk.lastIndexOf('/') + 1);
-                selectionArgs = new String[]{sk};
+                String folderByName = uri.toString();
+                folderByName = folderByName.substring(folderByName.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{folderByName};
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case uSearchFolderName:
+            case uAllFolderBySearchQuery:
                 selection = table2.mFolderName + " LIKE ?";
-                String src = uri.toString();
-                src = src.substring(src.lastIndexOf('/') + 1);
-                selectionArgs = new String[]{src + "%"};
+                String folderSearchQuery = uri.toString();
+                folderSearchQuery = folderSearchQuery.substring(folderSearchQuery.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{folderSearchQuery + "%"};
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case uAllSubFolder:
+            case uAllFolderByParentName:
                 selection = table2.mParentFolderName + " =?";
-                String sf = uri.toString();
-                sf = sf.substring(sf.lastIndexOf('/') + 1);
-                selectionArgs = new String[]{sf};
+                String folderByParentFolderName = uri.toString();
+                folderByParentFolderName = folderByParentFolderName.substring(folderByParentFolderName.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{folderByParentFolderName};
                 c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
+            case uAllFoldersThatArePinned:
+                selection = table2.mIsPinned + " =?";
+                selectionArgs = new String[]{String.valueOf(1)};
+                c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case uAllFoldersThatAreLocked:
+                selection = table2.mIsLocked + " =?";
+                selectionArgs = new String[]{String.valueOf(1)};
+                c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case uAllFoldersByColor:
+                selection = table2.mFolderName + " =?";
+                String folderColorValue = uri.toString();
+                folderColorValue = folderColorValue.substring(folderColorValue.lastIndexOf('/') + 1);
+                selectionArgs = new String[]{folderColorValue};
+                c = sdb.query(TableNames.mFolderTableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+
+
             default:
                 throw new IllegalArgumentException("Invalid Uri " + uri);
         }
-
         if (getContext() != null && getContext().getContentResolver() != null) {
             c.setNotificationUri(getContext().getContentResolver(), uri);
         }
@@ -168,11 +237,11 @@ public class TableProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case uAllNotes:
                 return deleteVal(uri, selection, selectionArgs, TableNames.mTableName);
-            case uSingleNote:
+            case uSingleNoteByNoteId:
                 selection = table1.mUid + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return deleteVal(uri, selection, selectionArgs, TableNames.mTableName);
-            case uAllFolderNote:
+            case uAllNoteByParentFolderName:
                 selection = table1.mFolderName + " =?";
                 String s = uri.toString();
                 s = s.substring(s.lastIndexOf('/') + 1);
@@ -180,17 +249,17 @@ public class TableProvider extends ContentProvider {
                 return deleteVal(uri, selection, selectionArgs, TableNames.mTableName);
             case uAllFolder:
                 return deleteVal(uri, selection, selectionArgs, TableNames.mFolderTableName);
-            case uSingleFolder:
+            case uSingleFolderByFolderId:
                 selection = TableNames.table2.mUid + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return deleteVal(uri, selection, selectionArgs, TableNames.mFolderTableName);
-            case uSingleFolderName:
+            case uSingleFolderByName:
                 selection = table2.mFolderName + " =?";
                 String sk = uri.toString();
                 sk = sk.substring(sk.lastIndexOf('/') + 1);
                 selectionArgs = new String[]{sk};
                 return deleteVal(uri, selection, selectionArgs, TableNames.mFolderTableName);
-            case uAllSubFolder:
+            case uAllFolderByParentName:
                 selection = table2.mParentFolderName + " =?";
                 String sb = uri.toString();
                 sb = sb.substring(sb.lastIndexOf('/') + 1);
@@ -225,11 +294,11 @@ public class TableProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case uAllNotes:
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mTableName);
-            case uSingleNote:
+            case uSingleNoteByNoteId:
                 selection = table1.mUid + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mTableName);
-            case uAllFolderNote:
+            case uAllNoteByParentFolderName:
                 selection = table1.mFolderName + " =?";
                 String s = uri.toString();
                 s = s.substring(s.lastIndexOf('/') + 1);
@@ -237,17 +306,17 @@ public class TableProvider extends ContentProvider {
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mTableName);
             case uAllFolder:
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mFolderTableName);
-            case uSingleFolder:
+            case uSingleFolderByFolderId:
                 selection = TableNames.table2.mUid + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mFolderTableName);
-            case uSingleFolderName:
+            case uSingleFolderByName:
                 selection = table2.mFolderName + " =?";
                 String sk = uri.toString();
                 sk = sk.substring(sk.lastIndexOf('/') + 1);
                 selectionArgs = new String[]{sk};
                 return updateVal(uri, values, selection, selectionArgs, TableNames.mFolderTableName);
-            case uAllSubFolder:
+            case uAllFolderByParentName:
                 selection = table2.mParentFolderName + " =?";
                 String sb = uri.toString();
                 sb = sb.substring(sb.lastIndexOf('/') + 1);

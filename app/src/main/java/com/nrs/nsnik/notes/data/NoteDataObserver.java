@@ -8,8 +8,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
-import com.nrs.nsnik.notes.interfaces.Observable;
-import com.nrs.nsnik.notes.interfaces.Observer;
+import com.nrs.nsnik.notes.interfaces.NoteObservable;
+import com.nrs.nsnik.notes.interfaces.NoteObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +25,11 @@ it send the new data to all of its observers
  */
 
 
-public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, Observable {
+public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, NoteObservable {
 
     private static final int LOADER_ID = 1;
     private static final String TAG = NoteDataObserver.class.getSimpleName();
-    private List<Observer> mObserverList;
+    private List<NoteObserver> mNoteObserverList;
     private Context mContext;
     private Uri mUri;
 
@@ -39,7 +39,7 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     */
     public NoteDataObserver(Context context, Uri uri, LoaderManager loaderManager) {
         mContext = context;
-        mObserverList = new ArrayList<>();
+        mNoteObserverList = new ArrayList<>();
         mUri = uri;
         loaderManager.initLoader(LOADER_ID, null, this);
     }
@@ -50,12 +50,12 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
                          data changes
     */
     @Override
-    public void add(Observer observer) {
-        mObserverList.add(observer);
+    public void add(NoteObserver noteObserver) {
+        mNoteObserverList.add(noteObserver);
     }
 
     @Override
-    public void remove(Observer observer) {
+    public void remove(NoteObserver noteObserver) {
     }
 
     /*
@@ -64,8 +64,8 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
      */
     @Override
     public void updateObserver(Cursor cursor) {
-        for (Observer observer : mObserverList) {
-            observer.updateItems(cursor);
+        for (NoteObserver noteObserver : mNoteObserverList) {
+            noteObserver.updateItems(cursor);
         }
     }
 

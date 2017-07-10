@@ -21,6 +21,7 @@
     <string name="imageError">Error</string>
     <string name="headingNotes">Notes</string>
     <string name="headingFolder">Folders</string>"
+    <string name="editingDate">Editing Date</string>
 
     <!-- emptyStateStrings-->
     <string name="emptyStateEmpty">No notes yet\n Tap the "+" to get started</string>
@@ -62,8 +63,20 @@
     <!-- -->
 
     <!-- menuStrings-->
-    <string name="save">Save</string>
-    <string name="delete">Delete</string>
+    <string name="menuNoteSave">Save</string>
+    <string name="menuNoteDelete">Delete</string>
+    <string name="menuNoteStar">Star</string>
+    <string name="menuNoteLock">Lock</string>
+    <!-- -->
+
+    <!-- noteTools-->
+    <string name="noteToolsDate">Date</string>
+    <string name="noteToolCheckList">CheckList</string>
+    <string name="noteToolCamera">Camera</string>
+    <string name="noteToolAttachment">Attachment</string>
+    <string name="noteToolAudio">Audio</string>
+    <string name="noteToolReminder">Reminder</string>
+    <string name="noteToolColor">Color</string>
     <!-- -->
 
     <!-- folder-->
@@ -120,6 +133,9 @@
     <string name="aboutLibraries">Third party library used</string>
     <string name="aboutLicense">License Info</string>
     <string name="aboutLicenseUrl">https://github.com/nsnikhil/Notes/blob/master/LICENSE</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- -->
 
 
