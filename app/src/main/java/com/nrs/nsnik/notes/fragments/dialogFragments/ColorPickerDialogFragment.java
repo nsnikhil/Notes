@@ -1,8 +1,8 @@
 package com.nrs.nsnik.notes.fragments.dialogFragments;
 
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ColorPickerDialogFragment extends Fragment {
+public class ColorPickerDialogFragment extends DialogFragment {
 
     @BindView(R.id.colorPickerList)
     RecyclerView mColorList;
@@ -41,6 +41,7 @@ public class ColorPickerDialogFragment extends Fragment {
         List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
         mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
         mColorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList);
+        mColorList.setAdapter(mColorPickerAdapter);
     }
 
 }

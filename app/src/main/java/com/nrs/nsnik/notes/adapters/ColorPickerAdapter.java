@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.nrs.nsnik.notes.R;
 
@@ -22,7 +23,8 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
     private List<String> mColorList;
 
     public ColorPickerAdapter(Context context, List<String> list) {
-
+        mContext = context;
+        mColorList = list;
     }
 
     @Override
@@ -47,6 +49,9 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            mColor.setOnClickListener(view -> {
+                Toast.makeText(mContext, mColorList.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+            });
         }
     }
 }

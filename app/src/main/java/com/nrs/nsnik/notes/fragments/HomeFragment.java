@@ -28,6 +28,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ import com.nrs.nsnik.notes.adapters.NotesAdapter;
 import com.nrs.nsnik.notes.data.FolderDataObserver;
 import com.nrs.nsnik.notes.data.NoteDataObserver;
 import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.helpers.RvItemTouchHelper;
 import com.nrs.nsnik.notes.interfaces.NoteObserver;
@@ -284,7 +286,12 @@ public class HomeFragment extends Fragment implements NoteObserver, Window.OnFra
         final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog, null);
         newFolder.setView(v);
         final EditText editText = v.findViewById(R.id.dialogFolderName);
+        ImageView folderColor = v.findViewById(R.id.dialogFolderColor);
         editText.requestFocus();
+        folderColor.setOnClickListener(view -> {
+            ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
+            pickerDialogFragment.show(getFragmentManager(), "color");
+        });
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         newFolder.setNegativeButton(getResources().getString(R.string.cancel), (dialogInterface, i) -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));

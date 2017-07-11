@@ -105,9 +105,11 @@
     <!-- -->
 
     <!-- popUps-->
-    <string name="popUpDelete">Delete</string>
     <string name="popUpStar">Star</string>
+    <string name="popUpLock">Add to vault</string>
+    <string name="popUpEdit">Edit</string>
     <string name="popUpShare">Share</string>
+    <string name="popUpDelete">Delete</string>
     <!-- -->
 
     <!-- delete-->

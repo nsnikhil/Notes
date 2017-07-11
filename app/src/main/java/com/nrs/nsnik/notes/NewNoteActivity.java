@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -29,11 +30,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nrs.nsnik.notes.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
+import com.nrs.nsnik.notes.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -72,8 +75,25 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     @BindView(R.id.activity_new_note)
     CoordinatorLayout mNoteContainer;
 
+    //Bottom Sheet View
+    BottomSheetBehavior mBottomSheetBehavior;
     @BindView(R.id.toolsDate)
     TextView mBottomDate;
+    @BindView(R.id.toolsBottomSheet)
+    LinearLayout mBottomSheet;
+    @BindView(R.id.toolsCheckList)
+    TextView mBottomCheckList;
+    @BindView(R.id.toolsCamera)
+    TextView mBottomCamera;
+    @BindView(R.id.toolsAttachment)
+    TextView mBottomAttachment;
+    @BindView(R.id.toolsReminder)
+    TextView mBottomReminder;
+    @BindView(R.id.toolsAudio)
+    TextView mBottomAudio;
+    @BindView(R.id.toolsColor)
+    TextView mBottomColor;
+
 
     String mAudioFileName, mFolderName = "nofolder";
 
@@ -161,6 +181,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setClickListener() {
+        mBottomDate.setOnClickListener(this);
+        mBottomCheckList.setOnClickListener(this);
+        mBottomCamera.setOnClickListener(this);
+        mBottomAttachment.setOnClickListener(this);
+        mBottomReminder.setOnClickListener(this);
+        mBottomAudio.setOnClickListener(this);
+        mBottomColor.setOnClickListener(this);
     }
 
     @Override
@@ -262,6 +289,11 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         mImagesLocations = new ArrayList<>();
         //seekAudio.incrementProgressBy(10);
         mFileOperation = new FileOperation(getApplicationContext(), true);
+
+        //Bottom Sheet Behaviour
+        mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
+
+
     }
 
     private String makeImageName() {
@@ -330,8 +362,20 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolsDate:
-                Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
+                changeState();
                 break;
+            case R.id.toolsColor:
+                ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
+                pickerDialogFragment.show(getSupportFragmentManager(), "color");
+                break;
+        }
+    }
+
+    private void changeState() {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
     }
 
