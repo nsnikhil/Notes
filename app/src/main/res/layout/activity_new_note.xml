@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_new_note"
-    style="@style/verticalLinearLayout"
+    style="@style/matchParent"
     android:transitionName="noteContainer">
 
     <RelativeLayout style="@style/matchParent">
@@ -14,16 +14,24 @@
             style="@style/matchParent"
             android:layout_below="@id/newNoteToolbar">
 
-            <RelativeLayout style="@style/stretchedHorizontally">
+            <LinearLayout
+                style="@style/stretchedHorizontally"
+                android:orientation="vertical">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/newNoteImageRecyclerView"
+                    android:id="@+id/newNoteImageList"
                     style="@style/matchParent"
                     android:layout_height="@dimen/newNoteImage"
                     android:visibility="gone" />
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/newNoteAudioRecyclerView"
+                    android:id="@+id/newNoteAudioList"
+                    style="@style/matchParent"
+                    android:layout_height="@dimen/newNoteImage"
+                    android:visibility="gone" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/newNoteCheckList"
                     style="@style/matchParent"
                     android:layout_height="@dimen/newNoteImage"
                     android:visibility="gone" />
@@ -31,7 +39,6 @@
                 <EditText
                     android:id="@+id/newNoteTitle"
                     style="@style/newNoteHeading"
-                    android:layout_below="@id/newNoteAudioRecyclerView"
                     android:background="@android:color/transparent"
                     android:labelFor="@+id/newNoteTitle"
                     android:maxLines="1"
@@ -41,12 +48,11 @@
                 <EditText
                     android:id="@+id/newNoteContent"
                     style="@style/newNoteContent"
-                    android:layout_below="@id/newNoteTitle"
                     android:inputType="textMultiLine"
                     android:labelFor="@+id/newNoteContent"
                     android:lineSpacingExtra="10dp" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </ScrollView>
 

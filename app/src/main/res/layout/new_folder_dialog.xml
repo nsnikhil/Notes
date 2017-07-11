@@ -15,7 +15,6 @@
         android:layout_gravity="end|center_vertical"
         android:layout_margin="@dimen/sixteen"
         android:background="@drawable/circle"
-        android:backgroundTint="#1976D2"
         android:contentDescription="@string/imageDescription" />
 </FrameLayout>
 

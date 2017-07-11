@@ -165,6 +165,18 @@ public class FileOperation {
         }*/
     }
 
+    public void deleteAudioFile(String fileName) {
+        File folder = new File(String.valueOf(mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName))));
+        File f = new File(folder, fileName);
+        boolean isDeleted = false;
+        if (f.exists()) {
+            isDeleted = f.delete();
+        }
+        if (!isDeleted) {
+            Log.d(TAG, "Error while deleting " + f.toString());
+        }
+    }
+
 
     /*
     @param fileName     the name of the fie which contains the note object
@@ -468,5 +480,9 @@ public class FileOperation {
      */
     private int generateRandom(int max, int min) {
         return new Random().nextInt((max - min) + 1) + min;
+    }
+
+    public Bitmap mCompressBitmap(Bitmap bitmap) {
+        return null;
     }
 }

@@ -21,38 +21,42 @@ public class NoteObject implements Serializable, Parcelable {
             return new NoteObject[size];
         }
     };
-    private String title, note, folderName;
+    private String mTitle, mNoteContent, mFolderName;
     private List<String> images, audioLocations;
+    private List<CheckListObject> mCheckList;
 
     /*
     TODO REPLACE WITH AUTO VALUE
      */
     private int reminder;
 
-    public NoteObject(String title, String note, ArrayList<String> images, List<String> audioLocations, int reminder, String folderName) {
-        this.note = note;
-        this.title = title;
+    public NoteObject(String title, String note, ArrayList<String> images, List<String> audioLocations, List<CheckListObject> checkList, int reminder, String folderName) {
+        this.mNoteContent = note;
+        this.mTitle = title;
         this.images = images;
         this.audioLocations = audioLocations;
+        this.mCheckList = checkList;
         this.reminder = reminder;
-        this.folderName = folderName;
+        this.mFolderName = folderName;
     }
 
     private NoteObject(Parcel in) {
-        title = in.readString();
-        note = in.readString();
+        mTitle = in.readString();
+        mNoteContent = in.readString();
         audioLocations = in.createStringArrayList();
-        folderName = in.readString();
+        mCheckList = new ArrayList<>();
+        in.readList(mCheckList, List.class.getClassLoader());
+        mFolderName = in.readString();
         images = in.createStringArrayList();
         reminder = in.readInt();
     }
 
     public String getTitle() {
-        return title;
+        return mTitle;
     }
 
     public String getNote() {
-        return note;
+        return mNoteContent;
     }
 
     public List<String> getImages() {
@@ -63,12 +67,20 @@ public class NoteObject implements Serializable, Parcelable {
         return audioLocations;
     }
 
+    public List<CheckListObject> getmCheckList() {
+        return mCheckList;
+    }
+
+    public void setmCheckList(List<CheckListObject> mCheckList) {
+        this.mCheckList = mCheckList;
+    }
+
     public int getReminder() {
         return reminder;
     }
 
     public String getFolderName() {
-        return folderName;
+        return mFolderName;
     }
 
     @Override
@@ -78,10 +90,11 @@ public class NoteObject implements Serializable, Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(title);
-        parcel.writeString(note);
+        parcel.writeString(mTitle);
+        parcel.writeString(mNoteContent);
         parcel.writeStringList(audioLocations);
-        parcel.writeString(folderName);
+        parcel.writeList(mCheckList);
+        parcel.writeString(mFolderName);
         parcel.writeStringList(images);
         parcel.writeInt(reminder);
     }

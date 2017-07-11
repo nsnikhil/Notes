@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/stretchedHorizontally"
+    android:padding="@dimen/eight">
+
+    <ImageButton
+        android:id="@+id/audioPlay"
+        style="@style/twentyFour"
+        android:layout_width="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/ic_play_arrow_black_24dp" />
+
+    <ProgressBar
+        android:id="@+id/audioProgressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="8"
+        android:indeterminate="false"
+        android:max="100"
+        android:padding="@dimen/eight"
+        android:progress="0" />
+
+    <ImageButton
+        android:id="@+id/audioRemove"
+        style="@style/twentyFour"
+        android:layout_width="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/ic_cancel_black_24dp" />
+
+</LinearLayout>

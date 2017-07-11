@@ -120,16 +120,13 @@ public class AboutFragment extends Fragment {
                 @Override
                 public void onAnimationStart(Animation animation) {
                 }
-
                 public void onAnimationEnd(Animation animation) {
                     if (getView() != null) {
                         getView().setLayerType(View.LAYER_TYPE_NONE, null);
                     }
                 }
-
                 @Override
                 public void onAnimationRepeat(Animation animation) {
-
                 }
             });
         }

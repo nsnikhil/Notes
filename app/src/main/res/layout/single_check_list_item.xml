@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/stretchedHorizontally"
+    android:padding="@dimen/eight">
+
+    <CheckBox
+        android:id="@+id/checkListTicker"
+        style="@style/wrapContent"
+        android:layout_marginStart="@dimen/sixteen" />
+
+    <EditText
+        android:id="@+id/checkListItem"
+        style="@style/stretchedHorizontally"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/sixteen"
+        android:background="@android:color/transparent"
+        android:hint="@string/app_name" />
+
+</LinearLayout>

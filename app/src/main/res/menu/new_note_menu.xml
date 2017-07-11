@@ -20,10 +20,4 @@
         android:title="@string/menuNoteLock"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/newNoteMenuDelete"
-        android:icon="@drawable/ic_delete_black_48dp"
-        android:title="@string/menuNoteDelete"
-        app:showAsAction="never" />
-
 </menu>

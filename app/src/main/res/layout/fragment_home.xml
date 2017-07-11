@@ -38,8 +38,8 @@
         android:id="@+id/homeAdView"
         style="@style/wrapContent"
         android:layout_gravity="bottom|center_horizontal"
-        android:visibility="gone"
         ads:adSize="BANNER"
         ads:adUnitId="@string/adAdUnitId" />
+
 
 </android.support.design.widget.CoordinatorLayout>

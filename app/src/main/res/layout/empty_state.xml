@@ -9,6 +9,7 @@
         android:id="@+id/emptyStateImage"
         style="@style/wrapContent"
         android:layout_gravity="center"
+        android:contentDescription="@string/imageError"
         android:padding="@dimen/sixteen"
         android:src="@drawable/noresults"
         android:visibility="visible" />

@@ -18,11 +18,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.FrameMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
@@ -63,16 +61,17 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /*
 this fragment passes the uri to the adapter upon
 which adapter queries and makes a list to display
  */
 
-public class HomeFragment extends Fragment implements NoteObserver, Window.OnFrameMetricsAvailableListener {
+public class HomeFragment extends Fragment implements NoteObserver {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
+    private static final int GET_COLOR_REQUEST_CODE = 207;
+
     @BindView(R.id.commonList)
     RecyclerView mList;
     @BindView(R.id.homeEmptyState)
@@ -462,12 +461,5 @@ public class HomeFragment extends Fragment implements NoteObserver, Window.OnFra
                 Log.d(TAG, e.getMessage());
             }
         });
-    }
-
-    @Override
-    public void onFrameMetricsAvailable(Window window, FrameMetrics frameMetrics, int i) {
-        Timber.d("Drop Count ", i);
-        Timber.d("Total Duration ", frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION));
-        Timber.d("Unknown Delay ", frameMetrics.getMetric(FrameMetrics.UNKNOWN_DELAY_DURATION));
     }
 }

@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.interfaces.OnColorSelectedListener;
 
 import java.util.List;
 
@@ -21,10 +21,12 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
 
     private Context mContext;
     private List<String> mColorList;
+    private OnColorSelectedListener mColorSelectedListener;
 
-    public ColorPickerAdapter(Context context, List<String> list) {
+    public ColorPickerAdapter(Context context, List<String> list, OnColorSelectedListener onColorSelectedListener) {
         mContext = context;
         mColorList = list;
+        mColorSelectedListener = onColorSelectedListener;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
             super(itemView);
             ButterKnife.bind(this, itemView);
             mColor.setOnClickListener(view -> {
-                Toast.makeText(mContext, mColorList.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition()));
             });
         }
     }

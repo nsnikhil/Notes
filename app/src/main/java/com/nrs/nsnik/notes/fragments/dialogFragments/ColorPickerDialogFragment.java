@@ -11,15 +11,17 @@ import android.view.ViewGroup;
 
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.adapters.ColorPickerAdapter;
+import com.nrs.nsnik.notes.interfaces.OnColorSelectedListener;
 
 import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 
-public class ColorPickerDialogFragment extends DialogFragment {
+public class ColorPickerDialogFragment extends DialogFragment implements OnColorSelectedListener {
 
     @BindView(R.id.colorPickerList)
     RecyclerView mColorList;
@@ -37,11 +39,17 @@ public class ColorPickerDialogFragment extends DialogFragment {
         return v;
     }
 
+
     private void initialize() {
         List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
         mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
-        mColorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList);
+        mColorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList, this);
         mColorList.setAdapter(mColorPickerAdapter);
     }
 
+    @Override
+    public void onColorSelected(String color) {
+        Timber.d(color);
+        dismiss();
+    }
 }
