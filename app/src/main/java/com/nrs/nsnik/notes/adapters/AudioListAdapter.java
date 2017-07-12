@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
+import android.widget.SeekBar;
 
 import com.nrs.nsnik.notes.R;
 
@@ -36,9 +36,17 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     }
 
-    public void modifyList(List<String> list) {
+    public void modifyAudioList(List<String> list) {
         mAudioLocationList.addAll(list);
         notifyDataSetChanged();
+    }
+
+    private void playAudio() {
+
+    }
+
+    private void removeAudio() {
+
     }
 
     @Override
@@ -48,7 +56,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.audioProgressBar)
-        ProgressBar mProgressBar;
+        SeekBar mSeekBar;
         @BindView(R.id.audioPlay)
         ImageButton mPlay;
         @BindView(R.id.audioRemove)
@@ -57,6 +65,8 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            mPlay.setOnClickListener(view -> playAudio());
+            mRemove.setOnClickListener(view -> removeAudio());
         }
     }
 }

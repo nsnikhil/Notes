@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -38,6 +37,7 @@ import com.nrs.nsnik.notes.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.nrs.nsnik.notes.helpers.FileOperation;
+import com.nrs.nsnik.notes.interfaces.OnAddClickListener;
 import com.nrs.nsnik.notes.interfaces.SendSize;
 import com.nrs.nsnik.notes.objects.CheckListObject;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -47,7 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -55,7 +54,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, SendSize {
+public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, SendSize, OnAddClickListener {
 
     private static final int ATTACH_PICTURE_REQUEST_CODE = 205;
     private static final int TAKE_PICTURE_REQUEST_CODE = 206;
@@ -182,7 +181,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
         //Audio List Setup
         mAudioLocations = new ArrayList<>();
-        mAudioRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAudioRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
         mAudioListAdapter = new AudioListAdapter(this, mAudioLocations);
         mAudioRecyclerView.setAdapter(mAudioListAdapter);
 
@@ -190,9 +189,11 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         //Check List Setup
         mCheckList = new ArrayList<>();
         mCheckListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mCheckListAdapter = new CheckListAdapter(this, mCheckList);
-        mCheckListRecyclerView.setAdapter(mAudioListAdapter);
+        mCheckListAdapter = new CheckListAdapter(this, mCheckList, this);
+        mCheckListRecyclerView.setAdapter(mCheckListAdapter);
+
     }
+
 
     private void setClickListener() {
         mBottomDate.setOnClickListener(this);
@@ -211,22 +212,27 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 changeState();
                 break;
             case R.id.toolsCheckList:
-                Toast.makeText(this, "Add CheckList", Toast.LENGTH_SHORT).show();
+                changeState();
+                addCheckListItem();
                 break;
             case R.id.toolsCamera:
-                Toast.makeText(this, "Start Camera", Toast.LENGTH_SHORT).show();
+                changeState();
+                checkWriteExternalStoragePermission();
                 break;
             case R.id.toolsAttachment:
-                Toast.makeText(this, "Start Gallery", Toast.LENGTH_SHORT).show();
+                changeState();
+                checkReadExternalStoragePermission();
                 break;
             case R.id.toolsReminder:
+                changeState();
                 Toast.makeText(this, "Add Reminder", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.toolsAudio:
-                Toast.makeText(this, "Add Audio", Toast.LENGTH_SHORT).show();
                 changeState();
+                checkAudioRecordPermission();
                 break;
             case R.id.toolsColor:
+                changeState();
                 ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
                 pickerDialogFragment.show(getSupportFragmentManager(), "color");
                 break;
@@ -266,19 +272,18 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(args.getInt(getResources().getString(R.string.bundleNoteSerialId))));
             NoteObject object = (NoteObject) args.getSerializable(getResources().getString(R.string.bundleNoteSerialObject));
             if (object != null) {
-                File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
                 mTitle.setText(object.getTitle());
                 mNote.setText(object.getNote());
                 mFolderName = object.getFolderName();
                 if (object.getImages().size() > 0) {
                     mImageRecyclerView.setVisibility(View.VISIBLE);
                     mImagesLocations.addAll(object.getImages());
-                    mImageAdapter.modifyList(mImagesLocations);
+                    mImageAdapter.modifyImageList(mImagesLocations);
                 }
                 if (object.getAudioLocations().size() > 0) {
                     mAudioRecyclerView.setVisibility(View.VISIBLE);
                     mAudioLocations.addAll(object.getAudioLocations());
-                    mAudioListAdapter.modifyList(mAudioLocations);
+                    mAudioListAdapter.modifyAudioList(mAudioLocations);
                 }
                 if (object.getmCheckList().size() > 0) {
                     mCheckListRecyclerView.setVisibility(View.VISIBLE);
@@ -293,11 +298,140 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void addCheckListItem() {
+        mCheckList.add(new CheckListObject("", false));
+        mCheckListAdapter.modifyCheckList(mCheckList);
+        displayCheckListView();
+    }
+
+    private void displayCheckListView() {
+        if (mCheckList.size() > 0) {
+            mCheckListRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            mCheckListRecyclerView.setVisibility(View.GONE);
+        }
+    }
+
+    private void addAudioToList(String audioFileLocation) {
+        mAudioLocations.add(audioFileLocation);
+        mAudioListAdapter.modifyAudioList(mAudioLocations);
+        displayAudioListView();
+    }
+
+    private void displayAudioListView() {
+        if (mAudioLocations.size() > 0) {
+            mAudioRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            mAudioRecyclerView.setVisibility(View.GONE);
+        }
+    }
+
+    private void addImageToList(String imageLocation) {
+        mImagesLocations.add(imageLocation);
+        mImageAdapter.modifyImageList(mImagesLocations);
+        displayImageList();
+    }
+
+    private void displayImageList() {
+        if (mImagesLocations.size() > 0) {
+            mImageRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            mImageRecyclerView.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkWriteExternalStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_PERMISSION_CODE);
+            return;
+        }
+        startCameraIntent();
+    }
+
+    private void checkReadExternalStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_PERMISSION);
+            return;
+        }
+        startGalleryIntent();
+    }
+
+    private void checkAudioRecordPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_PERMISSION_CODE);
+            return;
+        }
+        recordAudio();
+    }
+
+    private void startCameraIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this, "com.nrs.nsnik.notes.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, TAKE_PICTURE_REQUEST_CODE);
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void startGalleryIntent() {
+        Intent chosePicture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (chosePicture.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(chosePicture, ATTACH_PICTURE_REQUEST_CODE);
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.noGallery), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void addGalleryPhotoToList(Intent data) {
+        Uri imageUri = data.getData();
+        try {
+            Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+            String imageFileName = mFileOperation.makeName(false);
+            mFileOperation.saveImage(imageFileName, image);
+            addImageToList(imageFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addCameraPhotoToList() {
+        Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
+        String imageFileName = mFileOperation.makeName(false);
+        mFileOperation.saveImage(imageFileName, image);
+        addImageToList(imageFileName);
+    }
+
+
+    private void changeState() {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+
     private void updateNote() {
-        Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
-       /* if (mHour != 289 || mMinutes != 291) {
+        /*Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
+        if (mHour != 289 || mMinutes != 291) {
             mReminder = 1;
-        }*/
+        }
         /*try {
             if (c != null && c.moveToFirst()) {
                 NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
@@ -318,80 +452,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         mFileOperation.saveNote(makeNoteName(), noteObject);*/
     }
 
-    private String makeNoteName() {
-        Calendar c = Calendar.getInstance();
-        return mTitle.getText().toString() + c.getTimeInMillis() + ".txt";
-    }
-
-    private String makeImageName() {
-        Calendar c = Calendar.getInstance();
-        return mTitle.getText().toString() + c.getTimeInMillis() + ".jpg";
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case ATTACH_PICTURE_REQUEST_CODE:
-                if (resultCode == RESULT_OK) {
-                    takeGalleryAction(data);
-                }
-                break;
-            case TAKE_PICTURE_REQUEST_CODE:
-                if (resultCode == RESULT_OK && data != null) {
-                    addToList();
-                }
-                break;
-        }
-    }
-
-    private void takeGalleryAction(Intent data) {
-        Uri u = data.getData();
-        try {
-            Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), u);
-            mImageRecyclerView.swapAdapter(mImageAdapter, true);
-            mImageRecyclerView.setVisibility(View.VISIBLE);
-            String name = makeImageName();
-            mImagesLocations.add(name);
-            mFileOperation.saveImage(name, image);
-            mImageAdapter.modifyList(mImagesLocations);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void addToList() {
-
-        int targetW = mNoteContainer.getWidth();
-        int targetH = 400;
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        String name = makeImageName();
-        mImagesLocations.add(name);
-        try {
-            mFileOperation.saveImage(name, bitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mImageAdapter.modifyList(mImagesLocations);
-    }
-
-
-    private void changeState() {
-        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        }
-    }
-
     private void setReminder() {
      /*   Calendar c = Calendar.getInstance();
         TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, (timePicker, i, i1) -> {
@@ -401,67 +461,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         time.show();
 
         setNotification();*/
-    }
-
-
-    private void checkAudioRecordPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_PERMISSION_CODE);
-            return;
-        }
-        recordAudio();
-    }
-
-    private void checkWriteExternalStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_PERMISSION_CODE);
-            return;
-        }
-        startTheCamera();
-    }
-
-    private void checkReadeExternalStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_PERMISSION);
-            return;
-        }
-        startGalleryIntent();
-    }
-
-    private void startGalleryIntent() {
-        Intent chosePicture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        if (chosePicture.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(chosePicture, ATTACH_PICTURE_REQUEST_CODE);
-        } else {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.noGallery), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-    private void startTheCamera() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this, "com.nrs.nsnik.notes.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, TAKE_PICTURE_REQUEST_CODE);
-            }
-        }
     }
 
     private void recordAudio() {
@@ -522,6 +521,22 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ATTACH_PICTURE_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    addGalleryPhotoToList(data);
+                }
+                break;
+            case TAKE_PICTURE_REQUEST_CODE:
+                if (resultCode == RESULT_OK && data != null) {
+                    addCameraPhotoToList();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void validateSize(int position) {
         if (mImagesLocations.size() <= 0) {
             mImageRecyclerView.setVisibility(View.GONE);
@@ -537,6 +552,11 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);
         }
+    }
+
+    @Override
+    public void addClickListener() {
+        addCheckListItem();
     }
 
     public static class ReminderService extends BroadcastReceiver {

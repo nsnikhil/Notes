@@ -21,16 +21,16 @@
             android:icon="@drawable/ic_lock_black_48dp"
             android:title="@string/navItem3" />
 
+    </group>
+
+    <group android:id="@+id/headerGroup2">
+
         <item
             android:id="@+id/navItem4"
             android:checkable="true"
             android:checked="false"
             android:icon="@drawable/ic_settings_white_48dp"
             android:title="@string/navItem4" />
-
-    </group>
-
-    <group android:id="@+id/headerGroup2">
 
         <item
             android:id="@+id/navItem5"

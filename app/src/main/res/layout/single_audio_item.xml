@@ -13,7 +13,7 @@
         android:contentDescription="@string/imageDescription"
         android:src="@drawable/ic_play_arrow_black_24dp" />
 
-    <ProgressBar
+    <SeekBar
         android:id="@+id/audioProgressBar"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"

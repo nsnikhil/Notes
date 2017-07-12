@@ -1,28 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/emptyState"
     style="@style/wrapContent"
     android:layout_gravity="center"
+    android:drawableTop="@drawable/noresults"
     android:gravity="center"
-    android:orientation="vertical">
+    android:text="@string/emptyStateEmpty"
+    android:textSize="20sp"
+    android:textStyle="bold" />
 
-    <ImageView
-        android:id="@+id/emptyStateImage"
-        style="@style/wrapContent"
-        android:layout_gravity="center"
-        android:contentDescription="@string/imageError"
-        android:padding="@dimen/sixteen"
-        android:src="@drawable/noresults"
-        android:visibility="visible" />
-
-
-    <TextView
-        android:id="@+id/emptyStateText"
-        style="@style/wrapContent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/emptyStateEmpty"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-</LinearLayout>
 

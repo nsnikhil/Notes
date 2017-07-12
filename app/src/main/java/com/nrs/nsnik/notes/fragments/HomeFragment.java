@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -75,7 +76,7 @@ public class HomeFragment extends Fragment implements NoteObserver {
     @BindView(R.id.commonList)
     RecyclerView mList;
     @BindView(R.id.homeEmptyState)
-    LinearLayout mEmpty;
+    TextView mEmpty;
     @BindView(R.id.fabAdd)
     FloatingActionButton mAddSpinner;
     @BindView(R.id.fabAddNote)

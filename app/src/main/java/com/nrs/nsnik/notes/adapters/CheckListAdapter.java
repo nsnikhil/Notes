@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.interfaces.OnAddClickListener;
 import com.nrs.nsnik.notes.objects.CheckListObject;
 
 import java.util.List;
@@ -20,10 +22,12 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
 
     private Context mContext;
     private List<CheckListObject> mCheckList;
+    private OnAddClickListener mOnAddClickListener;
 
-    public CheckListAdapter(Context context, List<CheckListObject> list) {
+    public CheckListAdapter(Context context, List<CheckListObject> list, OnAddClickListener onAddClickListener) {
         mContext = context;
         mCheckList = list;
+        mOnAddClickListener = onAddClickListener;
     }
 
     @Override
@@ -33,16 +37,23 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
+        if (position == mCheckList.size() - 1) {
+            holder.mAdd.setVisibility(View.VISIBLE);
+        } else {
+            holder.mAdd.setVisibility(View.GONE);
+        }
+        holder.mText.setText(mCheckList.get(position).getmText());
+        holder.mTicker.setChecked(mCheckList.get(position).ismDone());
     }
 
     public void modifyCheckList(List<CheckListObject> list) {
-        mCheckList.addAll(list);
+        mCheckList = list;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return mCheckList.size();
+        return mCheckList != null ? mCheckList.size() : 0;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -50,10 +61,12 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
         CheckBox mTicker;
         @BindView(R.id.checkListItem)
         EditText mText;
-
+        @BindView(R.id.checkListAdd)
+        ImageButton mAdd;
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            mAdd.setOnClickListener(view -> mOnAddClickListener.addClickListener());
         }
     }
 }

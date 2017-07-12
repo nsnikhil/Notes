@@ -6,7 +6,7 @@ public class CheckListObject {
     private String mText;
     private boolean mDone;
 
-    CheckListObject(String text, boolean done) {
+    public CheckListObject(String text, boolean done) {
         mText = text;
         mDone = done;
     }

@@ -63,8 +63,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @Override
     public ImageAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.single_image_view, parent, false);
-        return new MyViewHolder(v);
+        return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_image_view, parent, false));
     }
 
     @Override
@@ -94,8 +93,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
      */
-    public void modifyList(List<String> imageLoc) {
-        mImageLoc = imageLoc;
+    public void modifyImageList(List<String> imageLocations) {
+        mImageLoc = imageLocations;
         notifyDataSetChanged();
     }
 

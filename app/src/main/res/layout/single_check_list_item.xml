@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/stretchedHorizontally"
-    android:padding="@dimen/eight">
+    android:orientation="vertical">
 
-    <CheckBox
-        android:id="@+id/checkListTicker"
-        style="@style/wrapContent"
-        android:layout_marginStart="@dimen/sixteen" />
+    <LinearLayout style="@style/stretchedHorizontally">
 
-    <EditText
-        android:id="@+id/checkListItem"
-        style="@style/stretchedHorizontally"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/sixteen"
-        android:background="@android:color/transparent"
-        android:hint="@string/app_name" />
+        <CheckBox
+            android:id="@+id/checkListTicker"
+            style="@style/wrapContent"
+            android:layout_marginStart="@dimen/sixteen" />
+
+        <EditText
+            android:id="@+id/checkListItem"
+            style="@style/stretchedHorizontally"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/sixteen"
+            android:background="@android:color/transparent"
+            android:hint="@string/app_name" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/checkListAdd"
+        style="@style/twentyFour"
+        android:layout_marginStart="20dp"
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/ic_add_box_black_24dp"
+        android:visibility="gone" />
 
 </LinearLayout>

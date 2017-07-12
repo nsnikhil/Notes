@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Calendar;
 import java.util.Random;
 
 import io.reactivex.Completable;
@@ -30,6 +31,7 @@ import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 
 public class FileOperation {
@@ -200,19 +202,37 @@ public class FileOperation {
     @param fileName     the name of image file
     @param image        the image
      */
-    public void saveImage(String fileName, Bitmap image) throws IOException {
-        File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
-        File f = new File(folder, fileName);
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(f);
-            image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fos != null) fos.close();
-        }
+    public void saveImage(String fileName, Bitmap image) {
+        Completable completable = Completable.fromCallable(() -> {
+            File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+            File f = new File(folder, fileName);
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(f);
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (fos != null) fos.close();
+            }
+            return null;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        completable.subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onComplete() {
+                Timber.d("Image Saved");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.d(TAG, e.getMessage());
+            }
+        });
     }
 
     /*
@@ -241,6 +261,18 @@ public class FileOperation {
         return object;
     }
 
+    private void deleteImage(String imageFileName) {
+        File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        File imageFile = new File(folder, imageFileName);
+        boolean isDeleted = false;
+        if (imageFile.exists()) {
+            isDeleted = imageFile.delete();
+        }
+        if (imageFile.exists() && !isDeleted) {
+            Timber.d("Error while deleting " + imageFile.toString());
+        }
+    }
+
     /*
     @param uri      the uri that will be used to get all the images and the file Name
                     of a note and then be deleted
@@ -258,11 +290,7 @@ public class FileOperation {
                 ois = new ObjectInputStream(fis);
                 NoteObject obj = (NoteObject) ois.readObject();
                 for (int i = 0; i < obj.getImages().size(); i++) {
-                    File path = new File(folder, obj.getImages().get(i));
-                    isDeleted = path.delete();
-                    if (path.exists() && !isDeleted) {
-                        Log.d(TAG, "Error while deleting " + path.toString());
-                    }
+                    deleteImage(obj.getImages().get(i));
                 }
                 isDeleted = f.delete();
                 if (f.exists() && !isDeleted) {
@@ -484,5 +512,14 @@ public class FileOperation {
 
     public Bitmap mCompressBitmap(Bitmap bitmap) {
         return null;
+    }
+
+    public String makeName(boolean isNote) {
+        Calendar c = Calendar.getInstance();
+        if (isNote) {
+            return c.getTimeInMillis() + ".txt";
+        } else {
+            return c.getTimeInMillis() + ".jpg";
+        }
     }
 }

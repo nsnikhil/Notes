@@ -4,59 +4,46 @@
     style="@style/matchParent"
     android:transitionName="noteContainer">
 
-    <RelativeLayout style="@style/matchParent">
+    <LinearLayout style="@style/verticalLinearLayout">
 
         <include
             android:id="@+id/newNoteToolbar"
             layout="@layout/toolbar" />
 
-        <ScrollView
-            style="@style/matchParent"
-            android:layout_below="@id/newNoteToolbar">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/newNoteImageList"
+            style="@style/stretchedHorizontally"
+            android:layout_height="@dimen/newNoteImage"
+            android:visibility="gone" />
 
-            <LinearLayout
-                style="@style/stretchedHorizontally"
-                android:orientation="vertical">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/newNoteAudioList"
+            style="@style/stretchedHorizontally"
+            android:layout_height="?attr/listPreferredItemHeight"
+            android:visibility="gone" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/newNoteImageList"
-                    style="@style/matchParent"
-                    android:layout_height="@dimen/newNoteImage"
-                    android:visibility="gone" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/newNoteCheckList"
+            style="@style/stretchedHorizontally"
+            android:visibility="gone" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/newNoteAudioList"
-                    style="@style/matchParent"
-                    android:layout_height="@dimen/newNoteImage"
-                    android:visibility="gone" />
+        <EditText
+            android:id="@+id/newNoteTitle"
+            style="@style/newNoteHeading"
+            android:background="@android:color/transparent"
+            android:labelFor="@+id/newNoteTitle"
+            android:maxLines="1"
+            android:padding="@dimen/sixteen"
+            android:textSize="24sp" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/newNoteCheckList"
-                    style="@style/matchParent"
-                    android:layout_height="@dimen/newNoteImage"
-                    android:visibility="gone" />
+        <EditText
+            android:id="@+id/newNoteContent"
+            style="@style/newNoteContent"
+            android:inputType="textMultiLine"
+            android:labelFor="@+id/newNoteContent"
+            android:lineSpacingExtra="10dp" />
 
-                <EditText
-                    android:id="@+id/newNoteTitle"
-                    style="@style/newNoteHeading"
-                    android:background="@android:color/transparent"
-                    android:labelFor="@+id/newNoteTitle"
-                    android:maxLines="1"
-                    android:padding="@dimen/sixteen"
-                    android:textSize="24sp" />
-
-                <EditText
-                    android:id="@+id/newNoteContent"
-                    style="@style/newNoteContent"
-                    android:inputType="textMultiLine"
-                    android:labelFor="@+id/newNoteContent"
-                    android:lineSpacingExtra="10dp" />
-
-            </LinearLayout>
-
-        </ScrollView>
-
-    </RelativeLayout>
+    </LinearLayout>
 
     <include layout="@layout/new_note_tools" />
 
