@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2017 nsnikhil
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.nrs.nsnik.notes.adapters;
 
 import android.app.Activity;
@@ -20,7 +30,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.nrs.nsnik.notes.ImageFullActivity;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.interfaces.SendSize;
+import com.nrs.nsnik.notes.helpers.FileOperation;
+import com.nrs.nsnik.notes.interfaces.OnItemRemoveListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +55,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private Activity mContext;
     private List<String> mImageLoc;
     private File mFolder;
-    private SendSize mSize;
+    private OnItemRemoveListener mOnItemRemoveListener;
     private boolean mFullScreen;
 
     /*
@@ -53,10 +64,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
      @param sz              SendSize interface
      @param forFullScreen   if the adapter is used in full screen or not
      */
-    public ImageAdapter(Activity c, List<String> imageLocations, SendSize sz, boolean forFullScreen) {
+    public ImageAdapter(Activity c, List<String> imageLocations, OnItemRemoveListener onItemRemoveListener, boolean forFullScreen) {
         mContext = c;
         mImageLoc = imageLocations;
-        mSize = sz;
+        mOnItemRemoveListener = onItemRemoveListener;
         mFullScreen = forFullScreen;
         mFolder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
     }
@@ -84,18 +95,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                     }
                 })
                 .into(holder.image);
-    }
-
-    /*
-    modify the file name list with
-    new items and notify about data change
-    to adapter
-
-    @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
-     */
-    public void modifyImageList(List<String> imageLocations) {
-        mImageLoc = imageLocations;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -127,10 +126,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 image.setScaleType(ImageView.ScaleType.CENTER);
             } else {
                 remove.setOnClickListener(view -> {
-                    int pos = getAdapterPosition();
-                    mImageLoc.remove(pos);
-                    notifyItemRemoved(pos);
-                    mSize.validateSize(pos);
+                    mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition()));
                 });
                 itemView.setOnClickListener(view -> {
                     Intent fullScreen = new Intent(mContext, ImageFullActivity.class);

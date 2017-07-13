@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2017 nsnikhil
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.nrs.nsnik.notes.helpers;
 
 import android.annotation.SuppressLint;
@@ -93,7 +103,6 @@ public class FileOperation {
         };
     }
 
-
     /*
     @param fileName     the name by which the file wil be saved
                         each new notes has a different file name
@@ -159,12 +168,6 @@ public class FileOperation {
         ContentValues contentValues = new ContentValues();
         contentValues.put(table1.mTitle, title);
         mAsyncQueryHandler.startUpdate(1, null, uri, contentValues, null, null);
-        /*int count = mContext.getContentResolver().update(uri, contentValues, null, null);
-        if (count == 0) {
-            Toast.makeText(mContext, mContext.getResources().getString(R.string.updateFailed), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(mContext, mContext.getResources().getString(R.string.updateNote), Toast.LENGTH_SHORT).show();
-        }*/
     }
 
     public void deleteAudioFile(String fileName) {
@@ -179,7 +182,6 @@ public class FileOperation {
         }
     }
 
-
     /*
     @param fileName     the name of the fie which contains the note object
     @param noteObject   the note object that represents a single note
@@ -190,12 +192,6 @@ public class FileOperation {
         cv.put(table1.mFileName, fileName);
         cv.put(table1.mFolderName, noteObject.getFolderName());
         mAsyncQueryHandler.startInsert(1, null, TableNames.mContentUri, cv);
-       /* Uri u = mContext.getContentResolver().insert(TableNames.mContentUri, cv);
-        if (u == null) {
-            Toast.makeText(mContext, mContext.getResources().getString(R.string.insertFailed), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(mContext, mContext.getResources().getString(R.string.insertedNote), Toast.LENGTH_SHORT).show();
-        }*/
     }
 
     /*
@@ -261,7 +257,7 @@ public class FileOperation {
         return object;
     }
 
-    private void deleteImage(String imageFileName) {
+    public void deleteImage(String imageFileName) {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         File imageFile = new File(folder, imageFileName);
         boolean isDeleted = false;
@@ -291,6 +287,9 @@ public class FileOperation {
                 NoteObject obj = (NoteObject) ois.readObject();
                 for (int i = 0; i < obj.getImages().size(); i++) {
                     deleteImage(obj.getImages().get(i));
+                }
+                for (int i = 0; i < obj.getAudioLocations().size(); i++) {
+                    deleteAudioFile(obj.getAudioLocations().get(i));
                 }
                 isDeleted = f.delete();
                 if (f.exists() && !isDeleted) {
@@ -343,7 +342,7 @@ public class FileOperation {
     /*
     @param uri      the uri of the folder that is to be deleted
     @param folderName   the name of the folder that is to deleted
-    
+
     folder name is to delete all the notes and their
     resources that arw within that folder, first the
     resources related to all notes in folder is deleted then
@@ -467,7 +466,6 @@ public class FileOperation {
         } else {
             Log.d(TAG, "Database Error");
         }
-
     }
 
     /*
@@ -514,12 +512,19 @@ public class FileOperation {
         return null;
     }
 
-    public String makeName(boolean isNote) {
+    public String makeName(FILE_TYPES type) {
         Calendar c = Calendar.getInstance();
-        if (isNote) {
-            return c.getTimeInMillis() + ".txt";
-        } else {
-            return c.getTimeInMillis() + ".jpg";
+        switch (type) {
+            case TEXT:
+                return c.getTimeInMillis() + ".txt";
+            case IMAGE:
+                return c.getTimeInMillis() + ".jpg";
+            case AUDIO:
+                return c.getTimeInMillis() + ".3gp";
+            default:
+                throw new IllegalArgumentException("Invalid type " + type.toString());
         }
     }
+
+    public enum FILE_TYPES {TEXT, IMAGE, AUDIO}
 }

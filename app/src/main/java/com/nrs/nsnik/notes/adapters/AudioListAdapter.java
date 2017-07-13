@@ -1,6 +1,18 @@
+/*
+ * Copyright (C) 2017 nsnikhil
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.nrs.nsnik.notes.adapters;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +21,11 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.helpers.FileOperation;
+import com.nrs.nsnik.notes.interfaces.OnItemRemoveListener;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -20,10 +36,13 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     private Context mContext;
     private List<String> mAudioLocationList;
+    private MediaPlayer mMediaPlayer;
+    private OnItemRemoveListener mOnItemRemoveListener;
 
-    public AudioListAdapter(Context context, List<String> list) {
+    public AudioListAdapter(Context context, List<String> list, OnItemRemoveListener onItemRemoveListener) {
         mContext = context;
         mAudioLocationList = list;
+        mOnItemRemoveListener = onItemRemoveListener;
     }
 
     @Override
@@ -36,18 +55,33 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     }
 
-    public void modifyAudioList(List<String> list) {
-        mAudioLocationList.addAll(list);
-        notifyDataSetChanged();
+    private void playAudio(int position, SeekBar seekBar, ImageButton play) {
+        seekBar.setProgress(0);
+        File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        mMediaPlayer = new MediaPlayer();
+        try {
+            mMediaPlayer.setDataSource(String.valueOf(new File(folder, mAudioLocationList.get(position))));
+            if (mMediaPlayer != null) {
+                mMediaPlayer.prepare();
+                mMediaPlayer.start();
+                shiftSeekBar(seekBar, mMediaPlayer.getDuration());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mMediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
+            if (mMediaPlayer != null) {
+                mMediaPlayer.release();
+                mMediaPlayer = null;
+                play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24dp));
+            }
+        });
     }
 
-    private void playAudio() {
+    private void shiftSeekBar(SeekBar seekBar, int maxDuration) {
 
     }
 
-    private void removeAudio() {
-
-    }
 
     @Override
     public int getItemCount() {
@@ -65,8 +99,11 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mPlay.setOnClickListener(view -> playAudio());
-            mRemove.setOnClickListener(view -> removeAudio());
+            mPlay.setOnClickListener(view -> {
+                mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_pause_black_24dp));
+                playAudio(getAdapterPosition(), mSeekBar, mPlay);
+            });
+            mRemove.setOnClickListener(view -> mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition())));
         }
     }
 }

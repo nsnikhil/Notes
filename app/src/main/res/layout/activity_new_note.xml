@@ -1,49 +1,61 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2017 nsnikhil
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+  -->
+
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_new_note"
     style="@style/matchParent"
     android:transitionName="noteContainer">
 
-    <LinearLayout style="@style/verticalLinearLayout">
+    <android.support.v4.widget.NestedScrollView style="@style/matchParent">
 
-        <include
-            android:id="@+id/newNoteToolbar"
-            layout="@layout/toolbar" />
+        <LinearLayout style="@style/verticalLinearLayout">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/newNoteImageList"
-            style="@style/stretchedHorizontally"
-            android:layout_height="@dimen/newNoteImage"
-            android:visibility="gone" />
+            <include
+                android:id="@+id/newNoteToolbar"
+                layout="@layout/toolbar" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/newNoteAudioList"
-            style="@style/stretchedHorizontally"
-            android:layout_height="?attr/listPreferredItemHeight"
-            android:visibility="gone" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/newNoteImageList"
+                style="@style/stretchedHorizontally"
+                android:layout_height="@dimen/newNoteImage"
+                android:visibility="gone" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/newNoteCheckList"
-            style="@style/stretchedHorizontally"
-            android:visibility="gone" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/newNoteAudioList"
+                style="@style/stretchedHorizontally"
+                android:visibility="gone" />
 
-        <EditText
-            android:id="@+id/newNoteTitle"
-            style="@style/newNoteHeading"
-            android:background="@android:color/transparent"
-            android:labelFor="@+id/newNoteTitle"
-            android:maxLines="1"
-            android:padding="@dimen/sixteen"
-            android:textSize="24sp" />
+            <EditText
+                android:id="@+id/newNoteTitle"
+                style="@style/newNoteHeading"
+                android:background="@android:color/transparent"
+                android:labelFor="@+id/newNoteTitle"
+                android:maxLines="1"
+                android:padding="@dimen/sixteen"
+                android:textSize="24sp" />
 
-        <EditText
-            android:id="@+id/newNoteContent"
-            style="@style/newNoteContent"
-            android:inputType="textMultiLine"
-            android:labelFor="@+id/newNoteContent"
-            android:lineSpacingExtra="10dp" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/newNoteCheckList"
+                style="@style/stretchedHorizontally"
+                android:visibility="gone" />
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/newNoteContent"
+                style="@style/newNoteContent"
+                android:inputType="textMultiLine"
+                android:labelFor="@+id/newNoteContent"
+                android:lineSpacingExtra="10dp" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
     <include layout="@layout/new_note_tools" />
 

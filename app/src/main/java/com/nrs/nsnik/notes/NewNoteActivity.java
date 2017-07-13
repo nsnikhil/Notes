@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2017 nsnikhil
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.nrs.nsnik.notes;
 
 import android.Manifest;
@@ -8,6 +18,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +30,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,7 +50,7 @@ import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.OnAddClickListener;
-import com.nrs.nsnik.notes.interfaces.SendSize;
+import com.nrs.nsnik.notes.interfaces.OnItemRemoveListener;
 import com.nrs.nsnik.notes.objects.CheckListObject;
 import com.nrs.nsnik.notes.objects.NoteObject;
 import com.squareup.leakcanary.RefWatcher;
@@ -54,12 +66,11 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, SendSize, OnAddClickListener {
+public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, OnAddClickListener, OnItemRemoveListener {
 
     private static final int ATTACH_PICTURE_REQUEST_CODE = 205;
     private static final int TAKE_PICTURE_REQUEST_CODE = 206;
     private static final int GET_COLOR_REQUEST_CODE = 207;
-
 
     private static final int RECORD_AUDIO_PERMISSION_CODE = 512;
     private static final int EXTERNAL_STORAGE_PERMISSION_CODE = 513;
@@ -181,8 +192,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
         //Audio List Setup
         mAudioLocations = new ArrayList<>();
-        mAudioRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
-        mAudioListAdapter = new AudioListAdapter(this, mAudioLocations);
+        mAudioRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAudioListAdapter = new AudioListAdapter(this, mAudioLocations, this);
         mAudioRecyclerView.setAdapter(mAudioListAdapter);
 
 
@@ -278,17 +289,17 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 if (object.getImages().size() > 0) {
                     mImageRecyclerView.setVisibility(View.VISIBLE);
                     mImagesLocations.addAll(object.getImages());
-                    mImageAdapter.modifyImageList(mImagesLocations);
+                    mImageAdapter.notifyDataSetChanged();
                 }
                 if (object.getAudioLocations().size() > 0) {
                     mAudioRecyclerView.setVisibility(View.VISIBLE);
                     mAudioLocations.addAll(object.getAudioLocations());
-                    mAudioListAdapter.modifyAudioList(mAudioLocations);
+                    mImageAdapter.notifyDataSetChanged();
                 }
                 if (object.getmCheckList().size() > 0) {
                     mCheckListRecyclerView.setVisibility(View.VISIBLE);
                     mCheckList.addAll(object.getmCheckList());
-                    mCheckListAdapter.modifyCheckList(mCheckList);
+                    mCheckListAdapter.notifyDataSetChanged();
                 }
                 /*if (object.getReminder() != 0) {
                     mHour = 292;
@@ -300,7 +311,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void addCheckListItem() {
         mCheckList.add(new CheckListObject("", false));
-        mCheckListAdapter.modifyCheckList(mCheckList);
+        mCheckListAdapter.notifyDataSetChanged();
         displayCheckListView();
     }
 
@@ -314,7 +325,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void addAudioToList(String audioFileLocation) {
         mAudioLocations.add(audioFileLocation);
-        mAudioListAdapter.modifyAudioList(mAudioLocations);
+        mAudioListAdapter.notifyDataSetChanged();
         displayAudioListView();
     }
 
@@ -328,7 +339,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void addImageToList(String imageLocation) {
         mImagesLocations.add(imageLocation);
-        mImageAdapter.modifyImageList(mImagesLocations);
+        mImageAdapter.notifyDataSetChanged();
         displayImageList();
     }
 
@@ -403,7 +414,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         Uri imageUri = data.getData();
         try {
             Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-            String imageFileName = mFileOperation.makeName(false);
+            String imageFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.IMAGE);
             mFileOperation.saveImage(imageFileName, image);
             addImageToList(imageFileName);
         } catch (IOException e) {
@@ -413,9 +424,43 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void addCameraPhotoToList() {
         Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
-        String imageFileName = mFileOperation.makeName(false);
+        String imageFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.IMAGE);
         mFileOperation.saveImage(imageFileName, image);
         addImageToList(imageFileName);
+    }
+
+    private void recordAudio() {
+        //Creating new file for audio
+        File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
+        String audioFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.AUDIO);
+        File audioFileAbsolutePath = new File(folder, audioFileName);
+
+
+        //Initializing the media recorder
+        MediaRecorder recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        recorder.setOutputFile(audioFileAbsolutePath.getAbsolutePath());
+
+        //Creating the aduio recorder dialog
+        AlertDialog.Builder record = new AlertDialog.Builder(NewNoteActivity.this);
+        record.setMessage("Recording");
+        record.setNeutralButton("Stop Recording", (dialogInterface, i) -> {
+            recorder.stop();
+            recorder.reset();
+            recorder.release();
+            addAudioToList(audioFileName);
+        });
+        record.setCancelable(false);
+        record.create().show();
+
+        try {
+            recorder.prepare();
+            recorder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -463,39 +508,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         setNotification();*/
     }
 
-    private void recordAudio() {
-       /* File folder = new File(String.valueOf(getExternalFilesDir(getResources().getString(R.string.folderName))));
-        Calendar c = Calendar.getInstance();
-        if (mAudioFileName == null) {
-            mAudioFileName = c.getTimeInMillis() + "audio.3gp";
-        }
-        File f = new File(folder, mAudioFileName);
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        mRecorder.setOutputFile(String.valueOf(f));
-        AlertDialog recordDialog;
-        AlertDialog.Builder record = new AlertDialog.Builder(NewNoteActivity.this);
-        record.setMessage("Recording");
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mRecorder.start();
-        record.setNeutralButton("Stop Recording", (dialogInterface, i) -> {
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
-            newNoteAudioContainer.setVisibility(View.VISIBLE);
-            mAudio = 1;
-        });
-        recordDialog = record.create();
-        recordDialog.setCancelable(false);
-        recordDialog.show();*/
-    }
-
     private void setNotification() {
       /*  Intent myIntent = new Intent(this, ReminderService.class);
         myIntent.putExtra(getResources().getString(R.string.notificationtitle), mTitle.getText().toString());
@@ -537,15 +549,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void validateSize(int position) {
-        if (mImagesLocations.size() <= 0) {
-            mImageRecyclerView.setVisibility(View.GONE);
-        } else {
-            mImageRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (BuildConfig.DEBUG) {
@@ -557,6 +560,24 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void addClickListener() {
         addCheckListItem();
+    }
+
+    @Override
+    public void onItemRemoved(int position, FileOperation.FILE_TYPES types, String fileName) {
+        switch (types) {
+            case IMAGE:
+                mFileOperation.deleteImage(fileName);
+                mImagesLocations.remove(position);
+                mImageAdapter.notifyItemRemoved(position);
+                displayImageList();
+                break;
+            case AUDIO:
+                mFileOperation.deleteAudioFile(fileName);
+                mAudioLocations.remove(position);
+                mAudioListAdapter.notifyItemRemoved(position);
+                displayAudioListView();
+                break;
+        }
     }
 
     public static class ReminderService extends BroadcastReceiver {
