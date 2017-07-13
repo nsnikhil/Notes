@@ -72,7 +72,6 @@
             android:label="@string/serach" />
         <activity android:name=".ImageFullActivity" />
         <activity android:name=".IntroActivity" />
-        <activity android:name=".test"></activity>
     </application>
 
 </manifest>

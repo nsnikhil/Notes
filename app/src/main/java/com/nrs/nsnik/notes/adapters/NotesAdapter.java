@@ -14,10 +14,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -38,11 +38,14 @@ import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.ItemTouchListener;
+import com.nrs.nsnik.notes.objects.FolderObject;
 import com.nrs.nsnik.notes.objects.NoteObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,7 +64,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int NOTES = 0, FOLDER = 1, HEADER = 2;
     private Context mContext;
     private List<NoteObject> mNotesList;
-    private List<String> mFolderList;
+    private List<FolderObject> mFolderList;
     private String mFolderName;
     private File mFolder;
     private FileOperation mFileOperations;
@@ -80,7 +83,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @param manager      the loader manager object used in data observers
     @param folderName   the name of the folder associated with the uri(note or folder)
      */
-    public NotesAdapter(Context context, List<NoteObject> noteList, List<String> folderList, String folderName) {
+    public NotesAdapter(Context context, List<NoteObject> noteList, List<FolderObject> folderList, String folderName) {
         mNotesList = new ArrayList<>();
         mFolderList = new ArrayList<>();
         mNotesList.addAll(noteList);
@@ -172,7 +175,8 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
     private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
-        folderViewHolder.mFolderNameText.setText(mFolderList.get(position));
+        folderViewHolder.mFolderNameText.setText(mFolderList.get(position).getmFolderName());
+        folderViewHolder.mFolderNameText.setCompoundDrawableTintList(stateList(mFolderList.get(position).getmFolderColor()));
     }
 
     /*
@@ -187,7 +191,9 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         final NoteViewHolder noteViewHolder = (NoteViewHolder) holder;
         NoteObject object = mNotesList.get(position);
         noteViewHolder.mNoteTitle.setText(object.getTitle());
+        noteViewHolder.mNoteTitle.setTextColor(Color.parseColor(object.getmColor()));
         noteViewHolder.mNoteContent.setText(object.getNote());
+        noteViewHolder.mNoteDate.setText(formatDate(object.getmTime()));
         if (object.getImages().size() > 0) {
             ((NoteViewHolder) holder).mNoteImage.setVisibility(View.VISIBLE);
             Glide.with(mContext)
@@ -196,15 +202,49 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else {
             noteViewHolder.mNoteImage.setVisibility(View.GONE);
         }
-        /*if (object.getAudioLocation() != null) {
+        if (object.getAudioLocations().size() > 0) {
             noteViewHolder.mAudIndicator.setVisibility(View.VISIBLE);
         } else {
             noteViewHolder.mAudIndicator.setVisibility(View.GONE);
-        }*/
+        }
+        if (object.getmCheckList().size() > 0) {
+            noteViewHolder.mChkLstIndicator.setVisibility(View.VISIBLE);
+        } else {
+            noteViewHolder.mChkLstIndicator.setVisibility(View.GONE);
+        }
         if (object.getReminder() != 0) {
             noteViewHolder.mRemIndicator.setVisibility(View.VISIBLE);
         } else {
             noteViewHolder.mRemIndicator.setVisibility(View.GONE);
+        }
+    }
+
+    private String formatDate(String rawDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(Long.parseLong(rawDate));
+
+        Calendar calendarPresent = Calendar.getInstance();
+
+        long noteDate = Long.parseLong(rawDate);
+        long currentTime = calendarPresent.getTimeInMillis();
+
+        long nowMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTime);
+        long secondMinutes = TimeUnit.MILLISECONDS.toMinutes(noteDate);
+
+        long nowHour = TimeUnit.MILLISECONDS.toHours(currentTime);
+        long secondHour = TimeUnit.MILLISECONDS.toHours(noteDate);
+
+        long nowDays = TimeUnit.MILLISECONDS.toDays(currentTime);
+        long secondDays = TimeUnit.MILLISECONDS.toDays(noteDate);
+
+        if (nowMinutes - secondMinutes < 60) {
+            return nowMinutes - secondMinutes + " min ago";
+        } else if (nowHour - secondHour < 24) {
+            return nowHour - secondHour + " hours ago";
+        } else if (nowDays - secondDays <= 2) {
+            return nowDays - secondDays + " days ago";
+        } else {
+            return calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH);
         }
     }
 
@@ -225,7 +265,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     /*
     @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
-    public void updateFolderList(List<String> folderList) {
+    public void updateFolderList(List<FolderObject> folderList) {
         mFolderList.clear();
         mFolderList.addAll(folderList);
         notifyDataSetChanged();
@@ -345,21 +385,6 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /*
-    @return new ColorSateList
-     */
-    private ColorStateList stateList() {
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_enabled},
-                new int[]{-android.R.attr.state_enabled},
-                new int[]{-android.R.attr.state_checked},
-                new int[]{android.R.attr.state_pressed}
-        };
-        int color = ContextCompat.getColor(mContext, R.color.colorAccentLight);
-        int[] colors = new int[]{color, color, color, color};
-        return new ColorStateList(states, colors);
-    }
-
-    /*
      @param message         message to be displayed in dialog box while deleting
      @param isFolder        check if folder inflated the menu or not
      @param folderName      name of the folder that inflated the menu
@@ -420,17 +445,33 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+    private ColorStateList stateList(String colorString) {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_enabled},
+                new int[]{-android.R.attr.state_enabled},
+                new int[]{-android.R.attr.state_checked},
+                new int[]{android.R.attr.state_pressed}
+        };
+        int color = Color.parseColor(colorString);
+        int[] colors = new int[]{color, color, color, color};
+        return new ColorStateList(states, colors);
+    }
+
     class NoteViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.singleNoteTitle)
         TextView mNoteTitle;
         @BindView(R.id.singleNoteContent)
         TextView mNoteContent;
+        @BindView(R.id.singleNoteDate)
+        TextView mNoteDate;
         @BindView(R.id.singleNoteImage)
         ImageView mNoteImage;
         @BindView(R.id.singleNoteReminder)
         ImageView mRemIndicator;
         @BindView(R.id.singleNoteAudio)
         ImageView mAudIndicator;
+        @BindView(R.id.singleNoteCheck)
+        ImageView mChkLstIndicator;
         @BindView(R.id.singleNoteMore)
         ImageButton mMore;
 
@@ -488,7 +529,6 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public FolderViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mFolderNameText.setCompoundDrawableTintList(stateList());
             itemView.setOnClickListener(v -> {
                 //check if position is valid
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {

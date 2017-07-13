@@ -11,7 +11,10 @@
 package com.nrs.nsnik.notes;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +53,7 @@ import com.nrs.nsnik.notes.data.TableNames;
 import com.nrs.nsnik.notes.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.OnAddClickListener;
+import com.nrs.nsnik.notes.interfaces.OnColorSelectedListener;
 import com.nrs.nsnik.notes.interfaces.OnItemRemoveListener;
 import com.nrs.nsnik.notes.objects.CheckListObject;
 import com.nrs.nsnik.notes.objects.NoteObject;
@@ -59,6 +63,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -66,7 +71,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, OnAddClickListener, OnItemRemoveListener {
+public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, OnAddClickListener, OnItemRemoveListener, OnColorSelectedListener {
 
     private static final int ATTACH_PICTURE_REQUEST_CODE = 205;
     private static final int TAKE_PICTURE_REQUEST_CODE = 206;
@@ -113,8 +118,10 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     TextView mBottomColor;
 
 
+    //Variables used in saving or updating note
     private String mFolderName = "nofolder";
-
+    private int IS_LOCKED, IS_STARRED, HAS_ALARM;
+    private String mColorCode;
     private Uri mIntentUri = null;
 
 
@@ -163,7 +170,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mFileOperation = new FileOperation(getApplicationContext(), true);
+        mFileOperation = new FileOperation(this, true);
 
         //BottomSheet
         mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
@@ -236,7 +243,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.toolsReminder:
                 changeState();
-                Toast.makeText(this, "Add Reminder", Toast.LENGTH_SHORT).show();
+                setReminder();
                 break;
             case R.id.toolsAudio:
                 changeState();
@@ -261,17 +268,24 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         switch (item.getItemId()) {
             case R.id.newNoteMenuSave:
                 if (verifyAndSave()) {
-                    try {
-                        if (mIntentUri != null) {
-                            updateNote();
-                        } else {
+                    if (mIntentUri == null) {
+                        try {
                             saveNote();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            finish();
                         }
-                        finish();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
+                break;
+            case R.id.newNoteMenuStar:
+                IS_STARRED = 1;
+                displayToast("Starred");
+                break;
+            case R.id.newNoteMenuLock:
+                IS_LOCKED = 1;
+                displayToast("Locked");
                 break;
         }
         return true;
@@ -406,7 +420,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         if (chosePicture.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(chosePicture, ATTACH_PICTURE_REQUEST_CODE);
         } else {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.noGallery), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.noGallery), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -463,20 +477,38 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void setReminder() {
+        Calendar calendar = Calendar.getInstance();
+        TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, (timePicker, hour, minutes) -> {
+            HAS_ALARM = 1;
+            setNotification(calendar, hour, minutes);
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false);
+        time.show();
+    }
 
-    private void changeState() {
-        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    private void setNotification(Calendar calendar, int hour, int minutes) {
+        Intent myIntent = new Intent(this, ReminderService.class);
+        myIntent.putExtra(getResources().getString(R.string.notificationtitle), mTitle.getText().toString());
+        myIntent.putExtra(getResources().getString(R.string.notificationcontent), mNote.getText().toString());
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minutes);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
+
+    private void saveNote() throws IOException {
+        if (mColorCode == null) {
+            mColorCode = "#333333";
         }
+        Calendar calendar = Calendar.getInstance();
+        String time = String.valueOf(calendar.getTimeInMillis());
+        NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioLocations, mCheckList, HAS_ALARM, mFolderName, mColorCode, time);
+        mFileOperation.saveNote(mFileOperation.makeName(FileOperation.FILE_TYPES.TEXT), noteObject, IS_STARRED, IS_LOCKED, time, mColorCode);
     }
 
     private void updateNote() {
         /*Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
-        if (mHour != 289 || mMinutes != 291) {
-            mReminder = 1;
-        }
         /*try {
             if (c != null && c.moveToFirst()) {
                 NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
@@ -489,47 +521,23 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }*/
     }
 
-    private void saveNote() throws IOException {
-        /*if (mHour != 289 || mMinutes != 291) {
-            mReminder = 1;
-        }*/
-      /*  NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
-        mFileOperation.saveNote(makeNoteName(), noteObject);*/
-    }
-
-    private void setReminder() {
-     /*   Calendar c = Calendar.getInstance();
-        TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, (timePicker, i, i1) -> {
-            mHour = i;
-            mMinutes = i1;
-        }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true);
-        time.show();
-
-        setNotification();*/
-    }
-
-    private void setNotification() {
-      /*  Intent myIntent = new Intent(this, ReminderService.class);
-        myIntent.putExtra(getResources().getString(R.string.notificationtitle), mTitle.getText().toString());
-        myIntent.putExtra(getResources().getString(R.string.notificationcontent), mNote.getText().toString());
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, mHour);
-        calendar.set(java.util.Calendar.MINUTE, mMinutes);
-        calendar.set(java.util.Calendar.SECOND, 0);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);*/
-    }
-
     private boolean verifyAndSave() {
         if (mNote.getText().toString().equalsIgnoreCase("") || mNote.getText().toString().isEmpty()) {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.noNote), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.noNote), Toast.LENGTH_SHORT).show();
             return false;
         } else if (mTitle.getText().toString().equalsIgnoreCase("") || mTitle.getText().toString().isEmpty()) {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.noTitle), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.noTitle), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
+    }
+
+    private void changeState() {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
     }
 
     @Override
@@ -580,6 +588,15 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    @Override
+    public void onColorSelected(String color) {
+        mColorCode = color;
+    }
+
+    private void displayToast(String toastMessage) {
+        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
+    }
+
     public static class ReminderService extends BroadcastReceiver {
         Context mContext;
 
@@ -593,7 +610,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mContext, mContext.getResources().getString(R.string.notificationChannelReminder));
             notificationBuilder.setSmallIcon(R.drawable.ic_add_alarm_white_48dp);
             notificationBuilder.setContentTitle(i.getExtras().getString(mContext.getResources().getString(R.string.notificationtitle)));
-            notificationBuilder.setContentText(i.getExtras().getString(mContext.getResources().getString(R.string.notificationcontent)));
             NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(1, notificationBuilder.build());
         }

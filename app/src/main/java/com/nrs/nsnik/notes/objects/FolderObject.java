@@ -10,32 +10,22 @@
 
 package com.nrs.nsnik.notes.objects;
 
-
 import java.io.Serializable;
 
-public class CheckListObject implements Serializable {
+public class FolderObject implements Serializable {
 
-    private String mText;
-    private boolean mDone;
+    private String mFolderName, mFolderColor;
 
-    public CheckListObject(String text, boolean done) {
-        mText = text;
-        mDone = done;
+    public FolderObject(String folderName, String folderColor) {
+        mFolderName = folderName;
+        mFolderColor = folderColor;
     }
 
-    public String getmText() {
-        return mText;
+    public String getmFolderName() {
+        return mFolderName;
     }
 
-    public void setmText(String mText) {
-        this.mText = mText;
-    }
-
-    public boolean ismDone() {
-        return mDone;
-    }
-
-    public void setmDone(boolean mDone) {
-        this.mDone = mDone;
+    public String getmFolderColor() {
+        return mFolderColor;
     }
 }

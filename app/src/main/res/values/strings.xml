@@ -32,6 +32,7 @@
     <string name="headingNotes">Notes</string>
     <string name="headingFolder">Folders</string>"
     <string name="editingDate">Editing Date</string>
+    <string name="checkListAddItem">…</string>
 
     <!-- emptyStateStrings-->
     <string name="emptyStateEmpty">No notes yet\n Tap the "+" to get started</string>

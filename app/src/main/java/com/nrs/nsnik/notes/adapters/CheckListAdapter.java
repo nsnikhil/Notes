@@ -11,13 +11,18 @@
 package com.nrs.nsnik.notes.adapters;
 
 import android.content.Context;
+import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.interfaces.OnAddClickListener;
@@ -54,6 +59,19 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
         }
         holder.mText.setText(mCheckList.get(position).getmText());
         holder.mTicker.setChecked(mCheckList.get(position).ismDone());
+        if (holder.mText.getText().toString().length() > 0) {
+            changeItem(mCheckList.get(position).ismDone(), holder.mText);
+        }
+    }
+
+    private void changeItem(boolean isDone, TextView textView) {
+        if (isDone) {
+            textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            textView.setTextColor(ContextCompat.getColor(mContext, R.color.grey));
+        } else {
+            textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            textView.setTextColor(ContextCompat.getColor(mContext, android.R.color.primary_text_light));
+        }
     }
 
     @Override
@@ -73,6 +91,28 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
             super(itemView);
             ButterKnife.bind(this, itemView);
             mAdd.setOnClickListener(view -> mOnAddClickListener.addClickListener());
+            mTicker.setOnCheckedChangeListener((compoundButton, b) -> {
+                CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
+                checkListObject.setmDone(b);
+                if (mText.getText().toString().length() > 0) {
+                    changeItem(b, mText);
+                }
+            });
+            mText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
+                    checkListObject.setmText(editable.toString());
+                }
+            });
         }
     }
 }

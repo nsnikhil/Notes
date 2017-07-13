@@ -32,12 +32,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyViewHolder> {
+public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyViewHolder> implements Runnable {
 
     private Context mContext;
     private List<String> mAudioLocationList;
     private MediaPlayer mMediaPlayer;
     private OnItemRemoveListener mOnItemRemoveListener;
+    private SeekBar mAdapterSeekBar;
 
     public AudioListAdapter(Context context, List<String> list, OnItemRemoveListener onItemRemoveListener) {
         mContext = context;
@@ -55,8 +56,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     }
 
-    private void playAudio(int position, SeekBar seekBar, ImageButton play) {
-        seekBar.setProgress(0);
+    private void playAudio(int position, ImageButton play) {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         mMediaPlayer = new MediaPlayer();
         try {
@@ -64,7 +64,8 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
             if (mMediaPlayer != null) {
                 mMediaPlayer.prepare();
                 mMediaPlayer.start();
-                shiftSeekBar(seekBar, mMediaPlayer.getDuration());
+                mAdapterSeekBar.setMax(mMediaPlayer.getDuration());
+                new Thread(this).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,19 +74,31 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
             if (mMediaPlayer != null) {
                 mMediaPlayer.release();
                 mMediaPlayer = null;
+                mAdapterSeekBar.setProgress(0, true);
                 play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24dp));
             }
         });
-    }
-
-    private void shiftSeekBar(SeekBar seekBar, int maxDuration) {
-
     }
 
 
     @Override
     public int getItemCount() {
         return mAudioLocationList.size();
+    }
+
+    @Override
+    public void run() {
+        int currentPosition = mMediaPlayer.getCurrentPosition();
+        int total = mMediaPlayer.getDuration();
+        while (mMediaPlayer != null && currentPosition < total) {
+            try {
+                Thread.sleep(1000);
+                currentPosition = mMediaPlayer.getCurrentPosition();
+            } catch (Exception e) {
+                return;
+            }
+            mAdapterSeekBar.setProgress(currentPosition, true);
+        }
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -100,8 +113,9 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
             super(itemView);
             ButterKnife.bind(this, itemView);
             mPlay.setOnClickListener(view -> {
-                mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_pause_black_24dp));
-                playAudio(getAdapterPosition(), mSeekBar, mPlay);
+                mAdapterSeekBar = mSeekBar;
+                mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_stop_black_24dp));
+                playAudio(getAdapterPosition(), mPlay);
             });
             mRemove.setOnClickListener(view -> mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition())));
         }

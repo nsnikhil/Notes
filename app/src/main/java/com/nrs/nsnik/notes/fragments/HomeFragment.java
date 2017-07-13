@@ -14,7 +14,9 @@ package com.nrs.nsnik.notes.fragments;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +58,8 @@ import com.nrs.nsnik.notes.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.helpers.RvItemTouchHelper;
 import com.nrs.nsnik.notes.interfaces.NoteObserver;
+import com.nrs.nsnik.notes.interfaces.OnColorSelectedListener;
+import com.nrs.nsnik.notes.objects.FolderObject;
 import com.nrs.nsnik.notes.objects.NoteObject;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -78,7 +82,7 @@ this fragment passes the uri to the adapter upon
 which adapter queries and makes a list to display
  */
 
-public class HomeFragment extends Fragment implements NoteObserver {
+public class HomeFragment extends Fragment implements NoteObserver, OnColorSelectedListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     private static final int GET_COLOR_REQUEST_CODE = 207;
@@ -103,10 +107,14 @@ public class HomeFragment extends Fragment implements NoteObserver {
     AdView mAdView;
     @BindView(R.id.homeContainer)
     CoordinatorLayout mHomeContainer;
+
     private String mFolderName = "nofolder";
+    private String mColor;
+    private ImageView mColorView;
+
     private Unbinder mUnbinder;
     private List<NoteObject> mNotesList;
-    private List<String> mFolderList;
+    private List<FolderObject> mFolderList;
     private NotesAdapter mNotesAdapter;
 
     public HomeFragment() {
@@ -296,10 +304,12 @@ public class HomeFragment extends Fragment implements NoteObserver {
         final View v = LayoutInflater.from(getActivity()).inflate(R.layout.new_folder_dialog, null);
         newFolder.setView(v);
         final EditText editText = v.findViewById(R.id.dialogFolderName);
-        ImageView folderColor = v.findViewById(R.id.dialogFolderColor);
+        mColorView = v.findViewById(R.id.dialogFolderColor);
         editText.requestFocus();
-        folderColor.setOnClickListener(view -> {
+        mColor = null;
+        mColorView.setOnClickListener(view -> {
             ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
+            pickerDialogFragment.setTargetFragment(this, 129);
             pickerDialogFragment.show(getFragmentManager(), "color");
         });
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -322,6 +332,11 @@ public class HomeFragment extends Fragment implements NoteObserver {
         Calendar c = Calendar.getInstance();
         cv.put(TableNames.table2.mFolderId, c.getTimeInMillis() + name);
         cv.put(TableNames.table2.mParentFolderName, mFolderName);
+        if (mColor != null) {
+            cv.put(TableNames.table2.mColor, mColor);
+        } else {
+            cv.put(TableNames.table2.mColor, "#333333");
+        }
         Uri u = getActivity().getContentResolver().insert(TableNames.mFolderContentUri, cv);
         if (u != null) {
             Toast.makeText(getActivity(), getResources().getString(R.string.newfoldercreated), Toast.LENGTH_SHORT).show();
@@ -449,20 +464,21 @@ public class HomeFragment extends Fragment implements NoteObserver {
 
     */
     private void makeFolderList(Cursor cursor) {
-        Single<List<String>> listSingle = Single.fromCallable(() -> {
-            List<String> tempList = new ArrayList<>();
+        Single<List<FolderObject>> listSingle = Single.fromCallable(() -> {
+            List<FolderObject> tempList = new ArrayList<>();
             while (cursor != null && cursor.moveToNext()) {
-                tempList.add(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName)));
+                tempList.add(new FolderObject(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))
+                        , cursor.getString(cursor.getColumnIndex(TableNames.table2.mColor))));
             }
             return tempList;
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-        listSingle.subscribe(new SingleObserver<List<String>>() {
+        listSingle.subscribe(new SingleObserver<List<FolderObject>>() {
             @Override
             public void onSubscribe(Disposable d) {
             }
 
             @Override
-            public void onSuccess(List<String> folderNames) {
+            public void onSuccess(List<FolderObject> folderNames) {
                 if (folderNames != null) {
                     mFolderList.clear();
                     mFolderList.addAll(folderNames);
@@ -470,11 +486,30 @@ public class HomeFragment extends Fragment implements NoteObserver {
                     setEmpty();
                 }
             }
-
             @Override
             public void onError(Throwable e) {
                 Log.d(TAG, e.getMessage());
             }
         });
+    }
+
+    private ColorStateList stateList(String colorString) {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_enabled},
+                new int[]{-android.R.attr.state_enabled},
+                new int[]{-android.R.attr.state_checked},
+                new int[]{android.R.attr.state_pressed}
+        };
+        int color = Color.parseColor(colorString);
+        int[] colors = new int[]{color, color, color, color};
+        return new ColorStateList(states, colors);
+    }
+
+    @Override
+    public void onColorSelected(String color) {
+        mColor = color;
+        if (mColorView != null) {
+            mColorView.setBackgroundTintList(stateList(mColor));
+        }
     }
 }

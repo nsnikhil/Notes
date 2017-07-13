@@ -31,7 +31,7 @@ public class NoteObject implements Serializable, Parcelable {
             return new NoteObject[size];
         }
     };
-    private String mTitle, mNoteContent, mFolderName;
+    private String mTitle, mNoteContent, mFolderName, mColor, mTime;
     private List<String> images, audioLocations;
     private List<CheckListObject> mCheckList;
 
@@ -40,7 +40,7 @@ public class NoteObject implements Serializable, Parcelable {
      */
     private int reminder;
 
-    public NoteObject(String title, String note, ArrayList<String> images, List<String> audioLocations, List<CheckListObject> checkList, int reminder, String folderName) {
+    public NoteObject(String title, String note, List<String> images, List<String> audioLocations, List<CheckListObject> checkList, int reminder, String folderName, String color, String time) {
         this.mNoteContent = note;
         this.mTitle = title;
         this.images = images;
@@ -48,6 +48,8 @@ public class NoteObject implements Serializable, Parcelable {
         this.mCheckList = checkList;
         this.reminder = reminder;
         this.mFolderName = folderName;
+        this.mColor = color;
+        this.mTime = time;
     }
 
     private NoteObject(Parcel in) {
@@ -59,6 +61,8 @@ public class NoteObject implements Serializable, Parcelable {
         mFolderName = in.readString();
         images = in.createStringArrayList();
         reminder = in.readInt();
+        mColor = in.readString();
+        mTime = in.readString();
     }
 
     public String getTitle() {
@@ -93,6 +97,14 @@ public class NoteObject implements Serializable, Parcelable {
         return mFolderName;
     }
 
+    public String getmColor() {
+        return mColor;
+    }
+
+    public String getmTime() {
+        return mTime;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -107,5 +119,7 @@ public class NoteObject implements Serializable, Parcelable {
         parcel.writeString(mFolderName);
         parcel.writeStringList(images);
         parcel.writeInt(reminder);
+        parcel.writeString(mColor);
+        parcel.writeString(mTime);
     }
 }

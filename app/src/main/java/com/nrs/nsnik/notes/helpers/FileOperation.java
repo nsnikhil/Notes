@@ -108,7 +108,7 @@ public class FileOperation {
                         each new notes has a different file name
     @param noteObject   the object that is written to file
      */
-    public void saveNote(String fileName, NoteObject noteObject) throws IOException {
+    public void saveNote(String fileName, NoteObject noteObject, int isPinned, int isLocked, String time, String color) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -128,7 +128,7 @@ public class FileOperation {
                 oos.close();
             }
         }
-        insertInTable(fileName, noteObject);
+        insertInTable(fileName, noteObject, isPinned, isLocked, time, color);
     }
 
     /*
@@ -186,11 +186,17 @@ public class FileOperation {
     @param fileName     the name of the fie which contains the note object
     @param noteObject   the note object that represents a single note
      */
-    private void insertInTable(String fileName, NoteObject noteObject) {
+    private void insertInTable(String fileName, NoteObject noteObject, int isPinned, int isLocked, String time, String color) {
         ContentValues cv = new ContentValues();
         cv.put(table1.mTitle, noteObject.getTitle());
         cv.put(table1.mFileName, fileName);
         cv.put(table1.mFolderName, noteObject.getFolderName());
+
+        cv.put(table1.mIsPinned, isPinned);
+        cv.put(table1.mIsLocked, isLocked);
+        cv.put(table1.mDataModified, time);
+        cv.put(table1.mColor, color);
+
         mAsyncQueryHandler.startInsert(1, null, TableNames.mContentUri, cv);
     }
 

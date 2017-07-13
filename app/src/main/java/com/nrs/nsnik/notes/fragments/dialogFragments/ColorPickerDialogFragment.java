@@ -11,6 +11,7 @@
 package com.nrs.nsnik.notes.fragments.dialogFragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -28,7 +29,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 
 public class ColorPickerDialogFragment extends DialogFragment implements OnColorSelectedListener {
@@ -36,6 +36,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
     @BindView(R.id.colorPickerList)
     RecyclerView mColorList;
     private ColorPickerAdapter mColorPickerAdapter;
+    private OnColorSelectedListener mOnColorSelectedListener;
 
     public ColorPickerDialogFragment() {
     }
@@ -49,6 +50,23 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
         return v;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (getTargetFragment() != null) {
+            try {
+                mOnColorSelectedListener = (OnColorSelectedListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                mOnColorSelectedListener = (OnColorSelectedListener) context;
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void initialize() {
         List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
@@ -59,7 +77,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
 
     @Override
     public void onColorSelected(String color) {
-        Timber.d(color);
+        mOnColorSelectedListener.onColorSelected(color);
         dismiss();
     }
 }

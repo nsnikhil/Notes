@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navItem1:
                     if (getSupportFragmentManager().findFragmentByTag(mFragTags[0]) == null) {
                         replaceFragment(new HomeFragment(), mFragTags[0]);
-                        //drawerAction(0);
                     }
                     break;
                 case R.id.navItem2:
@@ -136,38 +135,11 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navItem5:
                     if (getSupportFragmentManager().findFragmentByTag(mFragTags[3]) == null) {
                         replaceFragment(new AboutFragment(), mFragTags[3]);
-                        //drawerAction(3);
                     }
                     break;
             }
             return true;
         });
-    }
-
-    /*
-    @param key  the position of the navigation menu that was clicked
-     */
-    private void drawerAction(int key) {
-        MenuItem notes = mNavigationView.getMenu().getItem(0).setChecked(false);
-        MenuItem starred = mNavigationView.getMenu().getItem(1).setChecked(false);
-        MenuItem recent = mNavigationView.getMenu().getItem(2).setChecked(false);
-        MenuItem about = mNavigationView.getMenu().getItem(3).setChecked(false);
-        switch (key) {
-            case 0:
-                notes.setChecked(true);
-                mToolbarText.setText(getResources().getString(R.string.app_name));
-                break;
-            case 1:
-                starred.setChecked(true);
-                break;
-            case 2:
-                recent.setChecked(true);
-                break;
-            case 3:
-                about.setChecked(true);
-                mToolbarText.setText(getResources().getString(R.string.navItem5));
-                break;
-        }
     }
 
     private void initialize() {
