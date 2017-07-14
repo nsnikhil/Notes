@@ -17,7 +17,7 @@
         android:id="@+id/searchToolBar"
         style="@style/toolbar">
 
-        <EditText
+        <com.nrs.nsnik.notes.customViews.NikEditText
             android:id="@+id/searchText"
             style="@style/matchParent"
             android:layout_gravity="center_vertical"

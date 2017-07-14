@@ -22,7 +22,7 @@
             android:id="@+id/mainToolbar"
             style="@style/toolbar">
 
-            <TextView
+            <com.nrs.nsnik.notes.customViews.NikTextView
                 android:id="@+id/mainToolBarText"
                 style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                 android:layout_width="wrap_content"

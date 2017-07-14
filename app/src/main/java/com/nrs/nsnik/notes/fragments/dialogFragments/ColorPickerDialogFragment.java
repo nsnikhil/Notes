@@ -35,7 +35,6 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
 
     @BindView(R.id.colorPickerList)
     RecyclerView mColorList;
-    private ColorPickerAdapter mColorPickerAdapter;
     private OnColorSelectedListener mOnColorSelectedListener;
 
     public ColorPickerDialogFragment() {
@@ -71,8 +70,8 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
     private void initialize() {
         List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
         mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
-        mColorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList, this);
-        mColorList.setAdapter(mColorPickerAdapter);
+        ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList, this);
+        mColorList.setAdapter(colorPickerAdapter);
     }
 
     @Override

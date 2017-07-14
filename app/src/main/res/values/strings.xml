@@ -37,7 +37,7 @@
 
     <!-- emptyStateStrings-->
     <string name="emptyStateEmpty">No notes yet\n Tap the "+" to get started</string>
-    <string name="emptyStateSearch">No notes or folder matched to\u0020</string>
+    <string name="emptyStateSearch">No notes or folder matched %1$s</string>
     <string name="emptyStateSearchNoString">Enter a word to start the search</string>
     <!-- -->
 

@@ -11,7 +11,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/stretchedHorizontally">
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/itemHeader"
         style="@style/matchParent"
         android:padding="@dimen/sixteen"

@@ -19,13 +19,14 @@
             style="@style/wrapContent"
             android:layout_marginStart="@dimen/sixteen" />
 
-        <EditText
+        <com.nrs.nsnik.notes.customViews.NikEditText
             android:id="@+id/checkListItem"
             style="@style/stretchedHorizontally"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/sixteen"
             android:background="@android:color/transparent"
-            android:hint="@string/checkListAddItem" />
+            android:hint="@string/checkListAddItem"
+            android:maxLines="1" />
 
     </LinearLayout>
 

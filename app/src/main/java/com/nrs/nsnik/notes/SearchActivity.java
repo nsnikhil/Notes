@@ -168,7 +168,8 @@ public class SearchActivity extends AppCompatActivity {
                             mQueryList = searchObjects;
                             mSearchAdapter.modifyList(mQueryList);
                         } else {
-                            mEmptyState.setText(getResources().getString(R.string.emptyStateSearch) + mCurrentSearch);
+                            String noResults = getResources().getString(R.string.emptyStateSearch, mCurrentSearch);
+                            mEmptyState.setText(noResults);
                             mEmptyState.setVisibility(View.VISIBLE);
                         }
                     }

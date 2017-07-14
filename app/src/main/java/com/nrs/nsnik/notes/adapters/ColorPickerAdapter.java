@@ -61,9 +61,7 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mColor.setOnClickListener(view -> {
-                mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition()));
-            });
+            mColor.setOnClickListener(view -> mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition())));
         }
     }
 }

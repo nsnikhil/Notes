@@ -21,7 +21,7 @@
     card_view:cardMaxElevation="1dp"
     card_view:cardUseCompatPadding="true">
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/singleFolderName"
         style="@style/newNoteHeading"
         android:drawablePadding="@dimen/eight"

@@ -21,7 +21,7 @@
         android:src="@drawable/splash_logo"
         android:visibility="visible" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         style="@style/wrapContent"
         android:layout_gravity="center_horizontal"
         android:text="@string/app_name"
@@ -29,7 +29,7 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/aboutVersionInfo"
         style="@style/wrapContent"
         android:layout_gravity="center_horizontal"

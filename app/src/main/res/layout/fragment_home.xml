@@ -19,10 +19,11 @@
         android:id="@+id/commonListSwipe"
         style="@style/matchParent">
 
-        <include
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/commonList"
             style="@style/matchParent"
-            layout="@layout/recycler_view" />
+            android:clipToPadding="false"
+            android:paddingBottom="88dp" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

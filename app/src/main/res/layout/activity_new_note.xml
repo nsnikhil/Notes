@@ -13,7 +13,10 @@
     style="@style/matchParent"
     android:transitionName="noteContainer">
 
-    <android.support.v4.widget.NestedScrollView style="@style/matchParent">
+    <ScrollView
+        style="@style/matchParent"
+        android:clipToPadding="false"
+        android:paddingBottom="48dp">
 
         <LinearLayout style="@style/verticalLinearLayout">
 
@@ -32,7 +35,7 @@
                 style="@style/stretchedHorizontally"
                 android:visibility="gone" />
 
-            <EditText
+            <com.nrs.nsnik.notes.customViews.NikEditText
                 android:id="@+id/newNoteTitle"
                 style="@style/newNoteHeading"
                 android:background="@android:color/transparent"
@@ -46,16 +49,16 @@
                 style="@style/stretchedHorizontally"
                 android:visibility="gone" />
 
-            <EditText
+            <com.nrs.nsnik.notes.customViews.NikEditText
                 android:id="@+id/newNoteContent"
                 style="@style/newNoteContent"
                 android:inputType="textMultiLine"
                 android:labelFor="@+id/newNoteContent"
-                android:lineSpacingExtra="10dp" />
+                android:lineSpacingMultiplier="1.22" />
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 
     <include layout="@layout/new_note_tools" />
 

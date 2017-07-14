@@ -125,9 +125,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 remove.setVisibility(View.GONE);
                 image.setScaleType(ImageView.ScaleType.CENTER);
             } else {
-                remove.setOnClickListener(view -> {
-                    mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition()));
-                });
+                remove.setOnClickListener(view -> mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition())));
                 itemView.setOnClickListener(view -> {
                     Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
                     Bundle bundle = new Bundle();

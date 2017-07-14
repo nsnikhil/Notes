@@ -12,5 +12,5 @@
     android:id="@+id/singleColor"
     android:layout_width="72dp"
     android:layout_height="72dp"
-    android:background="@color/cardview_dark_background"
-    android:contentDescription="@string/imageDescription" />
+    android:contentDescription="@string/imageDescription"
+    android:src="@color/cardview_dark_background" />

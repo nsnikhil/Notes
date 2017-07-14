@@ -210,38 +210,29 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
             Animation scaleUp = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_from_down);
-
             @Override
             public void onAnimationStart(Animation animation) {
-
             }
-
             @Override
             public void onAnimationEnd(Animation animation) {
                 scaleUp.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-
                     }
-
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mFolderContainer.setVisibility(View.VISIBLE);
                         mNoteContainer.setVisibility(View.VISIBLE);
                     }
-
                     @Override
                     public void onAnimationRepeat(Animation animation) {
-
                     }
                 });
                 mFolderContainer.startAnimation(scaleUp);
                 mNoteContainer.startAnimation(scaleUp);
             }
-
             @Override
             public void onAnimationRepeat(Animation animation) {
-
             }
         });
         mAddSpinner.startAnimation(rotateAnimation);
@@ -258,38 +249,29 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
             Animation scaleDown = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_to_down);
-
             @Override
             public void onAnimationStart(Animation animation) {
-
             }
-
             @Override
             public void onAnimationEnd(Animation animation) {
                 scaleDown.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-
                     }
-
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mFolderContainer.setVisibility(View.INVISIBLE);
                         mNoteContainer.setVisibility(View.INVISIBLE);
                     }
-
                     @Override
                     public void onAnimationRepeat(Animation animation) {
-
                     }
                 });
                 mFolderContainer.startAnimation(scaleDown);
                 mNoteContainer.startAnimation(scaleDown);
             }
-
             @Override
             public void onAnimationRepeat(Animation animation) {
-
             }
         });
         mAddSpinner.startAnimation(rotateAnimation);

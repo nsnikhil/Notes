@@ -22,43 +22,43 @@
     app:behavior_peekHeight="48dp"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/toolsDate"
         style="@style/bottomToolText"
         android:drawableEnd="@drawable/ic_add_box_black_24dp"
         android:text="@string/noteToolsDate" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/toolsCheckList"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_playlist_add_check_black_24dp"
         android:text="@string/noteToolCheckList" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/toolsCamera"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_camera_alt_black_24dp"
         android:text="@string/noteToolCamera" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/toolsAttachment"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_attach_file_black_24dp"
         android:text="@string/noteToolAttachment" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/toolsReminder"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_alarm_add_black_24dp"
         android:text="@string/noteToolReminder" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/toolsAudio"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_music_note_black_24dp"
         android:text="@string/noteToolAudio" />
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/toolsColor"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_color_lens_black_24dp"

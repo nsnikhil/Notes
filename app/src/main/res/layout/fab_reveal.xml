@@ -20,7 +20,7 @@
         android:orientation="horizontal"
         android:visibility="invisible">
 
-        <TextView
+        <com.nrs.nsnik.notes.customViews.NikTextView
             style="@style/wrapContent"
             android:layout_gravity="center_vertical"
             android:background="@color/cardview_dark_background"
@@ -46,7 +46,7 @@
         android:orientation="horizontal"
         android:visibility="invisible">
 
-        <TextView
+        <com.nrs.nsnik.notes.customViews.NikTextView
             style="@style/wrapContent"
             android:layout_gravity="center_vertical"
             android:background="@color/cardview_dark_background"
@@ -64,7 +64,6 @@
 
 
     </LinearLayout>
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabAdd"

@@ -15,7 +15,7 @@
     android:clickable="true"
     android:focusable="true">
 
-    <TextView
+    <com.nrs.nsnik.notes.customViews.NikTextView
         android:id="@+id/searchItemName"
         style="@style/matchParent"
         android:layout_gravity="center_vertical"

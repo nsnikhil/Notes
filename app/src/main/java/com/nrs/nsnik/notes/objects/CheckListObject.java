@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 public class CheckListObject implements Serializable, Parcelable {
 
-    public static final Creator<CheckListObject> CREATOR = new Creator<CheckListObject>() {
+    private static final Creator<CheckListObject> CREATOR = new Creator<CheckListObject>() {
         @Override
         public CheckListObject createFromParcel(Parcel in) {
             return new CheckListObject(in);

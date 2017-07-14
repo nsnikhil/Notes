@@ -149,7 +149,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         ButterKnife.bind(this);
         initialize();
         setClickListener();
-        if (getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+        if (getIntent().getExtras() != null && getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
             }
@@ -186,10 +186,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     mBottomSheet.setElevation(0);
                 }
             }
-
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
             }
         });
 
@@ -212,7 +210,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         mCheckListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mCheckListAdapter = new CheckListAdapter(this, mCheckList, this);
         mCheckListRecyclerView.setAdapter(mCheckListAdapter);
-
     }
 
 
