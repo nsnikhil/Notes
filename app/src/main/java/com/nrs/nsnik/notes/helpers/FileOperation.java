@@ -35,6 +35,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -137,7 +138,7 @@ public class FileOperation {
     @param uri              the uri ton which the update operation will be
                             performed
      */
-    public void updateNote(String fileName, NoteObject noteObject, Uri uri) throws IOException {
+    public void updateNote(String fileName, NoteObject noteObject, Uri uri, int isPinned, int isLocked, String time, String color) throws IOException {
         File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -157,17 +158,24 @@ public class FileOperation {
                 oos.close();
             }
         }
-        updateInTable(noteObject.getTitle(), uri);
+        updateInTable(noteObject.getTitle(), uri, isPinned, isLocked, time, color);
     }
 
     /*
     @param title    the title of the note to be updated
     @param uri      the uri on which update operation will be performed
      */
-    private void updateInTable(String title, Uri uri) {
+    private void updateInTable(String title, Uri uri, int isPinned, int isLocked, String time, String color) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(table1.mTitle, title);
+
+        contentValues.put(table1.mIsPinned, isPinned);
+        contentValues.put(table1.mIsLocked, isLocked);
+        contentValues.put(table1.mDataModified, time);
+        contentValues.put(table1.mColor, color);
+
         mAsyncQueryHandler.startUpdate(1, null, uri, contentValues, null, null);
+        mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
     }
 
     public void deleteAudioFile(String fileName) {
@@ -191,12 +199,10 @@ public class FileOperation {
         cv.put(table1.mTitle, noteObject.getTitle());
         cv.put(table1.mFileName, fileName);
         cv.put(table1.mFolderName, noteObject.getFolderName());
-
         cv.put(table1.mIsPinned, isPinned);
         cv.put(table1.mIsLocked, isLocked);
         cv.put(table1.mDataModified, time);
         cv.put(table1.mColor, color);
-
         mAsyncQueryHandler.startInsert(1, null, TableNames.mContentUri, cv);
     }
 
@@ -224,12 +230,10 @@ public class FileOperation {
             @Override
             public void onSubscribe(Disposable d) {
             }
-
             @Override
             public void onComplete() {
                 Timber.d("Image Saved");
             }
-
             @Override
             public void onError(Throwable e) {
                 Timber.d(TAG, e.getMessage());
@@ -336,6 +340,7 @@ public class FileOperation {
             @Override
             public void onComplete() {
                 mAsyncQueryHandler.startDelete(0, null, uri, null, null);
+                mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
             }
 
             @Override
@@ -357,7 +362,7 @@ public class FileOperation {
      */
     public void deleteFolder(Uri uri, String folderName) {
         Completable completable = Completable.fromCallable(() -> {
-            deleteFileBack(Uri.withAppendedPath(TableNames.mContentUri, folderName));
+            deleteFileBack(Uri.withAppendedPath(TableNames.mContentUri, "parentFolderName/" + folderName));
             return null;
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
         completable.subscribe(new CompletableObserver() {
@@ -367,8 +372,11 @@ public class FileOperation {
 
             @Override
             public void onComplete() {
-                mAsyncQueryHandler.startDelete(0, null, Uri.withAppendedPath(TableNames.mContentUri, folderName), null, null);
+                String query = "parentFolderName/" + folderName;
+                mAsyncQueryHandler.startDelete(0, null, Uri.withAppendedPath(TableNames.mContentUri, query), null, null);
                 mAsyncQueryHandler.startDelete(0, null, uri, null, null);
+                mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
+                mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
             }
 
             @Override
@@ -393,8 +401,9 @@ public class FileOperation {
 
             //Change actual to temp
 
-            Uri fromUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(fromId));
-            Uri toUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(toId));
+
+            Uri fromUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + fromId);
+            Uri toUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + toId);
 
             ContentValues fromContentValues = new ContentValues();
             fromContentValues.put(table1.mUid, tempFromId);
@@ -403,13 +412,15 @@ public class FileOperation {
             toContentValues.put(table1.mUid, tempToID);
 
             mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
             mContext.getContentResolver().update(toUri, toContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
 
 
             //Change temp To Actual
 
-            Uri newFomUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempFromId));
-            Uri newToUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(tempToID));
+            Uri newFomUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + tempFromId);
+            Uri newToUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + tempToID);
 
             ContentValues newFromContentValues = new ContentValues();
             newFromContentValues.put(table1.mUid, toId);
@@ -418,7 +429,9 @@ public class FileOperation {
             newToContentValues.put(table1.mUid, fromId);
 
             mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
             mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
         } else {
             Log.d(TAG, "Database Error");
         }
@@ -440,8 +453,8 @@ public class FileOperation {
 
             //Change actual to temp
 
-            Uri fromUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(fromId));
-            Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(toId));
+            Uri fromUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + fromId);
+            Uri toUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + toId);
 
             //8336085805
             ContentValues fromContentValues = new ContentValues();
@@ -452,13 +465,15 @@ public class FileOperation {
 
 
             mContext.getContentResolver().update(fromUri, fromContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
             mContext.getContentResolver().update(toUri, toContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
 
 
             //Change temp To Actual
 
-            Uri newFomUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempFromId));
-            Uri newToUri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(tempToID));
+            Uri newFomUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + tempFromId);
+            Uri newToUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + tempToID);
 
             ContentValues newFromContentValues = new ContentValues();
             newFromContentValues.put(TableNames.table2.mUid, toId);
@@ -468,7 +483,9 @@ public class FileOperation {
 
 
             mContext.getContentResolver().update(newFomUri, newFromContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
             mContext.getContentResolver().update(newToUri, newToContentValues, null, null);
+            mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
         } else {
             Log.d(TAG, "Database Error");
         }
@@ -532,5 +549,35 @@ public class FileOperation {
         }
     }
 
+    public String formatDate(String rawDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(Long.parseLong(rawDate));
+
+        Calendar calendarPresent = Calendar.getInstance();
+
+        long noteDate = Long.parseLong(rawDate);
+        long currentTime = calendarPresent.getTimeInMillis();
+
+        long nowMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTime);
+        long secondMinutes = TimeUnit.MILLISECONDS.toMinutes(noteDate);
+
+        long nowHour = TimeUnit.MILLISECONDS.toHours(currentTime);
+        long secondHour = TimeUnit.MILLISECONDS.toHours(noteDate);
+
+        long nowDays = TimeUnit.MILLISECONDS.toDays(currentTime);
+        long secondDays = TimeUnit.MILLISECONDS.toDays(noteDate);
+
+        if (nowMinutes - secondMinutes < 60) {
+            return nowMinutes - secondMinutes + " min ago";
+        } else if (nowHour - secondHour < 24) {
+            return nowHour - secondHour + " hrs ago";
+        } else if (nowDays - secondDays <= 2) {
+            return nowDays - secondDays + " days ago";
+        } else {
+            return calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH);
+        }
+    }
+
     public enum FILE_TYPES {TEXT, IMAGE, AUDIO}
+
 }

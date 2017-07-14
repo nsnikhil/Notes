@@ -11,16 +11,40 @@
 package com.nrs.nsnik.notes.objects;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
-public class CheckListObject implements Serializable {
+public class CheckListObject implements Serializable, Parcelable {
 
+    public static final Creator<CheckListObject> CREATOR = new Creator<CheckListObject>() {
+        @Override
+        public CheckListObject createFromParcel(Parcel in) {
+            return new CheckListObject(in);
+        }
+
+        @Override
+        public CheckListObject[] newArray(int size) {
+            return new CheckListObject[size];
+        }
+    };
     private String mText;
     private boolean mDone;
 
     public CheckListObject(String text, boolean done) {
         mText = text;
         mDone = done;
+    }
+
+    private CheckListObject(Parcel in) {
+        mText = in.readString();
+        mDone = in.readByte() != 0;
+    }
+
+
+    public static Creator<CheckListObject> getCREATOR() {
+        return CREATOR;
     }
 
     public String getmText() {
@@ -37,5 +61,16 @@ public class CheckListObject implements Serializable {
 
     public void setmDone(boolean mDone) {
         this.mDone = mDone;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mText);
+        parcel.writeByte((byte) (mDone ? 1 : 0));
     }
 }

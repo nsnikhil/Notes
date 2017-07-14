@@ -96,7 +96,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     }
 
     /*
-    called to chnage the content of searchable list
+    called to change the content of searchable list
     and notify the adapter
 
     @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL

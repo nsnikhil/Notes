@@ -32,37 +32,42 @@ public class NoteObject implements Serializable, Parcelable {
         }
     };
     private String mTitle, mNoteContent, mFolderName, mColor, mTime;
-    private List<String> images, audioLocations;
+    private List<String> mImagesList, mAudioList;
     private List<CheckListObject> mCheckList;
+    private int mIsPinned, mIsLocked, mReminder;
 
     /*
     TODO REPLACE WITH AUTO VALUE
      */
-    private int reminder;
 
-    public NoteObject(String title, String note, List<String> images, List<String> audioLocations, List<CheckListObject> checkList, int reminder, String folderName, String color, String time) {
-        this.mNoteContent = note;
-        this.mTitle = title;
-        this.images = images;
-        this.audioLocations = audioLocations;
-        this.mCheckList = checkList;
-        this.reminder = reminder;
-        this.mFolderName = folderName;
-        this.mColor = color;
-        this.mTime = time;
+    public NoteObject(String title, String note, List<String> images, List<String> audioLocations, List<CheckListObject> checkList, int reminder, String folderName
+            , String color, String time, int isPinned, int isLocked) {
+        mNoteContent = note;
+        mTitle = title;
+        mImagesList = images;
+        mAudioList = audioLocations;
+        mCheckList = checkList;
+        mReminder = reminder;
+        mFolderName = folderName;
+        mColor = color;
+        mTime = time;
+        mIsPinned = isPinned;
+        mIsLocked = isLocked;
     }
 
     private NoteObject(Parcel in) {
         mTitle = in.readString();
         mNoteContent = in.readString();
-        audioLocations = in.createStringArrayList();
+        mAudioList = in.createStringArrayList();
         mCheckList = new ArrayList<>();
-        in.readList(mCheckList, List.class.getClassLoader());
+        in.readList(mCheckList, CheckListObject.class.getClassLoader());
         mFolderName = in.readString();
-        images = in.createStringArrayList();
-        reminder = in.readInt();
+        mImagesList = in.createStringArrayList();
+        mReminder = in.readInt();
         mColor = in.readString();
         mTime = in.readString();
+        mIsPinned = in.readInt();
+        mIsLocked = in.readInt();
     }
 
     public String getTitle() {
@@ -74,23 +79,19 @@ public class NoteObject implements Serializable, Parcelable {
     }
 
     public List<String> getImages() {
-        return images;
+        return mImagesList;
     }
 
     public List<String> getAudioLocations() {
-        return audioLocations;
+        return mAudioList;
     }
 
     public List<CheckListObject> getmCheckList() {
         return mCheckList;
     }
 
-    public void setmCheckList(List<CheckListObject> mCheckList) {
-        this.mCheckList = mCheckList;
-    }
-
     public int getReminder() {
-        return reminder;
+        return mReminder;
     }
 
     public String getFolderName() {
@@ -110,16 +111,26 @@ public class NoteObject implements Serializable, Parcelable {
         return 0;
     }
 
+    public int getmIsPinned() {
+        return mIsPinned;
+    }
+
+    public int getmIsLocked() {
+        return mIsLocked;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mTitle);
         parcel.writeString(mNoteContent);
-        parcel.writeStringList(audioLocations);
+        parcel.writeStringList(mAudioList);
         parcel.writeList(mCheckList);
         parcel.writeString(mFolderName);
-        parcel.writeStringList(images);
-        parcel.writeInt(reminder);
+        parcel.writeStringList(mImagesList);
+        parcel.writeInt(mReminder);
         parcel.writeString(mColor);
         parcel.writeString(mTime);
+        parcel.writeInt(mIsPinned);
+        parcel.writeInt(mIsLocked);
     }
 }

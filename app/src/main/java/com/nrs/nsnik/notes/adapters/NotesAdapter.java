@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -43,9 +44,7 @@ import com.nrs.nsnik.notes.objects.NoteObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -193,7 +192,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         noteViewHolder.mNoteTitle.setText(object.getTitle());
         noteViewHolder.mNoteTitle.setTextColor(Color.parseColor(object.getmColor()));
         noteViewHolder.mNoteContent.setText(object.getNote());
-        noteViewHolder.mNoteDate.setText(formatDate(object.getmTime()));
+        noteViewHolder.mNoteDate.setText(mFileOperations.formatDate((object.getmTime())));
         if (object.getImages().size() > 0) {
             ((NoteViewHolder) holder).mNoteImage.setVisibility(View.VISIBLE);
             Glide.with(mContext)
@@ -216,35 +215,6 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             noteViewHolder.mRemIndicator.setVisibility(View.VISIBLE);
         } else {
             noteViewHolder.mRemIndicator.setVisibility(View.GONE);
-        }
-    }
-
-    private String formatDate(String rawDate) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(Long.parseLong(rawDate));
-
-        Calendar calendarPresent = Calendar.getInstance();
-
-        long noteDate = Long.parseLong(rawDate);
-        long currentTime = calendarPresent.getTimeInMillis();
-
-        long nowMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTime);
-        long secondMinutes = TimeUnit.MILLISECONDS.toMinutes(noteDate);
-
-        long nowHour = TimeUnit.MILLISECONDS.toHours(currentTime);
-        long secondHour = TimeUnit.MILLISECONDS.toHours(noteDate);
-
-        long nowDays = TimeUnit.MILLISECONDS.toDays(currentTime);
-        long secondDays = TimeUnit.MILLISECONDS.toDays(noteDate);
-
-        if (nowMinutes - secondMinutes < 60) {
-            return nowMinutes - secondMinutes + " min ago";
-        } else if (nowHour - secondHour < 24) {
-            return nowHour - secondHour + " hours ago";
-        } else if (nowDays - secondDays <= 2) {
-            return nowDays - secondDays + " days ago";
-        } else {
-            return calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH);
         }
     }
 
@@ -305,7 +275,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
         if (viewHolder.getItemViewType() == NOTES) {
             startPos = mFolderList.size() + 2;
-            getIdUri = Uri.withAppendedPath(TableNames.mContentUri, mFolderName);
+            getIdUri = Uri.withAppendedPath(TableNames.mContentUri, "parentFolderName/" + mFolderName);
         }
 
          /*
@@ -315,7 +285,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
         if (viewHolder.getItemViewType() == FOLDER) {
             startPos = 1;
-            getIdUri = Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName);
+            getIdUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "parentFolderName/" + mFolderName);
         }
 
         /*
@@ -402,6 +372,12 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 case R.id.popUpStar:
                     Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
                     break;
+                case R.id.popUpLock:
+                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.popUpEdit:
+                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                    break;
                 case R.id.popUpShare:
                     Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
                     break;
@@ -474,11 +450,12 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         ImageView mChkLstIndicator;
         @BindView(R.id.singleNoteMore)
         ImageButton mMore;
+        @BindView(R.id.singleNoteCard)
+        CardView mNoteCard;
 
         public NoteViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
 
             itemView.setOnClickListener(v -> {
                 //check if position is valid
@@ -490,7 +467,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                      */
                     int startPos = mFolderList.size() + 2;
                     int currPos = getAdapterPosition() - startPos;
-                    int noteId = mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos);
+                    int noteId = mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, "parentFolderName/" + mFolderName), currPos);
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
 
                     Bundle noteArgs = new Bundle();
@@ -513,7 +490,9 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                      */
                     int startPos = mFolderList.size() + 2;
                     int currPos = getAdapterPosition() - startPos;
-                    Uri uri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(mFileOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, mFolderName), currPos)));
+                    Uri baseUri = Uri.withAppendedPath(TableNames.mContentUri, "parentFolderName/" + mFolderName);
+                    int id = mFileOperations.getId(baseUri, currPos);
+                    Uri uri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + id);
                     inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleNoteWarning), false, "", uri, mMore);
                 }
             });
@@ -553,9 +532,9 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                      */
                     int startPos = 1;
                     int currPos = getAdapterPosition() - startPos;
-                    Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri, mFolderName);
+                    Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "parentFolderName/" + mFolderName);
                     int id = mFileOperations.getId(baseUri, currPos);
-                    Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, String.valueOf(id));
+                    Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + id);
                     inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning), true, mFolderNameText.getText().toString(), uri, mFolderMore);
                 }
             });

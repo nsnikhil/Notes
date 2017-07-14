@@ -19,8 +19,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,12 +72,12 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, OnAddClickListener, OnItemRemoveListener, OnColorSelectedListener {
 
     private static final int ATTACH_PICTURE_REQUEST_CODE = 205;
     private static final int TAKE_PICTURE_REQUEST_CODE = 206;
-    private static final int GET_COLOR_REQUEST_CODE = 207;
 
     private static final int RECORD_AUDIO_PERMISSION_CODE = 512;
     private static final int EXTERNAL_STORAGE_PERMISSION_CODE = 513;
@@ -123,6 +125,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private int IS_LOCKED, IS_STARRED, HAS_ALARM;
     private String mColorCode;
     private Uri mIntentUri = null;
+    private MenuItem mStarMenu, mLockMenu;
 
 
     private String mCurrentPhotoPath;
@@ -260,6 +263,13 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.new_note_menu, menu);
+        if (menu.getItem(1) != null) {
+            mStarMenu = menu.getItem(1);
+        }
+        if (menu.getItem(2) != null) {
+            mLockMenu = menu.getItem(2);
+        }
+        setMenuIconState();
         return true;
     }
 
@@ -273,19 +283,34 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                             saveNote();
                         } catch (IOException e) {
                             e.printStackTrace();
-                        } finally {
-                            finish();
                         }
+                    } else {
+                        updateNote();
                     }
+                    finish();
                 }
                 break;
             case R.id.newNoteMenuStar:
-                IS_STARRED = 1;
-                displayToast("Starred");
+                if (IS_STARRED == 0) {
+                    item.setIcon(R.drawable.ic_star_black_48dp);
+                    IS_STARRED = 1;
+                    Toast.makeText(this, "Starred", Toast.LENGTH_LONG).show();
+                } else {
+                    item.setIcon(R.drawable.ic_star_border_black_48dp);
+                    IS_STARRED = 0;
+                    Toast.makeText(this, "Un Starred", Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.newNoteMenuLock:
-                IS_LOCKED = 1;
-                displayToast("Locked");
+                if (IS_LOCKED == 0) {
+                    item.setIcon(R.drawable.ic_lock_outline_black_48dp);
+                    IS_LOCKED = 1;
+                    Toast.makeText(this, "Locked", Toast.LENGTH_LONG).show();
+                } else {
+                    item.setIcon(R.drawable.ic_lock_open_black_48dp);
+                    IS_LOCKED = 0;
+                    Toast.makeText(this, "Un Locked", Toast.LENGTH_LONG).show();
+                }
                 break;
         }
         return true;
@@ -294,12 +319,18 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private void setNote() {
         if (getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             Bundle args = getIntent().getExtras();
-            mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, String.valueOf(args.getInt(getResources().getString(R.string.bundleNoteSerialId))));
+            mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + args.getInt(getResources().getString(R.string.bundleNoteSerialId)));
             NoteObject object = (NoteObject) args.getSerializable(getResources().getString(R.string.bundleNoteSerialObject));
             if (object != null) {
                 mTitle.setText(object.getTitle());
                 mNote.setText(object.getNote());
                 mFolderName = object.getFolderName();
+                mColorCode = object.getmColor();
+                mTitle.setTextColor(Color.parseColor(mColorCode));
+                IS_STARRED = object.getmIsPinned();
+                IS_LOCKED = object.getmIsLocked();
+                String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(object.getmTime()));
+                mBottomDate.setText(editedDate);
                 if (object.getImages().size() > 0) {
                     mImageRecyclerView.setVisibility(View.VISIBLE);
                     mImagesLocations.addAll(object.getImages());
@@ -315,10 +346,27 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     mCheckList.addAll(object.getmCheckList());
                     mCheckListAdapter.notifyDataSetChanged();
                 }
-                /*if (object.getReminder() != 0) {
-                    mHour = 292;
-                    mMinutes = 392;
-                }*/
+                if (object.getReminder() != 0) {
+                    HAS_ALARM = 1;
+                }
+            }
+        }
+    }
+
+    private void setMenuIconState() {
+        if (mStarMenu != null) {
+            if (IS_STARRED == 1) {
+                mStarMenu.setIcon(R.drawable.ic_star_black_48dp);
+            } else {
+                mStarMenu.setIcon(R.drawable.ic_star_border_black_48dp);
+            }
+        }
+        if (mLockMenu != null) {
+            Timber.d(mLockMenu.getTitle().toString());
+            if (IS_LOCKED == 1) {
+                mLockMenu.setIcon(R.drawable.ic_lock_outline_black_48dp);
+            } else {
+                mLockMenu.setIcon(R.drawable.ic_lock_open_black_48dp);
             }
         }
     }
@@ -503,22 +551,29 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
         Calendar calendar = Calendar.getInstance();
         String time = String.valueOf(calendar.getTimeInMillis());
-        NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioLocations, mCheckList, HAS_ALARM, mFolderName, mColorCode, time);
+        NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioLocations, mCheckList
+                , HAS_ALARM, mFolderName, mColorCode, time, IS_STARRED, IS_LOCKED);
         mFileOperation.saveNote(mFileOperation.makeName(FileOperation.FILE_TYPES.TEXT), noteObject, IS_STARRED, IS_LOCKED, time, mColorCode);
     }
 
     private void updateNote() {
-        /*Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
-        /*try {
+        if (mColorCode == null) {
+            mColorCode = "#333333";
+        }
+        Calendar calendar = Calendar.getInstance();
+        String time = String.valueOf(calendar.getTimeInMillis());
+        Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
+        try {
             if (c != null && c.moveToFirst()) {
-                NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioFileName, mReminder, mFolderName);
-                mFileOperation.updateNote(c.getString(c.getColumnIndex(table1.mFileName)), noteObject, mIntentUri);
+                NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioLocations, mCheckList
+                        , HAS_ALARM, mFolderName, mColorCode, time, IS_STARRED, IS_LOCKED);
+                mFileOperation.updateNote(c.getString(c.getColumnIndex(TableNames.table1.mFileName)), noteObject, mIntentUri, IS_STARRED, IS_LOCKED, time, mColorCode);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (c != null) c.close();
-        }*/
+        }
     }
 
     private boolean verifyAndSave() {
@@ -591,10 +646,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onColorSelected(String color) {
         mColorCode = color;
-    }
-
-    private void displayToast(String toastMessage) {
-        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
+        mTitle.setTextColor(Color.parseColor(mColorCode));
     }
 
     public static class ReminderService extends BroadcastReceiver {

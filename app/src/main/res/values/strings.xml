@@ -33,6 +33,7 @@
     <string name="headingFolder">Folders</string>"
     <string name="editingDate">Editing Date</string>
     <string name="checkListAddItem">…</string>
+    <string name="editedHead">edited %1$s</string>
 
     <!-- emptyStateStrings-->
     <string name="emptyStateEmpty">No notes yet\n Tap the "+" to get started</string>

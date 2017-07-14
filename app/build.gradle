@@ -19,8 +19,8 @@ android {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 26
-        versionCode 18
-        versionName "2.0.2"
+        versionCode 19
+        versionName "2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

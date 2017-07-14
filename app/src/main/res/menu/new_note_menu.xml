@@ -15,18 +15,18 @@
         android:id="@+id/newNoteMenuSave"
         android:icon="@drawable/ic_done_black_48dp"
         android:title="@string/menuNoteSave"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/newNoteMenuStar"
-        android:icon="@drawable/ic_star_black_48dp"
+        android:icon="@drawable/ic_star_border_black_48dp"
         android:title="@string/menuNoteStar"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/newNoteMenuLock"
-        android:icon="@drawable/ic_lock_black_48dp"
+        android:icon="@drawable/ic_lock_open_black_48dp"
         android:title="@string/menuNoteLock"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
 </menu>
