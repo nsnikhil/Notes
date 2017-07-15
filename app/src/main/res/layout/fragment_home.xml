@@ -36,6 +36,14 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/homeAdView"
+        style="@style/wrapContent"
+        android:layout_gravity="bottom|center_horizontal"
+        android:visibility="gone"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/adAdUnitId" />
+
     <include
         layout="@layout/fab_reveal"
         android:layout_width="wrap_content"
@@ -44,13 +52,5 @@
         android:layout_alignParentEnd="true"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/sixteen" />
-
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/homeAdView"
-        style="@style/wrapContent"
-        android:layout_gravity="bottom|center_horizontal"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/adAdUnitId" />
-
 
 </android.support.design.widget.CoordinatorLayout>

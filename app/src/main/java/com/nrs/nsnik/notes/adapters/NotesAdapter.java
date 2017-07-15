@@ -378,6 +378,9 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 case R.id.popUpEdit:
                     Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
                     break;
+                case R.id.popUpMove:
+                    Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
+                    break;
                 case R.id.popUpShare:
                     Toast.makeText(mContext, "TO-DO", Toast.LENGTH_SHORT).show();
                     break;

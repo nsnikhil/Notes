@@ -23,6 +23,10 @@
         android:title="@string/popUpEdit" />
 
     <item
+        android:id="@+id/popUpMove"
+        android:title="@string/popUpMoveTo" />
+
+    <item
         android:id="@+id/popUpShare"
         android:title="@string/popUpShare" />
 

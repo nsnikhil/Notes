@@ -19,14 +19,14 @@ android {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 26
-        versionCode 19
-        versionName "2.1"
+        versionCode 20
+        versionName "2.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

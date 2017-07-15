@@ -12,6 +12,7 @@ package com.nrs.nsnik.notes.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,7 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.mColor.setBackgroundColor(Color.parseColor(mColorList.get(position)));
+        holder.mColor.setImageDrawable(new ColorDrawable(Color.parseColor(mColorList.get(position))));
     }
 
     @Override

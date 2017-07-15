@@ -26,7 +26,7 @@ public class NikTextView extends android.support.v7.widget.AppCompatTextView {
 
 
     private void applyCustomFont(Context context) {
-        Typeface customFont = TypeFaceCache.getTypeface("quicksand_medium.ttf", context);
+        Typeface customFont = TypeFaceCache.getTypeface("roboto-mono-medium.ttf", context);
         setTypeface(customFont);
     }
 

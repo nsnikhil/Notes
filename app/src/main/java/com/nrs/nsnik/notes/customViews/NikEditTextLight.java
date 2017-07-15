@@ -9,17 +9,17 @@ public class NikEditTextLight extends android.support.v7.widget.AppCompatEditTex
 
     public NikEditTextLight(Context context) {
         super(context);
-        setTypeface(TypeFaceCache.getTypeface("quicksand.ttf", context));
+        setTypeface(TypeFaceCache.getTypeface("roboto-mono-regular.ttf", context));
     }
 
     public NikEditTextLight(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setTypeface(TypeFaceCache.getTypeface("quicksand.ttf", context));
+        setTypeface(TypeFaceCache.getTypeface("roboto-mono-regular.ttf", context));
     }
 
     public NikEditTextLight(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setTypeface(TypeFaceCache.getTypeface("quicksand.ttf", context));
+        setTypeface(TypeFaceCache.getTypeface("roboto-mono-regular.ttf", context));
     }
 
     @Override

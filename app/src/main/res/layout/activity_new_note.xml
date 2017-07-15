@@ -10,15 +10,16 @@
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_new_note"
-    style="@style/matchParent"
-    android:transitionName="noteContainer">
+    style="@style/matchParent">
 
     <ScrollView
         style="@style/matchParent"
         android:clipToPadding="false"
         android:paddingBottom="48dp">
 
-        <LinearLayout style="@style/verticalLinearLayout">
+        <LinearLayout
+            style="@style/verticalLinearLayout"
+            android:transitionName="noteContainer">
 
             <include
                 android:id="@+id/newNoteToolbar"

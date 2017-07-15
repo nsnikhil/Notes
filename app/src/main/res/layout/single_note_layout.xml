@@ -27,8 +27,8 @@
 
         <ImageView
             android:id="@+id/singleNoteImage"
-            style="@style/matchParent"
-            android:layout_height="200dp"
+            style="@style/stretchedHorizontally"
+            android:layout_height="100dp"
             android:contentDescription="@string/imageDescription"
             android:scaleType="centerCrop"
             android:visibility="gone" />
@@ -42,8 +42,7 @@
         <com.nrs.nsnik.notes.customViews.NikTextViewLight
             android:id="@+id/singleNoteContent"
             style="@style/newNoteContent"
-            android:lineSpacingExtra="5dp"
-            android:lineSpacingMultiplier="1.22"
+            android:lineSpacingExtra="2dp"
             android:maxLines="6" />
 
         <LinearLayout
