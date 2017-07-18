@@ -20,7 +20,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.dagger.components.DaggerMediaComponent;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.OnItemRemoveListener;
 
@@ -28,15 +30,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 
 public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyViewHolder> implements Runnable {
 
+    @Inject
+    MediaPlayer mMediaPlayer;
+
     private Context mContext;
     private List<String> mAudioLocationList;
-    private MediaPlayer mMediaPlayer;
     private OnItemRemoveListener mOnItemRemoveListener;
     private SeekBar mAdapterSeekBar;
 
@@ -44,6 +51,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         mContext = context;
         mAudioLocationList = list;
         mOnItemRemoveListener = onItemRemoveListener;
+        DaggerMediaComponent.builder().build().injectMediaPlayer(this);
     }
 
     @Override
@@ -57,10 +65,9 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
     }
 
     private void playAudio(int position, ImageButton play) {
-        File folder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
-        mMediaPlayer = new MediaPlayer();
+        Timber.d(String.valueOf(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mAudioLocationList.get(position))));
         try {
-            mMediaPlayer.setDataSource(String.valueOf(new File(folder, mAudioLocationList.get(position))));
+            mMediaPlayer.setDataSource(String.valueOf(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mAudioLocationList.get(position))));
             if (mMediaPlayer != null) {
                 mMediaPlayer.prepare();
                 mMediaPlayer.start();

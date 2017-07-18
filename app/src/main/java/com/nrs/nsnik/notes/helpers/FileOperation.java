@@ -51,6 +51,7 @@ public class FileOperation {
     private static final String TAG = FileOperation.class.getSimpleName();
     private Context mContext;
     private AsyncQueryHandler mAsyncQueryHandler;
+    private File mRootFolder;
 
     /*
     @param c    the context object

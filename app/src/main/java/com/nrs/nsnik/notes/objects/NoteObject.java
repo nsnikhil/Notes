@@ -40,19 +40,18 @@ public class NoteObject implements Serializable, Parcelable {
     TODO REPLACE WITH AUTO VALUE
      */
 
-    public NoteObject(String title, String note, List<String> images, List<String> audioLocations, List<CheckListObject> checkList, int reminder, String folderName
-            , String color, String time, int isPinned, int isLocked) {
-        mNoteContent = note;
-        mTitle = title;
-        mImagesList = images;
-        mAudioList = audioLocations;
-        mCheckList = checkList;
-        mReminder = reminder;
-        mFolderName = folderName;
-        mColor = color;
-        mTime = time;
-        mIsPinned = isPinned;
-        mIsLocked = isLocked;
+    NoteObject(NoteObjectBuilder noteObjectBuilder) {
+        mNoteContent = noteObjectBuilder.mNoteContent;
+        mTitle = noteObjectBuilder.mTitle;
+        mImagesList = noteObjectBuilder.mImagesList;
+        mAudioList = noteObjectBuilder.mAudioList;
+        mCheckList = noteObjectBuilder.mCheckList;
+        mReminder = noteObjectBuilder.mReminder;
+        mFolderName = noteObjectBuilder.mFolderName;
+        mColor = noteObjectBuilder.mColor;
+        mTime = noteObjectBuilder.mTime;
+        mIsPinned = noteObjectBuilder.mIsPinned;
+        mIsLocked = noteObjectBuilder.mIsLocked;
     }
 
     private NoteObject(Parcel in) {
@@ -132,5 +131,72 @@ public class NoteObject implements Serializable, Parcelable {
         parcel.writeString(mTime);
         parcel.writeInt(mIsPinned);
         parcel.writeInt(mIsLocked);
+    }
+
+    public static class NoteObjectBuilder {
+
+        private String mTitle, mNoteContent, mFolderName, mColor, mTime;
+        private List<String> mImagesList, mAudioList;
+        private List<CheckListObject> mCheckList;
+        private int mIsPinned, mIsLocked, mReminder;
+
+        public NoteObjectBuilder setTitle(String title) {
+            this.mTitle = title;
+            return this;
+        }
+
+        public NoteObjectBuilder setNoteContent(String noteContent) {
+            this.mNoteContent = noteContent;
+            return this;
+        }
+
+        public NoteObjectBuilder setFolderName(String folderName) {
+            this.mFolderName = folderName;
+            return this;
+        }
+
+        public NoteObjectBuilder setColor(String color) {
+            this.mColor = color;
+            return this;
+        }
+
+        public NoteObjectBuilder setTime(String time) {
+            this.mTime = time;
+            return this;
+        }
+
+        public NoteObjectBuilder setImageList(List<String> imageList) {
+            this.mImagesList = imageList;
+            return this;
+        }
+
+        public NoteObjectBuilder setAudioList(List<String> audioList) {
+            this.mAudioList = audioList;
+            return this;
+        }
+
+        public NoteObjectBuilder setCheckList(List<CheckListObject> checkList) {
+            this.mCheckList = checkList;
+            return this;
+        }
+
+        public NoteObjectBuilder setPinned(int pinned) {
+            this.mIsPinned = pinned;
+            return this;
+        }
+
+        public NoteObjectBuilder setLocked(int locked) {
+            this.mIsLocked = locked;
+            return this;
+        }
+
+        public NoteObjectBuilder setHasReminder(int reminder) {
+            this.mReminder = reminder;
+            return this;
+        }
+
+        public NoteObject build() {
+            return new NoteObject(this);
+        }
     }
 }

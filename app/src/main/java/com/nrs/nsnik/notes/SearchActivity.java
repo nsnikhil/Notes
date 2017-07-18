@@ -97,12 +97,10 @@ public class SearchActivity extends AppCompatActivity {
         mSearchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -198,11 +196,17 @@ public class SearchActivity extends AppCompatActivity {
         try {
             while (folderCursor != null && folderCursor.moveToNext()) {
                 String folderName = folderCursor.getString(folderCursor.getColumnIndex(TableNames.table2.mFolderName));
-                mList.add(new SearchObject(folderName, true));
+                mList.add(new SearchObject.SearchObjectBuilder()
+                        .setName(folderName)
+                        .setIsFolder(true)
+                        .build());
             }
             while ((noteCursor != null && noteCursor.moveToNext())) {
                 String noteTitle = noteCursor.getString(noteCursor.getColumnIndex(TableNames.table1.mTitle));
-                mList.add(new SearchObject(noteTitle, false));
+                mList.add(new SearchObject.SearchObjectBuilder()
+                        .setName(noteTitle)
+                        .setIsFolder(false)
+                        .build());
             }
         } catch (Exception e) {
             e.printStackTrace();

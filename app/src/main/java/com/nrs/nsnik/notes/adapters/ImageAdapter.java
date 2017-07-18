@@ -10,12 +10,11 @@
 
 package com.nrs.nsnik.notes.adapters;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,12 +22,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.nrs.nsnik.notes.ImageFullActivity;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.helpers.FileOperation;
 import com.nrs.nsnik.notes.interfaces.OnItemRemoveListener;
@@ -36,6 +36,8 @@ import com.nrs.nsnik.notes.interfaces.OnItemRemoveListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,9 +54,11 @@ IMAGE ADAPTER TAKES IN LIST OF STRING WHERE EACH
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
 
     private static final String TAG = ImageAdapter.class.getSimpleName();
-    private Activity mContext;
+    @Inject
+    RequestManager mGlideRequestManager;
+    private Context mContext;
     private List<String> mImageLoc;
-    private File mFolder;
+
     private OnItemRemoveListener mOnItemRemoveListener;
     private boolean mFullScreen;
 
@@ -64,23 +68,23 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
      @param sz              SendSize interface
      @param forFullScreen   if the adapter is used in full screen or not
      */
-    public ImageAdapter(Activity c, List<String> imageLocations, OnItemRemoveListener onItemRemoveListener, boolean forFullScreen) {
+    public ImageAdapter(Context c, List<String> imageLocations, OnItemRemoveListener onItemRemoveListener, boolean forFullScreen) {
         mContext = c;
         mImageLoc = imageLocations;
         mOnItemRemoveListener = onItemRemoveListener;
         mFullScreen = forFullScreen;
-        mFolder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        ((MyApplication) mContext.getApplicationContext()).getGlideComponent().injectImageAdapter(this);
     }
 
     @Override
-    public ImageAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_image_view, parent, false));
     }
 
     @Override
     public void onBindViewHolder(final ImageAdapter.MyViewHolder holder, int position) {
-        Glide.with(mContext)
-                .load(new File(mFolder, mImageLoc.get(position)).toString())
+        mGlideRequestManager
+                .load(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mImageLoc.get(position)).toString())
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -132,8 +136,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                     bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), (ArrayList<String>) mImageLoc);
                     bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
                     fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, itemView, "fullImage");
-                    mContext.startActivity(fullScreen, options.toBundle());
+                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "fullImage");
+                    mContext.startActivity(fullScreen/*, options.toBundle()*/);
                 });
             }
         }

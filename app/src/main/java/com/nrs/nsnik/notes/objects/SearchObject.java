@@ -16,14 +16,9 @@ public class SearchObject {
     private String mName;
     private boolean mIsFolder;
 
-
-    /*
-    TODO REPLACE WITH AUTO VALUE
-     */
-
-    public SearchObject(String name, boolean isFolder) {
-        mName = name;
-        mIsFolder = isFolder;
+    SearchObject(SearchObjectBuilder searchObjectBuilder) {
+        mName = searchObjectBuilder.mName;
+        mIsFolder = searchObjectBuilder.mIsFolder;
     }
 
     public String getmName() {
@@ -32,5 +27,25 @@ public class SearchObject {
 
     public boolean ismIsFolder() {
         return mIsFolder;
+    }
+
+    public static class SearchObjectBuilder {
+
+        private String mName;
+        private boolean mIsFolder;
+
+        public SearchObjectBuilder setName(String name) {
+            mName = name;
+            return this;
+        }
+
+        public SearchObjectBuilder setIsFolder(boolean isFolder) {
+            mIsFolder = isFolder;
+            return this;
+        }
+
+        public SearchObject build() {
+            return new SearchObject(this);
+        }
     }
 }

@@ -186,6 +186,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
                     mBottomSheet.setElevation(0);
                 }
             }
+
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
@@ -369,7 +370,10 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void addCheckListItem() {
-        mCheckList.add(new CheckListObject("", false));
+        mCheckList.add(new CheckListObject.CheckListBuilder()
+                .setText("")
+                .setCompleted(false)
+                .build());
         mCheckListAdapter.notifyDataSetChanged();
         displayCheckListView();
     }
@@ -548,8 +552,19 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
         Calendar calendar = Calendar.getInstance();
         String time = String.valueOf(calendar.getTimeInMillis());
-        NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioLocations, mCheckList
-                , HAS_ALARM, mFolderName, mColorCode, time, IS_STARRED, IS_LOCKED);
+        NoteObject noteObject = new NoteObject.NoteObjectBuilder()
+                .setTitle(mTitle.getText().toString())
+                .setNoteContent(mNote.getText().toString())
+                .setFolderName(mFolderName)
+                .setColor(mColorCode)
+                .setTime(time)
+                .setImageList(mImagesLocations)
+                .setAudioList(mAudioLocations)
+                .setCheckList(mCheckList)
+                .setPinned(IS_STARRED)
+                .setLocked(IS_LOCKED)
+                .setHasReminder(HAS_ALARM)
+                .build();
         mFileOperation.saveNote(mFileOperation.makeName(FileOperation.FILE_TYPES.TEXT), noteObject, IS_STARRED, IS_LOCKED, time, mColorCode);
     }
 
@@ -562,8 +577,19 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
         try {
             if (c != null && c.moveToFirst()) {
-                NoteObject noteObject = new NoteObject(mTitle.getText().toString(), mNote.getText().toString(), mImagesLocations, mAudioLocations, mCheckList
-                        , HAS_ALARM, mFolderName, mColorCode, time, IS_STARRED, IS_LOCKED);
+                NoteObject noteObject = new NoteObject.NoteObjectBuilder()
+                        .setTitle(mTitle.getText().toString())
+                        .setNoteContent(mNote.getText().toString())
+                        .setFolderName(mFolderName)
+                        .setColor(mColorCode)
+                        .setTime(time)
+                        .setImageList(mImagesLocations)
+                        .setAudioList(mAudioLocations)
+                        .setCheckList(mCheckList)
+                        .setPinned(IS_STARRED)
+                        .setLocked(IS_LOCKED)
+                        .setHasReminder(HAS_ALARM)
+                        .build();
                 mFileOperation.updateNote(c.getString(c.getColumnIndex(TableNames.table1.mFileName)), noteObject, mIntentUri, IS_STARRED, IS_LOCKED, time, mColorCode);
             }
         } catch (Exception e) {

@@ -14,15 +14,27 @@ import android.app.Application;
 import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
+import com.nrs.nsnik.notes.dagger.components.DaggerGlideComponent;
+import com.nrs.nsnik.notes.dagger.components.DaggerRootFolderComponent;
+import com.nrs.nsnik.notes.dagger.components.GlideComponent;
+import com.nrs.nsnik.notes.dagger.components.RootFolderComponent;
+import com.nrs.nsnik.notes.dagger.modules.ContextModule;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
+
+import java.io.File;
+
+import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class MyApplication extends Application {
 
+    @Inject
+    File mRootFolder;
     private RefWatcher refWatcher;
+    private GlideComponent mGlideComponent;
 
     public static RefWatcher getRefWatcher(Context context) {
         MyApplication application = (MyApplication) context.getApplicationContext();
@@ -45,5 +57,28 @@ public class MyApplication extends Application {
         if (BuildConfig.DEBUG) {
             refWatcher = LeakCanary.install(this);
         }
+        moduleSetter();
+    }
+
+    private void moduleSetter() {
+        setGlideComponent();
+        setRootFolderComponent();
+    }
+
+    private void setGlideComponent() {
+        mGlideComponent = DaggerGlideComponent.builder().contextModule(new ContextModule(this)).build();
+    }
+
+    private void setRootFolderComponent() {
+        RootFolderComponent rootFolderComponent = DaggerRootFolderComponent.builder().contextModule(new ContextModule(this)).build();
+        rootFolderComponent.inject(this);
+    }
+
+    public File getRootFolder() {
+        return mRootFolder;
+    }
+
+    public GlideComponent getGlideComponent() {
+        return mGlideComponent;
     }
 }

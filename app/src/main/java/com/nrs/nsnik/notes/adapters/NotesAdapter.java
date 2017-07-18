@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.nrs.nsnik.notes.ContainerActivity;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.NewNoteActivity;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.data.TableNames;
@@ -90,8 +91,9 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
         mFolderName = folderName;
-        mFolder = mContext.getExternalFilesDir(mContext.getResources().getString(R.string.folderName));
+        mFolder = ((MyApplication) mContext.getApplicationContext()).getRootFolder();
         mFileOperations = new FileOperation(mContext);
+        ((MyApplication) mContext.getApplicationContext()).getGlideComponent().injectNotesAdapter(this);
     }
 
     @Override

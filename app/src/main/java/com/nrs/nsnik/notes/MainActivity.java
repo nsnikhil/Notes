@@ -58,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initialize();
         initializeDrawer();
-        getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
+        }
     }
 
     /*

@@ -13,27 +13,43 @@
     <string name="drawerOpen">Open</string>
     <string name="drawerClose">Close</string>
     <string name="title">Title</string>
+    <string name="warning">Warning</string>
+    <string name="folderName">notes</string>
+    <string name="imageDescription">Image</string>
+    <string name="imageError">Error</string>
+    <string name="checkListAddItem">…</string>
+
+    <!-- operations-->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
+    <!-- -->
+
+    <!-- headers-->
+    <string name="headingNotes">Notes</string>
+    <string name="headingFolder">Folders</string>"
+    <string name="editingDate">Editing Date</string>
+    <string name="editedHead">edited %1$s</string>
+    <!-- -->
+
+    <!-- notesModification-->
     <string name="newNote">Note</string>
     <string name="addNote">Add Note</string>
     <string name="editNote">Edit Note</string>
     <string name="createNote">New Note</string>
-    <string name="createFolder">New Folder</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="warning">Warning</string>
-    <string name="folderName">notes</string>
-    <string name="newfoldername">Folder Name</string>
-    <string name="cancel">Cancel</string>
-    <string name="create">Create</string>
+    <!-- -->
+
+    <!-- search-->
     <string name="serach">Search</string>
     <string name="searchHint">Search folder and notes…</string>
-    <string name="imageDescription">Image</string>
-    <string name="imageError">Error</string>
-    <string name="headingNotes">Notes</string>
-    <string name="headingFolder">Folders</string>"
-    <string name="editingDate">Editing Date</string>
-    <string name="checkListAddItem">…</string>
-    <string name="editedHead">edited %1$s</string>
+    <!-- -->
+
+
+    <!-- errorMessages-->
+    <string name="errorNoInternet">No Internet</string>
+    <string name="errorRetry">Retry</string>
+    <!-- -->
 
     <!-- emptyStateStrings-->
     <string name="emptyStateEmpty">No notes yet\n Tap the "+" to get started</string>
@@ -91,7 +107,9 @@
     <string name="noteToolColor">Color</string>
     <!-- -->
 
-    <!-- folder-->
+    <!-- folderModifications-->
+    <string name="createFolder">New Folder</string>
+    <string name="newfoldername">Folder Name</string>
     <string name="newfoldercreated"> New Folder Created</string>
     <string name="newfoldernotcreated">Error while creating new folder</string>
     <!-- -->
@@ -143,15 +161,12 @@
 
     <!-- notificationChannels-->
     <string name="notificationChannelReminder">notiChnRmder</string>
+    <!-- -->
 
     <!-- aboutStrings-->
     <string name="aboutLibraries">Third party library used</string>
     <string name="aboutLicense">License Info</string>
     <string name="aboutLicenseUrl">https://github.com/nsnikhil/Notes/blob/master/LICENSE</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <!-- -->
 
 
 </resources>

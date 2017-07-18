@@ -23,7 +23,8 @@
             android:id="@+id/commonList"
             style="@style/matchParent"
             android:clipToPadding="false"
-            android:paddingBottom="88dp" />
+            android:paddingBottom="88dp"
+            android:scrollbars="vertical" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

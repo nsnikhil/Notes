@@ -210,20 +210,24 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
             Animation scaleUp = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_from_down);
+
             @Override
             public void onAnimationStart(Animation animation) {
             }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 scaleUp.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
                     }
+
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mFolderContainer.setVisibility(View.VISIBLE);
                         mNoteContainer.setVisibility(View.VISIBLE);
                     }
+
                     @Override
                     public void onAnimationRepeat(Animation animation) {
                     }
@@ -231,6 +235,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
                 mFolderContainer.startAnimation(scaleUp);
                 mNoteContainer.startAnimation(scaleUp);
             }
+
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
@@ -249,20 +254,24 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
             Animation scaleDown = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_to_down);
+
             @Override
             public void onAnimationStart(Animation animation) {
             }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 scaleDown.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
                     }
+
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mFolderContainer.setVisibility(View.INVISIBLE);
                         mNoteContainer.setVisibility(View.INVISIBLE);
                     }
+
                     @Override
                     public void onAnimationRepeat(Animation animation) {
                     }
@@ -270,6 +279,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
                 mFolderContainer.startAnimation(scaleDown);
                 mNoteContainer.startAnimation(scaleDown);
             }
+
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
@@ -449,8 +459,10 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         Single<List<FolderObject>> listSingle = Single.fromCallable(() -> {
             List<FolderObject> tempList = new ArrayList<>();
             while (cursor != null && cursor.moveToNext()) {
-                tempList.add(new FolderObject(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName))
-                        , cursor.getString(cursor.getColumnIndex(TableNames.table2.mColor))));
+                tempList.add(new FolderObject.FolderObjectBuilder()
+                        .setFolderName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName)))
+                        .setFolderColor(cursor.getString(cursor.getColumnIndex(TableNames.table2.mColor)))
+                        .build());
             }
             return tempList;
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -468,6 +480,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
                     setEmpty();
                 }
             }
+
             @Override
             public void onError(Throwable e) {
                 Log.d(TAG, e.getMessage());

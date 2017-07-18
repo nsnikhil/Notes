@@ -32,9 +32,9 @@ public class CheckListObject implements Serializable, Parcelable {
     private String mText;
     private boolean mDone;
 
-    public CheckListObject(String text, boolean done) {
-        mText = text;
-        mDone = done;
+    CheckListObject(CheckListBuilder checkListBuilder) {
+        mText = checkListBuilder.mText;
+        mDone = checkListBuilder.mDone;
     }
 
     private CheckListObject(Parcel in) {
@@ -72,5 +72,24 @@ public class CheckListObject implements Serializable, Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mText);
         parcel.writeByte((byte) (mDone ? 1 : 0));
+    }
+
+    public static class CheckListBuilder {
+        private String mText;
+        private boolean mDone;
+
+        public CheckListBuilder setText(String text) {
+            mText = text;
+            return this;
+        }
+
+        public CheckListBuilder setCompleted(boolean completed) {
+            mDone = completed;
+            return this;
+        }
+
+        public CheckListObject build() {
+            return new CheckListObject(this);
+        }
     }
 }
