@@ -16,6 +16,7 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,12 +49,14 @@ public class AboutFragment extends Fragment {
             "https://github.com/ReactiveX/RxJava", "https://github.com/bumptech/glide", "https://github.com/square/leakcanary"
             , "https://github.com/JakeWharton/timber", "https://google.github.io/dagger/"};
 
-    @BindView(R.id.aboutVersionInfo)
-    TextView mVersionNo;
     @BindView(R.id.aboutLibraries)
     Button mLibraries;
     @BindView(R.id.aboutLicense)
     Button mLicense;
+    @BindView(R.id.aboutSourceCode)
+    TextView mSourceCode;
+    @BindView(R.id.aboutNikhil)
+    TextView mNikhilLinks;
     private Unbinder mUnbinder;
 
     @Override
@@ -66,7 +69,8 @@ public class AboutFragment extends Fragment {
     }
 
     private void initialize() {
-        mVersionNo.setText(BuildConfig.VERSION_NAME);
+        mSourceCode.setMovementMethod(LinkMovementMethod.getInstance());
+        mNikhilLinks.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void listeners() {
@@ -93,6 +97,7 @@ public class AboutFragment extends Fragment {
      */
     private void showLibrariesList() {
         AlertDialog.Builder choosePath = new AlertDialog.Builder(getActivity());
+        choosePath.setTitle(getActivity().getResources().getString(R.string.aboutLibrariesHead));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
         for (String aLibraryName : mLibraryNames) {
             arrayAdapter.add(aLibraryName);

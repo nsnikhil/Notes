@@ -19,8 +19,8 @@ android {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 26
-        versionCode 22
-        versionName "2.4"
+        versionCode 23
+        versionName "2.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -45,7 +45,7 @@ dependencies {
         transitive = true
     }
     //MultiDex
-    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.android.support:multidex:1.0.2'
 
     //Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

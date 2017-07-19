@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String[] mFragTags = {"home", "starred", "recent", "about"};
+    private static final String[] mFragTags = {"home", "starred", "vault", "about"};
     @BindView(R.id.mainToolbar)
     Toolbar mMainToolbar;
     @BindView(R.id.mainDrawerLayout)
@@ -56,15 +56,12 @@ public class MainActivity extends AppCompatActivity {
         setTheme(R.style.transparentStatusBar);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        initialize();
+        initialize(savedInstanceState);
         initializeDrawer();
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
-        }
     }
 
     /*
-    @return true if connected to interned else flase
+    @return true if connected to interned else false
      */
     private boolean isConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -123,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navItem1:
                     if (getSupportFragmentManager().findFragmentByTag(mFragTags[0]) == null) {
                         replaceFragment(new HomeFragment(), mFragTags[0]);
+                        mToolbarText.setText(getResources().getString(R.string.app_name));
                     }
                     break;
                 case R.id.navItem2:
@@ -137,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navItem5:
                     if (getSupportFragmentManager().findFragmentByTag(mFragTags[3]) == null) {
                         replaceFragment(new AboutFragment(), mFragTags[3]);
+                        if (getSupportActionBar() != null) {
+                            mToolbarText.setText(getResources().getString(R.string.navItem5));
+                        }
                     }
                     break;
             }
@@ -144,12 +145,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initialize() {
+    private void initialize(Bundle savedInstanceState) {
         setSupportActionBar(mMainToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        mToolbarText.setText(getResources().getString(R.string.app_name));
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mFragTags[0]).commit();
+            mToolbarText.setText(getResources().getString(R.string.app_name));
+        }
     }
 
     /*
