@@ -12,7 +12,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/matchParent"
-    tools:context="com.nrs.nsnik.notes.SplashActivity">
+    tools:context="com.nrs.nsnik.notes.view.SplashActivity">
 
     <ImageView
         style="@style/errorImage"

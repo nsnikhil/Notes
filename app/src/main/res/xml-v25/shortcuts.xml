@@ -19,7 +19,7 @@
         android:shortcutShortLabel="@string/shortcutAddNoteShortMsg">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="com.nrs.nsnik.notes.NewNoteActivity"
+            android:targetClass="com.nrs.nsnik.notes.view.NewNoteActivity"
             android:targetPackage="com.nrs.nsnik.notes" />
     </shortcut>
 
@@ -32,7 +32,7 @@
         android:shortcutShortLabel="@string/shortcutSearchShortMsg">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="com.nrs.nsnik.notes.SearchActivity"
+            android:targetClass="com.nrs.nsnik.notes.view.SearchActivity"
             android:targetPackage="com.nrs.nsnik.notes" />
     </shortcut>
 

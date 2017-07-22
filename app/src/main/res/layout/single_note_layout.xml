@@ -23,13 +23,13 @@
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
-        <com.nrs.nsnik.notes.customViews.NikTextView
+        <com.nrs.nsnik.notes.view.customViews.NikTextView
             android:id="@+id/singleNoteTitle"
             style="@style/newNoteHeading"
             android:maxLines="1"
             android:textStyle="bold" />
 
-        <com.nrs.nsnik.notes.customViews.NikTextViewLight
+        <com.nrs.nsnik.notes.view.customViews.NikTextViewLight
             android:id="@+id/singleNoteContent"
             style="@style/newNoteContent"
             android:lineSpacingExtra="2dp"
@@ -71,7 +71,7 @@
 
         <LinearLayout style="@style/stretchedHorizontally">
 
-            <com.nrs.nsnik.notes.customViews.NikTextViewLight
+            <com.nrs.nsnik.notes.view.customViews.NikTextViewLight
                 android:id="@+id/singleNoteDate"
                 style="@style/wrapContent"
                 android:layout_width="0dp"

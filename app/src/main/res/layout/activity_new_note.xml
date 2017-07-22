@@ -36,7 +36,7 @@
                 style="@style/stretchedHorizontally"
                 android:visibility="gone" />
 
-            <com.nrs.nsnik.notes.customViews.NikEditText
+            <com.nrs.nsnik.notes.view.customViews.NikEditText
                 android:id="@+id/newNoteTitle"
                 style="@style/newNoteHeading"
                 android:background="@android:color/transparent"
@@ -50,7 +50,7 @@
                 style="@style/stretchedHorizontally"
                 android:visibility="gone" />
 
-            <com.nrs.nsnik.notes.customViews.NikEditText
+            <com.nrs.nsnik.notes.view.customViews.NikEditText
                 android:id="@+id/newNoteContent"
                 style="@style/newNoteContent"
                 android:inputType="textMultiLine"

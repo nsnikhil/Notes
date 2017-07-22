@@ -19,7 +19,7 @@
             style="@style/wrapContent"
             android:layout_marginStart="@dimen/sixteen" />
 
-        <com.nrs.nsnik.notes.customViews.NikEditText
+        <com.nrs.nsnik.notes.view.customViews.NikEditText
             android:id="@+id/checkListItem"
             style="@style/stretchedHorizontally"
             android:layout_gravity="center_vertical"

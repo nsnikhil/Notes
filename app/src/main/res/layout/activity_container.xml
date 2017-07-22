@@ -10,7 +10,7 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.nrs.nsnik.notes.ContainerActivity">
+    tools:context="com.nrs.nsnik.notes.view.ContainerActivity">
 
     <include
         android:id="@+id/containerToolbar"

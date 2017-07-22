@@ -18,29 +18,29 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".MyApplication"
+        android:name=".view.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
+        <activity android:name=".view.MainActivity" />
         <activity
-            android:name=".NewNoteActivity"
+            android:name=".view.NewNoteActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/addNote"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".view.MainActivity" />
 
         <provider
-            android:name=".data.TableProvider"
+            android:name=".model.data.TableProvider"
             android:authorities="com.nrs.nsnik.notes"
             android:enabled="true"
             android:exported="false" />
 
-        <receiver android:name=".NewNoteActivity$ReminderService" />
+        <receiver android:name=".view.NewNoteActivity$ReminderService" />
 
-        <activity android:name=".ContainerActivity" />
+        <activity android:name=".view.ContainerActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -55,7 +55,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".SplashActivity">
+        <activity android:name=".view.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -67,10 +67,10 @@
                 android:resource="@xml/shortcuts" />
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".view.SearchActivity"
             android:label="@string/serach" />
-        <activity android:name=".ImageFullActivity" />
-        <activity android:name=".IntroActivity" />
+        <activity android:name=".view.ImageFullActivity" />
+        <activity android:name=".view.IntroActivity" />
     </application>
 
 </manifest>

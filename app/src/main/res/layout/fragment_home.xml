@@ -13,7 +13,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/homeContainer"
     style="@style/matchParent"
-    tools:context="com.nrs.nsnik.notes.fragments.HomeFragment">
+    tools:context=".view.fragments.HomeFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/commonListSwipe"

@@ -12,7 +12,7 @@
     style="@style/myCardView"
     android:transitionName="noteFolder">
 
-    <com.nrs.nsnik.notes.customViews.NikTextView
+    <com.nrs.nsnik.notes.view.customViews.NikTextView
         android:id="@+id/singleFolderName"
         style="@style/newNoteHeading"
         android:drawablePadding="@dimen/eight"

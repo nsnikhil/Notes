@@ -14,7 +14,7 @@
     android:id="@+id/mainDrawerLayout"
     style="@style/matchParent"
     android:fitsSystemWindows="true"
-    tools:context="com.nrs.nsnik.notes.MainActivity">
+    tools:context="com.nrs.nsnik.notes.view.MainActivity">
 
     <FrameLayout style="@style/matchParent">
 
@@ -22,7 +22,7 @@
             android:id="@+id/mainToolbar"
             style="@style/toolbar">
 
-            <com.nrs.nsnik.notes.customViews.NikTextView
+            <com.nrs.nsnik.notes.view.customViews.NikTextView
                 android:id="@+id/mainToolBarText"
                 style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                 android:layout_width="wrap_content"

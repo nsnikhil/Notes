@@ -11,7 +11,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/stretchedHorizontally">
 
-    <com.nrs.nsnik.notes.customViews.NikEditText
+    <com.nrs.nsnik.notes.view.customViews.NikEditText
         android:id="@+id/dialogFolderName"
         style="@style/wrapContent"
         android:background="@android:color/transparent"

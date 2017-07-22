@@ -11,13 +11,13 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/verticalLinearLayout"
-    tools:context="com.nrs.nsnik.notes.SearchActivity">
+    tools:context="com.nrs.nsnik.notes.view.SearchActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/searchToolBar"
         style="@style/toolbar">
 
-        <com.nrs.nsnik.notes.customViews.NikEditText
+        <com.nrs.nsnik.notes.view.customViews.NikEditText
             android:id="@+id/searchText"
             style="@style/matchParent"
             android:layout_gravity="center_vertical"
