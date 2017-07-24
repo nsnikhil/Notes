@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.dagger.components.DaggerMediaComponent;
 import com.nrs.nsnik.notes.util.FileOperation;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
 
@@ -42,12 +44,14 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
     private MediaPlayer mMediaPlayer;
     private List<String> mAudioLocationList;
     private SeekBar mAdapterSeekBar;
+    private CompositeDisposable mCompositeDisposable;
 
     public AudioListAdapter(Context context, List<String> list, OnItemRemoveListener onItemRemoveListener) {
         mContext = context;
         mAudioLocationList = list;
         mOnItemRemoveListener = onItemRemoveListener;
         mMediaPlayer = DaggerMediaComponent.builder().build().getMediaPlayer();
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -74,14 +78,12 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         }
         mMediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
             if (mMediaPlayer != null) {
-                mMediaPlayer.release();
-                mMediaPlayer = null;
-                mAdapterSeekBar.setProgress(0, true);
-                play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24dp));
+                mMediaPlayer.reset();
             }
+            mAdapterSeekBar.setProgress(0, true);
+            play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24dp));
         });
     }
-
 
     @Override
     public int getItemCount() {
@@ -103,6 +105,24 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         }
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
+        }
+        if (mMediaPlayer != null) {
+            mMediaPlayer.reset();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        cleanUp();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.audioProgressBar)
         SeekBar mSeekBar;
@@ -114,12 +134,18 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mPlay.setOnClickListener(view -> {
-                mAdapterSeekBar = mSeekBar;
-                mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_stop_black_24dp));
-                playAudio(getAdapterPosition(), mPlay);
-            });
-            mRemove.setOnClickListener(view -> mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition())));
+            mCompositeDisposable.add(RxView.clicks(mPlay).subscribe(v -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    mAdapterSeekBar = mSeekBar;
+                    mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_stop_black_24dp));
+                    playAudio(getAdapterPosition(), mPlay);
+                }
+            }));
+            mCompositeDisposable.add(RxView.clicks(mRemove).subscribe(v -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition()));
+                }
+            }));
         }
     }
 }

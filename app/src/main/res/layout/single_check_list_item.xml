@@ -26,6 +26,8 @@
             android:layout_marginStart="@dimen/sixteen"
             android:background="@android:color/transparent"
             android:hint="@string/checkListAddItem"
+            android:imeOptions="actionNext"
+            android:inputType="text"
             android:maxLines="1" />
 
     </LinearLayout>

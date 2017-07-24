@@ -14,16 +14,18 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.objects.CheckListObject;
 import com.nrs.nsnik.notes.util.interfaces.OnAddClickListener;
@@ -32,17 +34,20 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyViewHolder> {
 
     private final Context mContext;
     private final OnAddClickListener mOnAddClickListener;
     private List<CheckListObject> mCheckList;
+    private CompositeDisposable mCompositeDisposable;
 
     public CheckListAdapter(Context context, List<CheckListObject> list, OnAddClickListener onAddClickListener) {
         mContext = context;
         mCheckList = list;
         mOnAddClickListener = onAddClickListener;
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -79,6 +84,19 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
         return mCheckList != null ? mCheckList.size() : 0;
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        cleanUp();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.checkListTicker)
         CheckBox mTicker;
@@ -90,29 +108,28 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mAdd.setOnClickListener(view -> mOnAddClickListener.addClickListener());
-            mTicker.setOnCheckedChangeListener((compoundButton, b) -> {
-                CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
-                checkListObject.setmDone(b);
-                if (mText.getText().toString().length() > 0) {
-                    changeItem(b, mText);
-                }
-            });
-            mText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
+            mCompositeDisposable.add(RxTextView.textChanges(mText).subscribe(charSequence -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
-                    checkListObject.setmText(editable.toString());
+                    checkListObject.setmText(charSequence.toString());
                 }
-            });
+            }));
+            mCompositeDisposable.add(RxTextView.editorActionEvents(mText).subscribe(textViewEditorActionEvent -> {
+                if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_NEXT)
+                    mOnAddClickListener.addClickListener();
+            }));
+            mCompositeDisposable.add(RxView.clicks(mAdd).subscribe(v -> {
+                mOnAddClickListener.addClickListener();
+            }));
+            mCompositeDisposable.add(RxCompoundButton.checkedChanges(mTicker).subscribe(aBoolean -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
+                    checkListObject.setmDone(aBoolean);
+                    if (mText.getText().toString().length() > 0) {
+                        changeItem(aBoolean, mText);
+                    }
+                }
+            }));
         }
     }
 }

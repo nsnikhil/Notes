@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.util.interfaces.OnColorSelectedListener;
 
@@ -26,6 +27,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
 
 public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.MyViewHolder> {
@@ -33,11 +35,13 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
     private final Context mContext;
     private final OnColorSelectedListener mColorSelectedListener;
     private List<String> mColorList;
+    private CompositeDisposable mCompositeDisposable;
 
     public ColorPickerAdapter(Context context, List<String> list, OnColorSelectedListener onColorSelectedListener) {
         mContext = context;
         mColorList = list;
         mColorSelectedListener = onColorSelectedListener;
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -55,6 +59,19 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
         return mColorList.size();
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        cleanUp();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.singleColor)
         ImageView mColor;
@@ -62,7 +79,11 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mColor.setOnClickListener(view -> mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition())));
+            mCompositeDisposable.add(RxView.clicks(mColor).subscribe(view -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition()));
+                }
+            }));
         }
     }
 }

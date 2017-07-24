@@ -43,6 +43,8 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.jakewharton.rxbinding2.support.v4.widget.RxSwipeRefreshLayout;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.data.FolderDataObserver;
@@ -71,6 +73,7 @@ import butterknife.Unbinder;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -114,6 +117,8 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
 
     private FileOperation mFileOperation;
     private DatabaseOperations mDatabaseOperations;
+
+    private CompositeDisposable mCompositeDisposable;
 
     public HomeFragment() {
     }
@@ -167,6 +172,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         FolderDataObserver folderDataObserver = new FolderDataObserver(getActivity(), Uri.withAppendedPath(TableNames.mFolderContentUri, folderQuery), getLoaderManager());
         folderDataObserver.add(this);
 
+        mCompositeDisposable = new CompositeDisposable();
 
         /*
         if the build is not debug
@@ -179,24 +185,24 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
     }
 
     private void listeners() {
-        mAddSpinner.setOnClickListener(v -> {
+        mCompositeDisposable.add(RxView.clicks(mAddSpinner).subscribe(v -> {
             if (mNoteContainer.getVisibility() == View.INVISIBLE || mFolderContainer.getVisibility() == View.INVISIBLE) {
                 reveal();
             } else {
                 disappear();
             }
-        });
-        mAddNote.setOnClickListener(v -> {
+        }));
+        mCompositeDisposable.add(RxView.clicks(mAddNote).subscribe(v -> {
             disappear();
             Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
             newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle), mFolderName);
             startActivity(newNote);
-        });
-        mAddFolder.setOnClickListener(v -> {
+        }));
+        mCompositeDisposable.add(RxView.clicks(mAddFolder).subscribe(v -> {
             disappear();
             createFolderDialog();
-        });
-        mSwipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(() -> mSwipeRefresh.setRefreshing(false), 1000));
+        }));
+        mCompositeDisposable.add(RxSwipeRefreshLayout.refreshes(mSwipeRefresh).subscribe(v -> new Handler().postDelayed(() -> mSwipeRefresh.setRefreshing(false), 1000)));
     }
 
     /*
@@ -299,11 +305,11 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         mColorView = v.findViewById(R.id.dialogFolderColor);
         editText.requestFocus();
         mColor = null;
-        mColorView.setOnClickListener(view -> {
+        mCompositeDisposable.add(RxView.clicks(mColorView).subscribe(o -> {
             ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
             pickerDialogFragment.setTargetFragment(this, 129);
             pickerDialogFragment.show(getFragmentManager(), "color");
-        });
+        }));
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         newFolder.setNegativeButton(getResources().getString(R.string.cancel), (dialogInterface, i) -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));
@@ -320,6 +326,9 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
     private void cleanUp() {
         if (mUnbinder != null) {
             mUnbinder.unbind();
+        }
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.dispose();
         }
     }
 

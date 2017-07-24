@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.view.MyApplication;
@@ -34,6 +35,7 @@ import com.squareup.leakcanary.RefWatcher;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.disposables.CompositeDisposable;
 
 /*
  this fragments shows
@@ -59,6 +61,8 @@ public class AboutFragment extends Fragment {
     TextView mNikhilLinks;
     private Unbinder mUnbinder;
 
+    private CompositeDisposable mCompositeDisposable;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_about, container, false);
@@ -71,11 +75,16 @@ public class AboutFragment extends Fragment {
     private void initialize() {
         mSourceCode.setMovementMethod(LinkMovementMethod.getInstance());
         mNikhilLinks.setMovementMethod(LinkMovementMethod.getInstance());
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     private void listeners() {
-        mLibraries.setOnClickListener(view -> showLibrariesList());
-        mLicense.setOnClickListener(view -> chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl)));
+        mCompositeDisposable.add(RxView.clicks(mLibraries).subscribe(v -> {
+            showLibrariesList();
+        }));
+        mCompositeDisposable.add(RxView.clicks(mLicense).subscribe(v -> {
+            chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl));
+        }));
     }
 
     /*
@@ -109,6 +118,9 @@ public class AboutFragment extends Fragment {
     private void cleanUp() {
         if (mUnbinder != null) {
             mUnbinder.unbind();
+        }
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.dispose();
         }
     }
 

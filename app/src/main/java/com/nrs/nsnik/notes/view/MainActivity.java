@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding2.support.design.widget.RxNavigationView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.view.fragments.AboutFragment;
@@ -37,6 +38,7 @@ import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private String mCurrentFragment;
     private boolean mIsClicked;
 
+    private CompositeDisposable mCompositeDisposable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +65,19 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initialize(savedInstanceState);
         initializeDrawer();
+    }
+
+    private void initialize(Bundle savedInstanceState) {
+        setSupportActionBar(mMainToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        if (savedInstanceState == null) {
+            mCurrentFragment = mFragTags[0];
+            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mCurrentFragment).commit();
+            mToolbarText.setText(getResources().getString(R.string.app_name));
+        }
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     /*
@@ -79,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void removeOffConnection() {
-        Snackbar.make(mDrawerLayout, "No Internet", Snackbar.LENGTH_INDEFINITE).setAction("Retry", view -> addOnConnection()).show();
+        Snackbar.make(mDrawerLayout, getResources().getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getResources().getString(R.string.errorRetry), view -> addOnConnection()).show();
     }
 
     @Override
@@ -121,8 +138,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         mNavigationView.getMenu().getItem(0).setChecked(true);
-        mNavigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
+        mCompositeDisposable.add(RxNavigationView.itemSelections(mNavigationView).subscribe(menuItem -> {
+            switch (menuItem.getItemId()) {
                 case R.id.navItem1:
                     if (!mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
                         mCurrentFragment = mFragTags[0];
@@ -146,8 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
             mDrawerLayout.closeDrawers();
-            return true;
-        });
+        }));
     }
 
     private void performChange() {
@@ -164,18 +180,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initialize(Bundle savedInstanceState) {
-        setSupportActionBar(mMainToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-        if (savedInstanceState == null) {
-            mCurrentFragment = mFragTags[0];
-            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mCurrentFragment).commit();
-            mToolbarText.setText(getResources().getString(R.string.app_name));
-        }
-    }
-
     /*
     @param fragment     the new fragment that will replace the old fragment
     @param tag          the tag for the new fragment
@@ -187,9 +191,17 @@ public class MainActivity extends AppCompatActivity {
         ft.commit();
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        cleanUp();
         if (BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);

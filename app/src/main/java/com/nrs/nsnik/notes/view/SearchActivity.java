@@ -18,14 +18,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.data.TableNames;
@@ -35,11 +34,13 @@ import com.squareup.leakcanary.RefWatcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -59,6 +60,8 @@ public class SearchActivity extends AppCompatActivity {
     private String mCurrentSearch;
     private SearchAdapter mSearchAdapter;
     private List<SearchObject> mQueryList;
+
+    private CompositeDisposable mCompositeDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,40 +95,29 @@ public class SearchActivity extends AppCompatActivity {
         subject and get data using subject
          */
         mSubject = PublishSubject.create();
+
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     private void listeners() {
-        mSearchText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        mCompositeDisposable.add(RxTextView.textChanges(mSearchText).debounce(200, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(charSequence -> {
+            if (!charSequence.toString().isEmpty() && charSequence.toString().length() > 0) {
+                mCurrentSearch = charSequence.toString();
+                performSearch(mCurrentSearch, false);
+            } else {
+                mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
             }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!editable.toString().isEmpty() && editable.toString().length() > 0) {
-                    mCurrentSearch = editable.toString();
-                    performSearch(mCurrentSearch, false);
-                } else {
-                    mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
-                }
-            }
-        });
-        mSearchText.setOnEditorActionListener((textView, actionId, keyEvent) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if (!textView.getText().toString().isEmpty() && textView.getText().toString().length() > 0) {
-                    mCurrentSearch = textView.getText().toString();
+        }));
+        mCompositeDisposable.add(RxTextView.editorActionEvents(mSearchText).observeOn(AndroidSchedulers.mainThread()).subscribe(textViewEditorActionEvent -> {
+            if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_SEARCH) {
+                if (!textViewEditorActionEvent.view().getText().toString().isEmpty() && textViewEditorActionEvent.view().getText().toString().length() > 0) {
+                    mCurrentSearch = textViewEditorActionEvent.view().getText().toString();
                     performSearch(mCurrentSearch, true);
                 } else {
                     mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
                 }
-                return true;
             }
-            return false;
-        });
+        }));
     }
 
     /*
@@ -140,7 +132,7 @@ public class SearchActivity extends AppCompatActivity {
             InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
         }
-        //Class the next method on subject
+        //Call the next method on subject
         mSubject.onNext(text);
     }
 
@@ -222,6 +214,10 @@ public class SearchActivity extends AppCompatActivity {
     private void cleanUp() {
         if (mSubject != null) {
             mSubject.unsubscribeOn(Schedulers.io());
+        }
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
         }
     }
 

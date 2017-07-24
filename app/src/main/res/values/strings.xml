@@ -45,6 +45,12 @@
     <string name="searchHint">Search folder and notes…</string>
     <!-- -->
 
+    <!-- audio-->
+    <string name="audioStartRecording">Start Recording</string>
+    <string name="audioRecording">Recording</string>
+    <string name="audioStopRecording">Stop Recording</string>
+    <!-- -->
+
 
     <!-- errorMessages-->
     <string name="errorNoInternet">No Internet</string>
@@ -156,7 +162,6 @@
     <!-- -->
 
     <!-- delete-->
-
     <string name="deleteSingleNoteWarning">Are you sure you want to delete this note</string>
     <string name="deleteSingleFolderWarning">Are you sure you want to delete this folder, this will also delete all notes within this folder</string>
     <string name="deleteNoteFailed">Error while deleting note</string>

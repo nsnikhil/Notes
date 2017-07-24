@@ -48,6 +48,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.data.TableNames;
@@ -74,8 +75,9 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
-public class NewNoteActivity extends AppCompatActivity implements View.OnClickListener, OnAddClickListener, OnItemRemoveListener, OnColorSelectedListener {
+public class NewNoteActivity extends AppCompatActivity implements OnAddClickListener, OnItemRemoveListener, OnColorSelectedListener {
 
     private static final int ATTACH_PICTURE_REQUEST_CODE = 205;
     private static final int TAKE_PICTURE_REQUEST_CODE = 206;
@@ -137,6 +139,9 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
     private CheckListAdapter mCheckListAdapter;
 
     private FileOperation mFileOperation;
+    private File mRootFolder;
+
+    private CompositeDisposable mCompositeDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,8 +149,9 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_new_note);
         ButterKnife.bind(this);
         mFileOperation = ((MyApplication) getApplicationContext()).getFileOperations();
+        mRootFolder = ((MyApplication) getApplicationContext()).getRootFolder();
         initialize();
-        setClickListener();
+        listeners();
         if (getIntent().getExtras() != null && getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
@@ -169,7 +175,6 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
         //BottomSheet
         mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -209,51 +214,37 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
         //Other initializations
         mFilesToDelete = new ArrayList<>();
+
+        mCompositeDisposable = new CompositeDisposable();
     }
 
-
-    private void setClickListener() {
-        mBottomDate.setOnClickListener(this);
-        mBottomCheckList.setOnClickListener(this);
-        mBottomCamera.setOnClickListener(this);
-        mBottomAttachment.setOnClickListener(this);
-        mBottomReminder.setOnClickListener(this);
-        mBottomAudio.setOnClickListener(this);
-        mBottomColor.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.toolsDate:
-                changeState();
-                break;
-            case R.id.toolsCheckList:
-                changeState();
-                addCheckListItem();
-                break;
-            case R.id.toolsCamera:
-                changeState();
-                checkWriteExternalStoragePermission();
-                break;
-            case R.id.toolsAttachment:
-                changeState();
-                checkReadExternalStoragePermission();
-                break;
-            case R.id.toolsReminder:
-                changeState();
-                setReminder();
-                break;
-            case R.id.toolsAudio:
-                changeState();
-                checkAudioRecordPermission();
-                break;
-            case R.id.toolsColor:
-                changeState();
-                ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
-                pickerDialogFragment.show(getSupportFragmentManager(), "color");
-                break;
-        }
+    private void listeners() {
+        mCompositeDisposable.add(RxView.clicks(mBottomDate).subscribe(v -> changeState()));
+        mCompositeDisposable.add(RxView.clicks(mBottomCheckList).subscribe(v -> {
+            changeState();
+            addCheckListItem();
+        }));
+        mCompositeDisposable.add(RxView.clicks(mBottomCamera).subscribe(v -> {
+            changeState();
+            checkWriteExternalStoragePermission();
+        }));
+        mCompositeDisposable.add(RxView.clicks(mBottomAttachment).subscribe(v -> {
+            changeState();
+            checkReadExternalStoragePermission();
+        }));
+        mCompositeDisposable.add(RxView.clicks(mBottomAudio).subscribe(v -> {
+            changeState();
+            checkAudioRecordPermission();
+        }));
+        mCompositeDisposable.add(RxView.clicks(mBottomReminder).subscribe(v -> {
+            changeState();
+            setReminder();
+        }));
+        mCompositeDisposable.add(RxView.clicks(mBottomColor).subscribe(v -> {
+            changeState();
+            ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
+            pickerDialogFragment.show(getSupportFragmentManager(), "color");
+        }));
     }
 
     @Override
@@ -491,10 +482,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void recordAudio() {
         //Creating new file for audio
-        File folder = getExternalFilesDir(getResources().getString(R.string.folderName));
         String audioFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.AUDIO);
-        File audioFileAbsolutePath = new File(folder, audioFileName);
-
+        File audioFileAbsolutePath = new File(mRootFolder, audioFileName);
 
         //Initializing the media recorder
         MediaRecorder recorder = new MediaRecorder();
@@ -505,8 +494,8 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
 
         //Creating the aduio recorder dialog
         AlertDialog.Builder record = new AlertDialog.Builder(NewNoteActivity.this);
-        record.setMessage("Recording");
-        record.setNeutralButton("Stop Recording", (dialogInterface, i) -> {
+        record.setMessage(getResources().getString(R.string.audioRecording));
+        record.setNeutralButton(getResources().getString(R.string.audioStopRecording), (dialogInterface, i) -> {
             recorder.stop();
             recorder.reset();
             recorder.release();
@@ -594,6 +583,7 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         } finally {
             if (c != null) c.close();
         }
+        deleteClearedItems();
     }
 
     private boolean verifyAndSave() {
@@ -631,10 +621,17 @@ public class NewNoteActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        deleteClearedItems();
+        cleanUp();
         if (BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(this);
             refWatcher.watch(this);

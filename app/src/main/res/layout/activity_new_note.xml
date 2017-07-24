@@ -12,18 +12,19 @@
     android:id="@+id/activity_new_note"
     style="@style/matchParent">
 
+    <include
+        android:id="@+id/newNoteToolbar"
+        layout="@layout/toolbar" />
+
     <ScrollView
         style="@style/matchParent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:clipToPadding="false"
         android:paddingBottom="48dp">
 
         <LinearLayout
             style="@style/verticalLinearLayout"
             android:transitionName="noteContainer">
-
-            <include
-                android:id="@+id/newNoteToolbar"
-                layout="@layout/toolbar" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/newNoteImageList"

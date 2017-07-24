@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.objects.SearchObject;
 
@@ -28,6 +29,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
 /*
 this adapter takes of list of search object which
@@ -40,6 +42,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
     private final Context mContext;
     private List<SearchObject> mSearchList;
+    private CompositeDisposable mCompositeDisposable;
 
     /*
     @param context          the context object
@@ -48,6 +51,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     public SearchAdapter(Context context, List<SearchObject> searchList) {
         mContext = context;
         mSearchList = searchList;
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -103,6 +107,18 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         notifyDataSetChanged();
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        cleanUp();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.searchItemName)
@@ -111,18 +127,20 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(view -> {
-                SearchObject object = mSearchList.get(getAdapterPosition());
-                if (object.ismIsFolder()) {
-                    // Intent folderIntent = new Intent(mContext, ContainerActivity.class);
-                    Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
-                    //mContext.startActivity(folderIntent);
-                } else {
-                    //  Intent noteIntent = new Intent(mContext, NewNoteActivity.class);
-                    Toast.makeText(mContext, "Will open note", Toast.LENGTH_LONG).show();
-                    //mContext.startActivity(noteIntent);
+            mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    SearchObject object = mSearchList.get(getAdapterPosition());
+                    if (object.ismIsFolder()) {
+                        // Intent folderIntent = new Intent(mContext, ContainerActivity.class);
+                        Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
+                        //mContext.startActivity(folderIntent);
+                    } else {
+                        //  Intent noteIntent = new Intent(mContext, NewNoteActivity.class);
+                        Toast.makeText(mContext, "Will open note", Toast.LENGTH_LONG).show();
+                        //mContext.startActivity(noteIntent);
+                    }
                 }
-            });
+            }));
         }
     }
 }

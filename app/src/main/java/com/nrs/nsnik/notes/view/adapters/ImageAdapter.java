@@ -10,11 +10,13 @@
 
 package com.nrs.nsnik.notes.view.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.util.FileOperation;
 import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
@@ -39,12 +42,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
 /*
 IMAGE ADAPTER TAKES IN LIST OF STRING WHERE EACH
  STRING REPRESENTS A FILE NAME, IT USES THIS FILENAME TO
  CREATE A NEW BITMAP FILE AND DISPLAY EACH IMAGE IN ITS
- RECYCLER VIEW, IT ALSO TAKES A SENDSIZE INTERFACE WHICH
+ RECYCLER VIEW, IT ALSO TAKES A onItemRemoveListener INTERFACE WHICH
  IS RESPONSIBLE FOR LETTING THE RECYCLER VIEWS ACTIVITY/FRAGMENT
  KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
  */
@@ -57,6 +61,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private final OnItemRemoveListener mOnItemRemoveListener;
     private final boolean mFullScreen;
     private List<String> mImageLoc;
+    private CompositeDisposable mCompositeDisposable;
 
     /*
      @param c               the context object
@@ -70,6 +75,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         mOnItemRemoveListener = onItemRemoveListener;
         mFullScreen = forFullScreen;
         mGlideRequestManager = ((MyApplication) mContext.getApplicationContext()).getGlideComponent().getRequestManager();
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -105,6 +111,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         return 0;
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.clear();
+            mCompositeDisposable.dispose();
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        cleanUp();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.singleImage)
         ImageView image;
@@ -125,16 +144,22 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 remove.setVisibility(View.GONE);
                 image.setScaleType(ImageView.ScaleType.CENTER);
             } else {
-                remove.setOnClickListener(view -> mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition())));
-                image.setOnClickListener(view -> {
-                    Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), (ArrayList<String>) mImageLoc);
-                    bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
-                    fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
-                    //ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "fullImage");
-                    mContext.startActivity(fullScreen/*, options.toBundle()*/);
-                });
+                mCompositeDisposable.add(RxView.clicks(remove).subscribe(v -> {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition()));
+                    }
+                }));
+                mCompositeDisposable.add(RxView.clicks(image).subscribe(v -> {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), (ArrayList<String>) mImageLoc);
+                        bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
+                        fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "fullImage");
+                        mContext.startActivity(fullScreen, options.toBundle());
+                    }
+                }));
             }
         }
     }
