@@ -46,10 +46,10 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class AboutFragment extends Fragment {
 
-    private final String[] mLibraryNames = {"Butter Knife", "RxAndroid", "RxJava", "Glide", "LeakCanary", "Timber", "Dagger 2"};
+    private final String[] mLibraryNames = {"Butter Knife", "RxAndroid", "RxJava", "RxBinding", "Glide", "LeakCanary", "Timber", "Dagger 2"};
     private final String[] mLibraryLinks = {"https://github.com/JakeWharton/butterknife", "https://github.com/ReactiveX/RxAndroid",
-            "https://github.com/ReactiveX/RxJava", "https://github.com/bumptech/glide", "https://github.com/square/leakcanary"
-            , "https://github.com/JakeWharton/timber", "https://google.github.io/dagger/"};
+            "https://github.com/ReactiveX/RxJava", "https://github.com/JakeWharton/RxBinding", "https://github.com/bumptech/glide",
+            "https://github.com/square/leakcanary", "https://github.com/JakeWharton/timber", "https://google.github.io/dagger/"};
 
     @BindView(R.id.aboutLibraries)
     Button mLibraries;

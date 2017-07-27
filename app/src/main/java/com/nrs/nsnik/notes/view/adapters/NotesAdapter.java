@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.data.TableNames;
 import com.nrs.nsnik.notes.model.objects.FolderObject;
@@ -50,6 +51,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
 /*
 This adapter takes in a uri queries the uri and
@@ -71,6 +73,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final DatabaseOperations mDatabaseOperations;
     private List<NoteObject> mNotesList;
     private List<FolderObject> mFolderList;
+    private CompositeDisposable mCompositeDisposable;
 
 
     /*
@@ -93,15 +96,14 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         mFolderList.addAll(folderList);
         mContext = context;
 
-
         mFileOperation = ((MyApplication) mContext.getApplicationContext()).getFileOperations();
         mDatabaseOperations = ((MyApplication) mContext.getApplicationContext()).getDatabaseOperations();
         mFolder = ((MyApplication) mContext.getApplicationContext()).getRootFolder();
         mRequestManager = ((MyApplication) mContext.getApplicationContext()).getGlideComponent().getRequestManager();
 
-
         mLayoutInflater = LayoutInflater.from(mContext);
         mFolderName = folderName;
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -313,20 +315,19 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         int fromPos = fromPosition - startPos;
         int toPos = toPosition - startPos;
         int tempFrom = fromPos;
-        int tempTo = toPos;
         /*
         add the id from starting position to the
         end position and if movement was from
         bottom to top decrement the tempFrom else
         increment it
          */
-        if (tempFrom > tempTo) {
-            while (tempFrom - tempTo >= 0) {
+        if (tempFrom > toPos) {
+            while (tempFrom - toPos >= 0) {
                 idList.add(mDatabaseOperations.getId(getIdUri, tempFrom));
                 --tempFrom;
             }
         } else {
-            while (tempTo - tempFrom >= 0) {
+            while (toPos - tempFrom >= 0) {
                 idList.add(mDatabaseOperations.getId(getIdUri, tempFrom));
                 ++tempFrom;
             }
@@ -443,6 +444,18 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return new ColorStateList(states, colors);
     }
 
+    private void cleanUp() {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.dispose();
+        }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        cleanUp();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
     class NoteViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.singleNoteTitle)
         TextView mNoteTitle;
@@ -463,11 +476,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @BindView(R.id.singleNoteCard)
         CardView mNoteCard;
 
-        public NoteViewHolder(final View itemView) {
+        NoteViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
-            itemView.setOnClickListener(v -> {
+            mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
                 //check if position is valid
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     /*
@@ -489,8 +501,8 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteContainer");
                     mContext.startActivity(intent, options.toBundle());
                 }
-            });
-            mMore.setOnClickListener(v -> {
+            }));
+            mCompositeDisposable.add(RxView.clicks(mMore).subscribe(v -> {
                 //check if position is valid
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     /*
@@ -505,7 +517,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     Uri uri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + id);
                     inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleNoteWarning), false, "", uri, mMore);
                 }
-            });
+            }));
         }
     }
 
@@ -515,10 +527,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @BindView(R.id.singleFolderMore)
         ImageButton mFolderMore;
 
-        public FolderViewHolder(final View itemView) {
+        FolderViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(v -> {
+            mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
                 //check if position is valid
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     /*
@@ -531,8 +543,8 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
                     mContext.startActivity(intent, options.toBundle());
                 }
-            });
-            mFolderMore.setOnClickListener(v -> {
+            }));
+            mCompositeDisposable.add(RxView.clicks(mFolderMore).subscribe(v -> {
                 //check if position is valid
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                      /*
@@ -547,7 +559,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + id);
                     inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning), true, mFolderNameText.getText().toString(), uri, mFolderMore);
                 }
-            });
+            }));
         }
     }
 
@@ -557,7 +569,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @BindView(R.id.itemHeaderMore)
         ImageButton mHeaderMore;
 
-        public HeaderViewHolder(View itemView) {
+        HeaderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

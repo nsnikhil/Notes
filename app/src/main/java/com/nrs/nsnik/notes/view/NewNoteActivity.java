@@ -123,7 +123,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     //Variables used in saving or updating note
     private String mFolderName = "nofolder";
-    private int IS_LOCKED, IS_STARRED, HAS_ALARM;
+    private int mIsLocked, mIsStarred, mHasReminder;
     private String mColorCode;
     private Uri mIntentUri = null;
     private MenuItem mStarMenu, mLockMenu;
@@ -278,24 +278,24 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                 }
                 break;
             case R.id.newNoteMenuStar:
-                if (IS_STARRED == 0) {
+                if (mIsStarred == 0) {
                     item.setIcon(R.drawable.ic_star_black_48dp);
-                    IS_STARRED = 1;
+                    mIsStarred = 1;
                     Toast.makeText(this, "Starred", Toast.LENGTH_LONG).show();
                 } else {
                     item.setIcon(R.drawable.ic_star_border_black_48dp);
-                    IS_STARRED = 0;
+                    mIsStarred = 0;
                     Toast.makeText(this, "Un Starred", Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.newNoteMenuLock:
-                if (IS_LOCKED == 0) {
+                if (mIsLocked == 0) {
                     item.setIcon(R.drawable.ic_lock_outline_black_48dp);
-                    IS_LOCKED = 1;
+                    mIsLocked = 1;
                     Toast.makeText(this, "Locked", Toast.LENGTH_LONG).show();
                 } else {
                     item.setIcon(R.drawable.ic_lock_open_black_48dp);
-                    IS_LOCKED = 0;
+                    mIsLocked = 0;
                     Toast.makeText(this, "Un Locked", Toast.LENGTH_LONG).show();
                 }
                 break;
@@ -314,8 +314,8 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                 mFolderName = object.getFolderName();
                 mColorCode = object.getmColor();
                 mTitle.setTextColor(Color.parseColor(mColorCode));
-                IS_STARRED = object.getmIsPinned();
-                IS_LOCKED = object.getmIsLocked();
+                mIsStarred = object.getmIsPinned();
+                mIsLocked = object.getmIsLocked();
                 String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(object.getmTime()));
                 mBottomDate.setText(editedDate);
                 if (object.getImages().size() > 0) {
@@ -334,7 +334,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                     mCheckListAdapter.notifyDataSetChanged();
                 }
                 if (object.getReminder() != 0) {
-                    HAS_ALARM = 1;
+                    mHasReminder = 1;
                 }
             }
         }
@@ -342,14 +342,14 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     private void setMenuIconState() {
         if (mStarMenu != null) {
-            if (IS_STARRED == 1) {
+            if (mIsStarred == 1) {
                 mStarMenu.setIcon(R.drawable.ic_star_black_48dp);
             } else {
                 mStarMenu.setIcon(R.drawable.ic_star_border_black_48dp);
             }
         }
         if (mLockMenu != null) {
-            if (IS_LOCKED == 1) {
+            if (mIsLocked == 1) {
                 mLockMenu.setIcon(R.drawable.ic_lock_outline_black_48dp);
             } else {
                 mLockMenu.setIcon(R.drawable.ic_lock_open_black_48dp);
@@ -515,7 +515,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     private void setReminder() {
         Calendar calendar = Calendar.getInstance();
         TimePickerDialog time = new TimePickerDialog(NewNoteActivity.this, (timePicker, hour, minutes) -> {
-            HAS_ALARM = 1;
+            mHasReminder = 1;
             setNotification(calendar, hour, minutes);
         }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false);
         time.show();
@@ -547,11 +547,11 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                 .setImageList(mImagesLocations)
                 .setAudioList(mAudioLocations)
                 .setCheckList(mCheckList)
-                .setPinned(IS_STARRED)
-                .setLocked(IS_LOCKED)
-                .setHasReminder(HAS_ALARM)
+                .setPinned(mIsStarred)
+                .setLocked(mIsLocked)
+                .setHasReminder(mHasReminder)
                 .build();
-        mFileOperation.saveNote(mFileOperation.makeName(FileOperation.FILE_TYPES.TEXT), noteObject, IS_STARRED, IS_LOCKED, time, mColorCode);
+        mFileOperation.saveNote(mFileOperation.makeName(FileOperation.FILE_TYPES.TEXT), noteObject, mIsStarred, mIsLocked, time, mColorCode);
     }
 
     private void updateNote() {
@@ -572,11 +572,11 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                         .setImageList(mImagesLocations)
                         .setAudioList(mAudioLocations)
                         .setCheckList(mCheckList)
-                        .setPinned(IS_STARRED)
-                        .setLocked(IS_LOCKED)
-                        .setHasReminder(HAS_ALARM)
+                        .setPinned(mIsStarred)
+                        .setLocked(mIsLocked)
+                        .setHasReminder(mHasReminder)
                         .build();
-                mFileOperation.updateNote(c.getString(c.getColumnIndex(TableNames.table1.mFileName)), noteObject, mIntentUri, IS_STARRED, IS_LOCKED, time, mColorCode);
+                mFileOperation.updateNote(c.getString(c.getColumnIndex(TableNames.table1.mFileName)), noteObject, mIntentUri, mIsStarred, mIsLocked, time, mColorCode);
             }
         } catch (Exception e) {
             e.printStackTrace();

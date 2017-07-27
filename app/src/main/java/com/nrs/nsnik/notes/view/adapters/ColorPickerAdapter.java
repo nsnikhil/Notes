@@ -76,7 +76,7 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
         @BindView(R.id.singleColor)
         ImageView mColor;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mCompositeDisposable.add(RxView.clicks(mColor).subscribe(view -> {

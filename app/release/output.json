@@ -6,7 +6,7 @@
     "apkInfo": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 24
+      "versionCode": 25
     },
     "outputFile": {
       "path": "C:\\Users\\Nikhil\\Documents\\AndroidStudioProjects\\Notes\\app\\release\\app-release.apk"

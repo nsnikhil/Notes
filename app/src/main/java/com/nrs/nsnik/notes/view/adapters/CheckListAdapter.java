@@ -105,7 +105,7 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
         @BindView(R.id.checkListAdd)
         ImageButton mAdd;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mCompositeDisposable.add(RxTextView.textChanges(mText).subscribe(charSequence -> {
@@ -115,8 +115,10 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
                 }
             }));
             mCompositeDisposable.add(RxTextView.editorActionEvents(mText).subscribe(textViewEditorActionEvent -> {
-                if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_NEXT)
+                if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_NEXT) {
                     mOnAddClickListener.addClickListener();
+                    mText.requestFocus();
+                }
             }));
             mCompositeDisposable.add(RxView.clicks(mAdd).subscribe(v -> {
                 mOnAddClickListener.addClickListener();

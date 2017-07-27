@@ -39,6 +39,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -314,11 +315,15 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         newFolder.setNegativeButton(getResources().getString(R.string.cancel), (dialogInterface, i) -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));
         newFolder.setPositiveButton(getResources().getString(R.string.create), (dialogInterface, i) -> {
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-            if (mColor == null) {
-                mColor = "#333333";
+            if (!editText.getText().toString().isEmpty()) {
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                if (mColor == null) {
+                    mColor = "#333333";
+                }
+                mDatabaseOperations.insertFolder(TableNames.mFolderContentUri, editText.getText().toString(), mFolderName, mColor);
+            } else {
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.errorNoFolderName), Toast.LENGTH_SHORT).show();
             }
-            mDatabaseOperations.insertFolder(TableNames.mFolderContentUri, editText.getText().toString(), mFolderName, mColor);
         });
         newFolder.create().show();
     }

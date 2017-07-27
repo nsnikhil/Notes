@@ -131,7 +131,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         @BindView(R.id.audioRemove)
         ImageButton mRemove;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mCompositeDisposable.add(RxView.clicks(mPlay).subscribe(v -> {

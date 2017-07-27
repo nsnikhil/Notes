@@ -132,7 +132,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         @BindView(R.id.singleImageProgress)
         ProgressBar mProgress;
 
-        public MyViewHolder(final View itemView) {
+        MyViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             /*

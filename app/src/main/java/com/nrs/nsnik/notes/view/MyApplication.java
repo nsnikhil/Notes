@@ -12,6 +12,7 @@ package com.nrs.nsnik.notes.view;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.StrictMode;
 
 import com.crashlytics.android.Crashlytics;
 import com.nrs.nsnik.notes.BuildConfig;
@@ -72,6 +73,16 @@ public class MyApplication extends Application {
             refWatcher = LeakCanary.install(this);
         }
         moduleSetter();
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+        }
     }
 
     private void moduleSetter() {

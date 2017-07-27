@@ -55,6 +55,7 @@
     <!-- errorMessages-->
     <string name="errorNoInternet">No Internet</string>
     <string name="errorRetry">Retry</string>
+    <string name="errorNoFolderName">Enter the folder name</string>
     <!-- -->
 
     <!-- emptyStateStrings-->
