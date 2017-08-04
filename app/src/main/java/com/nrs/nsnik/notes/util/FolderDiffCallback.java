@@ -12,6 +12,8 @@ package com.nrs.nsnik.notes.util;
 
 import android.support.v7.util.DiffUtil;
 
+import com.nrs.nsnik.notes.model.objects.FolderObject;
+
 import java.util.List;
 
 
@@ -21,9 +23,9 @@ public class FolderDiffCallback extends DiffUtil.Callback {
     TODO DIFFERENCE UTILITY CLASS FOR FOLDER LISTtodo
      */
 
-    private List<String> mOldList, mNewList;
+    private List<FolderObject> mOldList, mNewList;
 
-    public FolderDiffCallback(List<String> oldList, List<String> newList) {
+    public FolderDiffCallback(List<FolderObject> oldList, List<FolderObject> newList) {
         mOldList = oldList;
         mNewList = newList;
     }
@@ -40,7 +42,7 @@ public class FolderDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return mOldList.get(oldItemPosition).equals(mNewList.get(newItemPosition));
+        return mOldList.get(oldItemPosition).getmFolderName().equalsIgnoreCase(mNewList.get(newItemPosition).getmFolderName());
     }
 
     @Override

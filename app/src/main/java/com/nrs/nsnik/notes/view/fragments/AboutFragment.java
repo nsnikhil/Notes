@@ -79,12 +79,8 @@ public class AboutFragment extends Fragment {
     }
 
     private void listeners() {
-        mCompositeDisposable.add(RxView.clicks(mLibraries).subscribe(v -> {
-            showLibrariesList();
-        }));
-        mCompositeDisposable.add(RxView.clicks(mLicense).subscribe(v -> {
-            chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl));
-        }));
+        mCompositeDisposable.add(RxView.clicks(mLibraries).subscribe(v -> showLibrariesList()));
+        mCompositeDisposable.add(RxView.clicks(mLicense).subscribe(v -> chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl))));
     }
 
     /*

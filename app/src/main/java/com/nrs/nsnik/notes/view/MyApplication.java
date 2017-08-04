@@ -59,20 +59,20 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        Timber.plant(new Timber.DebugTree() {
-            @Override
-            protected String createStackElementTag(StackTraceElement element) {
-                return super.createStackElementTag(element) + ":" + element.getLineNumber();
-            }
-        });
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree() {
+                @Override
+                protected String createStackElementTag(StackTraceElement element) {
+                    return super.createStackElementTag(element) + ":" + element.getLineNumber();
+                }
+            });
+        }
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
         if (BuildConfig.DEBUG) {
             refWatcher = LeakCanary.install(this);
         }
-        moduleSetter();
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
@@ -83,6 +83,10 @@ public class MyApplication extends Application {
                     .penaltyLog()
                     .build());
         }
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
+        moduleSetter();
     }
 
     private void moduleSetter() {

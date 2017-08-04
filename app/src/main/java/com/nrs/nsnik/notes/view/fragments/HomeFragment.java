@@ -312,19 +312,21 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
             pickerDialogFragment.show(getFragmentManager(), "color");
         }));
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-        newFolder.setNegativeButton(getResources().getString(R.string.cancel), (dialogInterface, i) -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));
-        newFolder.setPositiveButton(getResources().getString(R.string.create), (dialogInterface, i) -> {
-            if (!editText.getText().toString().isEmpty()) {
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                if (mColor == null) {
-                    mColor = "#333333";
+        if (imm != null) {
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            newFolder.setNegativeButton(getResources().getString(R.string.cancel), (dialogInterface, i) -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));
+            newFolder.setPositiveButton(getResources().getString(R.string.create), (dialogInterface, i) -> {
+                if (!editText.getText().toString().isEmpty()) {
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                    if (mColor == null) {
+                        mColor = "#333333";
+                    }
+                    mDatabaseOperations.insertFolder(TableNames.mFolderContentUri, editText.getText().toString(), mFolderName, mColor);
+                } else {
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.errorNoFolderName), Toast.LENGTH_SHORT).show();
                 }
-                mDatabaseOperations.insertFolder(TableNames.mFolderContentUri, editText.getText().toString(), mFolderName, mColor);
-            } else {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.errorNoFolderName), Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
         newFolder.create().show();
     }
 

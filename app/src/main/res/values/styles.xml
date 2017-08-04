@@ -145,4 +145,8 @@
         <item name="cardUseCompatPadding">true</item>
     </style>
 
+    <style name="splashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
 </resources>

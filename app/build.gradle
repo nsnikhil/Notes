@@ -14,13 +14,13 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.0'
+    buildToolsVersion '26.0.1'
     defaultConfig {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 26
-        versionCode 27
-        versionName "2.9"
+        versionCode 28
+        versionName "2.9.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         resConfigs "en"
@@ -66,8 +66,8 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
 
     //FireBase
-    implementation 'com.google.firebase:firebase-ads:11.0.2'
-    implementation 'com.google.android.gms:play-services-ads:11.0.2'
+    implementation 'com.google.firebase:firebase-ads:11.0.4'
+    implementation 'com.google.android.gms:play-services-ads:11.0.4'
 
     //Rx Java & Android
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'

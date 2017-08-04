@@ -130,7 +130,9 @@ public class SearchActivity extends AppCompatActivity {
         mSearchText.clearFocus();
         if (fromKeyPress) {
             InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
+            if (in != null) {
+                in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
+            }
         }
         //Call the next method on subject
         mSubject.onNext(text);

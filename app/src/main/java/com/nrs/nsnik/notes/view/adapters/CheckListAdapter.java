@@ -120,9 +120,7 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
                     mText.requestFocus();
                 }
             }));
-            mCompositeDisposable.add(RxView.clicks(mAdd).subscribe(v -> {
-                mOnAddClickListener.addClickListener();
-            }));
+            mCompositeDisposable.add(RxView.clicks(mAdd).subscribe(v -> mOnAddClickListener.addClickListener()));
             mCompositeDisposable.add(RxCompoundButton.checkedChanges(mTicker).subscribe(aBoolean -> {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     CheckListObject checkListObject = mCheckList.get(getAdapterPosition());

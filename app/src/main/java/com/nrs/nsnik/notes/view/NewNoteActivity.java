@@ -304,7 +304,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private void setNote() {
-        if (getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+        if (getIntent().getExtras() != null && getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             Bundle args = getIntent().getExtras();
             mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + args.getInt(getResources().getString(R.string.bundleNoteSerialId)));
             NoteObject object = (NoteObject) args.getSerializable(getResources().getString(R.string.bundleNoteSerialObject));
@@ -529,7 +529,9 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minutes);
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        if (alarmManager != null) {
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
     }
 
     private void saveNote() throws IOException {
@@ -685,9 +687,13 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         private void buildNotification(Intent i) {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mContext, mContext.getResources().getString(R.string.notificationChannelReminder));
             notificationBuilder.setSmallIcon(R.drawable.ic_add_alarm_white_48dp);
-            notificationBuilder.setContentTitle(i.getExtras().getString(mContext.getResources().getString(R.string.notificationtitle)));
-            NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(1, notificationBuilder.build());
+            if (i.getExtras() != null) {
+                notificationBuilder.setContentTitle(i.getExtras().getString(mContext.getResources().getString(R.string.notificationtitle)));
+            }
+            NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.notify(1, notificationBuilder.build());
+            }
         }
     }
 }
