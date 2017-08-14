@@ -19,11 +19,19 @@ android {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 26
-        versionCode 28
-        versionName "2.9.1"
+        versionCode 29
+        versionName "2.9.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         resConfigs "en"
+        splits {
+            abi {
+                enable true
+                reset()
+                include 'x86_64', 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips'
+                universalApk false
+            }
+        }
     }
     buildTypes {
         release {
@@ -35,6 +43,16 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext.versionCodes = ['armeabi': 3, 'armeabi-v7a': 4, 'arm64-v8a': 5, mips: 6, 'x86': 7, 'x86_64': 8]
+import com.android.build.OutputFile
+
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+        output.versionCodeOverride =
+                project.ext.versionCodes.get(output.getFilter(OutputFile.ABI)) * 1000 + android.defaultConfig.versionCode
     }
 }
 
@@ -56,11 +74,11 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
     //design and support libraries
-    implementation 'com.android.support:appcompat-v7:26.0.0'
-    implementation 'com.android.support:support-v4:26.0.0'
-    implementation 'com.android.support:design:26.0.0'
-    implementation 'com.android.support:cardview-v7:26.0.0'
-    implementation 'com.android.support:palette-v7:26.0.0'
+    implementation 'com.android.support:appcompat-v7:26.0.1'
+    implementation 'com.android.support:support-v4:26.0.1'
+    implementation 'com.android.support:design:26.0.1'
+    implementation 'com.android.support:cardview-v7:26.0.1'
+    implementation 'com.android.support:palette-v7:26.0.1'
 
     //FindBugs Jsr305
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
@@ -81,13 +99,13 @@ dependencies {
     implementation 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:2.0.0'
 
     //Chrome Custom Tabs
-    implementation 'com.android.support:customtabs:26.0.0'
+    implementation 'com.android.support:customtabs:26.0.1'
 
     //Timber Logger
     implementation 'com.jakewharton.timber:timber:4.5.1'
 
     //Guava
-    implementation 'com.google.guava:guava:22.0'
+    implementation 'com.google.guava:guava:23.0'
 
     //Dagger 2
     implementation 'com.google.dagger:dagger-android:2.11'
@@ -95,8 +113,8 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
 
     //Butter Knife
-    implementation 'com.jakewharton:butterknife:8.7.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
+    implementation 'com.jakewharton:butterknife:8.8.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.0'
 
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.0.0-RC1'

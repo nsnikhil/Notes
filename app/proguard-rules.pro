@@ -15,6 +15,18 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-optimizations   code/simplification/arithmetic,!code/simplification/cast,!field/*,! class/merging/*,!method/inlining/*
+-optimizationpasses 5
+-allowaccessmodification
+-verbose
+
+-assumenosideeffects class timber.log.Timber {
+ public static *** d(...);
+ public static *** i(...);
+ public static *** v(...);
+}
+
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
 -keep class **$$ViewBinder { *; }

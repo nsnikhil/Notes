@@ -1,0 +1,19 @@
+[
+  {
+    "outputType": {
+      "type": "APK"
+    },
+    "apkInfo": {
+      "type": "MAIN",
+      "splits": [],
+      "versionCode": 28
+    },
+    "outputFile": {
+      "path": "C:\\Users\\nnikh\\Documents\\AndroidStudioProjects\\Notes\\app\\release\\release\\app-release.apk"
+    },
+    "properties": {
+      "packageId": "com.nrs.nsnik.notes",
+      "split": ""
+    }
+  }
+]

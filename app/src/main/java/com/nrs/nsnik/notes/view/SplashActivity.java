@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nrs.nsnik.notes.BuildConfig;
-import com.nrs.nsnik.notes.R;
 import com.squareup.leakcanary.RefWatcher;
 
 public class SplashActivity extends AppCompatActivity {
@@ -23,9 +22,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.splashTheme);
-        Intent startIntent = new Intent(SplashActivity.this, MainActivity.class);
-        startActivity(startIntent);
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
         finish();
     }
 
