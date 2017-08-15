@@ -26,7 +26,7 @@
         android:backgroundTint="@color/materialWhite"
         android:contentDescription="@string/imageDescription"
         android:elevation="@dimen/eight"
-        android:src="@drawable/ic_cancel_black_48dp" />
+        android:src="@drawable/ic_cancel_black_24px" />
 
     <ImageView
         android:id="@+id/singleImage"

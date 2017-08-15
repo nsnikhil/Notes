@@ -60,8 +60,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private final Context mContext;
     private final OnItemRemoveListener mOnItemRemoveListener;
     private final boolean mFullScreen;
-    private List<String> mImageLoc;
-    private CompositeDisposable mCompositeDisposable;
+    private final List<String> mImageLoc;
+    private final CompositeDisposable mCompositeDisposable;
 
     /*
      @param c               the context object

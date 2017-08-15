@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 public class TypeFaceCache {
 
-    private static HashMap<String, Typeface> mTypeFaceCache = new HashMap<>();
+    private static final HashMap<String, Typeface> mTypeFaceCache = new HashMap<>();
 
     public static Typeface getTypeface(String fontName, Context context) {
         Typeface typeface = mTypeFaceCache.get(fontName);

@@ -22,7 +22,7 @@ public class NotesDiffCallback extends DiffUtil.Callback {
     TODO DIFFERENCE UTILITY CLASS FOR NOTES LIST
      */
 
-    private List<NoteObject> mOldList, mNewList;
+    private final List<NoteObject> mOldList, mNewList;
 
     public NotesDiffCallback(List<NoteObject> oldList, List<NoteObject> newList) {
         mOldList = oldList;

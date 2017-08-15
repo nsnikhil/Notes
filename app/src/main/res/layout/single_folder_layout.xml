@@ -16,7 +16,7 @@
         android:id="@+id/singleFolderName"
         style="@style/newNoteHeading"
         android:drawablePadding="@dimen/eight"
-        android:drawableStart="@drawable/ic_folder_black_48dp"
+        android:drawableStart="@drawable/ic_folder_black_48px"
         android:maxLines="1"
         android:padding="4dp"
         android:textSize="18sp"
@@ -26,10 +26,10 @@
         android:id="@+id/singleFolderMore"
         style="@style/wrapContent"
         android:layout_gravity="end|center_vertical"
-        android:background="@android:color/transparent"
+        android:background="@null"
         android:contentDescription="@string/imageDescription"
         android:padding="@dimen/eight"
-        android:src="@drawable/ic_more_vert_black_24dp"
+        android:src="@drawable/ic_more_vert_black_24px"
         android:tint="#999999" />
 
 

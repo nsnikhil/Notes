@@ -40,7 +40,7 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     private static final int LOADER_ID = 1;
     private final Context mContext;
     private final Uri mUri;
-    private List<NoteObserver> mNoteObserverList;
+    private final List<NoteObserver> mNoteObserverList;
 
     /*
      @param uri              the uri to query on

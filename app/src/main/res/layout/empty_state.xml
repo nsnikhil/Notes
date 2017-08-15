@@ -12,7 +12,6 @@
     android:id="@+id/emptyState"
     style="@style/wrapContent"
     android:layout_gravity="center"
-    android:drawableTop="@drawable/noresults"
     android:gravity="center"
     android:text="@string/emptyStateEmpty"
     android:textSize="20sp"

@@ -19,15 +19,4 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <ImageButton
-        android:id="@+id/itemHeaderMore"
-        style="@style/twentyFour"
-        android:layout_gravity="end|center_vertical"
-        android:layout_margin="@dimen/sixteen"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_arrow_drop_up_black_48dp"
-        android:tint="#999999"
-        android:visibility="gone" />
-
 </FrameLayout>

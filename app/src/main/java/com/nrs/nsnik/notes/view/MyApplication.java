@@ -34,6 +34,9 @@ import javax.inject.Inject;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
+/*import com.nrs.nsnik.notes.model.dagger.components.DaggerApplicationComponent;
+import com.nrs.nsnik.notes.model.dagger.components.DaggerGlideComponent;*/
+
 public class MyApplication extends Application {
 
     @Inject

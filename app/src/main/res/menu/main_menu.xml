@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/menuMainSearch"
-        android:icon="@drawable/ic_search_black_48dp"
+        android:icon="@drawable/ic_search_black_48px"
         android:title="@string/serach"
         app:showAsAction="collapseActionView|ifRoom" />
 

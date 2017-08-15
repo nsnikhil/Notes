@@ -279,22 +279,22 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                 break;
             case R.id.newNoteMenuStar:
                 if (mIsStarred == 0) {
-                    item.setIcon(R.drawable.ic_star_black_48dp);
+                    item.setIcon(R.drawable.ic_star_black_48px);
                     mIsStarred = 1;
                     Toast.makeText(this, "Starred", Toast.LENGTH_LONG).show();
                 } else {
-                    item.setIcon(R.drawable.ic_star_border_black_48dp);
+                    item.setIcon(R.drawable.ic_star_border_black_48px);
                     mIsStarred = 0;
                     Toast.makeText(this, "Un Starred", Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.newNoteMenuLock:
                 if (mIsLocked == 0) {
-                    item.setIcon(R.drawable.ic_lock_outline_black_48dp);
+                    item.setIcon(R.drawable.ic_lock_black_48px);
                     mIsLocked = 1;
                     Toast.makeText(this, "Locked", Toast.LENGTH_LONG).show();
                 } else {
-                    item.setIcon(R.drawable.ic_lock_open_black_48dp);
+                    item.setIcon(R.drawable.ic_lock_open_black_48px);
                     mIsLocked = 0;
                     Toast.makeText(this, "Un Locked", Toast.LENGTH_LONG).show();
                 }
@@ -343,16 +343,16 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     private void setMenuIconState() {
         if (mStarMenu != null) {
             if (mIsStarred == 1) {
-                mStarMenu.setIcon(R.drawable.ic_star_black_48dp);
+                mStarMenu.setIcon(R.drawable.ic_star_black_48px);
             } else {
-                mStarMenu.setIcon(R.drawable.ic_star_border_black_48dp);
+                mStarMenu.setIcon(R.drawable.ic_star_border_black_48px);
             }
         }
         if (mLockMenu != null) {
             if (mIsLocked == 1) {
-                mLockMenu.setIcon(R.drawable.ic_lock_outline_black_48dp);
+                mLockMenu.setIcon(R.drawable.ic_lock_black_48px);
             } else {
-                mLockMenu.setIcon(R.drawable.ic_lock_open_black_48dp);
+                mLockMenu.setIcon(R.drawable.ic_lock_open_black_48px);
             }
         }
     }
@@ -686,7 +686,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
         private void buildNotification(Intent i) {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mContext, mContext.getResources().getString(R.string.notificationChannelReminder));
-            notificationBuilder.setSmallIcon(R.drawable.ic_add_alarm_white_48dp);
+            notificationBuilder.setSmallIcon(R.drawable.ic_alarm_add_white_48px);
             if (i.getExtras() != null) {
                 notificationBuilder.setContentTitle(i.getExtras().getString(mContext.getResources().getString(R.string.notificationtitle)));
             }

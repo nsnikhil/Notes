@@ -24,7 +24,7 @@
             style="@style/stretchedHorizontally"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/sixteen"
-            android:background="@android:color/transparent"
+            android:background="@null"
             android:hint="@string/checkListAddItem"
             android:imeOptions="actionNext"
             android:inputType="text"
@@ -37,7 +37,7 @@
         style="@style/twentyFour"
         android:layout_marginStart="20dp"
         android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_add_box_black_24dp"
+        android:src="@drawable/ic_add_box_black_24px"
         android:visibility="gone" />
 
 </LinearLayout>

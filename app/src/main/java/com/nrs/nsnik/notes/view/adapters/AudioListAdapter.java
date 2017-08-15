@@ -41,10 +41,10 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     private final Context mContext;
     private final OnItemRemoveListener mOnItemRemoveListener;
+    private final List<String> mAudioLocationList;
+    private final CompositeDisposable mCompositeDisposable;
     private MediaPlayer mMediaPlayer;
-    private List<String> mAudioLocationList;
     private SeekBar mAdapterSeekBar;
-    private CompositeDisposable mCompositeDisposable;
 
     public AudioListAdapter(Context context, List<String> list, OnItemRemoveListener onItemRemoveListener) {
         mContext = context;
@@ -81,7 +81,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
                 mMediaPlayer.reset();
             }
             mAdapterSeekBar.setProgress(0, true);
-            play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24dp));
+            play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24px));
         });
     }
 
@@ -137,7 +137,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
             mCompositeDisposable.add(RxView.clicks(mPlay).subscribe(v -> {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     mAdapterSeekBar = mSeekBar;
-                    mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_stop_black_24dp));
+                    mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_stop_black_24px));
                     playAudio(getAdapterPosition(), mPlay);
                 }
             }));

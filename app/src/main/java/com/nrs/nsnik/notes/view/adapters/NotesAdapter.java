@@ -71,9 +71,9 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final RequestManager mRequestManager;
     private final FileOperation mFileOperation;
     private final DatabaseOperations mDatabaseOperations;
-    private List<NoteObject> mNotesList;
-    private List<FolderObject> mFolderList;
-    private CompositeDisposable mCompositeDisposable;
+    private final List<NoteObject> mNotesList;
+    private final List<FolderObject> mFolderList;
+    private final CompositeDisposable mCompositeDisposable;
 
 
     /*
@@ -566,8 +566,6 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     class HeaderViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.itemHeader)
         TextView mItemHeader;
-        @BindView(R.id.itemHeaderMore)
-        ImageButton mHeaderMore;
 
         HeaderViewHolder(View itemView) {
             super(itemView);

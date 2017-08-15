@@ -28,7 +28,8 @@ public class FolderObject implements Serializable, Parcelable {
             return new FolderObject[size];
         }
     };
-    private String mFolderName, mFolderColor;
+    private final String mFolderName;
+    private final String mFolderColor;
 
     FolderObject(FolderObjectBuilder folderObjectBuilder) {
         mFolderName = folderObjectBuilder.mFolderName;

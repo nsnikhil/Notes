@@ -23,7 +23,8 @@ public class FolderDiffCallback extends DiffUtil.Callback {
     TODO DIFFERENCE UTILITY CLASS FOR FOLDER LISTtodo
      */
 
-    private List<FolderObject> mOldList, mNewList;
+    private final List<FolderObject> mOldList;
+    private final List<FolderObject> mNewList;
 
     public FolderDiffCallback(List<FolderObject> oldList, List<FolderObject> newList) {
         mOldList = oldList;

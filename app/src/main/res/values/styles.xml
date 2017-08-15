@@ -78,7 +78,7 @@
 
     <style name="newNoteContent" parent="matchParent">
         <item name="android:textColor">@color/cardview_dark_background</item>
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@null</item>
         <item name="android:padding">@dimen/sixteen</item>
         <item name="android:hint">@string/newNote</item>
         <item name="android:textSize">@dimen/smallHeadingText</item>
@@ -122,7 +122,7 @@
     </style>
 
     <style name="transparentStatusBar" parent="AppTheme">
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
@@ -136,8 +136,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:animateLayoutChanges">true</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:stateListAnimator">@animator/card_item_animator</item>
         <item name="cardCornerRadius">1dp</item>
         <item name="cardElevation">1dp</item>

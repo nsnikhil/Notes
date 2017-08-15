@@ -41,8 +41,8 @@ or note
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
 
     private final Context mContext;
+    private final CompositeDisposable mCompositeDisposable;
     private List<SearchObject> mSearchList;
-    private CompositeDisposable mCompositeDisposable;
 
     /*
     @param context          the context object
@@ -67,9 +67,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         appropriately attaches the icon to text
          */
         if (mSearchList.get(position).ismIsFolder()) {
-            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48dp, 0, 0, 0);
+            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48px, 0, 0, 0);
         } else {
-            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48dp, 0, 0, 0);
+            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48px, 0, 0, 0);
         }
         holder.mSearchName.setCompoundDrawableTintList(stateList());
         holder.mSearchName.setText(mSearchList.get(position).getmName());
@@ -108,10 +108,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     }
 
     private void cleanUp() {
-        if (mCompositeDisposable != null) {
-            mCompositeDisposable.clear();
-            mCompositeDisposable.dispose();
-        }
+        mCompositeDisposable.clear();
+        mCompositeDisposable.dispose();
     }
 
     @Override

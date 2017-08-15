@@ -13,8 +13,8 @@ package com.nrs.nsnik.notes.model.objects;
 
 public class SearchObject {
 
-    private String mName;
-    private boolean mIsFolder;
+    private final String mName;
+    private final boolean mIsFolder;
 
     SearchObject(SearchObjectBuilder searchObjectBuilder) {
         mName = searchObjectBuilder.mName;

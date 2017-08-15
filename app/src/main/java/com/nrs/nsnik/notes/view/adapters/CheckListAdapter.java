@@ -40,8 +40,8 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
 
     private final Context mContext;
     private final OnAddClickListener mOnAddClickListener;
-    private List<CheckListObject> mCheckList;
-    private CompositeDisposable mCompositeDisposable;
+    private final List<CheckListObject> mCheckList;
+    private final CompositeDisposable mCompositeDisposable;
 
     public CheckListAdapter(Context context, List<CheckListObject> list, OnAddClickListener onAddClickListener) {
         mContext = context;
@@ -85,10 +85,8 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
     }
 
     private void cleanUp() {
-        if (mCompositeDisposable != null) {
-            mCompositeDisposable.clear();
-            mCompositeDisposable.dispose();
-        }
+        mCompositeDisposable.clear();
+        mCompositeDisposable.dispose();
     }
 
     @Override

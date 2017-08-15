@@ -216,7 +216,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         rotateAnimation.setFillAfter(true);
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
-            Animation scaleUp = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_from_down);
+            final Animation scaleUp = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_from_down);
 
             @Override
             public void onAnimationStart(Animation animation) {
@@ -260,7 +260,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         rotateAnimation.setFillAfter(true);
         rotateAnimation.setFillEnabled(true);
         rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
-            Animation scaleDown = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_to_down);
+            final Animation scaleDown = AnimationUtils.loadAnimation(getActivity(), R.anim.jump_to_down);
 
             @Override
             public void onAnimationStart(Animation animation) {

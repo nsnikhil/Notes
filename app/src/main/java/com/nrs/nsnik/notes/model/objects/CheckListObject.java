@@ -13,17 +13,23 @@ package com.nrs.nsnik.notes.model.objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.Serializable;
 
 public class CheckListObject implements Serializable, Parcelable {
 
     public static final Creator<CheckListObject> CREATOR = new Creator<CheckListObject>() {
+        @NonNull
         @Override
         public CheckListObject createFromParcel(Parcel in) {
             return new CheckListObject(in);
         }
 
+        @NonNull
+        @Contract(pure = true)
         @Override
         public CheckListObject[] newArray(int size) {
             return new CheckListObject[size];
@@ -43,6 +49,7 @@ public class CheckListObject implements Serializable, Parcelable {
     }
 
 
+    @Contract(pure = true)
     public static Creator<CheckListObject> getCREATOR() {
         return CREATOR;
     }

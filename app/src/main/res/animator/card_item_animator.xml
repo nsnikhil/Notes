@@ -13,13 +13,13 @@
         android:state_enabled="true"
         android:state_pressed="true">
         <objectAnimator
-            android:duration="@android:integer/config_shortAnimTime"
+            android:duration="17694720"
             android:propertyName="translationZ"
             android:valueTo="@dimen/cardElevation" />
     </item>
     <item>
         <objectAnimator
-            android:duration="@android:integer/config_shortAnimTime"
+            android:duration="17694720"
             android:propertyName="translationZ"
             android:valueTo="0dp" />
     </item>

@@ -45,7 +45,7 @@
                 style="@style/small"
                 android:layout_margin="@dimen/eight"
                 android:contentDescription="@string/imageDescription"
-                android:src="@drawable/ic_timer_black_24dp"
+                android:src="@drawable/ic_alarm_add_black_24px"
                 android:tint="@color/colorAccent"
                 android:visibility="gone" />
 
@@ -54,7 +54,7 @@
                 style="@style/small"
                 android:layout_margin="@dimen/eight"
                 android:contentDescription="@string/imageDescription"
-                android:src="@drawable/ic_audiotrack_black_24dp"
+                android:src="@drawable/ic_music_note_black_24px"
                 android:tint="@color/colorAccent"
                 android:visibility="gone" />
 
@@ -63,7 +63,7 @@
                 style="@style/small"
                 android:layout_margin="@dimen/eight"
                 android:contentDescription="@string/imageDescription"
-                android:src="@drawable/ic_playlist_add_check_black_24dp"
+                android:src="@drawable/ic_list_black_24px"
                 android:tint="@color/colorAccent"
                 android:visibility="gone" />
 
@@ -78,7 +78,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="9"
                 android:drawablePadding="@dimen/eight"
-                android:drawableStart="@drawable/ic_access_time_black_18dp"
+                android:drawableStart="@drawable/ic_access_time_black_18px"
                 android:drawableTint="#999999"
                 android:gravity="center_vertical"
                 android:padding="@dimen/eight"
@@ -89,10 +89,10 @@
                 android:id="@+id/singleNoteMore"
                 style="@style/wrapContent"
                 android:layout_gravity="end|center_vertical"
-                android:background="@android:color/transparent"
+                android:background="@null"
                 android:contentDescription="@string/imageDescription"
                 android:padding="@dimen/eight"
-                android:src="@drawable/ic_more_vert_black_24dp"
+                android:src="@drawable/ic_more_vert_black_24px"
                 android:tint="#999999" />
 
         </LinearLayout>

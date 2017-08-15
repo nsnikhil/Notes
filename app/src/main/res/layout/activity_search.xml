@@ -22,7 +22,7 @@
             style="@style/matchParent"
             android:layout_gravity="center_vertical"
             android:layout_weight="9"
-            android:background="@android:color/transparent"
+            android:background="@null"
             android:hint="@string/searchHint"
             android:imeOptions="actionSearch"
             android:inputType="textAutoComplete"

@@ -63,7 +63,7 @@ public class TableProvider extends ContentProvider {
     private static final int uAllFoldersThatAreLocked = 217;
     private static final int uAllFoldersByColor = 218;
 
-    private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     /*
     Adding list of uri to UriMatcher

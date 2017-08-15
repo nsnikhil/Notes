@@ -16,9 +16,10 @@
 #   public *;
 #}
 
--optimizations   code/simplification/arithmetic,!code/simplification/cast,!field/*,! class/merging/*,!method/inlining/*
+
 -optimizationpasses 5
 -allowaccessmodification
+-assumenosideeffects
 -verbose
 
 -assumenosideeffects class timber.log.Timber {

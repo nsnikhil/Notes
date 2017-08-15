@@ -31,10 +31,10 @@ public class NoteObject implements Serializable, Parcelable {
             return new NoteObject[size];
         }
     };
-    private String mTitle, mNoteContent, mFolderName, mColor, mTime;
-    private List<String> mImagesList, mAudioList;
-    private List<CheckListObject> mCheckList;
-    private int mIsPinned, mIsLocked, mReminder;
+    private final String mTitle, mNoteContent, mFolderName, mColor, mTime;
+    private final List<String> mImagesList, mAudioList;
+    private final List<CheckListObject> mCheckList;
+    private final int mIsPinned, mIsLocked, mReminder;
 
     /*
     TODO REPLACE WITH AUTO VALUE

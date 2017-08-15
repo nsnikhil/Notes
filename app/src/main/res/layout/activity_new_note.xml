@@ -40,7 +40,7 @@
             <com.nrs.nsnik.notes.view.customViews.NikEditText
                 android:id="@+id/newNoteTitle"
                 style="@style/newNoteHeading"
-                android:background="@android:color/transparent"
+                android:background="@null"
                 android:labelFor="@+id/newNoteTitle"
                 android:maxLines="1"
                 android:padding="@dimen/sixteen"

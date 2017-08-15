@@ -34,8 +34,8 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
 
     private final Context mContext;
     private final OnColorSelectedListener mColorSelectedListener;
-    private List<String> mColorList;
-    private CompositeDisposable mCompositeDisposable;
+    private final List<String> mColorList;
+    private final CompositeDisposable mCompositeDisposable;
 
     public ColorPickerAdapter(Context context, List<String> list, OnColorSelectedListener onColorSelectedListener) {
         mContext = context;
@@ -60,10 +60,8 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
     }
 
     private void cleanUp() {
-        if (mCompositeDisposable != null) {
-            mCompositeDisposable.clear();
-            mCompositeDisposable.dispose();
-        }
+        mCompositeDisposable.clear();
+        mCompositeDisposable.dispose();
     }
 
     @Override

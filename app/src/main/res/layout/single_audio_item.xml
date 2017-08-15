@@ -18,9 +18,9 @@
         android:layout_width="0dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:background="@android:color/transparent"
+        android:background="@null"
         android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_play_arrow_black_24dp" />
+        android:src="@drawable/ic_play_arrow_black_24px" />
 
     <SeekBar
         android:id="@+id/audioProgressBar"
@@ -40,8 +40,8 @@
         android:layout_width="0dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:background="@android:color/transparent"
+        android:background="@null"
         android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_cancel_black_24dp" />
+        android:src="@drawable/ic_cancel_black_24px" />
 
 </LinearLayout>
