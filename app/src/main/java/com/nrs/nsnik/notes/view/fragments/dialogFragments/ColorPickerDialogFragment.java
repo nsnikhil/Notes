@@ -13,6 +13,8 @@ package com.nrs.nsnik.notes.view.fragments.dialogFragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +35,7 @@ import butterknife.ButterKnife;
 
 public class ColorPickerDialogFragment extends DialogFragment implements OnColorSelectedListener {
 
+    @Nullable
     @BindView(R.id.colorPickerList)
     RecyclerView mColorList;
     private OnColorSelectedListener mOnColorSelectedListener;
@@ -42,7 +45,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_color_picker_dialog, container, false);
         ButterKnife.bind(this, v);
         initialize();
@@ -69,7 +72,9 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
 
     private void initialize() {
         List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
-        mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+        if (mColorList != null) {
+            mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+        }
         ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList, this);
         mColorList.setAdapter(colorPickerAdapter);
     }

@@ -18,6 +18,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.dagger.qualifiers.ApplicationQualifier;
@@ -36,6 +38,7 @@ import timber.log.Timber;
 public class DatabaseOperations {
 
     private final Context mContext;
+    @Nullable
     private AsyncQueryHandler mAsyncQueryHandler;
 
     @Inject
@@ -54,7 +57,7 @@ public class DatabaseOperations {
             }
 
             @Override
-            protected void onInsertComplete(int token, Object cookie, Uri uri) {
+            protected void onInsertComplete(int token, Object cookie, @Nullable Uri uri) {
                 if (uri == null) {
                     Timber.d(mContext.getResources().getString(R.string.dbMessageInsertFailed));
                 } else {
@@ -84,7 +87,7 @@ public class DatabaseOperations {
             }
 
             @Override
-            protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+            protected void onQueryComplete(int token, Object cookie, @NonNull Cursor cursor) {
                 Timber.d(String.valueOf(cursor.getCount()));
                 super.onQueryComplete(token, cookie, cursor);
             }
@@ -99,7 +102,9 @@ public class DatabaseOperations {
         cv.put(TableNames.table2.mFolderId, c.getTimeInMillis() + folderName);
         cv.put(TableNames.table2.mParentFolderName, parentFolderName);
         cv.put(TableNames.table2.mColor, folderColor);
-        mAsyncQueryHandler.startInsert(1, null, uri, cv);
+        if (mAsyncQueryHandler != null) {
+            mAsyncQueryHandler.startInsert(1, null, uri, cv);
+        }
     }
 
 
@@ -108,10 +113,11 @@ public class DatabaseOperations {
         cv.put(TableNames.table2.mFolderName, folderName);
         cv.put(TableNames.table2.mParentFolderName, parentFolderName);
         cv.put(TableNames.table2.mColor, folderColor);
-        mAsyncQueryHandler.startUpdate(1, null, uri, cv, selection, selectionArgs);
-
-        //Change the uri to match the uri which loads the current set of list
-        mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
+        if (mAsyncQueryHandler != null) {
+            mAsyncQueryHandler.startUpdate(1, null, uri, cv, selection, selectionArgs);
+            //Change the uri to match the uri which loads the current set of list
+            mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
+        }
     }
 
 
@@ -119,7 +125,7 @@ public class DatabaseOperations {
     @param fileName     the name of the fie which contains the note object
     @param noteObject   the note object that represents a single note
      */
-    void insertNote(String fileName, NoteObject noteObject, int isPinned, int isLocked, String time, String color) {
+    void insertNote(String fileName, @NonNull NoteObject noteObject, int isPinned, int isLocked, String time, String color) {
         ContentValues cv = new ContentValues();
         cv.put(TableNames.table1.mTitle, noteObject.getTitle());
         cv.put(TableNames.table1.mFileName, fileName);
@@ -128,7 +134,9 @@ public class DatabaseOperations {
         cv.put(TableNames.table1.mIsLocked, isLocked);
         cv.put(TableNames.table1.mDataModified, time);
         cv.put(TableNames.table1.mColor, color);
-        mAsyncQueryHandler.startInsert(1, null, TableNames.mContentUri, cv);
+        if (mAsyncQueryHandler != null) {
+            mAsyncQueryHandler.startInsert(1, null, TableNames.mContentUri, cv);
+        }
     }
 
     /*
@@ -144,14 +152,18 @@ public class DatabaseOperations {
         contentValues.put(TableNames.table1.mDataModified, time);
         contentValues.put(TableNames.table1.mColor, color);
 
-        mAsyncQueryHandler.startUpdate(1, null, uri, contentValues, null, null);
+        if (mAsyncQueryHandler != null) {
+            mAsyncQueryHandler.startUpdate(1, null, uri, contentValues, null, null);
+            //Change the uri to match the uri which loads the current set of list
+            mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
+        }
 
-        //Change the uri to match the uri which loads the current set of list
-        mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
     }
 
     void queryNote(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrderBy) {
-        mAsyncQueryHandler.startQuery(1, null, uri, projection, selection, selectionArgs, sortOrderBy);
+        if (mAsyncQueryHandler != null) {
+            mAsyncQueryHandler.startQuery(1, null, uri, projection, selection, selectionArgs, sortOrderBy);
+        }
     }
 
 
@@ -159,10 +171,11 @@ public class DatabaseOperations {
     @param uri    uri of the path in database to be deleted
      */
     void deleteNote(Uri uri) {
-        mAsyncQueryHandler.startDelete(0, null, uri, null, null);
-
-        //Change the uri to match the uri which loads the current set of list
-        mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
+        if (mAsyncQueryHandler != null) {
+            mAsyncQueryHandler.startDelete(0, null, uri, null, null);
+            //Change the uri to match the uri which loads the current set of list
+            mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
+        }
     }
 
     /*
@@ -171,12 +184,13 @@ public class DatabaseOperations {
      */
     void deleteFolder(Uri uri, String folderName) {
         String query = "parentFolderName/" + folderName;
-        mAsyncQueryHandler.startDelete(0, null, Uri.withAppendedPath(TableNames.mContentUri, query), null, null);
-        mAsyncQueryHandler.startDelete(0, null, uri, null, null);
-
-        //Change the uri to match the uri which loads the current set of list
-        mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
-        mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
+        if (mAsyncQueryHandler != null) {
+            mAsyncQueryHandler.startDelete(0, null, Uri.withAppendedPath(TableNames.mContentUri, query), null, null);
+            mAsyncQueryHandler.startDelete(0, null, uri, null, null);
+            //Change the uri to match the uri which loads the current set of list
+            mContext.getContentResolver().notifyChange(TableNames.mContentUri, null);
+            mContext.getContentResolver().notifyChange(TableNames.mFolderContentUri, null);
+        }
     }
 
 
@@ -293,7 +307,7 @@ public class DatabaseOperations {
     @param uri          the uri which will be searched
     @param position     the position at which the search will end
    */
-    public int getId(Uri uri, int position) {
+    public int getId(@NonNull Uri uri, int position) {
         int uid = -1;
         Cursor tempCursor = mContext.getContentResolver().query(uri, null, null, null, null);
         try {

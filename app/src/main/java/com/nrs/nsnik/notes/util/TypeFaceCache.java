@@ -13,6 +13,7 @@ package com.nrs.nsnik.notes.util;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 
@@ -20,7 +21,7 @@ public class TypeFaceCache {
 
     private static final HashMap<String, Typeface> mTypeFaceCache = new HashMap<>();
 
-    public static Typeface getTypeface(String fontName, Context context) {
+    public static Typeface getTypeface(String fontName, @NonNull Context context) {
         Typeface typeface = mTypeFaceCache.get(fontName);
         if (typeface == null) {
             try {

@@ -241,7 +241,7 @@ public class TableProvider extends ContentProvider {
     @param tableName    the table to insert value into
      */
     @Nullable
-    private Uri insertVal(Uri u, ContentValues cv, String tableName) {
+    private Uri insertVal(@NonNull Uri u, ContentValues cv, String tableName) {
         if (mTableHelper == null) {
             setHelper();
         }
@@ -362,7 +362,7 @@ public class TableProvider extends ContentProvider {
     @param selArgs      the condition
     @param tableName    the table on which update operation will be performed
    */
-    private int updateVal(Uri u, ContentValues cv, String selection, String[] selectionArgs, String tableName) {
+    private int updateVal(@NonNull Uri u, ContentValues cv, String selection, String[] selectionArgs, String tableName) {
         if (mTableHelper == null) {
             setHelper();
         }

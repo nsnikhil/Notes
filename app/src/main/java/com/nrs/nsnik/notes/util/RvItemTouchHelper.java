@@ -10,6 +10,7 @@
 
 package com.nrs.nsnik.notes.util;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
@@ -23,6 +24,7 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
 
     private static final int NOTES = 0, FOLDER = 1, HEADER = 2;
     private final ItemTouchListener mListener;
+    @NonNull
     private final List<Integer> mDragFromList, mDragToList;
     private int mDragFromPosition = -1, mDragToPosition = -1;
 
@@ -46,7 +48,7 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+    public int getMovementFlags(RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         /*
         if view type if note or folder
         then only allow dragging or swiping
@@ -60,7 +62,7 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+    public boolean onMove(RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
         /*
          as the item is dragged add each starting
          and ending position of that item in a list
@@ -132,7 +134,7 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         mListener.onItemDismiss(viewHolder.getAdapterPosition());
     }
 }

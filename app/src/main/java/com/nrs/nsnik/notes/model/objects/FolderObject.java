@@ -12,17 +12,23 @@ package com.nrs.nsnik.notes.model.objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.Serializable;
 
 public class FolderObject implements Serializable, Parcelable {
 
     public static final Creator<FolderObject> CREATOR = new Creator<FolderObject>() {
+        @NonNull
         @Override
-        public FolderObject createFromParcel(Parcel in) {
+        public FolderObject createFromParcel(@NonNull Parcel in) {
             return new FolderObject(in);
         }
 
+        @NonNull
+        @Contract(pure = true)
         @Override
         public FolderObject[] newArray(int size) {
             return new FolderObject[size];
@@ -31,12 +37,12 @@ public class FolderObject implements Serializable, Parcelable {
     private final String mFolderName;
     private final String mFolderColor;
 
-    FolderObject(FolderObjectBuilder folderObjectBuilder) {
+    FolderObject(@NonNull FolderObjectBuilder folderObjectBuilder) {
         mFolderName = folderObjectBuilder.mFolderName;
         mFolderColor = folderObjectBuilder.mFolderColor;
     }
 
-    private FolderObject(Parcel in) {
+    private FolderObject(@NonNull Parcel in) {
         mFolderName = in.readString();
         mFolderColor = in.readString();
     }
@@ -55,7 +61,7 @@ public class FolderObject implements Serializable, Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(mFolderName);
         parcel.writeString(mFolderColor);
     }
@@ -64,16 +70,19 @@ public class FolderObject implements Serializable, Parcelable {
 
         private String mFolderName, mFolderColor;
 
+        @NonNull
         public FolderObjectBuilder setFolderName(String folderName) {
             this.mFolderName = folderName;
             return this;
         }
 
+        @NonNull
         public FolderObjectBuilder setFolderColor(String folderColor) {
             this.mFolderColor = folderColor;
             return this;
         }
 
+        @NonNull
         public FolderObject build() {
             return new FolderObject(this);
         }

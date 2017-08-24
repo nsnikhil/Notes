@@ -11,6 +11,7 @@
 package com.nrs.nsnik.notes.view;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,7 @@ screen
  */
 public class ImageFullActivity extends AppCompatActivity implements OnItemRemoveListener {
 
+    @Nullable
     @BindView(R.id.fullImage)
     RecyclerView mImageList;
 
@@ -55,7 +57,9 @@ public class ImageFullActivity extends AppCompatActivity implements OnItemRemove
     }
 
     private void initialize() {
-        mImageList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        if (mImageList != null) {
+            mImageList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        }
         if (getIntent() != null) {
             Bundle bundle = getIntent().getBundleExtra(getResources().getString(R.string.bundleIntentImage));
             int currPos = bundle.getInt(getResources().getString(R.string.bundleArrayListPosition));

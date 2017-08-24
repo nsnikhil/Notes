@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -44,12 +46,16 @@ import io.reactivex.disposables.CompositeDisposable;
 public class MainActivity extends AppCompatActivity {
 
     private static final String[] mFragTags = {"home", "starred", "vault", "about"};
+    @Nullable
     @BindView(R.id.mainToolbar)
     Toolbar mMainToolbar;
+    @Nullable
     @BindView(R.id.mainDrawerLayout)
     DrawerLayout mDrawerLayout;
+    @Nullable
     @BindView(R.id.mainNaviagtionView)
     NavigationView mNavigationView;
+    @Nullable
     @BindView(R.id.mainToolBarText)
     TextView mToolbarText;
     private String mCurrentFragment;
@@ -67,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
         initializeDrawer();
     }
 
-    private void initialize(Bundle savedInstanceState) {
+    private void initialize(@Nullable Bundle savedInstanceState) {
         setSupportActionBar(mMainToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && mToolbarText != null) {
             mCurrentFragment = mFragTags[0];
             getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mCurrentFragment).commit();
             mToolbarText.setText(getResources().getString(R.string.app_name));
@@ -100,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void removeOffConnection() {
-        Snackbar.make(mDrawerLayout, getResources().getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getResources().getString(R.string.errorRetry), view -> addOnConnection()).show();
+        if (mDrawerLayout != null) {
+            Snackbar.make(mDrawerLayout, getResources().getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getResources().getString(R.string.errorRetry), view -> addOnConnection()).show();
+        }
     }
 
     @Override
@@ -110,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuMainSearch:
                 startActivity(new Intent(MainActivity.this, SearchActivity.class));
@@ -139,48 +147,56 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
+        if (mDrawerLayout != null) {
+            mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
+        }
         actionBarDrawerToggle.syncState();
-        mNavigationView.getMenu().getItem(0).setChecked(true);
-        mCompositeDisposable.add(RxNavigationView.itemSelections(mNavigationView).subscribe(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.navItem1:
-                    if (!mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
-                        mCurrentFragment = mFragTags[0];
-                        mIsClicked = true;
-                    }
-                    break;
-                case R.id.navItem2:
-                    Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-                    break;
-                case R.id.navItem3:
-                    Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-                    break;
-                case R.id.navItem4:
-                    Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-                    break;
-                case R.id.navItem5:
-                    if (!mCurrentFragment.equalsIgnoreCase(mFragTags[3])) {
-                        mCurrentFragment = mFragTags[3];
-                        mIsClicked = true;
-                    }
-                    break;
-            }
-            mDrawerLayout.closeDrawers();
-        }));
+        if (mNavigationView != null) {
+            mNavigationView.getMenu().getItem(0).setChecked(true);
+        }
+        if (mNavigationView != null) {
+            mCompositeDisposable.add(RxNavigationView.itemSelections(mNavigationView).subscribe(menuItem -> {
+                switch (menuItem.getItemId()) {
+                    case R.id.navItem1:
+                        if (!mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
+                            mCurrentFragment = mFragTags[0];
+                            mIsClicked = true;
+                        }
+                        break;
+                    case R.id.navItem2:
+                        Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+                        break;
+                    case R.id.navItem3:
+                        Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+                        break;
+                    case R.id.navItem4:
+                        Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+                        break;
+                    case R.id.navItem5:
+                        if (!mCurrentFragment.equalsIgnoreCase(mFragTags[3])) {
+                            mCurrentFragment = mFragTags[3];
+                            mIsClicked = true;
+                        }
+                        break;
+                }
+                mDrawerLayout.closeDrawers();
+            }));
+        }
     }
 
     private void performChange() {
-        if (mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
-            replaceFragment(new HomeFragment(), mCurrentFragment);
-            mToolbarText.setText(getResources().getString(R.string.app_name));
-        } else if (mCurrentFragment.equalsIgnoreCase(mFragTags[1])) {
-            Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-        } else if (mCurrentFragment.equalsIgnoreCase(mFragTags[2])) {
-            Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
-        } else if (mCurrentFragment.equalsIgnoreCase(mFragTags[3])) {
-            replaceFragment(new AboutFragment(), mCurrentFragment);
-            mToolbarText.setText(getResources().getString(R.string.navItem5));
+        if (mToolbarText != null) {
+            if (mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
+                replaceFragment(new HomeFragment(), mCurrentFragment);
+                mToolbarText.setText(getResources().getString(R.string.app_name));
+            } else if (mCurrentFragment.equalsIgnoreCase(mFragTags[1])) {
+                Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+            } else if (mCurrentFragment.equalsIgnoreCase(mFragTags[2])) {
+                Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
+            } else if (mCurrentFragment.equalsIgnoreCase(mFragTags[3])) {
+                replaceFragment(new AboutFragment(), mCurrentFragment);
+                mToolbarText.setText(getResources().getString(R.string.navItem5));
+            }
         }
     }
 

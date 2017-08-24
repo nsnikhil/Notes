@@ -17,6 +17,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -71,8 +73,11 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final RequestManager mRequestManager;
     private final FileOperation mFileOperation;
     private final DatabaseOperations mDatabaseOperations;
+    @NonNull
     private final List<NoteObject> mNotesList;
+    @NonNull
     private final List<FolderObject> mFolderList;
+    @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
 
@@ -89,7 +94,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @param manager      the loader manager object used in data observers
     @param folderName   the name of the folder associated with the uri(note or folder)
      */
-    public NotesAdapter(Context context, List<NoteObject> noteList, List<FolderObject> folderList, String folderName) {
+    public NotesAdapter(Context context, @NonNull List<NoteObject> noteList, @NonNull List<FolderObject> folderList, String folderName) {
         mNotesList = new ArrayList<>();
         mFolderList = new ArrayList<>();
         mNotesList.addAll(noteList);
@@ -106,6 +111,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         mCompositeDisposable = new CompositeDisposable();
     }
 
+    @Nullable
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
@@ -120,7 +126,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int pos = mFolderList.size() + 2;
         int tempPOS = position - 1;
         switch (holder.getItemViewType()) {
@@ -159,19 +165,21 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
     private void bindHeaderData(RecyclerView.ViewHolder holder, int position) {
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-        if (position == 0) {
-            if (mFolderList.size() > 0) {
-                headerViewHolder.mItemHeader.setVisibility(View.VISIBLE);
-                headerViewHolder.mItemHeader.setText(mContext.getResources().getString(R.string.headingFolder));
+        if (headerViewHolder.mItemHeader != null) {
+            if (position == 0) {
+                if (mFolderList.size() > 0) {
+                    headerViewHolder.mItemHeader.setVisibility(View.VISIBLE);
+                    headerViewHolder.mItemHeader.setText(mContext.getResources().getString(R.string.headingFolder));
+                } else {
+                    headerViewHolder.mItemHeader.setVisibility(View.GONE);
+                }
             } else {
-                headerViewHolder.mItemHeader.setVisibility(View.GONE);
-            }
-        } else {
-            if (mNotesList.size() > 0) {
-                headerViewHolder.mItemHeader.setVisibility(View.VISIBLE);
-                headerViewHolder.mItemHeader.setText(mContext.getResources().getString(R.string.headingNotes));
-            } else {
-                headerViewHolder.mItemHeader.setVisibility(View.GONE);
+                if (mNotesList.size() > 0) {
+                    headerViewHolder.mItemHeader.setVisibility(View.VISIBLE);
+                    headerViewHolder.mItemHeader.setText(mContext.getResources().getString(R.string.headingNotes));
+                } else {
+                    headerViewHolder.mItemHeader.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -186,8 +194,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
     private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
-        folderViewHolder.mFolderNameText.setText(mFolderList.get(position).getmFolderName());
-        folderViewHolder.mFolderNameText.setCompoundDrawableTintList(stateList(mFolderList.get(position).getmFolderColor()));
+        if (folderViewHolder.mFolderNameText != null) {
+            folderViewHolder.mFolderNameText.setText(mFolderList.get(position).getmFolderName());
+            folderViewHolder.mFolderNameText.setCompoundDrawableTintList(stateList(mFolderList.get(position).getmFolderColor()));
+        }
     }
 
     /*
@@ -198,33 +208,47 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
    it takes data from Notes list and sets title and
    note content on textviews and others values.
     */
-    private void bindNotesData(RecyclerView.ViewHolder holder, int position) {
+    private void bindNotesData(@NonNull RecyclerView.ViewHolder holder, int position) {
         final NoteViewHolder noteViewHolder = (NoteViewHolder) holder;
         NoteObject object = mNotesList.get(position);
-        noteViewHolder.mNoteTitle.setText(object.getTitle());
-        noteViewHolder.mNoteTitle.setTextColor(Color.parseColor(object.getmColor()));
-        noteViewHolder.mNoteContent.setText(object.getNote());
-        noteViewHolder.mNoteDate.setText(mFileOperation.formatDate((object.getmTime())));
-        if (object.getImages().size() > 0) {
-            ((NoteViewHolder) holder).mNoteImage.setVisibility(View.VISIBLE);
-            mRequestManager.load(new File(mFolder, object.getImages().get(0))).into(((NoteViewHolder) holder).mNoteImage);
-        } else {
-            noteViewHolder.mNoteImage.setVisibility(View.GONE);
+        if (noteViewHolder.mNoteTitle != null) {
+            noteViewHolder.mNoteTitle.setText(object.getTitle());
+            noteViewHolder.mNoteTitle.setTextColor(Color.parseColor(object.getmColor()));
         }
-        if (object.getAudioLocations().size() > 0) {
-            noteViewHolder.mAudIndicator.setVisibility(View.VISIBLE);
-        } else {
-            noteViewHolder.mAudIndicator.setVisibility(View.GONE);
+        if (noteViewHolder.mNoteContent != null) {
+            noteViewHolder.mNoteContent.setText(object.getNote());
         }
-        if (object.getmCheckList().size() > 0) {
-            noteViewHolder.mChkLstIndicator.setVisibility(View.VISIBLE);
-        } else {
-            noteViewHolder.mChkLstIndicator.setVisibility(View.GONE);
+        if (noteViewHolder.mNoteDate != null) {
+            noteViewHolder.mNoteDate.setText(mFileOperation.formatDate((object.getmTime())));
         }
-        if (object.getReminder() != 0) {
-            noteViewHolder.mRemIndicator.setVisibility(View.VISIBLE);
-        } else {
-            noteViewHolder.mRemIndicator.setVisibility(View.GONE);
+        if (noteViewHolder.mNoteImage != null) {
+            if (object.getImages().size() > 0) {
+                noteViewHolder.mNoteImage.setVisibility(View.VISIBLE);
+                mRequestManager.load(new File(mFolder, object.getImages().get(0))).into(noteViewHolder.mNoteImage);
+            } else {
+                noteViewHolder.mNoteImage.setVisibility(View.GONE);
+            }
+        }
+        if (noteViewHolder.mAudIndicator != null) {
+            if (object.getAudioLocations().size() > 0) {
+                noteViewHolder.mAudIndicator.setVisibility(View.VISIBLE);
+            } else {
+                noteViewHolder.mAudIndicator.setVisibility(View.GONE);
+            }
+        }
+        if (noteViewHolder.mChkLstIndicator != null) {
+            if (object.getmCheckList().size() > 0) {
+                noteViewHolder.mChkLstIndicator.setVisibility(View.VISIBLE);
+            } else {
+                noteViewHolder.mChkLstIndicator.setVisibility(View.GONE);
+            }
+        }
+        if (noteViewHolder.mRemIndicator != null) {
+            if (object.getReminder() != 0) {
+                noteViewHolder.mRemIndicator.setVisibility(View.VISIBLE);
+            } else {
+                noteViewHolder.mRemIndicator.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -236,7 +260,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     /*
     @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
-    public void updateNotesList(List<NoteObject> noteList) {
+    public void updateNotesList(@NonNull List<NoteObject> noteList) {
         mNotesList.clear();
         mNotesList.addAll(noteList);
         notifyDataSetChanged();
@@ -245,7 +269,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     /*
     @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
-    public void updateFolderList(List<FolderObject> folderList) {
+    public void updateFolderList(@NonNull List<FolderObject> folderList) {
         mFolderList.clear();
         mFolderList.addAll(folderList);
         notifyDataSetChanged();
@@ -264,14 +288,14 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onItemMove(int fromPosition, int toPosition, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+    public void onItemMove(int fromPosition, int toPosition, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
         if (viewHolder.getItemViewType() == target.getItemViewType()) {
             notifyItemMoved(fromPosition, toPosition);
         }
     }
 
     @Override
-    public void onItemMoved(int fromPosition, int toPosition, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+    public void onItemMoved(int fromPosition, int toPosition, RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         /*
         After items are moved id for each
          */
@@ -323,12 +347,16 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
         if (tempFrom > toPos) {
             while (tempFrom - toPos >= 0) {
-                idList.add(mDatabaseOperations.getId(getIdUri, tempFrom));
-                --tempFrom;
+                if (getIdUri != null) {
+                    idList.add(mDatabaseOperations.getId(getIdUri, tempFrom));
+                    --tempFrom;
+                }
             }
         } else {
             while (toPos - tempFrom >= 0) {
-                idList.add(mDatabaseOperations.getId(getIdUri, tempFrom));
+                if (getIdUri != null) {
+                    idList.add(mDatabaseOperations.getId(getIdUri, tempFrom));
+                }
                 ++tempFrom;
             }
         }
@@ -340,10 +368,14 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
          */
         for (int i = 0; i < idList.size() - 1; i++) {
             if (viewHolder.getItemViewType() == NOTES) {
-                mDatabaseOperations.switchNoteId(mDatabaseOperations.getId(getIdUri, fromPos), idList.get(i + 1));
+                if (getIdUri != null) {
+                    mDatabaseOperations.switchNoteId(mDatabaseOperations.getId(getIdUri, fromPos), idList.get(i + 1));
+                }
             }
             if (viewHolder.getItemViewType() == FOLDER) {
-                mDatabaseOperations.switchFolderId(mDatabaseOperations.getId(getIdUri, fromPos), idList.get(i + 1));
+                if (getIdUri != null) {
+                    mDatabaseOperations.switchFolderId(mDatabaseOperations.getId(getIdUri, fromPos), idList.get(i + 1));
+                }
             }
             /*
             if starting position is greater i.e. going
@@ -373,7 +405,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      @TODO POP UP STAR THE IETM
      @TODO POP UP MENU SHARE THE ITEM
      */
-    private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName, final Uri uri, View itemView) {
+    private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName, @NonNull final Uri uri, @NonNull View itemView) {
         PopupMenu menu = new PopupMenu(mContext, itemView, Gravity.START);
         menu.inflate(R.menu.pop_up_menu);
         menu.setOnMenuItemClickListener(item -> {
@@ -408,7 +440,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      @param isFolder        check if uri corresponds to folder
      @param folderName      name of the folder
      */
-    private void makeDeleteDialog(String message, final Uri uri, final boolean isFolder, final String folderName) {
+    private void makeDeleteDialog(String message, @NonNull final Uri uri, final boolean isFolder, final String folderName) {
         AlertDialog.Builder delete = new AlertDialog.Builder(mContext);
         delete.setTitle(mContext.getResources().getString(R.string.warning))
                 .setMessage(message)
@@ -424,7 +456,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      @param isFolder        check if uri corresponds to folder
      @param folderName      name of the folder
      */
-    private void delete(Uri uri, boolean isFolder, String folderName) {
+    private void delete(@NonNull Uri uri, boolean isFolder, String folderName) {
         if (isFolder) {
             mFileOperation.deleteFolder(uri, folderName);
         } else {
@@ -445,9 +477,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private void cleanUp() {
-        if (mCompositeDisposable != null) {
-            mCompositeDisposable.dispose();
-        }
+        mCompositeDisposable.dispose();
     }
 
     @Override
@@ -457,26 +487,35 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.singleNoteTitle)
         TextView mNoteTitle;
+        @Nullable
         @BindView(R.id.singleNoteContent)
         TextView mNoteContent;
+        @Nullable
         @BindView(R.id.singleNoteDate)
         TextView mNoteDate;
+        @Nullable
         @BindView(R.id.singleNoteImage)
         ImageView mNoteImage;
+        @Nullable
         @BindView(R.id.singleNoteReminder)
         ImageView mRemIndicator;
+        @Nullable
         @BindView(R.id.singleNoteAudio)
         ImageView mAudIndicator;
+        @Nullable
         @BindView(R.id.singleNoteCheck)
         ImageView mChkLstIndicator;
+        @Nullable
         @BindView(R.id.singleNoteMore)
         ImageButton mMore;
+        @Nullable
         @BindView(R.id.singleNoteCard)
         CardView mNoteCard;
 
-        NoteViewHolder(final View itemView) {
+        NoteViewHolder(@NonNull final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
@@ -502,32 +541,36 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     mContext.startActivity(intent, options.toBundle());
                 }
             }));
-            mCompositeDisposable.add(RxView.clicks(mMore).subscribe(v -> {
-                //check if position is valid
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    /*
-                    calculate the id for the particular position and
-                    use it create a uri that is passed to inflate menu
-                    function
-                     */
-                    int startPos = mFolderList.size() + 2;
-                    int currPos = getAdapterPosition() - startPos;
-                    Uri baseUri = Uri.withAppendedPath(TableNames.mContentUri, "parentFolderName/" + mFolderName);
-                    int id = mDatabaseOperations.getId(baseUri, currPos);
-                    Uri uri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + id);
-                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleNoteWarning), false, "", uri, mMore);
-                }
-            }));
+            if (mMore != null) {
+                mCompositeDisposable.add(RxView.clicks(mMore).subscribe(v -> {
+                    //check if position is valid
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        /*
+                        calculate the id for the particular position and
+                        use it create a uri that is passed to inflate menu
+                        function
+                         */
+                        int startPos = mFolderList.size() + 2;
+                        int currPos = getAdapterPosition() - startPos;
+                        Uri baseUri = Uri.withAppendedPath(TableNames.mContentUri, "parentFolderName/" + mFolderName);
+                        int id = mDatabaseOperations.getId(baseUri, currPos);
+                        Uri uri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + id);
+                        inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleNoteWarning), false, "", uri, mMore);
+                    }
+                }));
+            }
         }
     }
 
     class FolderViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.singleFolderName)
         TextView mFolderNameText;
+        @Nullable
         @BindView(R.id.singleFolderMore)
         ImageButton mFolderMore;
 
-        FolderViewHolder(final View itemView) {
+        FolderViewHolder(@NonNull final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
@@ -539,35 +582,40 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                       pass it to container activity
                     */
                     Intent intent = new Intent(mContext, ContainerActivity.class);
-                    intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderNameText.getText().toString());
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
-                    mContext.startActivity(intent, options.toBundle());
+                    if (mFolderNameText != null) {
+                        intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderNameText.getText().toString());
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
+                        mContext.startActivity(intent, options.toBundle());
+                    }
                 }
             }));
-            mCompositeDisposable.add(RxView.clicks(mFolderMore).subscribe(v -> {
-                //check if position is valid
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                     /*
-                    calculate the id for the particular position and
-                    use it create a uri that is passed to inflate menu
-                    function
-                     */
-                    int startPos = 1;
-                    int currPos = getAdapterPosition() - startPos;
-                    Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "parentFolderName/" + mFolderName);
-                    int id = mDatabaseOperations.getId(baseUri, currPos);
-                    Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + id);
-                    inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning), true, mFolderNameText.getText().toString(), uri, mFolderMore);
-                }
-            }));
+            if (mFolderMore != null) {
+                mCompositeDisposable.add(RxView.clicks(mFolderMore).subscribe(v -> {
+                    //check if position is valid
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                         /*
+                        calculate the id for the particular position and
+                        use it create a uri that is passed to inflate menu
+                        function
+                         */
+                        int startPos = 1;
+                        int currPos = getAdapterPosition() - startPos;
+                        Uri baseUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "parentFolderName/" + mFolderName);
+                        int id = mDatabaseOperations.getId(baseUri, currPos);
+                        Uri uri = Uri.withAppendedPath(TableNames.mFolderContentUri, "folderId/" + id);
+                        inflatePopUpMenu(mContext.getResources().getString(R.string.deleteSingleFolderWarning), true, mFolderNameText.getText().toString(), uri, mFolderMore);
+                    }
+                }));
+            }
         }
     }
 
     class HeaderViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.itemHeader)
         TextView mItemHeader;
 
-        HeaderViewHolder(View itemView) {
+        HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

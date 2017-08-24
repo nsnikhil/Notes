@@ -11,6 +11,7 @@
 package com.nrs.nsnik.notes.model.dagger.modules;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.dagger.qualifiers.ApplicationQualifier;
@@ -25,9 +26,10 @@ import dagger.Provides;
 @Module(includes = ContextModule.class)
 public class RootFolderModule {
 
+    @NonNull
     @Singleton
     @Provides
-    File provideRootFolder(@ApplicationQualifier Context context) {
+    File provideRootFolder(@NonNull @ApplicationQualifier Context context) {
         return new File(String.valueOf(context.getExternalFilesDir(context.getResources().getString(R.string.folderName))));
     }
 

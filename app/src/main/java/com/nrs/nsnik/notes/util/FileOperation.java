@@ -14,6 +14,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.nrs.nsnik.notes.model.dagger.qualifiers.ApplicationQualifier;
 import com.nrs.nsnik.notes.model.data.TableNames;
@@ -60,7 +62,7 @@ public class FileOperation {
                         each new notes has a different file name
     @param noteObject   the object that is written to file
      */
-    public void saveNote(String fileName, NoteObject noteObject, int isPinned, int isLocked, String time, String color) {
+    public void saveNote(@NonNull String fileName, NoteObject noteObject, int isPinned, int isLocked, String time, String color) {
         Completable completable = Completable.fromCallable(() -> {
             FileOutputStream fos = null;
             ObjectOutputStream oos = null;
@@ -93,7 +95,7 @@ public class FileOperation {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });
@@ -106,7 +108,7 @@ public class FileOperation {
     @param uri              the uri ton which the update operation will be
                             performed
      */
-    public void updateNote(String fileName, NoteObject noteObject, Uri uri, int isPinned, int isLocked, String time, String color) {
+    public void updateNote(@NonNull String fileName, @NonNull NoteObject noteObject, Uri uri, int isPinned, int isLocked, String time, String color) {
         Completable completable = Completable.fromCallable(() -> {
             FileOutputStream fos = null;
             ObjectOutputStream oos = null;
@@ -139,13 +141,13 @@ public class FileOperation {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });
     }
 
-    public void deleteFileList(List<String> fileList) {
+    public void deleteFileList(@NonNull List<String> fileList) {
         Completable completable = Completable.fromCallable(() -> {
             for (String s : fileList) {
                 deleteFile(s);
@@ -163,13 +165,13 @@ public class FileOperation {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });
     }
 
-    private void deleteFile(String fileName) {
+    private void deleteFile(@NonNull String fileName) {
         File f = new File(mRootFolder, fileName);
         boolean isDeleted = false;
         if (f.exists()) {
@@ -184,7 +186,7 @@ public class FileOperation {
     @param fileName     the name of image file
     @param image        the image
      */
-    public void saveImage(String fileName, Bitmap image) {
+    public void saveImage(@NonNull String fileName, @NonNull Bitmap image) {
         Completable completable = Completable.fromCallable(() -> {
             File f = new File(mRootFolder, fileName);
             FileOutputStream fos = null;
@@ -210,7 +212,7 @@ public class FileOperation {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });
@@ -219,7 +221,8 @@ public class FileOperation {
     /*
     @param fileName     the name of that file that contains a note object
      */
-    public NoteObject readFile(String fileName) throws IOException {
+    @Nullable
+    public NoteObject readFile(@NonNull String fileName) throws IOException {
         File f = new File(mRootFolder, fileName);
         FileInputStream fis = null;
         ObjectInputStream ois = null;
@@ -228,7 +231,7 @@ public class FileOperation {
             fis = new FileInputStream(f);
             ois = new ObjectInputStream(fis);
             object = (NoteObject) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (@NonNull IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             if (fis != null) {
@@ -245,7 +248,7 @@ public class FileOperation {
     @param uri      the uri that will be used to get all the images and the file Name
                     of a note and then be deleted
      */
-    private void deleteFileBack(Uri uri) throws IOException {
+    private void deleteFileBack(@NonNull Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
         FileInputStream fis = null;
         ObjectInputStream ois = null;
@@ -288,7 +291,7 @@ public class FileOperation {
     first the resources related to note are deleted by calling the function
     @function deleteFileBack(Uri) then the note data is deleted from database
      */
-    public void deleteNote(Uri uri) {
+    public void deleteNote(@NonNull Uri uri) {
         Completable completable = Completable.fromCallable(() -> {
             deleteFileBack(uri);
             return null;
@@ -304,7 +307,7 @@ public class FileOperation {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });
@@ -336,13 +339,14 @@ public class FileOperation {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });
     }
 
-    public String makeName(FILE_TYPES type) {
+    @NonNull
+    public String makeName(@NonNull FILE_TYPES type) {
         Calendar c = Calendar.getInstance();
         switch (type) {
             case TEXT:
@@ -356,6 +360,7 @@ public class FileOperation {
         }
     }
 
+    @NonNull
     public String formatDate(String rawDate) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(Long.parseLong(rawDate));

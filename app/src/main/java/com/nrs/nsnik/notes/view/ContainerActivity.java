@@ -11,6 +11,7 @@
 package com.nrs.nsnik.notes.view;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -31,6 +32,7 @@ import butterknife.ButterKnife;
 
 public class ContainerActivity extends AppCompatActivity {
 
+    @Nullable
     @BindView(R.id.containerToolbar)
     Toolbar mContainerToolbar;
 

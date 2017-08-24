@@ -12,6 +12,7 @@ package com.nrs.nsnik.notes.view.customViews;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 
 import com.nrs.nsnik.notes.util.TypeFaceCache;
@@ -19,23 +20,23 @@ import com.nrs.nsnik.notes.util.TypeFaceCache;
 
 public class NikTextView extends android.support.v7.widget.AppCompatTextView {
 
-    public NikTextView(Context context) {
+    public NikTextView(@NonNull Context context) {
         super(context);
         applyCustomFont(context);
     }
 
-    public NikTextView(Context context, AttributeSet attrs) {
+    public NikTextView(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
         applyCustomFont(context);
     }
 
-    public NikTextView(Context context, AttributeSet attrs, int defStyle) {
+    public NikTextView(@NonNull Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         applyCustomFont(context);
     }
 
 
-    private void applyCustomFont(Context context) {
+    private void applyCustomFont(@NonNull Context context) {
         Typeface customFont = TypeFaceCache.getTypeface("roboto-mono-medium.ttf", context);
         setTypeface(customFont);
     }

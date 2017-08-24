@@ -17,6 +17,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
 import com.nrs.nsnik.notes.model.dagger.qualifiers.ApplicationQualifier;
@@ -76,6 +77,7 @@ public class SecurityChecks {
      * @return the detail info about the property
      * @throws Exception exception like classNotFound or noSuchMethod
      */
+    @NonNull
     private String getSystemProperty(String name) throws Exception {
         @SuppressLint("PrivateApi") Class systemPropertyClazz = Class.forName("android.os.SystemProperties");
         return (String) systemPropertyClazz.getMethod("get", new Class[]{String.class}).invoke(systemPropertyClazz, name);

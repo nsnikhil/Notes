@@ -15,6 +15,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -53,7 +54,7 @@ public class PageIndicator extends View {
 
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         int x = getWidth() / 2;
         int y = getHeight() / 2;
         mPaint.setColor(Color.parseColor("#FFFFFFFF"));

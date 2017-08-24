@@ -12,6 +12,8 @@ package com.nrs.nsnik.notes.view.adapters;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,6 +43,7 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
     private final Context mContext;
     private final OnAddClickListener mOnAddClickListener;
     private final List<CheckListObject> mCheckList;
+    @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
     public CheckListAdapter(Context context, List<CheckListObject> list, OnAddClickListener onAddClickListener) {
@@ -50,26 +53,33 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
         mCompositeDisposable = new CompositeDisposable();
     }
 
+    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_check_list_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        if (position == mCheckList.size() - 1) {
-            holder.mAdd.setVisibility(View.VISIBLE);
-        } else {
-            holder.mAdd.setVisibility(View.GONE);
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        if (holder.mAdd != null) {
+            if (position == mCheckList.size() - 1) {
+                holder.mAdd.setVisibility(View.VISIBLE);
+            } else {
+                holder.mAdd.setVisibility(View.GONE);
+            }
         }
-        holder.mText.setText(mCheckList.get(position).getmText());
-        holder.mTicker.setChecked(mCheckList.get(position).ismDone());
-        if (holder.mText.getText().toString().length() > 0) {
-            changeItem(mCheckList.get(position).ismDone(), holder.mText);
+        if (holder.mText != null) {
+            holder.mText.setText(mCheckList.get(position).getmText());
+        }
+        if (holder.mTicker != null) {
+            holder.mTicker.setChecked(mCheckList.get(position).ismDone());
+            if (holder.mText.getText().toString().length() > 0) {
+                changeItem(mCheckList.get(position).ismDone(), holder.mText);
+            }
         }
     }
 
-    private void changeItem(boolean isDone, TextView textView) {
+    private void changeItem(boolean isDone, @NonNull TextView textView) {
         if (isDone) {
             textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             textView.setTextColor(ContextCompat.getColor(mContext, R.color.grey));
@@ -96,38 +106,47 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.checkListTicker)
         CheckBox mTicker;
+        @Nullable
         @BindView(R.id.checkListItem)
         EditText mText;
+        @Nullable
         @BindView(R.id.checkListAdd)
         ImageButton mAdd;
 
-        MyViewHolder(View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mCompositeDisposable.add(RxTextView.textChanges(mText).subscribe(charSequence -> {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
-                    checkListObject.setmText(charSequence.toString());
-                }
-            }));
-            mCompositeDisposable.add(RxTextView.editorActionEvents(mText).subscribe(textViewEditorActionEvent -> {
-                if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_NEXT) {
-                    mOnAddClickListener.addClickListener();
-                    mText.requestFocus();
-                }
-            }));
-            mCompositeDisposable.add(RxView.clicks(mAdd).subscribe(v -> mOnAddClickListener.addClickListener()));
-            mCompositeDisposable.add(RxCompoundButton.checkedChanges(mTicker).subscribe(aBoolean -> {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
-                    checkListObject.setmDone(aBoolean);
-                    if (mText.getText().toString().length() > 0) {
-                        changeItem(aBoolean, mText);
+            if (mText != null) {
+                mCompositeDisposable.add(RxTextView.textChanges(mText).subscribe(charSequence -> {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
+                        checkListObject.setmText(charSequence.toString());
                     }
-                }
-            }));
+                }));
+                mCompositeDisposable.add(RxTextView.editorActionEvents(mText).subscribe(textViewEditorActionEvent -> {
+                    if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_NEXT) {
+                        mOnAddClickListener.addClickListener();
+                        mText.requestFocus();
+                    }
+                }));
+            }
+            if (mAdd != null) {
+                mCompositeDisposable.add(RxView.clicks(mAdd).subscribe(v -> mOnAddClickListener.addClickListener()));
+            }
+            if (mTicker != null) {
+                mCompositeDisposable.add(RxCompoundButton.checkedChanges(mTicker).subscribe(aBoolean -> {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
+                        checkListObject.setmDone(aBoolean);
+                        if (mText.getText().toString().length() > 0) {
+                            changeItem(aBoolean, mText);
+                        }
+                    }
+                }));
+            }
         }
     }
 }

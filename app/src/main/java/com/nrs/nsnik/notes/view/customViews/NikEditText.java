@@ -11,23 +11,24 @@
 package com.nrs.nsnik.notes.view.customViews;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 
 import com.nrs.nsnik.notes.util.TypeFaceCache;
 
 public class NikEditText extends android.support.v7.widget.AppCompatEditText {
 
-    public NikEditText(Context context) {
+    public NikEditText(@NonNull Context context) {
         super(context);
         setTypeface(TypeFaceCache.getTypeface("roboto-mono-medium.ttf", context));
     }
 
-    public NikEditText(Context context, AttributeSet attrs) {
+    public NikEditText(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
         setTypeface(TypeFaceCache.getTypeface("roboto-mono-medium.ttf", context));
     }
 
-    public NikEditText(Context context, AttributeSet attrs, int defStyle) {
+    public NikEditText(@NonNull Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setTypeface(TypeFaceCache.getTypeface("roboto-mono-medium.ttf", context));
     }

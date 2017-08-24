@@ -13,6 +13,9 @@ package com.nrs.nsnik.notes.model.objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,11 +24,14 @@ import java.util.List;
 public class NoteObject implements Serializable, Parcelable {
 
     public static final Creator<NoteObject> CREATOR = new Creator<NoteObject>() {
+        @NonNull
         @Override
-        public NoteObject createFromParcel(Parcel in) {
+        public NoteObject createFromParcel(@NonNull Parcel in) {
             return new NoteObject(in);
         }
 
+        @NonNull
+        @Contract(pure = true)
         @Override
         public NoteObject[] newArray(int size) {
             return new NoteObject[size];
@@ -40,7 +46,7 @@ public class NoteObject implements Serializable, Parcelable {
     TODO REPLACE WITH AUTO VALUE
      */
 
-    NoteObject(NoteObjectBuilder noteObjectBuilder) {
+    NoteObject(@NonNull NoteObjectBuilder noteObjectBuilder) {
         mNoteContent = noteObjectBuilder.mNoteContent;
         mTitle = noteObjectBuilder.mTitle;
         mImagesList = noteObjectBuilder.mImagesList;
@@ -54,7 +60,7 @@ public class NoteObject implements Serializable, Parcelable {
         mIsLocked = noteObjectBuilder.mIsLocked;
     }
 
-    private NoteObject(Parcel in) {
+    private NoteObject(@NonNull Parcel in) {
         mTitle = in.readString();
         mNoteContent = in.readString();
         mAudioList = in.createStringArrayList();
@@ -119,7 +125,7 @@ public class NoteObject implements Serializable, Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(mTitle);
         parcel.writeString(mNoteContent);
         parcel.writeStringList(mAudioList);
@@ -140,61 +146,73 @@ public class NoteObject implements Serializable, Parcelable {
         private List<CheckListObject> mCheckList;
         private int mIsPinned, mIsLocked, mReminder;
 
+        @NonNull
         public NoteObjectBuilder setTitle(String title) {
             this.mTitle = title;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setNoteContent(String noteContent) {
             this.mNoteContent = noteContent;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setFolderName(String folderName) {
             this.mFolderName = folderName;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setColor(String color) {
             this.mColor = color;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setTime(String time) {
             this.mTime = time;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setImageList(List<String> imageList) {
             this.mImagesList = imageList;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setAudioList(List<String> audioList) {
             this.mAudioList = audioList;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setCheckList(List<CheckListObject> checkList) {
             this.mCheckList = checkList;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setPinned(int pinned) {
             this.mIsPinned = pinned;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setLocked(int locked) {
             this.mIsLocked = locked;
             return this;
         }
 
+        @NonNull
         public NoteObjectBuilder setHasReminder(int reminder) {
             this.mReminder = reminder;
             return this;
         }
 
+        @NonNull
         public NoteObject build() {
             return new NoteObject(this);
         }

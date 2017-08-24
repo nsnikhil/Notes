@@ -11,12 +11,14 @@
 package com.nrs.nsnik.notes.model.objects;
 
 
+import android.support.annotation.NonNull;
+
 public class SearchObject {
 
     private final String mName;
     private final boolean mIsFolder;
 
-    SearchObject(SearchObjectBuilder searchObjectBuilder) {
+    SearchObject(@NonNull SearchObjectBuilder searchObjectBuilder) {
         mName = searchObjectBuilder.mName;
         mIsFolder = searchObjectBuilder.mIsFolder;
     }
@@ -34,16 +36,19 @@ public class SearchObject {
         private String mName;
         private boolean mIsFolder;
 
+        @NonNull
         public SearchObjectBuilder setName(String name) {
             mName = name;
             return this;
         }
 
+        @NonNull
         public SearchObjectBuilder setIsFolder(boolean isFolder) {
             mIsFolder = isFolder;
             return this;
         }
 
+        @NonNull
         public SearchObject build() {
             return new SearchObject(this);
         }

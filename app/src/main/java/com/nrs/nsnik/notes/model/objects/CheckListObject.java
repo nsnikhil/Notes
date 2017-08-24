@@ -24,7 +24,7 @@ public class CheckListObject implements Serializable, Parcelable {
     public static final Creator<CheckListObject> CREATOR = new Creator<CheckListObject>() {
         @NonNull
         @Override
-        public CheckListObject createFromParcel(Parcel in) {
+        public CheckListObject createFromParcel(@NonNull Parcel in) {
             return new CheckListObject(in);
         }
 
@@ -38,17 +38,18 @@ public class CheckListObject implements Serializable, Parcelable {
     private String mText;
     private boolean mDone;
 
-    CheckListObject(CheckListBuilder checkListBuilder) {
+    CheckListObject(@NonNull CheckListBuilder checkListBuilder) {
         mText = checkListBuilder.mText;
         mDone = checkListBuilder.mDone;
     }
 
-    private CheckListObject(Parcel in) {
+    private CheckListObject(@NonNull Parcel in) {
         mText = in.readString();
         mDone = in.readByte() != 0;
     }
 
 
+    @NonNull
     @Contract(pure = true)
     public static Creator<CheckListObject> getCREATOR() {
         return CREATOR;
@@ -76,7 +77,7 @@ public class CheckListObject implements Serializable, Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(mText);
         parcel.writeByte((byte) (mDone ? 1 : 0));
     }
@@ -85,16 +86,19 @@ public class CheckListObject implements Serializable, Parcelable {
         private String mText;
         private boolean mDone;
 
+        @NonNull
         public CheckListBuilder setText(String text) {
             mText = text;
             return this;
         }
 
+        @NonNull
         public CheckListBuilder setCompleted(boolean completed) {
             mDone = completed;
             return this;
         }
 
+        @NonNull
         public CheckListObject build() {
             return new CheckListObject(this);
         }

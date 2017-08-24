@@ -13,6 +13,8 @@ package com.nrs.nsnik.notes.view.adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,7 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
     private final Context mContext;
     private final OnColorSelectedListener mColorSelectedListener;
     private final List<String> mColorList;
+    @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
     public ColorPickerAdapter(Context context, List<String> list, OnColorSelectedListener onColorSelectedListener) {
@@ -44,14 +47,17 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
         mCompositeDisposable = new CompositeDisposable();
     }
 
+    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.color_picker_image, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.mColor.setImageDrawable(new ColorDrawable(Color.parseColor(mColorList.get(position))));
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        if (holder.mColor != null) {
+            holder.mColor.setImageDrawable(new ColorDrawable(Color.parseColor(mColorList.get(position))));
+        }
     }
 
     @Override
@@ -71,17 +77,20 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.singleColor)
         ImageView mColor;
 
-        MyViewHolder(View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mCompositeDisposable.add(RxView.clicks(mColor).subscribe(view -> {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition()));
-                }
-            }));
+            if (mColor != null) {
+                mCompositeDisposable.add(RxView.clicks(mColor).subscribe(view -> {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition()));
+                    }
+                }));
+            }
         }
     }
 }

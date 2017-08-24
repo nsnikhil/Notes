@@ -26,12 +26,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".view.MainActivity" />
+
         <activity
             android:name=".view.NewNoteActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/addNote"
-            android:parentActivityName=".view.MainActivity" />
+            android:configChanges="orientation"
+            android:label="@string/addNote" />
 
         <provider
             android:name=".model.data.TableProvider"
@@ -39,13 +40,14 @@
             android:enabled="true"
             android:exported="false" />
 
-        <receiver android:name=".view.NewNoteActivity$ReminderService" />
+        <receiver android:name=".util.receiver.NotificationReceiver" />
 
         <activity android:name=".view.ContainerActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="e3979606d7bddaddef52cc923bf7cc5cc18c38dd" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.nrs.nsnik.notes.fileprovider"
@@ -69,11 +71,16 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+
+
         <activity
             android:name=".view.SearchActivity"
             android:label="@string/serach" />
+
         <activity android:name=".view.ImageFullActivity" />
+
         <activity android:name=".view.IntroActivity" />
+
     </application>
 
 </manifest>

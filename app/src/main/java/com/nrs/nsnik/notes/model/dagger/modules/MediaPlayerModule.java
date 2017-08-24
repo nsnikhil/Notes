@@ -12,6 +12,7 @@ package com.nrs.nsnik.notes.model.dagger.modules;
 
 
 import android.media.MediaPlayer;
+import android.support.annotation.NonNull;
 
 import com.nrs.nsnik.notes.model.dagger.scopes.MediaPlayerScope;
 
@@ -21,6 +22,7 @@ import dagger.Provides;
 @Module
 public class MediaPlayerModule {
 
+    @NonNull
     @MediaPlayerScope
     @Provides
     MediaPlayer provideMediaPlayer() {

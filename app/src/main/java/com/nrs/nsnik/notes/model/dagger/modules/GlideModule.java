@@ -11,6 +11,7 @@
 package com.nrs.nsnik.notes.model.dagger.modules;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -25,7 +26,7 @@ public class GlideModule {
 
     @GlideScope
     @Provides
-    RequestManager provideGlide(@ApplicationQualifier Context context) {
+    RequestManager provideGlide(@NonNull @ApplicationQualifier Context context) {
         return Glide.with(context);
     }
 

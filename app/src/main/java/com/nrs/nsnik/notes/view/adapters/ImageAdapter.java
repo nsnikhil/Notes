@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
@@ -61,6 +62,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private final OnItemRemoveListener mOnItemRemoveListener;
     private final boolean mFullScreen;
     private final List<String> mImageLoc;
+    @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
     /*
@@ -78,29 +80,34 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         mCompositeDisposable = new CompositeDisposable();
     }
 
+    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_image_view, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(final ImageAdapter.MyViewHolder holder, int position) {
-        mGlideRequestManager
-                .load(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mImageLoc.get(position)).toString())
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        return false;
-                    }
+    public void onBindViewHolder(@NonNull final ImageAdapter.MyViewHolder holder, int position) {
+        if (holder.image != null) {
+            mGlideRequestManager
+                    .load(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mImageLoc.get(position)).toString())
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        holder.image.setVisibility(View.VISIBLE);
-                        holder.mProgress.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .into(holder.image);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            holder.image.setVisibility(View.VISIBLE);
+                            if (holder.mProgress != null) {
+                                holder.mProgress.setVisibility(View.GONE);
+                            }
+                            return false;
+                        }
+                    })
+                    .into(holder.image);
+        }
     }
 
     @Override
@@ -112,10 +119,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     }
 
     private void cleanUp() {
-        if (mCompositeDisposable != null) {
-            mCompositeDisposable.clear();
-            mCompositeDisposable.dispose();
-        }
+        mCompositeDisposable.clear();
+        mCompositeDisposable.dispose();
     }
 
     @Override
@@ -125,14 +130,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.singleImage)
         ImageView image;
+        @Nullable
         @BindView(R.id.singleImageCancel)
         ImageView remove;
+        @Nullable
         @BindView(R.id.singleImageProgress)
         ProgressBar mProgress;
 
-        MyViewHolder(final View itemView) {
+        MyViewHolder(@NonNull final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             /*
@@ -140,26 +148,28 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
             activity/fragment then remove the option
             remove the image or click on image
              */
-            if (mFullScreen) {
-                remove.setVisibility(View.GONE);
-                image.setScaleType(ImageView.ScaleType.CENTER);
-            } else {
-                mCompositeDisposable.add(RxView.clicks(remove).subscribe(v -> {
-                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition()));
-                    }
-                }));
-                mCompositeDisposable.add(RxView.clicks(image).subscribe(v -> {
-                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), (ArrayList<String>) mImageLoc);
-                        bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
-                        fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "fullImage");
-                        mContext.startActivity(fullScreen, options.toBundle());
-                    }
-                }));
+            if (remove != null && image != null) {
+                if (mFullScreen) {
+                    remove.setVisibility(View.GONE);
+                    image.setScaleType(ImageView.ScaleType.CENTER);
+                } else {
+                    mCompositeDisposable.add(RxView.clicks(remove).subscribe(v -> {
+                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                            mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition()));
+                        }
+                    }));
+                    mCompositeDisposable.add(RxView.clicks(image).subscribe(v -> {
+                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                            Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), (ArrayList<String>) mImageLoc);
+                            bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
+                            fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
+                            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "fullImage");
+                            mContext.startActivity(fullScreen, options.toBundle());
+                        }
+                    }));
+                }
             }
         }
     }

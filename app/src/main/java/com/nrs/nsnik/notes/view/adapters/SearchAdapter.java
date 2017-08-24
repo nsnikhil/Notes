@@ -13,6 +13,7 @@ package com.nrs.nsnik.notes.view.adapters;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ or note
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
 
     private final Context mContext;
+    @NonNull
     private final CompositeDisposable mCompositeDisposable;
     private List<SearchObject> mSearchList;
 
@@ -54,25 +56,28 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         mCompositeDisposable = new CompositeDisposable();
     }
 
+    @NonNull
     @Override
     public SearchAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_search_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         /*
         binder checks if the item at position
         has true for its isFolder field and
         appropriately attaches the icon to text
          */
-        if (mSearchList.get(position).ismIsFolder()) {
-            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48px, 0, 0, 0);
-        } else {
-            holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48px, 0, 0, 0);
+        if (holder.mSearchName != null) {
+            if (mSearchList.get(position).ismIsFolder()) {
+                holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48px, 0, 0, 0);
+            } else {
+                holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48px, 0, 0, 0);
+            }
+            holder.mSearchName.setCompoundDrawableTintList(stateList());
+            holder.mSearchName.setText(mSearchList.get(position).getmName());
         }
-        holder.mSearchName.setCompoundDrawableTintList(stateList());
-        holder.mSearchName.setText(mSearchList.get(position).getmName());
     }
 
     /*
@@ -119,10 +124,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.searchItemName)
         TextView mSearchName;
 
-        MyViewHolder(View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {

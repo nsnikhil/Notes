@@ -14,6 +14,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -39,13 +41,14 @@ public class FolderDataObserver implements LoaderManager.LoaderCallbacks<Cursor>
     private static final int LOADER_ID = 2;
     private final Context mContext;
     private final Uri mUri;
+    @NonNull
     private final List<NoteObserver> mNoteObserverList;
 
     /*
     @param uri              the uri to query on
     @param loaderManager    loader manager object
      */
-    public FolderDataObserver(Context context, Uri uri, LoaderManager loaderManager) {
+    public FolderDataObserver(Context context, Uri uri, @NonNull LoaderManager loaderManager) {
         mContext = context;
         mNoteObserverList = new ArrayList<>();
         mUri = uri;
@@ -77,6 +80,7 @@ public class FolderDataObserver implements LoaderManager.LoaderCallbacks<Cursor>
         }
     }
 
+    @Nullable
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {

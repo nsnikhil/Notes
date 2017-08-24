@@ -13,6 +13,7 @@ package com.nrs.nsnik.notes.model.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.nrs.nsnik.notes.model.dagger.qualifiers.ApplicationQualifier;
 import com.nrs.nsnik.notes.model.data.TableNames.table1;
@@ -57,17 +58,17 @@ public class TableHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+    public void onCreate(@NonNull SQLiteDatabase sqLiteDatabase) {
         createTable(sqLiteDatabase);
     }
 
-    private void createTable(SQLiteDatabase sdb) {
+    private void createTable(@NonNull SQLiteDatabase sdb) {
         sdb.execSQL(mCreateTable);
         sdb.execSQL(mCreateFolderTable);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(@NonNull SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(mDropTable);
         sqLiteDatabase.execSQL(mDropFolderTable);
         createTable(sqLiteDatabase);

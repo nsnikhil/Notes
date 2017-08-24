@@ -14,6 +14,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,12 +49,16 @@ import timber.log.Timber;
 
 public class SearchActivity extends AppCompatActivity {
 
+    @Nullable
     @BindView(R.id.searchToolBar)
     Toolbar mSearchToolbar;
+    @Nullable
     @BindView(R.id.searchList)
     RecyclerView mSearchList;
+    @Nullable
     @BindView(R.id.searchText)
     EditText mSearchText;
+    @Nullable
     @BindView(R.id.searchEmptyState)
     TextView mEmptyState;
     private PublishSubject<String> mSubject;
@@ -85,10 +90,14 @@ public class SearchActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         mQueryList = new ArrayList<>();
-        mSearchList.setLayoutManager(new LinearLayoutManager(this));
+        if (mSearchList != null) {
+            mSearchList.setLayoutManager(new LinearLayoutManager(this));
+        }
         mSearchAdapter = new SearchAdapter(this, mQueryList);
         mSearchList.setAdapter(mSearchAdapter);
-        mEmptyState.setText(getResources().getString(R.string.emptyStateSearch));
+        if (mEmptyState != null) {
+            mEmptyState.setText(getResources().getString(R.string.emptyStateSearch));
+        }
         /*
         Subject is special in a sense that its is both the
         observer and observable i.e. you can pass data using
@@ -100,24 +109,26 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void listeners() {
-        mCompositeDisposable.add(RxTextView.textChanges(mSearchText).debounce(200, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(charSequence -> {
-            if (!charSequence.toString().isEmpty() && charSequence.toString().length() > 0) {
-                mCurrentSearch = charSequence.toString();
-                performSearch(mCurrentSearch, false);
-            } else {
-                mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
-            }
-        }));
-        mCompositeDisposable.add(RxTextView.editorActionEvents(mSearchText).observeOn(AndroidSchedulers.mainThread()).subscribe(textViewEditorActionEvent -> {
-            if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_SEARCH) {
-                if (!textViewEditorActionEvent.view().getText().toString().isEmpty() && textViewEditorActionEvent.view().getText().toString().length() > 0) {
-                    mCurrentSearch = textViewEditorActionEvent.view().getText().toString();
-                    performSearch(mCurrentSearch, true);
+        if (mSearchText != null && mEmptyState != null) {
+            mCompositeDisposable.add(RxTextView.textChanges(mSearchText).debounce(200, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(charSequence -> {
+                if (!charSequence.toString().isEmpty() && charSequence.toString().length() > 0) {
+                    mCurrentSearch = charSequence.toString();
+                    performSearch(mCurrentSearch, false);
                 } else {
                     mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
                 }
-            }
-        }));
+            }));
+            mCompositeDisposable.add(RxTextView.editorActionEvents(mSearchText).observeOn(AndroidSchedulers.mainThread()).subscribe(textViewEditorActionEvent -> {
+                if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_SEARCH) {
+                    if (!textViewEditorActionEvent.view().getText().toString().isEmpty() && textViewEditorActionEvent.view().getText().toString().length() > 0) {
+                        mCurrentSearch = textViewEditorActionEvent.view().getText().toString();
+                        performSearch(mCurrentSearch, true);
+                    } else {
+                        mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
+                    }
+                }
+            }));
+        }
     }
 
     /*
@@ -127,7 +138,9 @@ public class SearchActivity extends AppCompatActivity {
     private void performSearch(String text, boolean fromKeyPress) {
         mQueryList.clear();
         mSearchAdapter.modifyList(mQueryList);
-        mSearchText.clearFocus();
+        if (mSearchText != null) {
+            mSearchText.clearFocus();
+        }
         if (fromKeyPress) {
             InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             if (in != null) {
@@ -151,20 +164,22 @@ public class SearchActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(@NonNull List<SearchObject> searchObjects) {
-                        if (searchObjects.size() > 0) {
-                            mEmptyState.setVisibility(View.GONE);
-                            mQueryList = searchObjects;
-                            mSearchAdapter.modifyList(mQueryList);
-                        } else {
-                            String noResults = getResources().getString(R.string.emptyStateSearch, mCurrentSearch);
-                            mEmptyState.setText(noResults);
-                            mEmptyState.setVisibility(View.VISIBLE);
+                    public void onNext(@android.support.annotation.NonNull @NonNull List<SearchObject> searchObjects) {
+                        if (mEmptyState != null) {
+                            if (searchObjects.size() > 0) {
+                                mEmptyState.setVisibility(View.GONE);
+                                mQueryList = searchObjects;
+                                mSearchAdapter.modifyList(mQueryList);
+                            } else {
+                                String noResults = getResources().getString(R.string.emptyStateSearch, mCurrentSearch);
+                                mEmptyState.setText(noResults);
+                                mEmptyState.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
 
                     @Override
-                    public void onError(@NonNull Throwable e) {
+                    public void onError(@android.support.annotation.NonNull @NonNull Throwable e) {
                         Timber.d(e.getMessage());
                     }
 
@@ -179,6 +194,7 @@ public class SearchActivity extends AppCompatActivity {
     /*
     @param s        the folder name or note tile that will be searched
      */
+    @android.support.annotation.NonNull
     private List<SearchObject> getSearchList(String s) {
         List<SearchObject> mList = new ArrayList<>();
         String query = "search/" + s;

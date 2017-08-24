@@ -12,11 +12,8 @@ package com.nrs.nsnik.notes.view;
 
 import android.Manifest;
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -29,10 +26,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -58,6 +55,7 @@ import com.nrs.nsnik.notes.util.FileOperation;
 import com.nrs.nsnik.notes.util.interfaces.OnAddClickListener;
 import com.nrs.nsnik.notes.util.interfaces.OnColorSelectedListener;
 import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
+import com.nrs.nsnik.notes.util.receiver.NotificationReceiver;
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter;
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter;
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter;
@@ -86,45 +84,62 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     private static final int EXTERNAL_STORAGE_PERMISSION_CODE = 513;
     private static final int READ_EXTERNAL_STORAGE_PERMISSION = 514;
 
+    @Nullable
     @BindView(R.id.newNoteToolbar)
     Toolbar mNoteToolbar;
+    @Nullable
     @BindView(R.id.newNoteContent)
     EditText mNote;
+    @Nullable
     @BindView(R.id.newNoteTitle)
     EditText mTitle;
+    @Nullable
     @BindView(R.id.newNoteImageList)
     RecyclerView mImageRecyclerView;
+    @Nullable
     @BindView(R.id.newNoteAudioList)
     RecyclerView mAudioRecyclerView;
+    @Nullable
     @BindView(R.id.newNoteCheckList)
     RecyclerView mCheckListRecyclerView;
+    @Nullable
     @BindView(R.id.activity_new_note)
     CoordinatorLayout mNoteContainer;
 
     //Bottom Sheet View
     BottomSheetBehavior mBottomSheetBehavior;
+    @Nullable
     @BindView(R.id.toolsDate)
     TextView mBottomDate;
+    @Nullable
     @BindView(R.id.toolsBottomSheet)
     LinearLayout mBottomSheet;
+    @Nullable
     @BindView(R.id.toolsCheckList)
     TextView mBottomCheckList;
+    @Nullable
     @BindView(R.id.toolsCamera)
     TextView mBottomCamera;
+    @Nullable
     @BindView(R.id.toolsAttachment)
     TextView mBottomAttachment;
+    @Nullable
     @BindView(R.id.toolsReminder)
     TextView mBottomReminder;
+    @Nullable
     @BindView(R.id.toolsAudio)
     TextView mBottomAudio;
+    @Nullable
     @BindView(R.id.toolsColor)
     TextView mBottomColor;
 
 
     //Variables used in saving or updating note
+    @Nullable
     private String mFolderName = "nofolder";
     private int mIsLocked, mIsStarred, mHasReminder;
     private String mColorCode;
+    @Nullable
     private Uri mIntentUri = null;
     private MenuItem mStarMenu, mLockMenu;
 
@@ -180,10 +195,12 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED || newState == BottomSheetBehavior.STATE_DRAGGING) {
-                    mBottomSheet.setElevation(16);
-                } else {
-                    mBottomSheet.setElevation(0);
+                if (mBottomSheet != null) {
+                    if (newState == BottomSheetBehavior.STATE_EXPANDED || newState == BottomSheetBehavior.STATE_DRAGGING) {
+                        mBottomSheet.setElevation(16);
+                    } else {
+                        mBottomSheet.setElevation(0);
+                    }
                 }
             }
 
@@ -194,21 +211,27 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
         //Image List Setup
         mImagesLocations = new ArrayList<>();
-        mImageRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        if (mImageRecyclerView != null) {
+            mImageRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        }
         mImageAdapter = new ImageAdapter(this, mImagesLocations, this, false);
         mImageRecyclerView.setAdapter(mImageAdapter);
 
 
         //Audio List Setup
         mAudioLocations = new ArrayList<>();
-        mAudioRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        if (mAudioRecyclerView != null) {
+            mAudioRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
         mAudioListAdapter = new AudioListAdapter(this, mAudioLocations, this);
         mAudioRecyclerView.setAdapter(mAudioListAdapter);
 
 
         //Check List Setup
         mCheckList = new ArrayList<>();
-        mCheckListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        if (mCheckListRecyclerView != null) {
+            mCheckListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
         mCheckListAdapter = new CheckListAdapter(this, mCheckList, this);
         mCheckListRecyclerView.setAdapter(mCheckListAdapter);
 
@@ -219,36 +242,50 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private void listeners() {
-        mCompositeDisposable.add(RxView.clicks(mBottomDate).subscribe(v -> changeState()));
-        mCompositeDisposable.add(RxView.clicks(mBottomCheckList).subscribe(v -> {
-            changeState();
-            addCheckListItem();
-        }));
-        mCompositeDisposable.add(RxView.clicks(mBottomCamera).subscribe(v -> {
-            changeState();
-            checkWriteExternalStoragePermission();
-        }));
-        mCompositeDisposable.add(RxView.clicks(mBottomAttachment).subscribe(v -> {
-            changeState();
-            checkReadExternalStoragePermission();
-        }));
-        mCompositeDisposable.add(RxView.clicks(mBottomAudio).subscribe(v -> {
-            changeState();
-            checkAudioRecordPermission();
-        }));
-        mCompositeDisposable.add(RxView.clicks(mBottomReminder).subscribe(v -> {
-            changeState();
-            setReminder();
-        }));
-        mCompositeDisposable.add(RxView.clicks(mBottomColor).subscribe(v -> {
-            changeState();
-            ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
-            pickerDialogFragment.show(getSupportFragmentManager(), "color");
-        }));
+        if (mBottomDate != null) {
+            mCompositeDisposable.add(RxView.clicks(mBottomDate).subscribe(v -> changeState()));
+        }
+        if (mBottomCheckList != null) {
+            mCompositeDisposable.add(RxView.clicks(mBottomCheckList).subscribe(v -> {
+                changeState();
+                addCheckListItem();
+            }));
+        }
+        if (mBottomCamera != null) {
+            mCompositeDisposable.add(RxView.clicks(mBottomCamera).subscribe(v -> {
+                changeState();
+                checkWriteExternalStoragePermission();
+            }));
+        }
+        if (mBottomAttachment != null) {
+            mCompositeDisposable.add(RxView.clicks(mBottomAttachment).subscribe(v -> {
+                changeState();
+                checkReadExternalStoragePermission();
+            }));
+        }
+        if (mBottomAudio != null) {
+            mCompositeDisposable.add(RxView.clicks(mBottomAudio).subscribe(v -> {
+                changeState();
+                checkAudioRecordPermission();
+            }));
+        }
+        if (mBottomReminder != null) {
+            mCompositeDisposable.add(RxView.clicks(mBottomReminder).subscribe(v -> {
+                changeState();
+                setReminder();
+            }));
+        }
+        if (mBottomColor != null) {
+            mCompositeDisposable.add(RxView.clicks(mBottomColor).subscribe(v -> {
+                changeState();
+                ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
+                pickerDialogFragment.show(getSupportFragmentManager(), "color");
+            }));
+        }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.new_note_menu, menu);
         if (menu.getItem(1) != null) {
             mStarMenu = menu.getItem(1);
@@ -261,16 +298,12 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.newNoteMenuSave:
                 if (verifyAndSave()) {
                     if (mIntentUri == null) {
-                        try {
-                            saveNote();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        saveNote();
                     } else {
                         updateNote();
                     }
@@ -309,27 +342,39 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + args.getInt(getResources().getString(R.string.bundleNoteSerialId)));
             NoteObject object = (NoteObject) args.getSerializable(getResources().getString(R.string.bundleNoteSerialObject));
             if (object != null) {
-                mTitle.setText(object.getTitle());
-                mNote.setText(object.getNote());
+                if (mTitle != null) {
+                    mTitle.setText(object.getTitle());
+                }
+                if (mNote != null) {
+                    mNote.setText(object.getNote());
+                }
                 mFolderName = object.getFolderName();
                 mColorCode = object.getmColor();
                 mTitle.setTextColor(Color.parseColor(mColorCode));
                 mIsStarred = object.getmIsPinned();
                 mIsLocked = object.getmIsLocked();
                 String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(object.getmTime()));
-                mBottomDate.setText(editedDate);
+                if (mBottomDate != null) {
+                    mBottomDate.setText(editedDate);
+                }
                 if (object.getImages().size() > 0) {
-                    mImageRecyclerView.setVisibility(View.VISIBLE);
+                    if (mImageRecyclerView != null) {
+                        mImageRecyclerView.setVisibility(View.VISIBLE);
+                    }
                     mImagesLocations.addAll(object.getImages());
                     mImageAdapter.notifyDataSetChanged();
                 }
                 if (object.getAudioLocations().size() > 0) {
-                    mAudioRecyclerView.setVisibility(View.VISIBLE);
+                    if (mAudioRecyclerView != null) {
+                        mAudioRecyclerView.setVisibility(View.VISIBLE);
+                    }
                     mAudioLocations.addAll(object.getAudioLocations());
                     mImageAdapter.notifyDataSetChanged();
                 }
                 if (object.getmCheckList().size() > 0) {
-                    mCheckListRecyclerView.setVisibility(View.VISIBLE);
+                    if (mCheckListRecyclerView != null) {
+                        mCheckListRecyclerView.setVisibility(View.VISIBLE);
+                    }
                     mCheckList.addAll(object.getmCheckList());
                     mCheckListAdapter.notifyDataSetChanged();
                 }
@@ -368,9 +413,13 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     private void displayCheckListView() {
         if (mCheckList.size() > 0) {
-            mCheckListRecyclerView.setVisibility(View.VISIBLE);
+            if (mCheckListRecyclerView != null) {
+                mCheckListRecyclerView.setVisibility(View.VISIBLE);
+            }
         } else {
-            mCheckListRecyclerView.setVisibility(View.GONE);
+            if (mCheckListRecyclerView != null) {
+                mCheckListRecyclerView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -382,9 +431,13 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     private void displayAudioListView() {
         if (mAudioLocations.size() > 0) {
-            mAudioRecyclerView.setVisibility(View.VISIBLE);
+            if (mAudioRecyclerView != null) {
+                mAudioRecyclerView.setVisibility(View.VISIBLE);
+            }
         } else {
-            mAudioRecyclerView.setVisibility(View.GONE);
+            if (mAudioRecyclerView != null) {
+                mAudioRecyclerView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -396,9 +449,13 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     private void displayImageList() {
         if (mImagesLocations.size() > 0) {
-            mImageRecyclerView.setVisibility(View.VISIBLE);
+            if (mImageRecyclerView != null) {
+                mImageRecyclerView.setVisibility(View.VISIBLE);
+            }
         } else {
-            mImageRecyclerView.setVisibility(View.GONE);
+            if (mImageRecyclerView != null) {
+                mImageRecyclerView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -443,6 +500,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         }
     }
 
+    @NonNull
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -461,7 +519,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         }
     }
 
-    private void addGalleryPhotoToList(Intent data) {
+    private void addGalleryPhotoToList(@NonNull Intent data) {
         Uri imageUri = data.getData();
         try {
             Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
@@ -492,7 +550,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         recorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         recorder.setOutputFile(audioFileAbsolutePath.getAbsolutePath());
 
-        //Creating the aduio recorder dialog
+        //Creating the audio recorder dialog
         AlertDialog.Builder record = new AlertDialog.Builder(NewNoteActivity.this);
         record.setMessage(getResources().getString(R.string.audioRecording));
         record.setNeutralButton(getResources().getString(R.string.audioStopRecording), (dialogInterface, i) -> {
@@ -521,10 +579,14 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         time.show();
     }
 
-    private void setNotification(Calendar calendar, int hour, int minutes) {
-        Intent myIntent = new Intent(this, ReminderService.class);
-        myIntent.putExtra(getResources().getString(R.string.notificationtitle), mTitle.getText().toString());
-        myIntent.putExtra(getResources().getString(R.string.notificationcontent), mNote.getText().toString());
+    private void setNotification(@NonNull Calendar calendar, int hour, int minutes) {
+        Intent myIntent = new Intent(this, NotificationReceiver.class);
+        if (mTitle != null) {
+            myIntent.putExtra(getResources().getString(R.string.notificationTitle), mTitle.getText().toString());
+        }
+        if (mNote != null) {
+            myIntent.putExtra(getResources().getString(R.string.notificationContent), mNote.getText().toString());
+        }
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -534,25 +596,29 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         }
     }
 
-    private void saveNote() throws IOException {
+    private void saveNote() {
         if (mColorCode == null) {
             mColorCode = "#333333";
         }
         Calendar calendar = Calendar.getInstance();
         String time = String.valueOf(calendar.getTimeInMillis());
-        NoteObject noteObject = new NoteObject.NoteObjectBuilder()
-                .setTitle(mTitle.getText().toString())
-                .setNoteContent(mNote.getText().toString())
-                .setFolderName(mFolderName)
-                .setColor(mColorCode)
-                .setTime(time)
-                .setImageList(mImagesLocations)
-                .setAudioList(mAudioLocations)
-                .setCheckList(mCheckList)
-                .setPinned(mIsStarred)
-                .setLocked(mIsLocked)
-                .setHasReminder(mHasReminder)
-                .build();
+        NoteObject noteObject = null;
+        if (mTitle != null && mNote != null) {
+            noteObject = new NoteObject.NoteObjectBuilder()
+                    .setTitle(mTitle.getText().toString())
+                    .setNoteContent(mNote.getText().toString())
+                    .setFolderName(mFolderName)
+                    .setColor(mColorCode)
+                    .setTime(time)
+                    .setImageList(mImagesLocations)
+                    .setAudioList(mAudioLocations)
+                    .setCheckList(mCheckList)
+                    .setPinned(mIsStarred)
+                    .setLocked(mIsLocked)
+                    .setHasReminder(mHasReminder)
+                    .build();
+
+        }
         mFileOperation.saveNote(mFileOperation.makeName(FileOperation.FILE_TYPES.TEXT), noteObject, mIsStarred, mIsLocked, time, mColorCode);
     }
 
@@ -562,23 +628,31 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         }
         Calendar calendar = Calendar.getInstance();
         String time = String.valueOf(calendar.getTimeInMillis());
-        Cursor c = getContentResolver().query(mIntentUri, null, null, null, null);
+        Cursor c = null;
+        if (mIntentUri != null) {
+            c = getContentResolver().query(mIntentUri, null, null, null, null);
+        }
         try {
             if (c != null && c.moveToFirst()) {
-                NoteObject noteObject = new NoteObject.NoteObjectBuilder()
-                        .setTitle(mTitle.getText().toString())
-                        .setNoteContent(mNote.getText().toString())
-                        .setFolderName(mFolderName)
-                        .setColor(mColorCode)
-                        .setTime(time)
-                        .setImageList(mImagesLocations)
-                        .setAudioList(mAudioLocations)
-                        .setCheckList(mCheckList)
-                        .setPinned(mIsStarred)
-                        .setLocked(mIsLocked)
-                        .setHasReminder(mHasReminder)
-                        .build();
-                mFileOperation.updateNote(c.getString(c.getColumnIndex(TableNames.table1.mFileName)), noteObject, mIntentUri, mIsStarred, mIsLocked, time, mColorCode);
+                NoteObject noteObject = null;
+                if (mTitle != null && mNote != null) {
+                    noteObject = new NoteObject.NoteObjectBuilder()
+                            .setTitle(mTitle.getText().toString())
+                            .setNoteContent(mNote.getText().toString())
+                            .setFolderName(mFolderName)
+                            .setColor(mColorCode)
+                            .setTime(time)
+                            .setImageList(mImagesLocations)
+                            .setAudioList(mAudioLocations)
+                            .setCheckList(mCheckList)
+                            .setPinned(mIsStarred)
+                            .setLocked(mIsLocked)
+                            .setHasReminder(mHasReminder)
+                            .build();
+                }
+                if (noteObject != null) {
+                    mFileOperation.updateNote(c.getString(c.getColumnIndex(TableNames.table1.mFileName)), noteObject, mIntentUri, mIsStarred, mIsLocked, time, mColorCode);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -589,10 +663,10 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private boolean verifyAndSave() {
-        if (mNote.getText().toString().equalsIgnoreCase("") || mNote.getText().toString().isEmpty()) {
+        if (mNote != null && mNote.getText().toString().isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.noNote), Toast.LENGTH_SHORT).show();
             return false;
-        } else if (mTitle.getText().toString().equalsIgnoreCase("") || mTitle.getText().toString().isEmpty()) {
+        } else if (mTitle != null && mTitle.getText().toString().isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.noTitle), Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -608,7 +682,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @NonNull Intent data) {
         switch (requestCode) {
             case ATTACH_PICTURE_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
@@ -616,7 +690,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                 }
                 break;
             case TAKE_PICTURE_REQUEST_CODE:
-                if (resultCode == RESULT_OK && data != null) {
+                if (resultCode == RESULT_OK) {
                     addCameraPhotoToList();
                 }
                 break;
@@ -652,7 +726,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     @Override
-    public void onItemRemoved(int position, FileOperation.FILE_TYPES types, String fileName) {
+    public void onItemRemoved(int position, @NonNull FileOperation.FILE_TYPES types, String fileName) {
         switch (types) {
             case IMAGE:
                 mFilesToDelete.add(fileName);
@@ -672,28 +746,8 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     @Override
     public void onColorSelected(String color) {
         mColorCode = color;
-        mTitle.setTextColor(Color.parseColor(mColorCode));
-    }
-
-    public static class ReminderService extends BroadcastReceiver {
-        Context mContext;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mContext = context;
-            buildNotification(intent);
-        }
-
-        private void buildNotification(Intent i) {
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mContext, mContext.getResources().getString(R.string.notificationChannelReminder));
-            notificationBuilder.setSmallIcon(R.drawable.ic_alarm_add_white_48px);
-            if (i.getExtras() != null) {
-                notificationBuilder.setContentTitle(i.getExtras().getString(mContext.getResources().getString(R.string.notificationtitle)));
-            }
-            NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                notificationManager.notify(1, notificationBuilder.build());
-            }
+        if (mTitle != null) {
+            mTitle.setTextColor(Color.parseColor(mColorCode));
         }
     }
 }

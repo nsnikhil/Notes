@@ -12,6 +12,8 @@ package com.nrs.nsnik.notes.view.adapters;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,8 +44,11 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
     private final Context mContext;
     private final OnItemRemoveListener mOnItemRemoveListener;
     private final List<String> mAudioLocationList;
+    @NonNull
     private final CompositeDisposable mCompositeDisposable;
+    @Nullable
     private MediaPlayer mMediaPlayer;
+    @Nullable
     private SeekBar mAdapterSeekBar;
 
     public AudioListAdapter(Context context, List<String> list, OnItemRemoveListener onItemRemoveListener) {
@@ -54,6 +59,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
         mCompositeDisposable = new CompositeDisposable();
     }
 
+    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.single_audio_item, parent, false));
@@ -63,26 +69,35 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
     public void onBindViewHolder(MyViewHolder holder, int position) {
     }
 
-    private void playAudio(int position, ImageButton play) {
+    private void playAudio(int position, @NonNull ImageButton play) {
         Timber.d(String.valueOf(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mAudioLocationList.get(position))));
-        try {
-            mMediaPlayer.setDataSource(String.valueOf(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mAudioLocationList.get(position))));
-            if (mMediaPlayer != null) {
-                mMediaPlayer.prepare();
-                mMediaPlayer.start();
-                mAdapterSeekBar.setMax(mMediaPlayer.getDuration());
-                new Thread(this).start();
+        if (mMediaPlayer != null) {
+            try {
+                mMediaPlayer.setDataSource(String.valueOf(new File(((MyApplication) mContext.getApplicationContext()).getRootFolder(), mAudioLocationList.get(position))));
+                mMediaPlayer.prepareAsync();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            mMediaPlayer.setOnPreparedListener(mediaPlayer -> {
+                if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
+                    mMediaPlayer.start();
+                    if (mAdapterSeekBar != null) {
+                        mAdapterSeekBar.setMax(mMediaPlayer.getDuration());
+                    }
+                    new Thread(this).start();
+                }
+            });
+            mMediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.reset();
+                }
+                if (mAdapterSeekBar != null) {
+                    mAdapterSeekBar.setProgress(0, true);
+                }
+                play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24px));
+            });
         }
-        mMediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
-            if (mMediaPlayer != null) {
-                mMediaPlayer.reset();
-            }
-            mAdapterSeekBar.setProgress(0, true);
-            play.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_black_24px));
-        });
     }
 
     @Override
@@ -92,24 +107,27 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     @Override
     public void run() {
-        int currentPosition = mMediaPlayer.getCurrentPosition();
-        int total = mMediaPlayer.getDuration();
-        while (mMediaPlayer != null && currentPosition < total) {
-            try {
-                Thread.sleep(1000);
-                currentPosition = mMediaPlayer.getCurrentPosition();
-            } catch (Exception e) {
-                return;
+        int currentPosition = 0;
+        if (mMediaPlayer != null) {
+            currentPosition = mMediaPlayer.getCurrentPosition();
+            int total = mMediaPlayer.getDuration();
+            while (mMediaPlayer != null && currentPosition < total) {
+                try {
+                    Thread.sleep(1000);
+                    currentPosition = mMediaPlayer.getCurrentPosition();
+                } catch (Exception e) {
+                    return;
+                }
+                if (mAdapterSeekBar != null) {
+                    mAdapterSeekBar.setProgress(currentPosition, true);
+                }
             }
-            mAdapterSeekBar.setProgress(currentPosition, true);
         }
     }
 
     private void cleanUp() {
-        if (mCompositeDisposable != null) {
-            mCompositeDisposable.clear();
-            mCompositeDisposable.dispose();
-        }
+        mCompositeDisposable.clear();
+        mCompositeDisposable.dispose();
         if (mMediaPlayer != null) {
             mMediaPlayer.reset();
             mMediaPlayer.release();
@@ -124,28 +142,35 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        @Nullable
         @BindView(R.id.audioProgressBar)
         SeekBar mSeekBar;
+        @Nullable
         @BindView(R.id.audioPlay)
         ImageButton mPlay;
+        @Nullable
         @BindView(R.id.audioRemove)
         ImageButton mRemove;
 
-        MyViewHolder(View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mCompositeDisposable.add(RxView.clicks(mPlay).subscribe(v -> {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    mAdapterSeekBar = mSeekBar;
-                    mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_stop_black_24px));
-                    playAudio(getAdapterPosition(), mPlay);
-                }
-            }));
-            mCompositeDisposable.add(RxView.clicks(mRemove).subscribe(v -> {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition()));
-                }
-            }));
+            if (mPlay != null) {
+                mCompositeDisposable.add(RxView.clicks(mPlay).subscribe(v -> {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        mAdapterSeekBar = mSeekBar;
+                        mPlay.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_stop_black_24px));
+                        playAudio(getAdapterPosition(), mPlay);
+                    }
+                }));
+            }
+            if (mRemove != null) {
+                mCompositeDisposable.add(RxView.clicks(mRemove).subscribe(v -> {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition()));
+                    }
+                }));
+            }
         }
     }
 }

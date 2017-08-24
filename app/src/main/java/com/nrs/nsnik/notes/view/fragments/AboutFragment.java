@@ -12,6 +12,8 @@ package com.nrs.nsnik.notes.view.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -51,12 +53,16 @@ public class AboutFragment extends Fragment {
             "https://github.com/ReactiveX/RxJava", "https://github.com/JakeWharton/RxBinding", "https://github.com/bumptech/glide",
             "https://github.com/square/leakcanary", "https://github.com/JakeWharton/timber", "https://google.github.io/dagger/"};
 
+    @Nullable
     @BindView(R.id.aboutLibraries)
     Button mLibraries;
+    @Nullable
     @BindView(R.id.aboutLicense)
     Button mLicense;
+    @Nullable
     @BindView(R.id.aboutSourceCode)
     TextView mSourceCode;
+    @Nullable
     @BindView(R.id.aboutNikhil)
     TextView mNikhilLinks;
     private Unbinder mUnbinder;
@@ -64,7 +70,7 @@ public class AboutFragment extends Fragment {
     private CompositeDisposable mCompositeDisposable;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_about, container, false);
         mUnbinder = ButterKnife.bind(this, v);
         initialize();
@@ -73,14 +79,22 @@ public class AboutFragment extends Fragment {
     }
 
     private void initialize() {
-        mSourceCode.setMovementMethod(LinkMovementMethod.getInstance());
-        mNikhilLinks.setMovementMethod(LinkMovementMethod.getInstance());
+        if (mSourceCode != null) {
+            mSourceCode.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+        if (mNikhilLinks != null) {
+            mNikhilLinks.setMovementMethod(LinkMovementMethod.getInstance());
+        }
         mCompositeDisposable = new CompositeDisposable();
     }
 
     private void listeners() {
-        mCompositeDisposable.add(RxView.clicks(mLibraries).subscribe(v -> showLibrariesList()));
-        mCompositeDisposable.add(RxView.clicks(mLicense).subscribe(v -> chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl))));
+        if (mLibraries != null) {
+            mCompositeDisposable.add(RxView.clicks(mLibraries).subscribe(v -> showLibrariesList()));
+        }
+        if (mLicense != null) {
+            mCompositeDisposable.add(RxView.clicks(mLicense).subscribe(v -> chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl))));
+        }
     }
 
     /*

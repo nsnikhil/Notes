@@ -19,6 +19,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -86,34 +88,47 @@ which adapter queries and makes a list to display
 
 public class HomeFragment extends Fragment implements NoteObserver, OnColorSelectedListener {
 
+    @Nullable
     @BindView(R.id.commonList)
     RecyclerView mList;
+    @Nullable
     @BindView(R.id.homeEmptyState)
     TextView mEmpty;
+    @Nullable
     @BindView(R.id.fabAdd)
     FloatingActionButton mAddSpinner;
+    @Nullable
     @BindView(R.id.fabAddNote)
     FloatingActionButton mAddNote;
+    @Nullable
     @BindView(R.id.fabAddFolder)
     FloatingActionButton mAddFolder;
+    @Nullable
     @BindView(R.id.fabNoteContainer)
     LinearLayout mNoteContainer;
+    @Nullable
     @BindView(R.id.fabFolderContainer)
     LinearLayout mFolderContainer;
+    @Nullable
     @BindView(R.id.commonListSwipe)
     SwipeRefreshLayout mSwipeRefresh;
+    @Nullable
     @BindView(R.id.homeAdView)
     AdView mAdView;
+    @Nullable
     @BindView(R.id.homeContainer)
     CoordinatorLayout mHomeContainer;
 
+    @Nullable
     private String mFolderName = "nofolder";
+    @Nullable
     private String mColor;
     private ImageView mColorView;
 
     private Unbinder mUnbinder;
     private List<NoteObject> mNotesList;
     private List<FolderObject> mFolderList;
+    @Nullable
     private NotesAdapter mNotesAdapter;
 
     private FileOperation mFileOperation;
@@ -125,7 +140,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         MobileAds.initialize(getActivity(), getActivity().getResources().getString(R.string.adAdMobId));
         mUnbinder = ButterKnife.bind(this, v);
@@ -154,11 +169,15 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         mFolderList = new ArrayList<>();
 
         //Setting up recycler view
-        mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        if (mList != null) {
+            mList.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        }
         mNotesAdapter = new NotesAdapter(getActivity(), mNotesList, mFolderList, mFolderName);
         mList.setHasFixedSize(true);
+
         DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
         mList.setItemAnimator(itemAnimator);
+
         mList.setAdapter(mNotesAdapter);
         ItemTouchHelper.Callback callback = new RvItemTouchHelper(mNotesAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -181,29 +200,39 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
          */
         if (!BuildConfig.DEBUG) {
             AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
+            if (mAdView != null) {
+                mAdView.loadAd(adRequest);
+            }
         }
     }
 
     private void listeners() {
-        mCompositeDisposable.add(RxView.clicks(mAddSpinner).subscribe(v -> {
-            if (mNoteContainer.getVisibility() == View.INVISIBLE || mFolderContainer.getVisibility() == View.INVISIBLE) {
-                reveal();
-            } else {
+        if (mAddSpinner != null) {
+            mCompositeDisposable.add(RxView.clicks(mAddSpinner).subscribe(v -> {
+                if (mNoteContainer != null && mNoteContainer.getVisibility() == View.INVISIBLE || mFolderContainer != null && mFolderContainer.getVisibility() == View.INVISIBLE) {
+                    reveal();
+                } else {
+                    disappear();
+                }
+            }));
+        }
+        if (mAddNote != null) {
+            mCompositeDisposable.add(RxView.clicks(mAddNote).subscribe(v -> {
                 disappear();
-            }
-        }));
-        mCompositeDisposable.add(RxView.clicks(mAddNote).subscribe(v -> {
-            disappear();
-            Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
-            newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle), mFolderName);
-            startActivity(newNote);
-        }));
-        mCompositeDisposable.add(RxView.clicks(mAddFolder).subscribe(v -> {
-            disappear();
-            createFolderDialog();
-        }));
-        mCompositeDisposable.add(RxSwipeRefreshLayout.refreshes(mSwipeRefresh).subscribe(v -> new Handler().postDelayed(() -> mSwipeRefresh.setRefreshing(false), 1000)));
+                Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
+                newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle), mFolderName);
+                startActivity(newNote);
+            }));
+        }
+        if (mAddFolder != null) {
+            mCompositeDisposable.add(RxView.clicks(mAddFolder).subscribe(v -> {
+                disappear();
+                createFolderDialog();
+            }));
+        }
+        if (mSwipeRefresh != null) {
+            mCompositeDisposable.add(RxSwipeRefreshLayout.refreshes(mSwipeRefresh).subscribe(v -> new Handler().postDelayed(() -> mSwipeRefresh.setRefreshing(false), 1000)));
+        }
     }
 
     /*
@@ -231,23 +260,30 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        mFolderContainer.setVisibility(View.VISIBLE);
-                        mNoteContainer.setVisibility(View.VISIBLE);
+                        if (mFolderContainer != null && mNoteContainer != null) {
+                            mFolderContainer.setVisibility(View.VISIBLE);
+                            mNoteContainer.setVisibility(View.VISIBLE);
+                        }
+
                     }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
                     }
                 });
-                mFolderContainer.startAnimation(scaleUp);
-                mNoteContainer.startAnimation(scaleUp);
+                if (mFolderContainer != null && mNoteContainer != null) {
+                    mFolderContainer.startAnimation(scaleUp);
+                    mNoteContainer.startAnimation(scaleUp);
+                }
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        mAddSpinner.startAnimation(rotateAnimation);
+        if (mAddSpinner != null) {
+            mAddSpinner.startAnimation(rotateAnimation);
+        }
     }
 
     /*
@@ -275,23 +311,29 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        mFolderContainer.setVisibility(View.INVISIBLE);
-                        mNoteContainer.setVisibility(View.INVISIBLE);
+                        if (mFolderContainer != null && mNoteContainer != null) {
+                            mFolderContainer.setVisibility(View.INVISIBLE);
+                            mNoteContainer.setVisibility(View.INVISIBLE);
+                        }
                     }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
                     }
                 });
-                mFolderContainer.startAnimation(scaleDown);
-                mNoteContainer.startAnimation(scaleDown);
+                if (mFolderContainer != null && mNoteContainer != null) {
+                    mFolderContainer.startAnimation(scaleDown);
+                    mNoteContainer.startAnimation(scaleDown);
+                }
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        mAddSpinner.startAnimation(rotateAnimation);
+        if (mAddSpinner != null) {
+            mAddSpinner.startAnimation(rotateAnimation);
+        }
     }
 
     /*
@@ -380,7 +422,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
     }
 
     @Override
-    public void updateItems(Cursor cursor) {
+    public void updateItems(@NonNull Cursor cursor) {
         if (cursor.getColumnIndex(TableNames.table1.mTitle) != -1) {
             makeNotesList(cursor);
         } else {
@@ -389,10 +431,12 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
     }
 
     private void setEmpty() {
-        if (mFolderList.size() <= 0 && mNotesList.size() <= 0) {
-            mEmpty.setVisibility(View.VISIBLE);
-        } else {
-            mEmpty.setVisibility(View.GONE);
+        if (mEmpty != null) {
+            if (mFolderList.size() <= 0 && mNotesList.size() <= 0) {
+                mEmpty.setVisibility(View.VISIBLE);
+            } else {
+                mEmpty.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -404,7 +448,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
     adapter about the change in data
 
      */
-    private void makeNotesList(Cursor cursor) {
+    private void makeNotesList(@Nullable Cursor cursor) {
         Single<List<NoteObject>> listSingle = Single.fromCallable(() -> {
             List<NoteObject> tempList = new ArrayList<>();
             NoteObject object = null;
@@ -426,8 +470,8 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
             }
 
             @Override
-            public void onSuccess(List<NoteObject> noteObjects) {
-                if (noteObjects != null) {
+            public void onSuccess(@Nullable List<NoteObject> noteObjects) {
+                if (noteObjects != null && mNotesAdapter != null) {
                     mNotesList.clear();
                     mNotesList.addAll(noteObjects);
                     mNotesAdapter.updateNotesList(noteObjects);
@@ -436,7 +480,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });
@@ -450,7 +494,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
    adapter about the change in data
 
     */
-    private void makeFolderList(Cursor cursor) {
+    private void makeFolderList(@Nullable Cursor cursor) {
         Single<List<FolderObject>> listSingle = Single.fromCallable(() -> {
             List<FolderObject> tempList = new ArrayList<>();
             while (cursor != null && cursor.moveToNext()) {
@@ -467,8 +511,8 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
             }
 
             @Override
-            public void onSuccess(List<FolderObject> folderNames) {
-                if (folderNames != null) {
+            public void onSuccess(@Nullable List<FolderObject> folderNames) {
+                if (folderNames != null && mNotesAdapter != null) {
                     mFolderList.clear();
                     mFolderList.addAll(folderNames);
                     mNotesAdapter.updateFolderList(folderNames);
@@ -477,7 +521,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Timber.d(e.getMessage());
             }
         });

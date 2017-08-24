@@ -13,6 +13,7 @@ package com.nrs.nsnik.notes.view;
 import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 
 import com.crashlytics.android.Crashlytics;
 import com.nrs.nsnik.notes.BuildConfig;
@@ -34,9 +35,6 @@ import javax.inject.Inject;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
-/*import com.nrs.nsnik.notes.model.dagger.components.DaggerApplicationComponent;
-import com.nrs.nsnik.notes.model.dagger.components.DaggerGlideComponent;*/
-
 public class MyApplication extends Application {
 
     @Inject
@@ -54,7 +52,7 @@ public class MyApplication extends Application {
     private RefWatcher refWatcher;
     private GlideComponent mGlideComponent;
 
-    public static RefWatcher getRefWatcher(Context context) {
+    public static RefWatcher getRefWatcher(@NonNull Context context) {
         MyApplication application = (MyApplication) context.getApplicationContext();
         return application.refWatcher;
     }
@@ -64,6 +62,7 @@ public class MyApplication extends Application {
         super.onCreate();
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree() {
+                @NonNull
                 @Override
                 protected String createStackElementTag(StackTraceElement element) {
                     return super.createStackElementTag(element) + ":" + element.getLineNumber();
