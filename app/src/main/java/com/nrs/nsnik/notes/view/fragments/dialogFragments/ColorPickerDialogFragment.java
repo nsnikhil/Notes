@@ -23,8 +23,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.util.interfaces.OnColorSelectedListener;
+import com.nrs.nsnik.notes.util.events.ColorPickerEvent;
 import com.nrs.nsnik.notes.view.adapters.ColorPickerAdapter;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +36,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ColorPickerDialogFragment extends DialogFragment implements OnColorSelectedListener {
+public class ColorPickerDialogFragment extends DialogFragment {
 
     @Nullable
     @BindView(R.id.colorPickerList)
     RecyclerView mColorList;
-    private OnColorSelectedListener mOnColorSelectedListener;
 
     public ColorPickerDialogFragment() {
     }
@@ -52,36 +54,29 @@ public class ColorPickerDialogFragment extends DialogFragment implements OnColor
         return v;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (getTargetFragment() != null) {
-            try {
-                mOnColorSelectedListener = (OnColorSelectedListener) getTargetFragment();
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                mOnColorSelectedListener = (OnColorSelectedListener) context;
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void initialize() {
         List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
         if (mColorList != null) {
             mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
         }
-        ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList, this);
+        ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList/*, this*/);
         mColorList.setAdapter(colorPickerAdapter);
     }
 
     @Override
-    public void onColorSelected(String color) {
-        mOnColorSelectedListener.onColorSelected(color);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onColorPickerEvent(ColorPickerEvent colorPickerEvent) {
         dismiss();
     }
 }

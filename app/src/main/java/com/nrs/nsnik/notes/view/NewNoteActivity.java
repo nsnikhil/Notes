@@ -52,8 +52,8 @@ import com.nrs.nsnik.notes.model.data.TableNames;
 import com.nrs.nsnik.notes.model.objects.CheckListObject;
 import com.nrs.nsnik.notes.model.objects.NoteObject;
 import com.nrs.nsnik.notes.util.FileOperation;
+import com.nrs.nsnik.notes.util.events.ColorPickerEvent;
 import com.nrs.nsnik.notes.util.interfaces.OnAddClickListener;
-import com.nrs.nsnik.notes.util.interfaces.OnColorSelectedListener;
 import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
 import com.nrs.nsnik.notes.util.receiver.NotificationReceiver;
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter;
@@ -61,6 +61,9 @@ import com.nrs.nsnik.notes.view.adapters.CheckListAdapter;
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.squareup.leakcanary.RefWatcher;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +78,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
 
-public class NewNoteActivity extends AppCompatActivity implements OnAddClickListener, OnItemRemoveListener, OnColorSelectedListener {
+public class NewNoteActivity extends AppCompatActivity implements OnAddClickListener, OnItemRemoveListener {
 
     private static final int ATTACH_PICTURE_REQUEST_CODE = 205;
     private static final int TAKE_PICTURE_REQUEST_CODE = 206;
@@ -191,23 +194,26 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         //BottomSheet
-        mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
-        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (mBottomSheet != null) {
-                    if (newState == BottomSheetBehavior.STATE_EXPANDED || newState == BottomSheetBehavior.STATE_DRAGGING) {
-                        mBottomSheet.setElevation(16);
-                    } else {
-                        mBottomSheet.setElevation(0);
+        if (mBottomSheet != null) {
+            mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
+
+            mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    if (mBottomSheet != null) {
+                        if (newState == BottomSheetBehavior.STATE_EXPANDED || newState == BottomSheetBehavior.STATE_DRAGGING) {
+                            mBottomSheet.setElevation(16);
+                        } else {
+                            mBottomSheet.setElevation(0);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
-        });
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                }
+            });
+        }
 
         //Image List Setup
         mImagesLocations = new ArrayList<>();
@@ -744,8 +750,20 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     @Override
-    public void onColorSelected(String color) {
-        mColorCode = color;
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onColorPickerEvent(ColorPickerEvent colorPickerEvent) {
+        mColorCode = colorPickerEvent.getColor();
         if (mTitle != null) {
             mTitle.setTextColor(Color.parseColor(mColorCode));
         }

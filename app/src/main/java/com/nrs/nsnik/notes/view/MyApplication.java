@@ -25,6 +25,7 @@ import com.nrs.nsnik.notes.model.dagger.modules.ContextModule;
 import com.nrs.nsnik.notes.model.data.TableHelper;
 import com.nrs.nsnik.notes.util.DatabaseOperations;
 import com.nrs.nsnik.notes.util.FileOperation;
+import com.rollbar.android.Rollbar;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -68,14 +69,7 @@ public class MyApplication extends Application {
                     return super.createStackElementTag(element) + ":" + element.getLineNumber();
                 }
             });
-        }
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            return;
-        }
-        if (BuildConfig.DEBUG) {
             refWatcher = LeakCanary.install(this);
-        }
-        if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
@@ -84,10 +78,12 @@ public class MyApplication extends Application {
                     .detectAll()
                     .penaltyLog()
                     .build());
-        }
-        if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        Rollbar.init(this, "3b2ad6f009e643fdaf91228cdc54acab", "development");
         moduleSetter();
     }
 

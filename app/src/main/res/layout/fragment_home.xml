@@ -23,8 +23,12 @@
             android:id="@+id/commonList"
             style="@style/matchParent"
             android:clipToPadding="false"
-            android:paddingBottom="88dp"
-            android:scrollbars="vertical" />
+            android:paddingBottom="88dp" />
+        <!--app:fastScrollEnabled="true"
+        app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+        app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
+        app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+        app:fastScrollVerticalTrackDrawable="@drawable/line_drawable" !-->
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

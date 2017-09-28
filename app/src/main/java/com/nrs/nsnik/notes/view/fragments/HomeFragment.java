@@ -58,13 +58,16 @@ import com.nrs.nsnik.notes.model.objects.NoteObject;
 import com.nrs.nsnik.notes.util.DatabaseOperations;
 import com.nrs.nsnik.notes.util.FileOperation;
 import com.nrs.nsnik.notes.util.RvItemTouchHelper;
+import com.nrs.nsnik.notes.util.events.ColorPickerEvent;
 import com.nrs.nsnik.notes.util.interfaces.NoteObserver;
-import com.nrs.nsnik.notes.util.interfaces.OnColorSelectedListener;
 import com.nrs.nsnik.notes.view.MyApplication;
 import com.nrs.nsnik.notes.view.NewNoteActivity;
 import com.nrs.nsnik.notes.view.adapters.NotesAdapter;
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.squareup.leakcanary.RefWatcher;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,7 +89,7 @@ this fragment passes the uri to the adapter upon
 which adapter queries and makes a list to display
  */
 
-public class HomeFragment extends Fragment implements NoteObserver, OnColorSelectedListener {
+public class HomeFragment extends Fragment implements NoteObserver {
 
     @Nullable
     @BindView(R.id.commonList)
@@ -350,7 +353,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         mColor = null;
         mCompositeDisposable.add(RxView.clicks(mColorView).subscribe(o -> {
             ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
-            pickerDialogFragment.setTargetFragment(this, 129);
+            // pickerDialogFragment.setTargetFragment(this, 129);
             pickerDialogFragment.show(getFragmentManager(), "color");
         }));
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -527,6 +530,7 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
         });
     }
 
+    @NonNull
     private ColorStateList stateList(String colorString) {
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_enabled},
@@ -540,8 +544,20 @@ public class HomeFragment extends Fragment implements NoteObserver, OnColorSelec
     }
 
     @Override
-    public void onColorSelected(String color) {
-        mColor = color;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onColorPickerEvent(ColorPickerEvent colorPickerEvent) {
+        mColor = colorPickerEvent.getColor();
         if (mColorView != null) {
             mColorView.setBackgroundTintList(stateList(mColor));
         }

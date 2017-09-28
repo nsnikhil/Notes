@@ -23,7 +23,9 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.util.interfaces.OnColorSelectedListener;
+import com.nrs.nsnik.notes.util.events.ColorPickerEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -35,15 +37,13 @@ import io.reactivex.disposables.CompositeDisposable;
 public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.MyViewHolder> {
 
     private final Context mContext;
-    private final OnColorSelectedListener mColorSelectedListener;
     private final List<String> mColorList;
     @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
-    public ColorPickerAdapter(Context context, List<String> list, OnColorSelectedListener onColorSelectedListener) {
+    public ColorPickerAdapter(Context context, List<String> list) {
         mContext = context;
         mColorList = list;
-        mColorSelectedListener = onColorSelectedListener;
         mCompositeDisposable = new CompositeDisposable();
     }
 
@@ -87,7 +87,7 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
             if (mColor != null) {
                 mCompositeDisposable.add(RxView.clicks(mColor).subscribe(view -> {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        mColorSelectedListener.onColorSelected(mColorList.get(getAdapterPosition()));
+                        EventBus.getDefault().post(new ColorPickerEvent(mColorList.get(getAdapterPosition())));
                     }
                 }));
             }
