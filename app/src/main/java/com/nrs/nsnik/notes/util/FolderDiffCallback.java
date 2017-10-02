@@ -19,8 +19,8 @@ import java.util.List;
 
 public class FolderDiffCallback extends DiffUtil.Callback {
 
-    /*
-    TODO DIFFERENCE UTILITY CLASS FOR FOLDER LISTtodo
+    /**
+     * TODO DIFFERENCE UTILITY CLASS FOR FOLDER LISTtodo
      */
 
     private final List<FolderObject> mOldList;
@@ -43,7 +43,7 @@ public class FolderDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return mOldList.get(oldItemPosition).getmFolderName().equalsIgnoreCase(mNewList.get(newItemPosition).getmFolderName());
+        return mOldList.get(oldItemPosition).folderName().equalsIgnoreCase(mNewList.get(newItemPosition).folderName());
     }
 
     @Override

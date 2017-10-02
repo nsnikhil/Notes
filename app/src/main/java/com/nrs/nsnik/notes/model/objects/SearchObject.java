@@ -11,46 +11,28 @@
 package com.nrs.nsnik.notes.model.objects;
 
 
-import android.support.annotation.NonNull;
+import com.google.auto.value.AutoValue;
 
-public class SearchObject {
+@AutoValue
+public abstract class SearchObject {
 
-    private final String mName;
-    private final boolean mIsFolder;
-
-    SearchObject(@NonNull SearchObjectBuilder searchObjectBuilder) {
-        mName = searchObjectBuilder.mName;
-        mIsFolder = searchObjectBuilder.mIsFolder;
+    public static Builder builder() {
+        return new AutoValue_SearchObject.Builder();
     }
 
-    public String getmName() {
-        return mName;
-    }
+    public abstract String name();
 
-    public boolean ismIsFolder() {
-        return mIsFolder;
-    }
+    public abstract boolean isFolder();
 
-    public static class SearchObjectBuilder {
+    @AutoValue.Builder
+    public abstract static class Builder {
 
-        private String mName;
-        private boolean mIsFolder;
+        public abstract Builder name(String value);
 
-        @NonNull
-        public SearchObjectBuilder setName(String name) {
-            mName = name;
-            return this;
-        }
 
-        @NonNull
-        public SearchObjectBuilder setIsFolder(boolean isFolder) {
-            mIsFolder = isFolder;
-            return this;
-        }
+        public abstract Builder isFolder(boolean value);
 
-        @NonNull
-        public SearchObject build() {
-            return new SearchObject(this);
-        }
+
+        public abstract SearchObject build();
     }
 }

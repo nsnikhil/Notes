@@ -19,8 +19,8 @@ import com.squareup.leakcanary.RefWatcher;
 
 public class IntroActivity extends AppCompatActivity {
 
-    /*
-    TODO INTRO ACTIVITY
+    /**
+     * TODO INTRO ACTIVITY
      */
 
     @Override

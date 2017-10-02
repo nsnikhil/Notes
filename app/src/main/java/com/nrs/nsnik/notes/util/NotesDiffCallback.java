@@ -18,8 +18,8 @@ import java.util.List;
 
 public class NotesDiffCallback extends DiffUtil.Callback {
 
-     /*
-    TODO DIFFERENCE UTILITY CLASS FOR NOTES LIST
+    /**
+     * TODO DIFFERENCE UTILITY CLASS FOR NOTES LIST
      */
 
     private final List<NoteObject> mOldList, mNewList;
@@ -41,7 +41,7 @@ public class NotesDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return mOldList.get(oldItemPosition).getTitle().equalsIgnoreCase(mNewList.get(newItemPosition).getTitle());
+        return mOldList.get(oldItemPosition).title().equalsIgnoreCase(mNewList.get(newItemPosition).title());
     }
 
     @Override

@@ -26,12 +26,12 @@ public class TableNames {
     public static final Uri mContentUri = Uri.withAppendedPath(mBaseUri, mTableName);
     public static final Uri mFolderContentUri = Uri.withAppendedPath(mBaseUri, mFolderTableName);
 
-    /*
-    @mUid           column representing the id of each element in note table
-    @mTitle         column representing the title of each note
-    @mFileName      column representing the file name of the note object
-    @FolderName     column representing the folder name of the each note
-    @StarIndicator  column representing the star value of the each note
+    /**
+     * mUid column representing the id of each element in note table
+     * mTitle column representing the title of each note
+     * mFileName column representing the file name of the note object
+     * FolderName column representing the folder name of the each note
+     * StarIndicator column representing the star value of the each note
      */
     public class table1 implements BaseColumns {
         public static final String mUid = BaseColumns._ID;
@@ -44,13 +44,13 @@ public class TableNames {
         public static final String mColor = "color";
     }
 
-    /*
-     @mUid                column representing the id of each element in folder table
-     @mFolderName         column representing the folder name of folder
-     @mFolderId           column representing the folder id name of the folder
-     @mParentFolderName   column representing the parent folder name of the folder
-     @StarIndicator       column representing the star value of the each folder
-    */
+    /**
+     * mUid column representing the id of each element in folder table
+     * mFolderName column representing the folder name of folder
+     * mFolderId column representing the folder id name of the folder
+     * mParentFolderName column representing the parent folder name of the folder
+     * StarIndicator column representing the star value of the each folder
+     */
     public class table2 implements BaseColumns {
         public static final String mUid = BaseColumns._ID;
         public static final String mFolderName = "foldername";

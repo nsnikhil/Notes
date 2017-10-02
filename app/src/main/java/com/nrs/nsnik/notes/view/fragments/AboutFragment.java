@@ -97,8 +97,8 @@ public class AboutFragment extends Fragment {
         }
     }
 
-    /*
-    @param url  display the url supplied im a chrome custom tab
+    /**
+     * @param url  display the url supplied im a chrome custom tab
      */
     private void chromeCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
@@ -109,10 +109,10 @@ public class AboutFragment extends Fragment {
         customTabsIntent.launchUrl(getActivity(), Uri.parse(url));
     }
 
-    /*
-    displays the list of available libraries in a
-    dialog format and open links of each library
-    in a chrome custom tab
+    /**
+     * displays the list of available libraries in a
+     * dialog format and open links of each library
+     * in a chrome custom tab
      */
     private void showLibrariesList() {
         AlertDialog.Builder choosePath = new AlertDialog.Builder(getActivity());

@@ -65,11 +65,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
-    /*
-     @param c               the context object
-     @param imageLocation   list of image file names
-     @param sz              SendSize interface
-     @param forFullScreen   if the adapter is used in full screen or not
+    /**
+     * @param c                     the context object
+     * @param imageLocations        list of image file names
+     * @param onItemRemoveListener  onItemRemoveListener interface
+     * @param forFullScreen         if the adapter is used in full screen or not
      */
     public ImageAdapter(Context c, List<String> imageLocations, OnItemRemoveListener onItemRemoveListener, boolean forFullScreen) {
         mContext = c;

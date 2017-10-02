@@ -46,9 +46,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     private final CompositeDisposable mCompositeDisposable;
     private List<SearchObject> mSearchList;
 
-    /*
-    @param context          the context object
-    @param searchList       the list of search objects
+    /**
+     * @param context    the context object
+     * @param searchList the list of search objects
      */
     public SearchAdapter(Context context, List<SearchObject> searchList) {
         mContext = context;
@@ -70,18 +70,18 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         appropriately attaches the icon to text
          */
         if (holder.mSearchName != null) {
-            if (mSearchList.get(position).ismIsFolder()) {
+            if (mSearchList.get(position).isFolder()) {
                 holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48px, 0, 0, 0);
             } else {
                 holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48px, 0, 0, 0);
             }
             holder.mSearchName.setCompoundDrawableTintList(stateList());
-            holder.mSearchName.setText(mSearchList.get(position).getmName());
+            holder.mSearchName.setText(mSearchList.get(position).name());
         }
     }
 
-    /*
-    @return new ColorStateList
+    /**
+     * @return new ColorStateList
      */
     @NonNull
     private ColorStateList stateList() {
@@ -101,11 +101,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         return mSearchList.size();
     }
 
-    /*
-    called to change the content of searchable list
-    and notify the adapter
-
-    @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
+    /**
+     * called to change the content of searchable list
+     * and notify the adapter
+     * <p>
+     * TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
      */
     public void modifyList(List<SearchObject> list) {
         mSearchList = list;
@@ -134,7 +134,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
             mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     SearchObject object = mSearchList.get(getAdapterPosition());
-                    if (object.ismIsFolder()) {
+                    if (object.isFolder()) {
                         // Intent folderIntent = new Intent(mContext, ContainerActivity.class);
                         Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
                         //mContext.startActivity(folderIntent);

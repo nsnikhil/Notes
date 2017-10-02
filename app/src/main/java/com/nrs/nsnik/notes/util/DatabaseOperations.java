@@ -121,15 +121,15 @@ public class DatabaseOperations {
     }
 
 
-    /*
-    @param fileName     the name of the fie which contains the note object
-    @param noteObject   the note object that represents a single note
+    /**
+     * @param fileName   the name of the fie which contains the note object
+     * @param noteObject the note object that represents a single note
      */
     void insertNote(String fileName, @NonNull NoteObject noteObject, int isPinned, int isLocked, String time, String color) {
         ContentValues cv = new ContentValues();
-        cv.put(TableNames.table1.mTitle, noteObject.getTitle());
+        cv.put(TableNames.table1.mTitle, noteObject.title());
         cv.put(TableNames.table1.mFileName, fileName);
-        cv.put(TableNames.table1.mFolderName, noteObject.getFolderName());
+        cv.put(TableNames.table1.mFolderName, noteObject.folderName());
         cv.put(TableNames.table1.mIsPinned, isPinned);
         cv.put(TableNames.table1.mIsLocked, isLocked);
         cv.put(TableNames.table1.mDataModified, time);
@@ -139,10 +139,10 @@ public class DatabaseOperations {
         }
     }
 
-    /*
-   @param title    the title of the note to be updated
-   @param uri      the uri on which update operation will be performed
-    */
+    /**
+     * @param title the title of the note to be updated
+     * @param uri   the uri on which update operation will be performed
+     */
     void updateNote(String title, Uri uri, int isPinned, int isLocked, String time, String color) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableNames.table1.mTitle, title);
@@ -167,8 +167,8 @@ public class DatabaseOperations {
     }
 
 
-    /*
-    @param uri    uri of the path in database to be deleted
+    /**
+     * @param uri uri of the path in database to be deleted
      */
     void deleteNote(Uri uri) {
         if (mAsyncQueryHandler != null) {
@@ -178,9 +178,9 @@ public class DatabaseOperations {
         }
     }
 
-    /*
-    @param uri              uri of the path in database to be deleted
-    @param folderName       the name of the folder to be deleted
+    /**
+     * @param uri        uri of the path in database to be deleted
+     * @param folderName the name of the folder to be deleted
      */
     void deleteFolder(Uri uri, String folderName) {
         String query = "parentFolderName/" + folderName;
@@ -194,13 +194,13 @@ public class DatabaseOperations {
     }
 
 
-    /*
-    This method takes id of two notes and swaps them by
-    first assigning a temporary id to them and then finally swapping
-    the temporary with the actual
-
-    @param fromId       the id of the first note
-    @param toId         the id of second note
+    /**
+     * This method takes id of two notes and swaps them by
+     * first assigning a temporary id to them and then finally swapping
+     * the temporary with the actual
+     *
+     * @param fromId the id of the first note
+     * @param toId   the id of second note
      */
     public void switchNoteId(int fromId, int toId) {
         if (fromId != -1 && toId != -1) {
@@ -244,13 +244,13 @@ public class DatabaseOperations {
         }
     }
 
-    /*
-    This method takes id of two folders and swaps them by
-    first assigning a temporary id to them and then finally swapping
-    the temporary with the actual
-
-    @param fromId       the id of the first folder
-    @param toId         the id of second folder
+    /**
+     * This method takes id of two folders and swaps them by
+     * first assigning a temporary id to them and then finally swapping
+     * the temporary with the actual
+     *
+     * @param fromId the id of the first folder
+     * @param toId   the id of second folder
      */
     public void switchFolderId(int fromId, int toId) {
 
@@ -299,14 +299,14 @@ public class DatabaseOperations {
     }
 
 
-    /*
-    this method takes a uri and
-    provides the id of a note or folder in
-    particular position
-
-    @param uri          the uri which will be searched
-    @param position     the position at which the search will end
-   */
+    /**
+     * this method takes a uri and
+     * provides the id of a note or folder in
+     * particular position
+     *
+     * @param uri      the uri which will be searched
+     * @param position the position at which the search will end
+     */
     public int getId(@NonNull Uri uri, int position) {
         int uid = -1;
         Cursor tempCursor = mContext.getContentResolver().query(uri, null, null, null, null);

@@ -11,210 +11,68 @@
 package com.nrs.nsnik.notes.model.objects;
 
 
-import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
-import org.jetbrains.annotations.Contract;
+import com.google.auto.value.AutoValue;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-public class NoteObject implements Serializable, Parcelable {
+@AutoValue
+public abstract class NoteObject implements Parcelable, Serializable {
 
-    public static final Creator<NoteObject> CREATOR = new Creator<NoteObject>() {
-        @NonNull
-        @Override
-        public NoteObject createFromParcel(@NonNull Parcel in) {
-            return new NoteObject(in);
-        }
 
-        @NonNull
-        @Contract(pure = true)
-        @Override
-        public NoteObject[] newArray(int size) {
-            return new NoteObject[size];
-        }
-    };
-    private final String mTitle, mNoteContent, mFolderName, mColor, mTime;
-    private final List<String> mImagesList, mAudioList;
-    private final List<CheckListObject> mCheckList;
-    private final int mIsPinned, mIsLocked, mReminder;
-
-    /*
-    TODO REPLACE WITH AUTO VALUE
-     */
-
-    NoteObject(@NonNull NoteObjectBuilder noteObjectBuilder) {
-        mNoteContent = noteObjectBuilder.mNoteContent;
-        mTitle = noteObjectBuilder.mTitle;
-        mImagesList = noteObjectBuilder.mImagesList;
-        mAudioList = noteObjectBuilder.mAudioList;
-        mCheckList = noteObjectBuilder.mCheckList;
-        mReminder = noteObjectBuilder.mReminder;
-        mFolderName = noteObjectBuilder.mFolderName;
-        mColor = noteObjectBuilder.mColor;
-        mTime = noteObjectBuilder.mTime;
-        mIsPinned = noteObjectBuilder.mIsPinned;
-        mIsLocked = noteObjectBuilder.mIsLocked;
+    public static Builder builder() {
+        return new AutoValue_NoteObject.Builder();
     }
 
-    private NoteObject(@NonNull Parcel in) {
-        mTitle = in.readString();
-        mNoteContent = in.readString();
-        mAudioList = in.createStringArrayList();
-        mCheckList = new ArrayList<>();
-        in.readList(mCheckList, CheckListObject.class.getClassLoader());
-        mFolderName = in.readString();
-        mImagesList = in.createStringArrayList();
-        mReminder = in.readInt();
-        mColor = in.readString();
-        mTime = in.readString();
-        mIsPinned = in.readInt();
-        mIsLocked = in.readInt();
-    }
+    public abstract String title();
 
-    public String getTitle() {
-        return mTitle;
-    }
+    public abstract String noteContent();
 
-    public String getNote() {
-        return mNoteContent;
-    }
+    public abstract String folderName();
 
-    public List<String> getImages() {
-        return mImagesList;
-    }
+    public abstract String color();
 
-    public List<String> getAudioLocations() {
-        return mAudioList;
-    }
+    public abstract String time();
 
-    public List<CheckListObject> getmCheckList() {
-        return mCheckList;
-    }
+    public abstract List<String> imageList();
 
-    public int getReminder() {
-        return mReminder;
-    }
+    public abstract List<String> audioList();
 
-    public String getFolderName() {
-        return mFolderName;
-    }
+    public abstract List<CheckListObject> checkList();
 
-    public String getmColor() {
-        return mColor;
-    }
+    public abstract int isPinned();
 
-    public String getmTime() {
-        return mTime;
-    }
+    public abstract int isLocked();
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+    public abstract int hasReminder();
 
-    public int getmIsPinned() {
-        return mIsPinned;
-    }
+    @AutoValue.Builder
+    public abstract static class Builder {
 
-    public int getmIsLocked() {
-        return mIsLocked;
-    }
+        public abstract Builder title(String value);
 
-    @Override
-    public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeString(mTitle);
-        parcel.writeString(mNoteContent);
-        parcel.writeStringList(mAudioList);
-        parcel.writeList(mCheckList);
-        parcel.writeString(mFolderName);
-        parcel.writeStringList(mImagesList);
-        parcel.writeInt(mReminder);
-        parcel.writeString(mColor);
-        parcel.writeString(mTime);
-        parcel.writeInt(mIsPinned);
-        parcel.writeInt(mIsLocked);
-    }
+        public abstract Builder noteContent(String value);
 
-    public static class NoteObjectBuilder {
+        public abstract Builder folderName(String value);
 
-        private String mTitle, mNoteContent, mFolderName, mColor, mTime;
-        private List<String> mImagesList, mAudioList;
-        private List<CheckListObject> mCheckList;
-        private int mIsPinned, mIsLocked, mReminder;
+        public abstract Builder color(String value);
 
-        @NonNull
-        public NoteObjectBuilder setTitle(String title) {
-            this.mTitle = title;
-            return this;
-        }
+        public abstract Builder time(String value);
 
-        @NonNull
-        public NoteObjectBuilder setNoteContent(String noteContent) {
-            this.mNoteContent = noteContent;
-            return this;
-        }
+        public abstract Builder imageList(List<String> value);
 
-        @NonNull
-        public NoteObjectBuilder setFolderName(String folderName) {
-            this.mFolderName = folderName;
-            return this;
-        }
+        public abstract Builder audioList(List<String> value);
 
-        @NonNull
-        public NoteObjectBuilder setColor(String color) {
-            this.mColor = color;
-            return this;
-        }
+        public abstract Builder checkList(List<CheckListObject> value);
 
-        @NonNull
-        public NoteObjectBuilder setTime(String time) {
-            this.mTime = time;
-            return this;
-        }
+        public abstract Builder isPinned(int value);
 
-        @NonNull
-        public NoteObjectBuilder setImageList(List<String> imageList) {
-            this.mImagesList = imageList;
-            return this;
-        }
+        public abstract Builder isLocked(int value);
 
-        @NonNull
-        public NoteObjectBuilder setAudioList(List<String> audioList) {
-            this.mAudioList = audioList;
-            return this;
-        }
+        public abstract Builder hasReminder(int value);
 
-        @NonNull
-        public NoteObjectBuilder setCheckList(List<CheckListObject> checkList) {
-            this.mCheckList = checkList;
-            return this;
-        }
-
-        @NonNull
-        public NoteObjectBuilder setPinned(int pinned) {
-            this.mIsPinned = pinned;
-            return this;
-        }
-
-        @NonNull
-        public NoteObjectBuilder setLocked(int locked) {
-            this.mIsLocked = locked;
-            return this;
-        }
-
-        @NonNull
-        public NoteObjectBuilder setHasReminder(int reminder) {
-            this.mReminder = reminder;
-            return this;
-        }
-
-        @NonNull
-        public NoteObject build() {
-            return new NoteObject(this);
-        }
+        public abstract NoteObject build();
     }
 }

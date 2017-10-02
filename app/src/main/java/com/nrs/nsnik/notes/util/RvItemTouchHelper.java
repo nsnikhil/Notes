@@ -28,8 +28,8 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
     private final List<Integer> mDragFromList, mDragToList;
     private int mDragFromPosition = -1, mDragToPosition = -1;
 
-    /*
-    @param listener     instance of ItemTouchListener
+    /**
+     * @param listener instance of ItemTouchListener
      */
     public RvItemTouchHelper(ItemTouchListener listener) {
         mListener = listener;
@@ -73,9 +73,9 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
         return true;
     }
 
-    /*
-    clearView is called once the user have complete the dragging
-    or swiping operations
+    /**
+     * clearView is called once the user have complete the dragging
+     * or swiping operations
      */
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -103,10 +103,8 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
         mDragToPosition = -1;
     }
 
-    /*
-    returns the maximum value from starting index
-    indicates from which index should the
-    id swapping start
+    /**
+     * @return the maximum value from starting index indicates from which index should the id swapping start
      */
     private int getMax() {
         int max = mDragFromList.get(0);
@@ -118,11 +116,9 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
         return max;
     }
 
-    /*
-    returns the minimum value from ending index
-    indicates to which index should the
-    id swapping end
-    */
+    /**
+     * @return the minimum value from ending index indicates to which index should the id swapping end
+     */
     private int getMin() {
         int min = mDragToList.get(0);
         for (int i = 1; i < mDragToList.size(); i++) {

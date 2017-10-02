@@ -170,7 +170,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         mRootFolder = ((MyApplication) getApplicationContext()).getRootFolder();
         initialize();
         listeners();
-        if (getIntent().getExtras() != null && getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+        if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
             }
@@ -343,48 +343,48 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private void setNote() {
-        if (getIntent().getExtras() != null && getIntent().getExtras().getSerializable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+        if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             Bundle args = getIntent().getExtras();
             mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + args.getInt(getResources().getString(R.string.bundleNoteSerialId)));
-            NoteObject object = (NoteObject) args.getSerializable(getResources().getString(R.string.bundleNoteSerialObject));
+            NoteObject object = args.getParcelable(getResources().getString(R.string.bundleNoteSerialObject));
             if (object != null) {
                 if (mTitle != null) {
-                    mTitle.setText(object.getTitle());
+                    mTitle.setText(object.title());
                 }
                 if (mNote != null) {
-                    mNote.setText(object.getNote());
+                    mNote.setText(object.noteContent());
                 }
-                mFolderName = object.getFolderName();
-                mColorCode = object.getmColor();
+                mFolderName = object.folderName();
+                mColorCode = object.color();
                 mTitle.setTextColor(Color.parseColor(mColorCode));
-                mIsStarred = object.getmIsPinned();
-                mIsLocked = object.getmIsLocked();
-                String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(object.getmTime()));
+                mIsStarred = object.isPinned();
+                mIsLocked = object.isLocked();
+                String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(object.time()));
                 if (mBottomDate != null) {
                     mBottomDate.setText(editedDate);
                 }
-                if (object.getImages().size() > 0) {
+                if (object.imageList().size() > 0) {
                     if (mImageRecyclerView != null) {
                         mImageRecyclerView.setVisibility(View.VISIBLE);
                     }
-                    mImagesLocations.addAll(object.getImages());
+                    mImagesLocations.addAll(object.imageList());
                     mImageAdapter.notifyDataSetChanged();
                 }
-                if (object.getAudioLocations().size() > 0) {
+                if (object.audioList().size() > 0) {
                     if (mAudioRecyclerView != null) {
                         mAudioRecyclerView.setVisibility(View.VISIBLE);
                     }
-                    mAudioLocations.addAll(object.getAudioLocations());
+                    mAudioLocations.addAll(object.audioList());
                     mImageAdapter.notifyDataSetChanged();
                 }
-                if (object.getmCheckList().size() > 0) {
+                if (object.checkList().size() > 0) {
                     if (mCheckListRecyclerView != null) {
                         mCheckListRecyclerView.setVisibility(View.VISIBLE);
                     }
-                    mCheckList.addAll(object.getmCheckList());
+                    mCheckList.addAll(object.checkList());
                     mCheckListAdapter.notifyDataSetChanged();
                 }
-                if (object.getReminder() != 0) {
+                if (object.hasReminder() != 0) {
                     mHasReminder = 1;
                 }
             }
@@ -409,9 +409,9 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private void addCheckListItem() {
-        mCheckList.add(new CheckListObject.CheckListBuilder()
-                .setText("")
-                .setCompleted(false)
+        mCheckList.add(CheckListObject.builder()
+                .text("")
+                .isDone(false)
                 .build());
         mCheckListAdapter.notifyDataSetChanged();
         displayCheckListView();
@@ -610,18 +610,18 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         String time = String.valueOf(calendar.getTimeInMillis());
         NoteObject noteObject = null;
         if (mTitle != null && mNote != null) {
-            noteObject = new NoteObject.NoteObjectBuilder()
-                    .setTitle(mTitle.getText().toString())
-                    .setNoteContent(mNote.getText().toString())
-                    .setFolderName(mFolderName)
-                    .setColor(mColorCode)
-                    .setTime(time)
-                    .setImageList(mImagesLocations)
-                    .setAudioList(mAudioLocations)
-                    .setCheckList(mCheckList)
-                    .setPinned(mIsStarred)
-                    .setLocked(mIsLocked)
-                    .setHasReminder(mHasReminder)
+            noteObject = NoteObject.builder()
+                    .title(mTitle.getText().toString())
+                    .noteContent(mNote.getText().toString())
+                    .folderName(mFolderName)
+                    .color(mColorCode)
+                    .time(time)
+                    .imageList(mImagesLocations)
+                    .audioList(mAudioLocations)
+                    .checkList(mCheckList)
+                    .isPinned(mIsStarred)
+                    .isLocked(mIsLocked)
+                    .hasReminder(mHasReminder)
                     .build();
 
         }
@@ -642,18 +642,18 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             if (c != null && c.moveToFirst()) {
                 NoteObject noteObject = null;
                 if (mTitle != null && mNote != null) {
-                    noteObject = new NoteObject.NoteObjectBuilder()
-                            .setTitle(mTitle.getText().toString())
-                            .setNoteContent(mNote.getText().toString())
-                            .setFolderName(mFolderName)
-                            .setColor(mColorCode)
-                            .setTime(time)
-                            .setImageList(mImagesLocations)
-                            .setAudioList(mAudioLocations)
-                            .setCheckList(mCheckList)
-                            .setPinned(mIsStarred)
-                            .setLocked(mIsLocked)
-                            .setHasReminder(mHasReminder)
+                    noteObject = NoteObject.builder()
+                            .title(mTitle.getText().toString())
+                            .noteContent(mNote.getText().toString())
+                            .folderName(mFolderName)
+                            .color(mColorCode)
+                            .time(time)
+                            .imageList(mImagesLocations)
+                            .audioList(mAudioLocations)
+                            .checkList(mCheckList)
+                            .isPinned(mIsStarred)
+                            .isLocked(mIsLocked)
+                            .hasReminder(mHasReminder)
                             .build();
                 }
                 if (noteObject != null) {
