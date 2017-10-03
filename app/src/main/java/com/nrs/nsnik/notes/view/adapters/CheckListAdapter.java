@@ -61,6 +61,7 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        CheckListObject object = mCheckList.get(position);
         if (holder.mAdd != null) {
             if (position == mCheckList.size() - 1) {
                 holder.mAdd.setVisibility(View.VISIBLE);
@@ -69,12 +70,12 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
             }
         }
         if (holder.mText != null) {
-            holder.mText.setText(mCheckList.get(position).text());
+            holder.mText.setText(object.text());
         }
-        if (holder.mTicker != null) {
-            holder.mTicker.setChecked(mCheckList.get(position).done());
+        if (holder.mTicker != null && holder.mText != null) {
+            holder.mTicker.setChecked(object.done());
             if (holder.mText.getText().toString().length() > 0) {
-                changeItem(mCheckList.get(position).done(), holder.mText);
+                changeItem(object.done(), holder.mText);
             }
         }
     }
