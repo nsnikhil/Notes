@@ -70,13 +70,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         appropriately attaches the icon to text
          */
         if (holder.mSearchName != null) {
-            if (mSearchList.get(position).ismIsFolder()) {
+            if (mSearchList.get(position).isFolder()) {
                 holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_folder_black_48px, 0, 0, 0);
             } else {
                 holder.mSearchName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_note_black_48px, 0, 0, 0);
             }
             holder.mSearchName.setCompoundDrawableTintList(stateList());
-            holder.mSearchName.setText(mSearchList.get(position).getmName());
+            holder.mSearchName.setText(mSearchList.get(position).name());
         }
     }
 
@@ -134,7 +134,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
             mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     SearchObject object = mSearchList.get(getAdapterPosition());
-                    if (object.ismIsFolder()) {
+                    if (object.isFolder()) {
                         // Intent folderIntent = new Intent(mContext, ContainerActivity.class);
                         Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
                         //mContext.startActivity(folderIntent);

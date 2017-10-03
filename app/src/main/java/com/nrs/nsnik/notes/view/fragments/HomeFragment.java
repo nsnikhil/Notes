@@ -489,21 +489,20 @@ public class HomeFragment extends Fragment implements NoteObserver {
         });
     }
 
-    /*
-   @param cursor   represents the cursor received after querying the folderUri
-
-   this function add the content of each row of the cursor to the
-   folder list and clear the old list if any and also notifies the
-   adapter about the change in data
-
+    /**
+     * @param cursor   represents the cursor received after querying the folderUri
+     *
+     *                 this function add the content of each row of the cursor to the
+     *                 folder list and clear the old list if any and also notifies the
+     *                 adapter about the change in data
     */
     private void makeFolderList(@Nullable Cursor cursor) {
         Single<List<FolderObject>> listSingle = Single.fromCallable(() -> {
             List<FolderObject> tempList = new ArrayList<>();
             while (cursor != null && cursor.moveToNext()) {
-                tempList.add(new FolderObject.FolderObjectBuilder()
-                        .setFolderName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName)))
-                        .setFolderColor(cursor.getString(cursor.getColumnIndex(TableNames.table2.mColor)))
+                tempList.add(FolderObject.builder()
+                        .folderName(cursor.getString(cursor.getColumnIndex(TableNames.table2.mFolderName)))
+                        .folderColor(cursor.getString(cursor.getColumnIndex(TableNames.table2.mColor)))
                         .build());
             }
             return tempList;

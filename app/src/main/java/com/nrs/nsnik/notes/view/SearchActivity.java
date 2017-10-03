@@ -131,9 +131,9 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    /*
-    @param text             the search query text
-    @param fromKeyPress     flag to check if search button on keyboard was clicked or not
+    /**
+     * @param text             the search query text
+     * @param fromKeyPress     flag to check if search button on keyboard was clicked or not
      */
     private void performSearch(String text, boolean fromKeyPress) {
         mQueryList.clear();
@@ -151,9 +151,6 @@ public class SearchActivity extends AppCompatActivity {
         mSubject.onNext(text);
     }
 
-    /*
-
-     */
     private void initializeSubject() {
         mSubject.subscribeOn(Schedulers.io())
                 .map(this::getSearchList).observeOn(AndroidSchedulers.mainThread())
@@ -191,8 +188,8 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-    /*
-    @param s        the folder name or note tile that will be searched
+    /**
+     * @param s the folder name or note tile that will be searched
      */
     @android.support.annotation.NonNull
     private List<SearchObject> getSearchList(String s) {
@@ -203,14 +200,14 @@ public class SearchActivity extends AppCompatActivity {
         try {
             while (folderCursor != null && folderCursor.moveToNext()) {
                 String folderName = folderCursor.getString(folderCursor.getColumnIndex(TableNames.table2.mFolderName));
-                mList.add(new SearchObject.SearchObjectBuilder()
+                mList.add(SearchObject.builder()
                         .setName(folderName)
                         .setIsFolder(true)
                         .build());
             }
             while ((noteCursor != null && noteCursor.moveToNext())) {
                 String noteTitle = noteCursor.getString(noteCursor.getColumnIndex(TableNames.table1.mTitle));
-                mList.add(new SearchObject.SearchObjectBuilder()
+                mList.add(SearchObject.builder()
                         .setName(noteTitle)
                         .setIsFolder(false)
                         .build());

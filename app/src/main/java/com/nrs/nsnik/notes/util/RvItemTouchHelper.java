@@ -28,8 +28,8 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
     private final List<Integer> mDragFromList, mDragToList;
     private int mDragFromPosition = -1, mDragToPosition = -1;
 
-    /*
-    @param listener     instance of ItemTouchListener
+    /**
+     * @param listener     instance of ItemTouchListener
      */
     public RvItemTouchHelper(ItemTouchListener listener) {
         mListener = listener;

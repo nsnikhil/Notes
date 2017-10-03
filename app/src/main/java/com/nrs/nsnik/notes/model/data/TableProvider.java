@@ -27,23 +27,23 @@ import com.nrs.nsnik.notes.view.MyApplication;
 
 public class TableProvider extends ContentProvider {
 
-    /*
-    @uAllNotes                      return all notes
-    @uSingleNoteByNoteId            return a note of specific id
-    @uAllNoteByParentFolderName     return notes with a specific parent name supplied as arguments
-    @uAllNoteBySearchQuery          return notes whose title begin with the argument supplied
-    @uAllNotesThatArePinned         return all notes that are pinned
-    @uAllNotesThatAreLocked         return all notes that are locked
-    @uAllNotesByColor               return note of specific color supplied as argument
-
-    @uAllFolder                     return all folders
-    @uSingleFolderByFolderId        return folder of a specific id
-    @uSingleFolderByName            return folder with a specific name supplied as argument
-    @uAllFolderByParentName         return folders with a specific parent name supplied as argument
-    @uAllFolderBySearchQuery        return folders whose name begin with the argument supplied
-    @uAllFoldersThatArePinned       return all folders that are pinned
-    @uAllFoldersThatAreLocked       return all folder that are locked
-    @uAllFoldersByColor             return folder by a specific color supplied as argument
+    /**
+     * uAllNotes                      return all notes
+     * uSingleNoteByNoteId            return a note of specific id
+     * uAllNoteByParentFolderName     return notes with a specific parent name supplied as arguments
+     * uAllNoteBySearchQuery          return notes whose title begin with the argument supplied
+     * uAllNotesThatArePinned         return all notes that are pinned
+     * uAllNotesThatAreLocked         return all notes that are locked
+     * uAllNotesByColor               return note of specific color supplied as argument
+     *
+     * uAllFolder                     return all folders
+     * uSingleFolderByFolderId        return folder of a specific id
+     * uSingleFolderByName            return folder with a specific name supplied as argument
+     * uAllFolderByParentName         return folders with a specific parent name supplied as argument
+     * uAllFolderBySearchQuery        return folders whose name begin with the argument supplied
+     * uAllFoldersThatArePinned       return all folders that are pinned
+     * uAllFoldersThatAreLocked       return all folder that are locked
+     * uAllFoldersByColor             return folder by a specific color supplied as argument
     */
     private static final int uAllNotes = 111;
     private static final int uSingleNoteByNoteId = 112;
@@ -66,10 +66,10 @@ public class TableProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     /*
-    Adding list of uri to UriMatcher
-    1st Param  - Base Authority
-    2nd Param  - Path to a specific uri
-    3rd param  - integer constant which map to a uri
+     * Adding list of uri to UriMatcher
+     * 1st Param  - Base Authority
+     * 2nd Param  - Path to a specific uri
+     * 3rd param  - integer constant which map to a uri
      */
     static {
         sUriMatcher.addURI(TableNames.mAuthority, TableNames.mTableName + "/noteId/#", uSingleNoteByNoteId);
@@ -97,8 +97,8 @@ public class TableProvider extends ContentProvider {
         return true;
     }
 
-    /*
-    @Todo replace with lazy injection
+    /**
+     * TODO replace with lazy injection
      */
     private void setHelper() {
         if (getContext() != null) {
@@ -235,10 +235,11 @@ public class TableProvider extends ContentProvider {
         }
     }
 
-    /*
-    @param u            the uri to be notified after change
-    @param cv           the values to insert
-    @param tableName    the table to insert value into
+    /**
+     * @param u            the uri to be notified after change
+     * @param cv           the values to insert
+     * @param tableName    the table to insert value into
+     * @return the uri of new row
      */
     @Nullable
     private Uri insertVal(@NonNull Uri u, ContentValues cv, String tableName) {
@@ -295,11 +296,12 @@ public class TableProvider extends ContentProvider {
         }
     }
 
-    /*
-    @param u            the uri to be notified after deletion
-    @param sel          the column selected
-    @param selArgs      the condition
-    @param tableName    the table on which delete operation will be performed
+    /**
+     * @param u            the uri to be notified after deletion
+     * @param sel          the column selected
+     * @param selArgs      the condition
+     * @param tableName    the table on which delete operation will be performed
+     * @return the index of the inserted row
      */
     private int deleteVal(Uri u, String sel, String[] selArgs, String tableName) {
         if (mTableHelper == null) {
@@ -355,13 +357,14 @@ public class TableProvider extends ContentProvider {
         }
     }
 
-    /*
-    @param u            the uri to be notified after updating
-    @param cv           the new value used for updating
-    @param sel          the column selected
-    @param selArgs      the condition
-    @param tableName    the table on which update operation will be performed
-   */
+    /**
+     * @param u             the uri to be notified after updating
+     * @param cv            the new value used for updating
+     * @param selection     the column selected
+     * @param selectionArgs the condition
+     * @param tableName     the table on which update operation will be performed
+     * @return the index of the updated row
+     */
     private int updateVal(@NonNull Uri u, ContentValues cv, String selection, String[] selectionArgs, String tableName) {
         if (mTableHelper == null) {
             setHelper();

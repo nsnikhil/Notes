@@ -84,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
             mToolbarText.setText(getResources().getString(R.string.app_name));
         }
         mCompositeDisposable = new CompositeDisposable();
-        //Rollbar.reportMessage("Test message", "debug");
-        //Rollbar.reportException(new Exception("Test exception"));
     }
 
     /**

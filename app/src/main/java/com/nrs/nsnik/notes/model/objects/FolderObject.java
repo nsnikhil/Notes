@@ -10,82 +10,34 @@
 
 package com.nrs.nsnik.notes.model.objects;
 
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import org.jetbrains.annotations.Contract;
+import com.google.auto.value.AutoValue;
 
-import java.io.Serializable;
+@AutoValue
+public abstract class FolderObject implements Parcelable {
 
-public class FolderObject implements Serializable, Parcelable {
 
-    public static final Creator<FolderObject> CREATOR = new Creator<FolderObject>() {
-        @NonNull
-        @Override
-        public FolderObject createFromParcel(@NonNull Parcel in) {
-            return new FolderObject(in);
-        }
-
-        @NonNull
-        @Contract(pure = true)
-        @Override
-        public FolderObject[] newArray(int size) {
-            return new FolderObject[size];
-        }
-    };
-    private final String mFolderName;
-    private final String mFolderColor;
-
-    FolderObject(@NonNull FolderObjectBuilder folderObjectBuilder) {
-        mFolderName = folderObjectBuilder.mFolderName;
-        mFolderColor = folderObjectBuilder.mFolderColor;
+    @NonNull
+    public static Builder builder() {
+        return new AutoValue_FolderObject.Builder();
     }
 
-    private FolderObject(@NonNull Parcel in) {
-        mFolderName = in.readString();
-        mFolderColor = in.readString();
-    }
+    public abstract String folderName();
 
-    public String getmFolderName() {
-        return mFolderName;
-    }
+    public abstract String folderColor();
 
-    public String getmFolderColor() {
-        return mFolderColor;
-    }
+    @AutoValue.Builder
+    public abstract static class Builder {
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+        public abstract Builder folderName(String value);
 
-    @Override
-    public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeString(mFolderName);
-        parcel.writeString(mFolderColor);
-    }
 
-    public static class FolderObjectBuilder {
+        public abstract Builder folderColor(String value);
 
-        private String mFolderName, mFolderColor;
 
-        @NonNull
-        public FolderObjectBuilder setFolderName(String folderName) {
-            this.mFolderName = folderName;
-            return this;
-        }
-
-        @NonNull
-        public FolderObjectBuilder setFolderColor(String folderColor) {
-            this.mFolderColor = folderColor;
-            return this;
-        }
-
-        @NonNull
-        public FolderObject build() {
-            return new FolderObject(this);
-        }
+        public abstract FolderObject build();
     }
 
 }

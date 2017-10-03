@@ -45,9 +45,9 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     @NonNull
     private final List<NoteObserver> mNoteObserverList;
 
-    /*
-     @param uri              the uri to query on
-     @param loaderManager    loader manager object
+    /**
+     * @param uri              the uri to query on
+     * @param loaderManager    loader manager object
     */
     public NoteDataObserver(Context context, Uri uri, @NonNull LoaderManager loaderManager) {
         mContext = context;
@@ -56,10 +56,10 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
         loaderManager.initLoader(LOADER_ID, null, this);
     }
 
-    /*
-     @param observers    the observers which are interested on data emitted
-                         by this observable and want ot be notified every time
-                         data changes
+    /**
+     * @param noteObserver    the observers which are interested on data emitted
+     *                        by this observable and want ot be notified every time
+     *                        data changes
     */
     @Override
     public void add(NoteObserver noteObserver) {
@@ -70,9 +70,9 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     public void remove(NoteObserver noteObserver) {
     }
 
-    /*
-    @param cursor   all its observers those have registered to listen for change are
-                    send a new cursor on data changed
+    /**
+     * @param cursor   all its observers those have registered to listen for change are
+     *                 send a new cursor on data changed
      */
     @Override
     public void updateObserver(Cursor cursor) {

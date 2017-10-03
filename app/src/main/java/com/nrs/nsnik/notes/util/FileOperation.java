@@ -57,10 +57,10 @@ public class FileOperation {
         mRootFolder = ((MyApplication) mContext.getApplicationContext()).getRootFolder();
     }
 
-    /*
-    @param fileName     the name by which the file wil be saved
-                        each new notes has a different file name
-    @param noteObject   the object that is written to file
+    /**
+     * @param fileName     the name by which the file wil be saved
+     *                     each new notes has a different file name
+     * @param noteObject   the object that is written to file
      */
     public void saveNote(@NonNull String fileName, NoteObject noteObject, int isPinned, int isLocked, String time, String color) {
         Completable completable = Completable.fromCallable(() -> {
@@ -102,11 +102,10 @@ public class FileOperation {
 
     }
 
-    /*
-    @param fileName         the name by which the file wil be saved
-    @param noteObject       the object that will be written to file
-    @param uri              the uri ton which the update operation will be
-                            performed
+    /**
+     * @param fileName         the name by which the file wil be saved
+     * @param noteObject       the object that will be written to file
+     * @param uri              the uri ton which the update operation will be performed
      */
     public void updateNote(@NonNull String fileName, @NonNull NoteObject noteObject, Uri uri, int isPinned, int isLocked, String time, String color) {
         Completable completable = Completable.fromCallable(() -> {
@@ -137,7 +136,7 @@ public class FileOperation {
 
             @Override
             public void onComplete() {
-                mDatabaseOperations.updateNote(noteObject.getTitle(), uri, isPinned, isLocked, time, color);
+                mDatabaseOperations.updateNote(noteObject.title(), uri, isPinned, isLocked, time, color);
             }
 
             @Override
@@ -182,9 +181,9 @@ public class FileOperation {
         }
     }
 
-    /*
-    @param fileName     the name of image file
-    @param image        the image
+    /**
+     * @param fileName     the name of image file
+     * @param image        the image
      */
     public void saveImage(@NonNull String fileName, @NonNull Bitmap image) {
         Completable completable = Completable.fromCallable(() -> {
@@ -218,8 +217,8 @@ public class FileOperation {
         });
     }
 
-    /*
-    @param fileName     the name of that file that contains a note object
+    /**
+     * @param fileName     the name of that file that contains a note object
      */
     @Nullable
     public NoteObject readFile(@NonNull String fileName) throws IOException {
@@ -244,9 +243,8 @@ public class FileOperation {
         return object;
     }
 
-    /*
-    @param uri      the uri that will be used to get all the images and the file Name
-                    of a note and then be deleted
+    /**
+     * @param uri the uri that will be used to get all the images and the file Name of a note and then be deleted
      */
     private void deleteFileBack(@NonNull Uri uri) throws IOException {
         Cursor c = mContext.getContentResolver().query(uri, null, null, null, null);
@@ -259,11 +257,11 @@ public class FileOperation {
                 fis = new FileInputStream(f);
                 ois = new ObjectInputStream(fis);
                 NoteObject obj = (NoteObject) ois.readObject();
-                for (int i = 0; i < obj.getImages().size(); i++) {
-                    deleteFile(obj.getImages().get(i));
+                for (int i = 0; i < obj.imagesList().size(); i++) {
+                    deleteFile(obj.imagesList().get(i));
                 }
-                for (int i = 0; i < obj.getAudioLocations().size(); i++) {
-                    deleteFile(obj.getAudioLocations().get(i));
+                for (int i = 0; i < obj.audioList().size(); i++) {
+                    deleteFile(obj.audioList().get(i));
                 }
                 isDeleted = f.delete();
                 if (f.exists() && !isDeleted) {
@@ -285,11 +283,11 @@ public class FileOperation {
         }
     }
 
-    /*
-    @param uri  the uri of the bot that is to be deleted
-
-    first the resources related to note are deleted by calling the function
-    @function deleteFileBack(Uri) then the note data is deleted from database
+    /**
+     * @param uri  the uri of the bot that is to be deleted
+     *
+     *             first the resources related to note are deleted by calling the function
+     *             function deleteFileBack(Uri) then the note data is deleted from database
      */
     public void deleteNote(@NonNull Uri uri) {
         Completable completable = Completable.fromCallable(() -> {
@@ -313,15 +311,15 @@ public class FileOperation {
         });
     }
 
-    /*
-    @param uri      the uri of the folder that is to be deleted
-    @param folderName   the name of the folder that is to deleted
-
-    folder name is to delete all the notes and their
-    resources that arw within that folder, first the
-    resources related to all notes in folder is deleted then
-    all the notes in the database that are stored in that
-    folder and finally the folder
+    /**
+     * @param uri      the uri of the folder that is to be deleted
+     * @param folderName   the name of the folder that is to deleted
+     *
+     *                     folder name is to delete all the notes and their
+     *                     resources that arw within that folder, first the
+     *                     resources related to all notes in folder is deleted then
+     *                     all the notes in the database that are stored in that
+     *                     folder and finally the folder
      */
     public void deleteFolder(Uri uri, String folderName) {
         Completable completable = Completable.fromCallable(() -> {

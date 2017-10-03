@@ -48,10 +48,52 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class AboutFragment extends Fragment {
 
-    private final String[] mLibraryNames = {"Butter Knife", "RxAndroid", "RxJava", "RxBinding", "Glide", "LeakCanary", "Timber", "Dagger 2"};
-    private final String[] mLibraryLinks = {"https://github.com/JakeWharton/butterknife", "https://github.com/ReactiveX/RxAndroid",
-            "https://github.com/ReactiveX/RxJava", "https://github.com/JakeWharton/RxBinding", "https://github.com/bumptech/glide",
-            "https://github.com/square/leakcanary", "https://github.com/JakeWharton/timber", "https://google.github.io/dagger/"};
+    private final String[] mLibraryNames = {
+            "Android Support Library",
+            "FindBug JSR305",
+            "FireBase",
+            "Google Play Services",
+            "RxAndroid",
+            "RxJava",
+            "RxBinding",
+            "Chrome custom tabs",
+            "Timber",
+            "Guava",
+            "Dagger 2",
+            "Butter Knife",
+            "Glide",
+            "RollBar",
+            "EventBus",
+            "AutoValue",
+            "Auto Service",
+            "Auto Parcel",
+            "Leak Canary",
+            "Block Canary"
+    };
+
+
+    private final String[] mLibraryLinks = {
+            "https://github.com/android/platform_frameworks_support",
+            "https://github.com/spotbugs/spotbugs",
+            "https://firebase.google.com/terms/",
+            "https://developers.google.com/terms/",
+            "https://github.com/ReactiveX/RxAndroid",
+            "https://github.com/ReactiveX/RxJava",
+            "https://github.com/JakeWharton/RxBinding",
+            "https://github.com/GoogleChrome/custom-tabs-client",
+            "https://github.com/JakeWharton/timber",
+            "https://github.com/google/guava",
+            "https://google.github.io/dagger/",
+            "https://github.com/JakeWharton/butterknife",
+            "https://github.com/bumptech/glide",
+            "https://github.com/rollbar/rollbar-android",
+            "https://github.com/greenrobot/EventBus",
+            "https://github.com/google/auto/tree/master/value",
+            "https://github.com/google/auto/tree/master/service",
+            "https://github.com/rharter/auto-value-parcel",
+            "https://github.com/square/leakcanary",
+            "https://github.com/markzhai/AndroidPerformanceMonitor"
+    };
 
     @Nullable
     @BindView(R.id.aboutLibraries)
@@ -109,10 +151,10 @@ public class AboutFragment extends Fragment {
         customTabsIntent.launchUrl(getActivity(), Uri.parse(url));
     }
 
-    /*
-    displays the list of available libraries in a
-    dialog format and open links of each library
-    in a chrome custom tab
+    /**
+     * displays the list of available libraries in a
+     * dialog format and open links of each library
+     * in a chrome custom tab
      */
     private void showLibrariesList() {
         AlertDialog.Builder choosePath = new AlertDialog.Builder(getActivity());

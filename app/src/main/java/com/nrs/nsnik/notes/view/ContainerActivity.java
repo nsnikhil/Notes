@@ -58,10 +58,10 @@ public class ContainerActivity extends AppCompatActivity {
         }
     }
 
-    /*
-    this function get the folder name from intent
-    passes it to fragment which displays the notes list
-    in that folder
+    /**
+     * this function get the folder name from intent
+     * passes it to fragment which displays the notes list
+     * in that folder
      */
     private void setFolderValues() {
         if (getIntent() != null && getIntent().getExtras() != null) {

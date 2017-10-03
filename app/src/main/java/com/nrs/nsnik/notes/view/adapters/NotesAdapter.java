@@ -55,12 +55,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
 
-/*
-This adapter takes in a uri queries the uri and
-registers for change in uri i.e. if any items in
-that uri changes the adapter is notified and then
-adapters clear the old list re draws the entire list
-with the new data set
+/**
+ * This adapter takes in a uri queries the uri and
+ * registers for change in uri i.e. if any items in
+ * that uri changes the adapter is notified and then
+ * adapters clear the old list re draws the entire list
+ * with the new data set
  */
 
 public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchListener {
@@ -85,14 +85,11 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     TODO ENABLE SHOW TRANSITIONING OF LAYOUT CHANGES
      */
 
-    /*
-    @param context      the context object
-    @param noteUri      the uri to which queries the note table
-    @param folderUri    the uri which queries the folder table
-    @param notesCount   a interface which notifies about change in note list
-    @param folderCount  a interface which notifies about change in folder list
-    @param manager      the loader manager object used in data observers
-    @param folderName   the name of the folder associated with the uri(note or folder)
+    /**
+     * @param context       The context object
+     * @param noteList      Note list
+     * @param folderList    Folder List
+     * @param folderName    The name of folder
      */
     public NotesAdapter(Context context, @NonNull List<NoteObject> noteList, @NonNull List<FolderObject> folderList, String folderName) {
         mNotesList = new ArrayList<>();
@@ -154,15 +151,15 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         super.onBindViewHolder(holder, position, payloads);
     }
 
-    /*
-        @param holder       HeaderViewHolder object
-        @param position     Position of/in the list
-
-        this function binds the data for header view-holder type
-        it check if folder or note list is size is greater than 0
-        if yes than shows the appropriate headers otherwise
-        hides them
-         */
+    /**
+     * @param holder   HeaderViewHolder object
+     * @param position Position of/in the list
+     *                 <p>
+     *                 this function binds the data for header view-holder type
+     *                 it check if folder or note list is size is greater than 0
+     *                 if yes than shows the appropriate headers otherwise
+     *                 hides them
+     */
     private void bindHeaderData(RecyclerView.ViewHolder holder, int position) {
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
         if (headerViewHolder.mItemHeader != null) {
@@ -184,67 +181,67 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    /*
-        @param holder       FolderViewHolder object
-        @param position     Position of/in the list
-
-        this function binds the data for FolderViewHolder type
-        it takes data from folder list and sets them on textview of
-        FolderViewHolder
-         */
+    /**
+     * @param holder       FolderViewHolder object
+     * @param position     Position of/in the list
+     *
+     *                     this function binds the data for FolderViewHolder type
+     *                     it takes data from folder list and sets them on textview of
+     *                     FolderViewHolder
+     */
     private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
         if (folderViewHolder.mFolderNameText != null) {
-            folderViewHolder.mFolderNameText.setText(mFolderList.get(position).getmFolderName());
-            folderViewHolder.mFolderNameText.setCompoundDrawableTintList(stateList(mFolderList.get(position).getmFolderColor()));
+            folderViewHolder.mFolderNameText.setText(mFolderList.get(position).folderName());
+            folderViewHolder.mFolderNameText.setCompoundDrawableTintList(stateList(mFolderList.get(position).folderColor()));
         }
     }
 
-    /*
-   @param holder       NoteViewHolder object
-   @param position     Position of/in the list
-
-   this function binds the data for NoteViewHolder type
-   it takes data from Notes list and sets title and
-   note content on textviews and others values.
-    */
+    /**
+     * @param holder       NoteViewHolder object
+     * @param position     Position of/in the list
+     *
+     *                     this function binds the data for NoteViewHolder type
+     *                     it takes data from Notes list and sets title and
+     *                     note content on textviews and others values.
+     */
     private void bindNotesData(@NonNull RecyclerView.ViewHolder holder, int position) {
         final NoteViewHolder noteViewHolder = (NoteViewHolder) holder;
         NoteObject object = mNotesList.get(position);
         if (noteViewHolder.mNoteTitle != null) {
-            noteViewHolder.mNoteTitle.setText(object.getTitle());
-            noteViewHolder.mNoteTitle.setTextColor(Color.parseColor(object.getmColor()));
+            noteViewHolder.mNoteTitle.setText(object.title());
+            noteViewHolder.mNoteTitle.setTextColor(Color.parseColor(object.color()));
         }
         if (noteViewHolder.mNoteContent != null) {
-            noteViewHolder.mNoteContent.setText(object.getNote());
+            noteViewHolder.mNoteContent.setText(object.noteContent());
         }
         if (noteViewHolder.mNoteDate != null) {
-            noteViewHolder.mNoteDate.setText(mFileOperation.formatDate((object.getmTime())));
+            noteViewHolder.mNoteDate.setText(mFileOperation.formatDate((object.time())));
         }
         if (noteViewHolder.mNoteImage != null) {
-            if (object.getImages().size() > 0) {
+            if (object.imagesList().size() > 0) {
                 noteViewHolder.mNoteImage.setVisibility(View.VISIBLE);
-                mRequestManager.load(new File(mFolder, object.getImages().get(0))).into(noteViewHolder.mNoteImage);
+                mRequestManager.load(new File(mFolder, object.imagesList().get(0))).into(noteViewHolder.mNoteImage);
             } else {
                 noteViewHolder.mNoteImage.setVisibility(View.GONE);
             }
         }
         if (noteViewHolder.mAudIndicator != null) {
-            if (object.getAudioLocations().size() > 0) {
+            if (object.audioList().size() > 0) {
                 noteViewHolder.mAudIndicator.setVisibility(View.VISIBLE);
             } else {
                 noteViewHolder.mAudIndicator.setVisibility(View.GONE);
             }
         }
         if (noteViewHolder.mChkLstIndicator != null) {
-            if (object.getmCheckList().size() > 0) {
+            if (object.checkList().size() > 0) {
                 noteViewHolder.mChkLstIndicator.setVisibility(View.VISIBLE);
             } else {
                 noteViewHolder.mChkLstIndicator.setVisibility(View.GONE);
             }
         }
         if (noteViewHolder.mRemIndicator != null) {
-            if (object.getReminder() != 0) {
+            if (object.hasReminder() != 0) {
                 noteViewHolder.mRemIndicator.setVisibility(View.VISIBLE);
             } else {
                 noteViewHolder.mRemIndicator.setVisibility(View.GONE);
@@ -257,8 +254,8 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return mNotesList.size() + mFolderList.size() + 2;
     }
 
-    /*
-    @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
+    /**
+     * @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
     public void updateNotesList(@NonNull List<NoteObject> noteList) {
         mNotesList.clear();
@@ -266,8 +263,8 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    /*
-    @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
+    /**
+     * @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
     public void updateFolderList(@NonNull List<FolderObject> folderList) {
         mFolderList.clear();
@@ -297,15 +294,15 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onItemMoved(int fromPosition, int toPosition, RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         /*
-        After items are moved id for each
+         *  After items are moved id for each
          */
         int startPos = -100;
         Uri getIdUri = null;
 
         /*
-        if item is a note than start position is
-        folder size + 2 (folder size + the two header)
-        getUri-->base uri is for note
+         * if item is a note than start position is
+         * folder size + 2 (folder size + the two header)
+         * getUri-->base uri is for note
          */
         if (viewHolder.getItemViewType() == NOTES) {
             startPos = mFolderList.size() + 2;
@@ -313,10 +310,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
          /*
-        if item is a folder than start position is
-        1 (1st position is the folder header)
-         getUri-->base uri is for folder
-         */
+          * if item is a folder than start position is
+          * 1 (1st position is the folder header)
+          * getUri-->base uri is for folder
+          */
         if (viewHolder.getItemViewType() == FOLDER) {
             startPos = 1;
             getIdUri = Uri.withAppendedPath(TableNames.mFolderContentUri, "parentFolderName/" + mFolderName);
@@ -395,15 +392,15 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         //notifyItemRemoved(position);
     }
 
-    /*
-     @param message         message to be displayed in dialog box while deleting
-     @param isFolder        check if folder inflated the menu or not
-     @param folderName      name of the folder that inflated the menu
-     @param uri             uri of the item upon which actions will be taken
-     @param itemView        view to which the particular menu will be attached
-
-     @TODO POP UP STAR THE IETM
-     @TODO POP UP MENU SHARE THE ITEM
+    /**
+     * @param message         message to be displayed in dialog box while deleting
+     * @param isFolder        check if folder inflated the menu or not
+     * @param folderName      name of the folder that inflated the menu
+     * @param uri             uri of the item upon which actions will be taken
+     * @param itemView        view to which the particular menu will be attached
+     *
+     * @TODO POP UP STAR THE IETM
+     * @TODO POP UP MENU SHARE THE ITEM
      */
     private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName, @NonNull final Uri uri, @NonNull View itemView) {
         PopupMenu menu = new PopupMenu(mContext, itemView, Gravity.START);
@@ -434,11 +431,11 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         menu.show();
     }
 
-    /*
-     @param message         message to be displayed in dialog box while deleting
-     @param uri             uri of the item upon which delete operation will be taken
-     @param isFolder        check if uri corresponds to folder
-     @param folderName      name of the folder
+    /**
+     * @param message         message to be displayed in dialog box while deleting
+     * @param uri             uri of the item upon which delete operation will be taken
+     * @param isFolder        check if uri corresponds to folder
+     * @param folderName      name of the folder
      */
     private void makeDeleteDialog(String message, @NonNull final Uri uri, final boolean isFolder, final String folderName) {
         AlertDialog.Builder delete = new AlertDialog.Builder(mContext);
@@ -451,10 +448,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         delete.create().show();
     }
 
-    /*
-     @param uri             uri of the item upon which delete operation will be taken
-     @param isFolder        check if uri corresponds to folder
-     @param folderName      name of the folder
+    /**
+     * @param uri             uri of the item upon which delete operation will be taken
+     * @param isFolder        check if uri corresponds to folder
+     * @param folderName      name of the folder
      */
     private void delete(@NonNull Uri uri, boolean isFolder, String folderName) {
         if (isFolder) {
@@ -532,7 +529,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     Intent intent = new Intent(mContext, NewNoteActivity.class);
 
                     Bundle noteArgs = new Bundle();
-                    noteArgs.putSerializable(mContext.getResources().getString(R.string.bundleNoteSerialObject), mNotesList.get(currPos));
+                    noteArgs.putParcelable(mContext.getResources().getString(R.string.bundleNoteSerialObject), mNotesList.get(currPos));
                     noteArgs.putInt(mContext.getResources().getString(R.string.bundleNoteSerialId), noteId);
 
                     intent.putExtras(noteArgs);

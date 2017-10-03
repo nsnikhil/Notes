@@ -21,8 +21,8 @@ operation with new data
  */
 
 public interface NoteObserver {
-    /*
-    @param cursor   the new data/cursor received from observables
+    /**
+     * @param cursor   the new data/cursor received from observables
      */
     void updateItems(Cursor cursor);
 }
