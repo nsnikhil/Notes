@@ -139,8 +139,8 @@ public class AboutFragment extends Fragment {
         }
     }
 
-    /*
-    @param url  display the url supplied im a chrome custom tab
+    /**
+     * @param url  display the url supplied im a chrome custom tab
      */
     private void chromeCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();

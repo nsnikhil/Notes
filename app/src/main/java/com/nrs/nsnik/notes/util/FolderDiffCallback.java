@@ -19,8 +19,8 @@ import java.util.List;
 
 public class FolderDiffCallback extends DiffUtil.Callback {
 
-    /*
-    TODO DIFFERENCE UTILITY CLASS FOR FOLDER LISTtodo
+    /**
+     * TODO DIFFERENCE UTILITY CLASS FOR FOLDER LISTtodo
      */
 
     private final List<FolderObject> mOldList;

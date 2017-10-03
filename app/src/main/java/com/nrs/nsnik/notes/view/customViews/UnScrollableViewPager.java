@@ -23,31 +23,31 @@ with swipe to scroll disabled
 
 public class UnScrollableViewPager extends ViewPager {
 
-    /*
-    @param context  the context object
+    /**
+     * @param context  the context object
      */
     public UnScrollableViewPager(Context context) {
         super(context);
     }
 
-    /*
-    @param context  the context object
-    @param attr     group of attributes associated with the view on xml
+    /**
+     * @param context  the context object
+     * @param attrs    group of attributes associated with the view on xml
      */
     public UnScrollableViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    /*
-    return false for all touch screen motion events
+    /**
+     * @return false for all touch screen motion events
      */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         return false;
     }
 
-    /*
-    returns false i.e. no implementation to handle touch screen motion events.
+    /**
+     * @return false i.e. no implementation to handle touch screen motion events.
      */
     @SuppressLint("ClickableViewAccessibility")
     @Override

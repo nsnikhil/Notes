@@ -18,8 +18,8 @@ import android.support.v7.widget.RecyclerView;
 
 public class AnimationUtil {
 
-    /*
-    TODO ANIMATION FOR RECYCLER VIEW
+    /**
+     * TODO ANIMATION FOR RECYCLER VIEW
      */
 
     public static void animateItems(@NonNull RecyclerView.ViewHolder holder) {

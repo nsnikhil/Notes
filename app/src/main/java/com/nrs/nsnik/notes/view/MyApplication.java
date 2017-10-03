@@ -10,10 +10,10 @@
 
 package com.nrs.nsnik.notes.view;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.nrs.nsnik.notes.BuildConfig;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
-public class MyApplication extends Application {
+public class MyApplication extends MultiDexApplication {
 
     @Inject
     File mRootFolder;
@@ -86,6 +86,7 @@ public class MyApplication extends Application {
         Rollbar.init(this, "3b2ad6f009e643fdaf91228cdc54acab", "development");
         moduleSetter();
     }
+
 
     private void moduleSetter() {
         setGlideComponent();

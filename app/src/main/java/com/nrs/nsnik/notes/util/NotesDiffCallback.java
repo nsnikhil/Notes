@@ -18,8 +18,8 @@ import java.util.List;
 
 public class NotesDiffCallback extends DiffUtil.Callback {
 
-     /*
-    TODO DIFFERENCE UTILITY CLASS FOR NOTES LIST
+    /**
+     * TODO DIFFERENCE UTILITY CLASS FOR NOTES LIST
      */
 
     private final List<NoteObject> mOldList, mNewList;

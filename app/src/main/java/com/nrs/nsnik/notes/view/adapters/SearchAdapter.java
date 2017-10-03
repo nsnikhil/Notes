@@ -46,9 +46,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     private final CompositeDisposable mCompositeDisposable;
     private List<SearchObject> mSearchList;
 
-    /*
-    @param context          the context object
-    @param searchList       the list of search objects
+    /**
+     * @param context    the context object
+     * @param searchList the list of search objects
      */
     public SearchAdapter(Context context, List<SearchObject> searchList) {
         mContext = context;
@@ -80,8 +80,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         }
     }
 
-    /*
-    @return new ColorStateList
+    /**
+     * @return new ColorStateList
      */
     @NonNull
     private ColorStateList stateList() {
@@ -101,11 +101,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         return mSearchList.size();
     }
 
-    /*
-    called to change the content of searchable list
-    and notify the adapter
-
-    @TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
+    /**
+     * called to change the content of searchable list
+     * and notify the adapter
+     * <p>
+     * TODO REPLACE NOTIFYSETDATA CHANGE WITH DIFF UTIL
      */
     public void modifyList(List<SearchObject> list) {
         mSearchList = list;
