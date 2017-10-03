@@ -77,7 +77,6 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 public class NewNoteActivity extends AppCompatActivity implements OnAddClickListener, OnItemRemoveListener {
 
@@ -610,9 +609,6 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         Calendar calendar = Calendar.getInstance();
         String time = String.valueOf(calendar.getTimeInMillis());
         NoteObject noteObject = null;
-        for (CheckListObject object : mCheckList) {
-            Timber.d(object.done() + " " + object.text());
-        }
         if (mTitle != null && mNote != null) {
             noteObject = NoteObject.builder()
                     .title(mTitle.getText().toString())

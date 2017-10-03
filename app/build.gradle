@@ -14,7 +14,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
@@ -44,6 +44,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
 }
 
 ext.versionCodes = ['armeabi': 3, 'armeabi-v7a': 4, 'arm64-v8a': 5, mips: 6, 'x86': 7, 'x86_64': 8]
@@ -64,7 +67,7 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
     }
-    //MULTIDEX
+    //MULTI DEX
     implementation 'com.android.support:multidex:1.0.2'
 
     //KOTLIN
@@ -89,7 +92,7 @@ dependencies {
 
     //RX JAVA & ANDROID
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.4'
 
     //RX BINDING
     implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
@@ -113,23 +116,32 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
 
     //BUTTER KNIFE
-    implementation 'com.jakewharton:butterknife:8.8.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     //GLIDE
-    implementation 'com.github.bumptech.glide:glide:4.0.0-RC1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+    implementation 'com.github.bumptech.glide:glide:4.1.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
 
-    //ROLLBAR
+    //ROLL BAR
     implementation 'com.rollbar:rollbar-android:0.2.1'
 
     //EVENT BUS
     implementation 'org.greenrobot:eventbus:3.0.0'
 
+    //AUTO VALUE
+    compileOnly "com.google.auto.value:auto-value:1.5.1"
+    annotationProcessor "com.google.auto.value:auto-value:1.5.1"
+
+    //AUTO PARCEL
+    annotationProcessor 'com.ryanharter.auto.value:auto-value-parcel:0.2.5'
+
     //LEAK CANARY
-    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
+    //BLOCK CANARY
+    implementation 'com.github.markzhai:blockcanary-android:1.5.0'
 
     testImplementation 'junit:junit:4.12'
 }

@@ -65,7 +65,6 @@ public class AboutFragment extends Fragment {
             "RollBar",
             "EventBus",
             "AutoValue",
-            "Auto Service",
             "Auto Parcel",
             "Leak Canary",
             "Block Canary"
@@ -89,7 +88,6 @@ public class AboutFragment extends Fragment {
             "https://github.com/rollbar/rollbar-android",
             "https://github.com/greenrobot/EventBus",
             "https://github.com/google/auto/tree/master/value",
-            "https://github.com/google/auto/tree/master/service",
             "https://github.com/rharter/auto-value-parcel",
             "https://github.com/square/leakcanary",
             "https://github.com/markzhai/AndroidPerformanceMonitor"

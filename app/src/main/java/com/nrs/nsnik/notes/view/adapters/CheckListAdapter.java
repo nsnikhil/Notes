@@ -69,12 +69,12 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
             }
         }
         if (holder.mText != null) {
-            holder.mText.setText(mCheckList.get(position).getmText());
+            holder.mText.setText(mCheckList.get(position).text());
         }
         if (holder.mTicker != null) {
-            holder.mTicker.setChecked(mCheckList.get(position).ismDone());
+            holder.mTicker.setChecked(mCheckList.get(position).done());
             if (holder.mText.getText().toString().length() > 0) {
-                changeItem(mCheckList.get(position).ismDone(), holder.mText);
+                changeItem(mCheckList.get(position).done(), holder.mText);
             }
         }
     }
@@ -119,11 +119,13 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
         MyViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            if (mText != null) {
+            if (mText != null && mTicker != null) {
                 mCompositeDisposable.add(RxTextView.textChanges(mText).subscribe(charSequence -> {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
-                        checkListObject.setmText(charSequence.toString());
+                        mCheckList.set(getAdapterPosition(), CheckListObject.builder()
+                                .text(charSequence.toString())
+                                .done(mTicker.isChecked())
+                                .build());
                     }
                 }));
                 mCompositeDisposable.add(RxTextView.editorActionEvents(mText).subscribe(textViewEditorActionEvent -> {
@@ -139,8 +141,10 @@ public class CheckListAdapter extends RecyclerView.Adapter<CheckListAdapter.MyVi
             if (mTicker != null) {
                 mCompositeDisposable.add(RxCompoundButton.checkedChanges(mTicker).subscribe(aBoolean -> {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        CheckListObject checkListObject = mCheckList.get(getAdapterPosition());
-                        checkListObject.setmDone(aBoolean);
+                        mCheckList.set(getAdapterPosition(), CheckListObject.builder()
+                                .text(mText.getText().toString())
+                                .done(aBoolean)
+                                .build());
                         if (mText.getText().toString().length() > 0) {
                             changeItem(aBoolean, mText);
                         }

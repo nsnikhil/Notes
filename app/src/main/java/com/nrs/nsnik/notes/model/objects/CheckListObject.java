@@ -11,96 +11,31 @@
 package com.nrs.nsnik.notes.model.objects;
 
 
-import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
-import org.jetbrains.annotations.Contract;
+import com.google.auto.value.AutoValue;
 
 import java.io.Serializable;
 
-public class CheckListObject implements Serializable, Parcelable {
+@AutoValue
+public abstract class CheckListObject implements Serializable, Parcelable {
 
-    public static final Creator<CheckListObject> CREATOR = new Creator<CheckListObject>() {
-        @NonNull
-        @Override
-        public CheckListObject createFromParcel(@NonNull Parcel in) {
-            return new CheckListObject(in);
-        }
 
-        @NonNull
-        @Contract(pure = true)
-        @Override
-        public CheckListObject[] newArray(int size) {
-            return new CheckListObject[size];
-        }
-    };
-    private String mText;
-    private boolean mDone;
-
-    CheckListObject(@NonNull CheckListBuilder checkListBuilder) {
-        mText = checkListBuilder.mText;
-        mDone = checkListBuilder.mDone;
+    public static Builder builder() {
+        return new AutoValue_CheckListObject.Builder();
     }
 
-    private CheckListObject(@NonNull Parcel in) {
-        mText = in.readString();
-        mDone = in.readByte() != 0;
-    }
+    public abstract String text();
 
+    public abstract boolean done();
 
-    @NonNull
-    @Contract(pure = true)
-    public static Creator<CheckListObject> getCREATOR() {
-        return CREATOR;
-    }
+    @AutoValue.Builder
+    public abstract static class Builder {
 
-    public String getmText() {
-        return mText;
-    }
+        public abstract Builder text(String value);
 
-    public void setmText(String mText) {
-        this.mText = mText;
-    }
+        public abstract Builder done(boolean value);
 
-    public boolean ismDone() {
-        return mDone;
-    }
-
-    public void setmDone(boolean mDone) {
-        this.mDone = mDone;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeString(mText);
-        parcel.writeByte((byte) (mDone ? 1 : 0));
-    }
-
-    public static class CheckListBuilder {
-        private String mText;
-        private boolean mDone;
-
-        @NonNull
-        public CheckListBuilder setText(String text) {
-            mText = text;
-            return this;
-        }
-
-        @NonNull
-        public CheckListBuilder setCompleted(boolean completed) {
-            mDone = completed;
-            return this;
-        }
-
-        @NonNull
-        public CheckListObject build() {
-            return new CheckListObject(this);
-        }
+        public abstract CheckListObject build();
     }
 }
