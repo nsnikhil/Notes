@@ -41,3 +41,12 @@
 }
 
 -libraryjars <java.home>/lib/rt.jar
+
+-dontwarn com.f2prateek.dart.internal.**
+-keep class **$$ExtraInjector { *; }
+-keepclasseswithmembernames class * {
+    @com.f2prateek.dart.* <fields>;
+}
+-keep class **Henson { *; }
+-keep class **$$IntentBuilder { *; }
+

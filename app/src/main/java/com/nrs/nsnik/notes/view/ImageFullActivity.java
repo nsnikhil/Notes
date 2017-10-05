@@ -17,6 +17,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.WindowManager;
 
+import com.f2prateek.dart.Dart;
+import com.f2prateek.dart.InjectExtra;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.util.FileOperation;
@@ -41,11 +43,18 @@ public class ImageFullActivity extends AppCompatActivity implements OnItemRemove
     @BindView(R.id.fullImage)
     RecyclerView mImageList;
 
+    @InjectExtra
+    @Nullable
+    ArrayList<String> mImageLocations;
+    @InjectExtra
+    int mPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_full);
         ButterKnife.bind(this);
+        Dart.inject(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         initialize();
     }
@@ -60,13 +69,10 @@ public class ImageFullActivity extends AppCompatActivity implements OnItemRemove
         if (mImageList != null) {
             mImageList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         }
-        if (getIntent() != null) {
-            Bundle bundle = getIntent().getBundleExtra(getResources().getString(R.string.bundleIntentImage));
-            int currPos = bundle.getInt(getResources().getString(R.string.bundleArrayListPosition));
-            ArrayList<String> mImagesLoc = bundle.getStringArrayList(getResources().getString(R.string.bundleStringImageArray));
-            ImageAdapter adapter = new ImageAdapter(this, mImagesLoc, this, true);
+        if (mImageLocations != null) {
+            ImageAdapter adapter = new ImageAdapter(this, mImageLocations, this, true);
             mImageList.setAdapter(adapter);
-            mImageList.getLayoutManager().scrollToPosition(currPos);
+            mImageList.getLayoutManager().scrollToPosition(mPosition);
         }
     }
 

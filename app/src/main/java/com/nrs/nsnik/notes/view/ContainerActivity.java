@@ -15,6 +15,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.f2prateek.dart.Dart;
+import com.f2prateek.dart.InjectExtra;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.view.fragments.HomeFragment;
@@ -23,11 +25,11 @@ import com.squareup.leakcanary.RefWatcher;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/*
-  this activity is usually called by folder click and
-  the name of the folder is passed as extras
-  which is appended to a uri upon which query is performed to
-  get data list
+/**
+ * this activity is usually called by folder click and
+ * the name of the folder is passed as extras
+ * which is appended to a uri upon which query is performed to
+ * get data list
  */
 
 public class ContainerActivity extends AppCompatActivity {
@@ -36,11 +38,15 @@ public class ContainerActivity extends AppCompatActivity {
     @BindView(R.id.containerToolbar)
     Toolbar mContainerToolbar;
 
+    @InjectExtra
+    String mFolderName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_container);
         ButterKnife.bind(this);
+        Dart.inject(this);
         initialize();
         setFolderValues();
     }
@@ -64,14 +70,11 @@ public class ContainerActivity extends AppCompatActivity {
      * in that folder
      */
     private void setFolderValues() {
-        if (getIntent() != null && getIntent().getExtras() != null) {
-            String folderName = getIntent().getExtras().getString(getResources().getString(R.string.intentFolderName));
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(folderName);
-            }
+        if (getSupportActionBar() != null && mFolderName != null) {
+            getSupportActionBar().setTitle(mFolderName);
             HomeFragment homeFragment = new HomeFragment();
             Bundle args = new Bundle();
-            args.putString(getResources().getString(R.string.homefldnm), folderName);
+            args.putString(getResources().getString(R.string.homefldnm), mFolderName);
             homeFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction().add(R.id.containerSpace, homeFragment).commit();
         }

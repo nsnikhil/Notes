@@ -45,6 +45,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.f2prateek.dart.Dart;
+import com.f2prateek.dart.InjectExtra;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
@@ -135,8 +137,14 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     @Nullable
     @BindView(R.id.toolsColor)
     TextView mBottomColor;
-
-
+    @InjectExtra
+    @Nullable
+    NoteObject mNoteObject;
+    @InjectExtra
+    int mNoteId;
+    @InjectExtra
+    @Nullable
+    String mFolderNameBundle;
     //Variables used in saving or updating note
     @Nullable
     private String mFolderName = "nofolder";
@@ -145,20 +153,15 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     @Nullable
     private Uri mIntentUri = null;
     private MenuItem mStarMenu, mLockMenu;
-
     private String mCurrentPhotoPath;
-
     private List<String> mImagesLocations, mAudioLocations;
     private List<CheckListObject> mCheckList;
     private List<String> mFilesToDelete;
-
     private ImageAdapter mImageAdapter;
     private AudioListAdapter mAudioListAdapter;
     private CheckListAdapter mCheckListAdapter;
-
     private FileOperation mFileOperation;
     private File mRootFolder;
-
     private CompositeDisposable mCompositeDisposable;
 
     @Override
@@ -168,9 +171,11 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         ButterKnife.bind(this);
         mFileOperation = ((MyApplication) getApplicationContext()).getFileOperations();
         mRootFolder = ((MyApplication) getApplicationContext()).getRootFolder();
+        Dart.inject(this);
         initialize();
         listeners();
-        if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+
+        /*if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
             }
@@ -179,6 +184,13 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             if (getIntent().getExtras() != null) {
                 mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
             }
+        }*/
+
+        if (getSupportActionBar() != null && mNoteObject != null) {
+            getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
+            setNote();
+        } else if (mFolderNameBundle != null) {
+            mFolderName = mFolderNameBundle;
         }
     }
 
@@ -343,7 +355,51 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private void setNote() {
-        if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
+        if (mNoteObject != null && mNoteId != 0) {
+            mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + mNoteId);
+            if (mNoteObject != null) {
+                if (mTitle != null) {
+                    mTitle.setText(mNoteObject.title());
+                }
+                if (mNote != null) {
+                    mNote.setText(mNoteObject.noteContent());
+                }
+                mFolderName = mNoteObject.folderName();
+                mColorCode = mNoteObject.color();
+                mTitle.setTextColor(Color.parseColor(mColorCode));
+                mIsStarred = mNoteObject.isPinned();
+                mIsLocked = mNoteObject.isLocked();
+                String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(mNoteObject.time()));
+                if (mBottomDate != null) {
+                    mBottomDate.setText(editedDate);
+                }
+                if (mNoteObject.imagesList().size() > 0) {
+                    if (mImageRecyclerView != null) {
+                        mImageRecyclerView.setVisibility(View.VISIBLE);
+                    }
+                    mImagesLocations.addAll(mNoteObject.imagesList());
+                    mImageAdapter.notifyDataSetChanged();
+                }
+                if (mNoteObject.audioList().size() > 0) {
+                    if (mAudioRecyclerView != null) {
+                        mAudioRecyclerView.setVisibility(View.VISIBLE);
+                    }
+                    mAudioLocations.addAll(mNoteObject.audioList());
+                    mImageAdapter.notifyDataSetChanged();
+                }
+                if (mNoteObject.checkList().size() > 0) {
+                    if (mCheckListRecyclerView != null) {
+                        mCheckListRecyclerView.setVisibility(View.VISIBLE);
+                    }
+                    mCheckList.addAll(mNoteObject.checkList());
+                    mCheckListAdapter.notifyDataSetChanged();
+                }
+                if (mNoteObject.hasReminder() != 0) {
+                    mHasReminder = 1;
+                }
+            }
+        }
+        /*if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
             Bundle args = getIntent().getExtras();
             mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + args.getInt(getResources().getString(R.string.bundleNoteSerialId)));
             NoteObject object = args.getParcelable(getResources().getString(R.string.bundleNoteSerialObject));
@@ -388,7 +444,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                     mHasReminder = 1;
                 }
             }
-        }
+        }*/
     }
 
     private void setMenuIconState() {

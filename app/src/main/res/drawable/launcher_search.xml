@@ -8,12 +8,14 @@
   ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
   -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="oval">
-            <solid android:color="@color/launcherShortcutBackground" />
-            <stroke android:color="@color/launcherShortcutBackground" />
-            <size android:width="48dp" android:height="48dp" />
-        </shape>
-    </item>
-</selector>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/circle" />
+
+    <item
+        android:width="@dimen/twentyFour"
+        android:height="@dimen/twentyFour"
+        android:drawable="@drawable/ic_search_black_48px"
+        android:gravity="center" />
+
+</layer-list>

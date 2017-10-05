@@ -107,7 +107,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
 
     @Override
     public void run() {
-        int currentPosition = 0;
+        int currentPosition;
         if (mMediaPlayer != null) {
             currentPosition = mMediaPlayer.getCurrentPosition();
             int total = mMediaPlayer.getDuration();

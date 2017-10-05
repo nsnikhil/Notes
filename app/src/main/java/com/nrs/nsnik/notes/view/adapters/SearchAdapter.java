@@ -134,14 +134,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
             mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     SearchObject object = mSearchList.get(getAdapterPosition());
+
                     if (object.isFolder()) {
-                        // Intent folderIntent = new Intent(mContext, ContainerActivity.class);
                         Toast.makeText(mContext, "Will open folder", Toast.LENGTH_LONG).show();
-                        //mContext.startActivity(folderIntent);
                     } else {
-                        //  Intent noteIntent = new Intent(mContext, NewNoteActivity.class);
                         Toast.makeText(mContext, "Will open note", Toast.LENGTH_LONG).show();
-                        //mContext.startActivity(noteIntent);
                     }
                 }
             }));

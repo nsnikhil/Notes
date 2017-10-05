@@ -60,8 +60,8 @@ import com.nrs.nsnik.notes.util.FileOperation;
 import com.nrs.nsnik.notes.util.RvItemTouchHelper;
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent;
 import com.nrs.nsnik.notes.util.interfaces.NoteObserver;
+import com.nrs.nsnik.notes.view.Henson;
 import com.nrs.nsnik.notes.view.MyApplication;
-import com.nrs.nsnik.notes.view.NewNoteActivity;
 import com.nrs.nsnik.notes.view.adapters.NotesAdapter;
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment;
 import com.squareup.leakcanary.RefWatcher;
@@ -154,10 +154,10 @@ public class HomeFragment extends Fragment implements NoteObserver {
         return v;
     }
 
-    /*
-    if the fragment if attached to activity which was
-    launch via intent then get the folder name
-    and append to base content uri
+    /**
+     * if the fragment if attached to activity which was
+     * launch via intent then get the folder name
+     * and append to base content uri
      */
     private void getArgs() {
         if (getArguments() != null) {
@@ -222,9 +222,14 @@ public class HomeFragment extends Fragment implements NoteObserver {
         if (mAddNote != null) {
             mCompositeDisposable.add(RxView.clicks(mAddNote).subscribe(v -> {
                 disappear();
-                Intent newNote = new Intent(getActivity(), NewNoteActivity.class);
-                newNote.putExtra(getActivity().getResources().getString(R.string.newnotefolderbundle), mFolderName);
-                startActivity(newNote);
+
+                Intent intent = Henson.with(getActivity())
+                        .gotoNewNoteActivity()
+                        .mNoteId(0)
+                        .mFolderNameBundle(mFolderName)
+                        .build();
+
+                startActivity(intent);
             }));
         }
         if (mAddFolder != null) {
@@ -238,9 +243,9 @@ public class HomeFragment extends Fragment implements NoteObserver {
         }
     }
 
-    /*
-    if the add notes and folder fab is not visible
-    the perform animation and then make them visible
+    /**
+     * if the add notes and folder fab is not visible
+     * the perform animation and then make them visible
      */
     private void reveal() {
         RotateAnimation rotateAnimation = new RotateAnimation(0, 135, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -289,9 +294,9 @@ public class HomeFragment extends Fragment implements NoteObserver {
         }
     }
 
-    /*
-    if the add notes and folder fab is visible
-    the perform animation and then make them in-visible
+    /**
+     * if the add notes and folder fab is visible
+     * the perform animation and then make them in-visible
      */
     private void disappear() {
         RotateAnimation rotateAnimation = new RotateAnimation(135, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -339,9 +344,9 @@ public class HomeFragment extends Fragment implements NoteObserver {
         }
     }
 
-    /*
-    create a alert dialog with custom view
-    to take a name from field
+    /**
+     * create a alert dialog with custom view
+     * to take a name from field
      */
     private void createFolderDialog() {
         AlertDialog.Builder newFolder = new AlertDialog.Builder(getActivity());
@@ -443,13 +448,12 @@ public class HomeFragment extends Fragment implements NoteObserver {
         }
     }
 
-    /*
-    @param cursor   represents the cursor received after querying the noteUri
-
-    this function add the content of each row of the cursor to the
-    note list and clear the old list if any and also notifies the
-    adapter about the change in data
-
+    /**
+     * @param cursor represents the cursor received after querying the noteUri
+     *               <p>
+     *               this function add the content of each row of the cursor to the
+     *               note list and clear the old list if any and also notifies the
+     *               adapter about the change in data
      */
     private void makeNotesList(@Nullable Cursor cursor) {
         Single<List<NoteObject>> listSingle = Single.fromCallable(() -> {
@@ -490,12 +494,12 @@ public class HomeFragment extends Fragment implements NoteObserver {
     }
 
     /**
-     * @param cursor   represents the cursor received after querying the folderUri
-     *
-     *                 this function add the content of each row of the cursor to the
-     *                 folder list and clear the old list if any and also notifies the
-     *                 adapter about the change in data
-    */
+     * @param cursor represents the cursor received after querying the folderUri
+     *               <p>
+     *               this function add the content of each row of the cursor to the
+     *               folder list and clear the old list if any and also notifies the
+     *               adapter about the change in data
+     */
     private void makeFolderList(@Nullable Cursor cursor) {
         Single<List<FolderObject>> listSingle = Single.fromCallable(() -> {
             List<FolderObject> tempList = new ArrayList<>();

@@ -143,6 +143,14 @@ dependencies {
     //BLOCK CANARY
     implementation 'com.github.markzhai:blockcanary-android:1.5.0'
 
+    //DART
+    implementation 'com.f2prateek.dart:dart:2.0.2'
+    annotationProcessor 'com.f2prateek.dart:dart-processor:2.0.2'
+
+    //HENSON
+    implementation 'com.f2prateek.dart:henson:2.0.2'
+    annotationProcessor 'com.f2prateek.dart:henson-processor:2.0.2'
+
     testImplementation 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

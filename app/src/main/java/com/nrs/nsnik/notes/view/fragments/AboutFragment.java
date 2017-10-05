@@ -39,11 +39,11 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.disposables.CompositeDisposable;
 
-/*
- this fragments shows
- info about the app and all the
- 3rd party libraries used to make this app
- and also the license info
+/**
+ * this fragments shows
+ * info about the app and all the
+ * 3rd party libraries used to make this app
+ * and also the license info
  */
 
 public class AboutFragment extends Fragment {
@@ -67,30 +67,32 @@ public class AboutFragment extends Fragment {
             "AutoValue",
             "Auto Parcel",
             "Leak Canary",
-            "Block Canary"
+            "Block Canary",
+            "Dart & Henson"
     };
 
 
     private final String[] mLibraryLinks = {
-            "https://github.com/android/platform_frameworks_support",
-            "https://github.com/spotbugs/spotbugs",
-            "https://firebase.google.com/terms/",
-            "https://developers.google.com/terms/",
-            "https://github.com/ReactiveX/RxAndroid",
-            "https://github.com/ReactiveX/RxJava",
-            "https://github.com/JakeWharton/RxBinding",
-            "https://github.com/GoogleChrome/custom-tabs-client",
-            "https://github.com/JakeWharton/timber",
-            "https://github.com/google/guava",
-            "https://google.github.io/dagger/",
-            "https://github.com/JakeWharton/butterknife",
-            "https://github.com/bumptech/glide",
-            "https://github.com/rollbar/rollbar-android",
-            "https://github.com/greenrobot/EventBus",
-            "https://github.com/google/auto/tree/master/value",
-            "https://github.com/rharter/auto-value-parcel",
-            "https://github.com/square/leakcanary",
-            "https://github.com/markzhai/AndroidPerformanceMonitor"
+            "https://github.com/android/platform_frameworks_support",   //Android Support library
+            "https://github.com/spotbugs/spotbugs",                     //FindBug JSR305
+            "https://firebase.google.com/terms/",                       //FireBase
+            "https://developers.google.com/terms/",                     //Google Play Services
+            "https://github.com/ReactiveX/RxAndroid",                   //RxAndroid
+            "https://github.com/ReactiveX/RxJava",                      //RxJava
+            "https://github.com/JakeWharton/RxBinding",                 //RxBinding
+            "https://github.com/GoogleChrome/custom-tabs-client",       //Chrome custom tabs
+            "https://github.com/JakeWharton/timber",                    //Timber
+            "https://github.com/google/guava",                          //Guava
+            "https://google.github.io/dagger/",                         //Dagger
+            "https://github.com/JakeWharton/butterknife",               //Butter Knife
+            "https://github.com/bumptech/glide",                        //Glide
+            "https://github.com/rollbar/rollbar-android",               //RollBar
+            "https://github.com/greenrobot/EventBus",                   //EventBus
+            "https://github.com/google/auto/tree/master/value",         //Auto Value
+            "https://github.com/rharter/auto-value-parcel",             //Auto Parcel
+            "https://github.com/square/leakcanary",                     //Leak Canary
+            "https://github.com/markzhai/AndroidPerformanceMonitor",    //Block Canary
+            "https://github.com/f2prateek/dart",                        //Dart & Henson
     };
 
     @Nullable
@@ -138,7 +140,7 @@ public class AboutFragment extends Fragment {
     }
 
     /**
-     * @param url  display the url supplied im a chrome custom tab
+     * @param url display the url supplied im a chrome custom tab
      */
     private void chromeCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();

@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -43,9 +42,8 @@ import com.nrs.nsnik.notes.model.objects.NoteObject;
 import com.nrs.nsnik.notes.util.DatabaseOperations;
 import com.nrs.nsnik.notes.util.FileOperation;
 import com.nrs.nsnik.notes.util.interfaces.ItemTouchListener;
-import com.nrs.nsnik.notes.view.ContainerActivity;
+import com.nrs.nsnik.notes.view.Henson;
 import com.nrs.nsnik.notes.view.MyApplication;
-import com.nrs.nsnik.notes.view.NewNoteActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -86,10 +84,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
 
     /**
-     * @param context       The context object
-     * @param noteList      Note list
-     * @param folderList    Folder List
-     * @param folderName    The name of folder
+     * @param context    The context object
+     * @param noteList   Note list
+     * @param folderList Folder List
+     * @param folderName The name of folder
      */
     public NotesAdapter(Context context, @NonNull List<NoteObject> noteList, @NonNull List<FolderObject> folderList, String folderName) {
         mNotesList = new ArrayList<>();
@@ -182,12 +180,12 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * @param holder       FolderViewHolder object
-     * @param position     Position of/in the list
-     *
-     *                     this function binds the data for FolderViewHolder type
-     *                     it takes data from folder list and sets them on textview of
-     *                     FolderViewHolder
+     * @param holder   FolderViewHolder object
+     * @param position Position of/in the list
+     *                 <p>
+     *                 this function binds the data for FolderViewHolder type
+     *                 it takes data from folder list and sets them on textview of
+     *                 FolderViewHolder
      */
     private void bindFolderData(RecyclerView.ViewHolder holder, int position) {
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
@@ -198,12 +196,12 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * @param holder       NoteViewHolder object
-     * @param position     Position of/in the list
-     *
-     *                     this function binds the data for NoteViewHolder type
-     *                     it takes data from Notes list and sets title and
-     *                     note content on textviews and others values.
+     * @param holder   NoteViewHolder object
+     * @param position Position of/in the list
+     *                 <p>
+     *                 this function binds the data for NoteViewHolder type
+     *                 it takes data from Notes list and sets title and
+     *                 note content on textviews and others values.
      */
     private void bindNotesData(@NonNull RecyclerView.ViewHolder holder, int position) {
         final NoteViewHolder noteViewHolder = (NoteViewHolder) holder;
@@ -255,7 +253,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
+     * TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
     public void updateNotesList(@NonNull List<NoteObject> noteList) {
         mNotesList.clear();
@@ -264,7 +262,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * @TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
+     * TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
      */
     public void updateFolderList(@NonNull List<FolderObject> folderList) {
         mFolderList.clear();
@@ -393,14 +391,14 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * @param message         message to be displayed in dialog box while deleting
-     * @param isFolder        check if folder inflated the menu or not
-     * @param folderName      name of the folder that inflated the menu
-     * @param uri             uri of the item upon which actions will be taken
-     * @param itemView        view to which the particular menu will be attached
-     *
-     * @TODO POP UP STAR THE IETM
-     * @TODO POP UP MENU SHARE THE ITEM
+     * @param message    message to be displayed in dialog box while deleting
+     * @param isFolder   check if folder inflated the menu or not
+     * @param folderName name of the folder that inflated the menu
+     * @param uri        uri of the item upon which actions will be taken
+     * @param itemView   view to which the particular menu will be attached
+     *                   <p>
+     *                   TODO POP UP STAR THE IETM
+     *                   TODO POP UP MENU SHARE THE ITEM
      */
     private void inflatePopUpMenu(final String message, final boolean isFolder, final String folderName, @NonNull final Uri uri, @NonNull View itemView) {
         PopupMenu menu = new PopupMenu(mContext, itemView, Gravity.START);
@@ -432,10 +430,10 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * @param message         message to be displayed in dialog box while deleting
-     * @param uri             uri of the item upon which delete operation will be taken
-     * @param isFolder        check if uri corresponds to folder
-     * @param folderName      name of the folder
+     * @param message    message to be displayed in dialog box while deleting
+     * @param uri        uri of the item upon which delete operation will be taken
+     * @param isFolder   check if uri corresponds to folder
+     * @param folderName name of the folder
      */
     private void makeDeleteDialog(String message, @NonNull final Uri uri, final boolean isFolder, final String folderName) {
         AlertDialog.Builder delete = new AlertDialog.Builder(mContext);
@@ -449,9 +447,9 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * @param uri             uri of the item upon which delete operation will be taken
-     * @param isFolder        check if uri corresponds to folder
-     * @param folderName      name of the folder
+     * @param uri        uri of the item upon which delete operation will be taken
+     * @param isFolder   check if uri corresponds to folder
+     * @param folderName name of the folder
      */
     private void delete(@NonNull Uri uri, boolean isFolder, String folderName) {
         if (isFolder) {
@@ -526,16 +524,14 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     int startPos = mFolderList.size() + 2;
                     int currPos = getAdapterPosition() - startPos;
                     int noteId = mDatabaseOperations.getId(Uri.withAppendedPath(TableNames.mContentUri, "parentFolderName/" + mFolderName), currPos);
-                    Intent intent = new Intent(mContext, NewNoteActivity.class);
 
-                    Bundle noteArgs = new Bundle();
-                    noteArgs.putParcelable(mContext.getResources().getString(R.string.bundleNoteSerialObject), mNotesList.get(currPos));
-                    noteArgs.putInt(mContext.getResources().getString(R.string.bundleNoteSerialId), noteId);
-
-                    intent.putExtras(noteArgs);
-
+                    Intent noteIntent = Henson.with(mContext)
+                            .gotoNewNoteActivity()
+                            .mNoteId(noteId)
+                            .mNoteObject(mNotesList.get(currPos))
+                            .build();
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteContainer");
-                    mContext.startActivity(intent, options.toBundle());
+                    mContext.startActivity(noteIntent, options.toBundle());
                 }
             }));
             if (mMore != null) {
@@ -570,23 +566,25 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         FolderViewHolder(@NonNull final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
-                //check if position is valid
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+            if (mFolderNameText != null) {
+                mCompositeDisposable.add(RxView.clicks(itemView).subscribe(v -> {
+                    //check if position is valid
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     /*
                       get the id for the folder at the particular
                       position and attach it to folder content uri and
                       pass it to container activity
                     */
-                    Intent intent = new Intent(mContext, ContainerActivity.class);
-                    if (mFolderNameText != null) {
-                        intent.putExtra(mContext.getResources().getString(R.string.intentFolderName), mFolderNameText.getText().toString());
+                        Intent intent = Henson.with(mContext)
+                                .gotoContainerActivity()
+                                .mFolderName(mFolderNameText.getText().toString())
+                                .build();
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "noteFolder");
                         mContext.startActivity(intent, options.toBundle());
                     }
-                }
-            }));
-            if (mFolderMore != null) {
+                }));
+            }
+            if (mFolderMore != null && mFolderNameText != null) {
                 mCompositeDisposable.add(RxView.clicks(mFolderMore).subscribe(v -> {
                     //check if position is valid
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {

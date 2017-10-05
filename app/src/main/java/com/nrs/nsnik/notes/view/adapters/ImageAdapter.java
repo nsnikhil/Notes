@@ -14,7 +14,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -34,7 +33,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.util.FileOperation;
 import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
-import com.nrs.nsnik.notes.view.ImageFullActivity;
+import com.nrs.nsnik.notes.view.Henson;
 import com.nrs.nsnik.notes.view.MyApplication;
 
 import java.io.File;
@@ -160,13 +159,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                     }));
                     mCompositeDisposable.add(RxView.clicks(image).subscribe(v -> {
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                            Intent fullScreen = new Intent(mContext, ImageFullActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putStringArrayList(mContext.getResources().getString(R.string.bundleStringImageArray), (ArrayList<String>) mImageLoc);
-                            bundle.putInt(mContext.getResources().getString(R.string.bundleArrayListPosition), getAdapterPosition());
-                            fullScreen.putExtra(mContext.getResources().getString(R.string.bundleIntentImage), bundle);
+
+                            Intent intent = Henson.with(mContext)
+                                    .gotoImageFullActivity()
+                                    .mPosition(getAdapterPosition())
+                                    .mImageLocations((ArrayList<String>) mImageLoc)
+                                    .build();
+
                             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, itemView, "fullImage");
-                            mContext.startActivity(fullScreen, options.toBundle());
+                            mContext.startActivity(intent, options.toBundle());
+
                         }
                     }));
                 }
