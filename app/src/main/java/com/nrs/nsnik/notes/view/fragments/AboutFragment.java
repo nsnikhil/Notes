@@ -68,7 +68,8 @@ public class AboutFragment extends Fragment {
             "Auto Parcel",
             "Leak Canary",
             "Block Canary",
-            "Dart & Henson"
+            "Dart & Henson",
+            "Room"
     };
 
 
@@ -92,7 +93,8 @@ public class AboutFragment extends Fragment {
             "https://github.com/rharter/auto-value-parcel",             //Auto Parcel
             "https://github.com/square/leakcanary",                     //Leak Canary
             "https://github.com/markzhai/AndroidPerformanceMonitor",    //Block Canary
-            "https://github.com/f2prateek/dart",                        //Dart & Henson
+            "https://github.com/f2prateek/dart",                                    //Dart & Henson
+            "https://developer.android.com/topic/libraries/architecture/room.html"  //ROOM
     };
 
     @Nullable

@@ -10,6 +10,7 @@
 
 package com.nrs.nsnik.notes.view;
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.nrs.nsnik.notes.model.dagger.components.DaggerApplicationComponent;
 import com.nrs.nsnik.notes.model.dagger.components.DaggerGlideComponent;
 import com.nrs.nsnik.notes.model.dagger.components.GlideComponent;
 import com.nrs.nsnik.notes.model.dagger.modules.ContextModule;
+import com.nrs.nsnik.notes.model.data.NotesDatabase;
 import com.nrs.nsnik.notes.model.data.TableHelper;
 import com.nrs.nsnik.notes.util.DatabaseOperations;
 import com.nrs.nsnik.notes.util.FileOperation;
@@ -38,18 +40,16 @@ import timber.log.Timber;
 
 public class MyApplication extends MultiDexApplication {
 
+    private static final String DATABASE_NAME = "NotesDB";
     @Inject
     File mRootFolder;
-
     @Inject
     FileOperation mFileOperations;
-
     @Inject
     DatabaseOperations mDatabaseOperations;
-
     @Inject
     TableHelper mTableHelper;
-
+    private NotesDatabase mNotesDatabase;
     private RefWatcher refWatcher;
     private GlideComponent mGlideComponent;
 
@@ -91,6 +91,7 @@ public class MyApplication extends MultiDexApplication {
     private void moduleSetter() {
         setGlideComponent();
         setAppComponent();
+        mNotesDatabase = Room.databaseBuilder(this, NotesDatabase.class, DATABASE_NAME).build();
     }
 
     private void setAppComponent() {
@@ -120,5 +121,9 @@ public class MyApplication extends MultiDexApplication {
 
     public TableHelper getTableHelper() {
         return mTableHelper;
+    }
+
+    public NotesDatabase getNotesDatabase() {
+        return mNotesDatabase;
     }
 }
