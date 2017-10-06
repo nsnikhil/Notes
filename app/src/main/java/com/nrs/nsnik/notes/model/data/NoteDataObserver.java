@@ -26,14 +26,14 @@ import com.nrs.nsnik.notes.util.interfaces.NoteObserver;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-this is an observable i.e. observers
-can observe on this class
-and they will be notified once the
-observable emits new set of data
-it uses cursor loader to watch out on a uri
-passed and whenever somethings changes in that uri
-it send the new data to all of its observers
+/**
+ * this is an observable i.e. observers
+ * can observe on this class
+ * and they will be notified once the
+ * observable emits new set of data
+ * it uses cursor loader to watch out on a uri
+ * passed and whenever somethings changes in that uri
+ * it send the new data to all of its observers
  */
 
 
@@ -46,9 +46,9 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     private final List<NoteObserver> mNoteObserverList;
 
     /**
-     * @param uri              the uri to query on
-     * @param loaderManager    loader manager object
-    */
+     * @param uri           the uri to query on
+     * @param loaderManager loader manager object
+     */
     public NoteDataObserver(Context context, Uri uri, @NonNull LoaderManager loaderManager) {
         mContext = context;
         mNoteObserverList = new ArrayList<>();
@@ -57,10 +57,10 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     }
 
     /**
-     * @param noteObserver    the observers which are interested on data emitted
-     *                        by this observable and want ot be notified every time
-     *                        data changes
-    */
+     * @param noteObserver the observers which are interested on data emitted
+     *                     by this observable and want ot be notified every time
+     *                     data changes
+     */
     @Override
     public void add(NoteObserver noteObserver) {
         mNoteObserverList.add(noteObserver);
@@ -71,8 +71,8 @@ public class NoteDataObserver implements LoaderManager.LoaderCallbacks<Cursor>, 
     }
 
     /**
-     * @param cursor   all its observers those have registered to listen for change are
-     *                 send a new cursor on data changed
+     * @param cursor all its observers those have registered to listen for change are
+     *               send a new cursor on data changed
      */
     @Override
     public void updateObserver(Cursor cursor) {

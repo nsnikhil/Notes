@@ -27,6 +27,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
@@ -174,18 +175,6 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         Dart.inject(this);
         initialize();
         listeners();
-
-        /*if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
-            }
-            setNote();
-        } else {
-            if (getIntent().getExtras() != null) {
-                mFolderName = getIntent().getExtras().getString(getResources().getString(R.string.newnotefolderbundle));
-            }
-        }*/
-
         if (getSupportActionBar() != null && mNoteObject != null) {
             getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
             setNote();
@@ -399,52 +388,6 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                 }
             }
         }
-        /*if (getIntent().getExtras() != null && getIntent().getExtras().getParcelable(getResources().getString(R.string.bundleNoteSerialObject)) != null) {
-            Bundle args = getIntent().getExtras();
-            mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + args.getInt(getResources().getString(R.string.bundleNoteSerialId)));
-            NoteObject object = args.getParcelable(getResources().getString(R.string.bundleNoteSerialObject));
-            if (object != null) {
-                if (mTitle != null) {
-                    mTitle.setText(object.title());
-                }
-                if (mNote != null) {
-                    mNote.setText(object.noteContent());
-                }
-                mFolderName = object.folderName();
-                mColorCode = object.color();
-                mTitle.setTextColor(Color.parseColor(mColorCode));
-                mIsStarred = object.isPinned();
-                mIsLocked = object.isLocked();
-                String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(object.time()));
-                if (mBottomDate != null) {
-                    mBottomDate.setText(editedDate);
-                }
-                if (object.imagesList().size() > 0) {
-                    if (mImageRecyclerView != null) {
-                        mImageRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                    mImagesLocations.addAll(object.imagesList());
-                    mImageAdapter.notifyDataSetChanged();
-                }
-                if (object.audioList().size() > 0) {
-                    if (mAudioRecyclerView != null) {
-                        mAudioRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                    mAudioLocations.addAll(object.audioList());
-                    mImageAdapter.notifyDataSetChanged();
-                }
-                if (object.checkList().size() > 0) {
-                    if (mCheckListRecyclerView != null) {
-                        mCheckListRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                    mCheckList.addAll(object.checkList());
-                    mCheckListAdapter.notifyDataSetChanged();
-                }
-                if (object.hasReminder() != 0) {
-                    mHasReminder = 1;
-                }
-            }
-        }*/
     }
 
     private void setMenuIconState() {
@@ -545,6 +488,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         recordAudio();
     }
 
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private void startCameraIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -572,6 +516,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         return image;
     }
 
+    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     private void startGalleryIntent() {
         Intent chosePicture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         if (chosePicture.resolveActivity(getPackageManager()) != null) {
@@ -600,6 +545,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         addImageToList(imageFileName);
     }
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     private void recordAudio() {
         //Creating new file for audio
         String audioFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.AUDIO);

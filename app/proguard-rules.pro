@@ -50,3 +50,5 @@
 -keep class **Henson { *; }
 -keep class **$$IntentBuilder { *; }
 
+-keep class * implements android.arch.lifecycle.GeneratedAdapter {<init>(...);}
+

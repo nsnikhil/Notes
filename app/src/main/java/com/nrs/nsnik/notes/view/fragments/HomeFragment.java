@@ -52,7 +52,6 @@ import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.data.FolderDataObserver;
 import com.nrs.nsnik.notes.model.data.NoteDataObserver;
-import com.nrs.nsnik.notes.model.data.NotesDatabase;
 import com.nrs.nsnik.notes.model.data.TableNames;
 import com.nrs.nsnik.notes.model.objects.FolderObject;
 import com.nrs.nsnik.notes.model.objects.NoteObject;
@@ -140,8 +139,6 @@ public class HomeFragment extends Fragment implements NoteObserver {
 
     private CompositeDisposable mCompositeDisposable;
 
-    private NotesDatabase mNotesDatabase;
-
     public HomeFragment() {
     }
 
@@ -152,7 +149,6 @@ public class HomeFragment extends Fragment implements NoteObserver {
         mUnbinder = ButterKnife.bind(this, v);
         mFileOperation = ((MyApplication) getActivity().getApplicationContext()).getFileOperations();
         mDatabaseOperations = ((MyApplication) getActivity().getApplicationContext()).getDatabaseOperations();
-        //mNotesDatabase = ((MyApplication) getActivity().getApplicationContext()).getNotesDatabase();
         initialize();
         listeners();
         return v;

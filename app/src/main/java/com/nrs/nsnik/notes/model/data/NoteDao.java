@@ -10,6 +10,7 @@
 
 package com.nrs.nsnik.notes.model.data;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -23,25 +24,25 @@ import java.util.List;
 public interface NoteDao {
 
     @Query("SELECT * FROM NoteEntity")
-    List<NoteEntity> getNotes();
+    LiveData<List<NoteEntity>> getNotes();
 
     @Query("SELECT * FROM NoteEntity WHERE mUid = :id")
     NoteEntity getNote(int id);
 
     @Query("SELECT * FROM NoteEntity WHERE mFolderName = :folderName")
-    NoteEntity getNoteByFolderName(String folderName);
+    LiveData<List<NoteEntity>> getNoteByFolderName(String folderName);
 
     @Query("SELECT * FROM NoteEntity WHERE mTitle LIKE :query")
-    NoteEntity getNoteByQuery(String query);
+    LiveData<List<NoteEntity>> getNoteByQuery(String query);
 
     @Query("SELECT * FROM NoteEntity WHERE mIsPinned = :isPinned")
-    NoteEntity getNoteByPin(int isPinned);
+    LiveData<List<NoteEntity>> getNoteByPin(int isPinned);
 
     @Query("SELECT * FROM NoteEntity WHERE mIsLocked = :isLocked")
-    NoteEntity getNoteByLock(int isLocked);
+    LiveData<List<NoteEntity>> getNoteByLock(int isLocked);
 
     @Query("SELECT * FROM NoteEntity WHERE mColor = :color")
-    NoteEntity getNoteByColor(String color);
+    LiveData<List<NoteEntity>> getNoteByColor(String color);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertNotes(NoteEntity... noteEntity);

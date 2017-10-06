@@ -10,6 +10,7 @@
 
 package com.nrs.nsnik.notes.model.data;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -22,7 +23,7 @@ import java.util.List;
 public interface FolderDao {
 
     @Query("SELECT * FROM FolderEntity")
-    List<FolderEntity> getFolders();
+    LiveData<List<FolderEntity>> getFolders();
 
     @Query("SELECT * FROM FolderEntity WHERE mUid = :id")
     FolderEntity getFolder(int id);
@@ -31,19 +32,19 @@ public interface FolderDao {
     FolderEntity getFolderByName(String folderName);
 
     @Query("SELECT * FROM FolderEntity WHERE mFolderName LIKE :query")
-    FolderEntity getFolderByQuery(String query);
+    LiveData<List<FolderEntity>> getFolderByQuery(String query);
 
     @Query("SELECT * FROM FolderEntity WHERE mParentFolderName = :parentFolder")
-    FolderEntity getFolderBYParent(String parentFolder);
+    LiveData<List<FolderEntity>> getFolderBYParent(String parentFolder);
 
     @Query("SELECT * FROM FolderEntity WHERE mIsPinned = :isPinned")
-    FolderEntity getFolderByPin(int isPinned);
+    LiveData<List<FolderEntity>> getFolderByPin(int isPinned);
 
     @Query("SELECT * FROM FolderEntity WHERE mIsLocked = :isLocked")
-    FolderEntity getFolderByLock(int isLocked);
+    LiveData<List<FolderEntity>> getFolderByLock(int isLocked);
 
     @Query("SELECT * FROM FolderEntity WHERE mColor = :color")
-    FolderEntity getFolderByColor(String color);
+    LiveData<List<FolderEntity>> getFolderByColor(String color);
 
     @Insert
     long[] insertFolders(FolderEntity... folderEntities);
