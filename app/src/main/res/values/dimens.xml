@@ -9,12 +9,11 @@
   -->
 
 <resources>
-    <dimen name="toolbarElevation">4dp</dimen>
     <dimen name="sixteen">16dp</dimen>
     <dimen name="twentyFour">24dp</dimen>
     <dimen name="eight">8dp</dimen>
+    <dimen name="headerHeight">240dp</dimen>
     <dimen name="drawerWidth">240dp</dimen>
-    <dimen name="headerHeight">180dp</dimen>
     <dimen name="headingText">20sp</dimen>
     <dimen name="smallHeadingText">18sp</dimen>
     <dimen name="newNoteImage">200dp</dimen>

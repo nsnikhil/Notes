@@ -9,11 +9,12 @@
   -->
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/singleNoteCard"
     style="@style/myCardView"
     android:transitionName="noteContainer">
 
-    <LinearLayout style="@style/verticalLinearLayout">
+    <android.support.constraint.ConstraintLayout style="@style/verticalLinearLayout">
 
         <ImageView
             android:id="@+id/singleNoteImage"
@@ -27,76 +28,43 @@
             android:id="@+id/singleNoteTitle"
             style="@style/newNoteHeading"
             android:maxLines="1"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/singleNoteImage" />
 
         <com.nrs.nsnik.notes.view.customViews.NikTextViewLight
             android:id="@+id/singleNoteContent"
             style="@style/newNoteContent"
             android:lineSpacingExtra="2dp"
-            android:maxLines="6" />
+            android:maxLines="6"
+            app:layout_constraintTop_toBottomOf="@id/singleNoteTitle" />
 
-        <LinearLayout
+        <ImageButton
+            android:id="@+id/singleNoteMore"
             style="@style/wrapContent"
-            android:layout_gravity="end"
-            android:orientation="horizontal">
+            android:layout_gravity="end|center_vertical"
+            android:background="@null"
+            android:contentDescription="@string/imageDescription"
+            android:padding="@dimen/eight"
+            android:src="@drawable/ic_more_vert_black_24px"
+            android:tint="#999999"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/singleNoteContent" />
 
-            <ImageView
-                android:id="@+id/singleNoteReminder"
-                style="@style/small"
-                android:layout_margin="@dimen/eight"
-                android:contentDescription="@string/imageDescription"
-                android:src="@drawable/ic_alarm_add_black_24px"
-                android:tint="@color/colorAccent"
-                android:visibility="gone" />
+        <com.nrs.nsnik.notes.view.customViews.NikTextViewLight
+            android:id="@+id/singleNoteDate"
+            style="@style/wrapContent"
+            android:layout_width="0dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="9"
+            android:drawablePadding="@dimen/eight"
+            android:drawableStart="@drawable/note_time"
+            android:drawableTint="#999999"
+            android:gravity="center_vertical"
+            android:padding="@dimen/eight"
+            android:text="@string/app_name"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-            <ImageView
-                android:id="@+id/singleNoteAudio"
-                style="@style/small"
-                android:layout_margin="@dimen/eight"
-                android:contentDescription="@string/imageDescription"
-                android:src="@drawable/ic_music_note_black_24px"
-                android:tint="@color/colorAccent"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/singleNoteCheck"
-                style="@style/small"
-                android:layout_margin="@dimen/eight"
-                android:contentDescription="@string/imageDescription"
-                android:src="@drawable/ic_list_black_24px"
-                android:tint="@color/colorAccent"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <LinearLayout style="@style/stretchedHorizontally">
-
-            <com.nrs.nsnik.notes.view.customViews.NikTextViewLight
-                android:id="@+id/singleNoteDate"
-                style="@style/wrapContent"
-                android:layout_width="0dp"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="9"
-                android:drawablePadding="@dimen/eight"
-                android:drawableStart="@drawable/ic_access_time_black_18px"
-                android:drawableTint="#999999"
-                android:gravity="center_vertical"
-                android:padding="@dimen/eight"
-                android:text="@string/app_name"
-                android:textSize="14sp" />
-
-            <ImageButton
-                android:id="@+id/singleNoteMore"
-                style="@style/wrapContent"
-                android:layout_gravity="end|center_vertical"
-                android:background="@null"
-                android:contentDescription="@string/imageDescription"
-                android:padding="@dimen/eight"
-                android:src="@drawable/ic_more_vert_black_24px"
-                android:tint="#999999" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

@@ -30,11 +30,9 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.util.FileOperation;
-import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
 import com.nrs.nsnik.notes.view.Henson;
-import com.nrs.nsnik.notes.view.MyApplication;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,13 +42,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
 
-/*
-IMAGE ADAPTER TAKES IN LIST OF STRING WHERE EACH
- STRING REPRESENTS A FILE NAME, IT USES THIS FILENAME TO
- CREATE A NEW BITMAP FILE AND DISPLAY EACH IMAGE IN ITS
- RECYCLER VIEW, IT ALSO TAKES A onItemRemoveListener INTERFACE WHICH
- IS RESPONSIBLE FOR LETTING THE RECYCLER VIEWS ACTIVITY/FRAGMENT
- KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
+/**
+ * IMAGE ADAPTER TAKES IN LIST OF STRING WHERE EACH
+ * STRING REPRESENTS A FILE NAME, IT USES THIS FILENAME TO
+ * CREATE A NEW BITMAP FILE AND DISPLAY EACH IMAGE IN ITS
+ * RECYCLER VIEW, IT ALSO TAKES A onItemRemoveListener INTERFACE WHICH
+ * IS RESPONSIBLE FOR LETTING THE RECYCLER VIEWS ACTIVITY/FRAGMENT
+ * KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
  */
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
@@ -58,24 +56,21 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private final RequestManager mGlideRequestManager;
 
     private final Context mContext;
-    private final OnItemRemoveListener mOnItemRemoveListener;
     private final boolean mFullScreen;
     private final List<String> mImageLoc;
     @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
     /**
-     * @param c                     the context object
-     * @param imageLocations        the location of images
-     * @param onItemRemoveListener  the itemRemoveListener
-     * @param forFullScreen         is full screen
+     * @param c                    the context object
+     * @param imageLocations       the location of images
+     * @param forFullScreen        is full screen
      */
-    public ImageAdapter(Context c, List<String> imageLocations, OnItemRemoveListener onItemRemoveListener, boolean forFullScreen) {
+    public ImageAdapter(Context c, List<String> imageLocations, boolean forFullScreen) {
         mContext = c;
         mImageLoc = imageLocations;
-        mOnItemRemoveListener = onItemRemoveListener;
         mFullScreen = forFullScreen;
-        mGlideRequestManager = ((MyApplication) mContext.getApplicationContext()).getGlideComponent().getRequestManager();
+        mGlideRequestManager = ((MyApplication) mContext.getApplicationContext()).getRequestManager();
         mCompositeDisposable = new CompositeDisposable();
     }
 
@@ -153,9 +148,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                     image.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
                     mCompositeDisposable.add(RxView.clicks(remove).subscribe(v -> {
-                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                            mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.IMAGE, mImageLoc.get(getAdapterPosition()));
-                        }
+
                     }));
                     mCompositeDisposable.add(RxView.clicks(image).subscribe(v -> {
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {

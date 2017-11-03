@@ -1,0 +1,125 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "0975fba0f34064bee701d34ad2f66c21",
+    "entities": [
+      {
+        "tableName": "NoteEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mUid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mTitle` TEXT, `mFileName` TEXT, `mFolderName` TEXT, `mIsPinned` INTEGER NOT NULL, `mIsLocked` INTEGER NOT NULL, `mDateModified` INTEGER, `mColor` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "mUid",
+            "columnName": "mUid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mTitle",
+            "columnName": "mTitle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mFileName",
+            "columnName": "mFileName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mFolderName",
+            "columnName": "mFolderName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mIsPinned",
+            "columnName": "mIsPinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mIsLocked",
+            "columnName": "mIsLocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mDateModified",
+            "columnName": "mDateModified",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mColor",
+            "columnName": "mColor",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "mUid"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "FolderEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mUid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mFolderName` TEXT, `mParentFolderName` TEXT, `mIsPinned` INTEGER NOT NULL, `mIsLocked` INTEGER NOT NULL, `mColor` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "mUid",
+            "columnName": "mUid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mFolderName",
+            "columnName": "mFolderName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mParentFolderName",
+            "columnName": "mParentFolderName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mIsPinned",
+            "columnName": "mIsPinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mIsLocked",
+            "columnName": "mIsLocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mColor",
+            "columnName": "mColor",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "mUid"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"0975fba0f34064bee701d34ad2f66c21\")"
+    ]
+  }
+}

@@ -52,3 +52,16 @@
 
 -keep class * implements android.arch.lifecycle.GeneratedAdapter {<init>(...);}
 
+-keepclasseswithmembers class * implements android.arch.lifecycle.GenericLifecycleObserver {
+<init>(...);
+}
+-keepclassmembers class android.arch.lifecycle.Lifecycle$* { *; }
+-keepclassmembers class * {
+    @android.arch.lifecycle.OnLifecycleEvent *;
+}
+-keepclassmembers class * extends android.arch.lifecycle.ViewModel {
+<init>(...);
+}
+
+-dontwarn okio.**
+

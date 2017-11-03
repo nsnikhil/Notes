@@ -21,10 +21,9 @@ import android.view.View;
 
 import com.nrs.nsnik.notes.R;
 
-    /*
-    NO INFO AVAILABLE SINCE IT IS INCOMPLETE
-
-    TODO COMPLETE THIS PAGE INDICATOR
+/**
+ * NO INFO AVAILABLE SINCE IT IS INCOMPLETE
+ * TODO COMPLETE THIS PAGE INDICATOR
      */
 
 public class PageIndicator extends View {

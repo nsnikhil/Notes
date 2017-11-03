@@ -20,7 +20,7 @@ import android.content.pm.Signature;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
-import com.nrs.nsnik.notes.model.dagger.qualifiers.ApplicationQualifier;
+import com.nrs.nsnik.notes.dagger.qualifiers.ApplicationQualifier;
 
 import java.security.MessageDigest;
 

@@ -18,7 +18,7 @@
         android:drawablePadding="@dimen/eight"
         android:drawableStart="@drawable/ic_folder_black_48px"
         android:maxLines="1"
-        android:padding="4dp"
+        android:padding="@dimen/sixteen"
         android:textSize="18sp"
         android:textStyle="bold" />
 

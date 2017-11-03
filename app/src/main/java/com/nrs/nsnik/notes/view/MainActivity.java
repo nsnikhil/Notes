@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.support.design.widget.RxNavigationView;
 import com.nrs.nsnik.notes.BuildConfig;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.view.fragments.AboutFragment;
 import com.nrs.nsnik.notes.view.fragments.HomeFragment;

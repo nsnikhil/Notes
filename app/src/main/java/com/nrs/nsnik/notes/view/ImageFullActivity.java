@@ -20,9 +20,8 @@ import android.view.WindowManager;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
 import com.nrs.nsnik.notes.BuildConfig;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.util.FileOperation;
-import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -30,17 +29,16 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
-/*
-Receives list of file names as intent which are passed to adapter
-that get the bitmap/images of that file and displays them in full
-screen
+/**
+ * Receives list of file names as intent which are passed to adapter
+ * that get the bitmap/images of that file and displays them in full
+ * screen
  */
-public class ImageFullActivity extends AppCompatActivity implements OnItemRemoveListener {
+public class ImageFullActivity extends AppCompatActivity {
 
     @Nullable
-    @BindView(R.id.fullImage)
+    @BindView(R.id.recyclerView)
     RecyclerView mImageList;
 
     @InjectExtra
@@ -52,7 +50,7 @@ public class ImageFullActivity extends AppCompatActivity implements OnItemRemove
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_full);
+        setContentView(R.layout.recycler_view);
         ButterKnife.bind(this);
         Dart.inject(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -70,7 +68,7 @@ public class ImageFullActivity extends AppCompatActivity implements OnItemRemove
             mImageList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         }
         if (mImageLocations != null) {
-            ImageAdapter adapter = new ImageAdapter(this, mImageLocations, this, true);
+            ImageAdapter adapter = new ImageAdapter(this, mImageLocations, true);
             mImageList.setAdapter(adapter);
             mImageList.getLayoutManager().scrollToPosition(mPosition);
         }
@@ -85,8 +83,4 @@ public class ImageFullActivity extends AppCompatActivity implements OnItemRemove
         }
     }
 
-    @Override
-    public void onItemRemoved(int position, FileOperation.FILE_TYPES types, String fileName) {
-        Timber.d(String.valueOf(position));
-    }
 }

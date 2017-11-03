@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nrs.nsnik.notes.BuildConfig;
+import com.nrs.nsnik.notes.MyApplication;
 import com.squareup.leakcanary.RefWatcher;
 
 public class SplashActivity extends AppCompatActivity {

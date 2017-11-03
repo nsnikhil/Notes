@@ -8,21 +8,21 @@
   ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/stretchedHorizontally"
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/fabFolderContainer"
+        android:id="@+id/fabAddNoteContainer"
         style="@style/wrapContent"
-        android:layout_gravity="end"
-        android:orientation="horizontal"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.nrs.nsnik.notes.view.customViews.NikTextView
             style="@style/wrapContent"
             android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/eight"
             android:background="@color/cardview_dark_background"
             android:padding="4dp"
             android:text="@string/createFolder"
@@ -32,45 +32,49 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAddFolder"
             style="@style/wrapContent"
+            android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/eight"
             android:src="@drawable/ic_create_new_folder_white_48px"
             app:fabSize="normal" />
 
-
     </LinearLayout>
 
+
     <LinearLayout
-        android:id="@+id/fabNoteContainer"
+        android:id="@+id/fabAddFolderContainer"
         style="@style/wrapContent"
-        android:layout_gravity="end"
-        android:orientation="horizontal"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fabAddNoteContainer">
 
         <com.nrs.nsnik.notes.view.customViews.NikTextView
             style="@style/wrapContent"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center_vertical|start"
+            android:layout_margin="@dimen/eight"
             android:background="@color/cardview_dark_background"
             android:padding="4dp"
             android:text="@string/createNote"
             android:textColor="@color/cardview_light_background"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="visible" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAddNote"
             style="@style/wrapContent"
+            android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/eight"
             android:src="@drawable/ic_note_add_white_48px"
             app:fabSize="normal" />
-
 
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabAdd"
         style="@style/wrapContent"
-        android:layout_gravity="end"
         android:layout_margin="@dimen/eight"
         android:src="@drawable/ic_add_white_48px"
-        app:fabSize="normal" />
+        app:fabSize="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fabAddFolderContainer" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

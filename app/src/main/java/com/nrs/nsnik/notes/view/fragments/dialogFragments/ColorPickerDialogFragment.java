@@ -39,16 +39,12 @@ import butterknife.ButterKnife;
 public class ColorPickerDialogFragment extends DialogFragment {
 
     @Nullable
-    @BindView(R.id.colorPickerList)
+    @BindView(R.id.recyclerView)
     RecyclerView mColorList;
-
-    public ColorPickerDialogFragment() {
-    }
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_color_picker_dialog, container, false);
+        View v = inflater.inflate(R.layout.recycler_view, container, false);
         ButterKnife.bind(this, v);
         initialize();
         return v;

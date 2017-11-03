@@ -36,7 +36,7 @@
         <FrameLayout
             android:id="@+id/mainContainer"
             style="@style/matchParent"
-            android:layout_marginTop="?attr/actionBarSize" />
+            android:layout_marginTop="?android:actionBarSize" />
 
     </FrameLayout>
 

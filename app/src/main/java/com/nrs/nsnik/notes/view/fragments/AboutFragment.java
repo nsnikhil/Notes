@@ -30,8 +30,8 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.view.MyApplication;
 import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.BindView;

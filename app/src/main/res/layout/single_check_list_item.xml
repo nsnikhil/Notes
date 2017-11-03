@@ -8,36 +8,33 @@
   ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/stretchedHorizontally"
     android:orientation="vertical">
 
-    <LinearLayout style="@style/stretchedHorizontally">
+    <CheckBox
+        android:id="@+id/checkListTicker"
+        style="@style/wrapContent" />
 
-        <CheckBox
-            android:id="@+id/checkListTicker"
-            style="@style/wrapContent"
-            android:layout_marginStart="@dimen/sixteen" />
+    <com.nrs.nsnik.notes.view.customViews.NikEditText
+        android:id="@+id/checkListItem"
+        style="@style/wrapContent"
+        android:layout_gravity="center_vertical"
+        android:background="@null"
+        android:hint="@string/checkListAddItem"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:maxLines="1"
+        app:layout_constraintStart_toEndOf="@id/checkListTicker" />
 
-        <com.nrs.nsnik.notes.view.customViews.NikEditText
-            android:id="@+id/checkListItem"
-            style="@style/stretchedHorizontally"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/sixteen"
-            android:background="@null"
-            android:hint="@string/checkListAddItem"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:maxLines="1" />
-
-    </LinearLayout>
 
     <ImageButton
         android:id="@+id/checkListAdd"
         style="@style/twentyFour"
-        android:layout_marginStart="20dp"
         android:contentDescription="@string/imageDescription"
         android:src="@drawable/ic_add_box_black_24px"
-        android:visibility="gone" />
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/checkListTicker" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nrs.nsnik.notes.BuildConfig;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
 import com.squareup.leakcanary.RefWatcher;
 

@@ -8,11 +8,10 @@
   ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolsBottomSheet"
-    style="@style/matchParent"
-    android:layout_height="wrap_content"
+    style="@style/stretchedHorizontally"
     android:background="@color/colorBackground"
     android:clickable="true"
     android:duplicateParentState="true"
@@ -32,37 +31,43 @@
         android:id="@+id/toolsCheckList"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_list_black_24px"
-        android:text="@string/noteToolCheckList" />
+        android:text="@string/noteToolCheckList"
+        app:layout_constraintTop_toBottomOf="@id/toolsDate" />
 
     <com.nrs.nsnik.notes.view.customViews.NikTextView
         android:id="@+id/toolsCamera"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_camera_alt_black_24px"
-        android:text="@string/noteToolCamera" />
+        android:text="@string/noteToolCamera"
+        app:layout_constraintTop_toBottomOf="@id/toolsCheckList" />
 
     <com.nrs.nsnik.notes.view.customViews.NikTextView
         android:id="@+id/toolsAttachment"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_attach_file_black_24px"
-        android:text="@string/noteToolAttachment" />
+        android:text="@string/noteToolAttachment"
+        app:layout_constraintTop_toBottomOf="@id/toolsCamera" />
 
     <com.nrs.nsnik.notes.view.customViews.NikTextView
         android:id="@+id/toolsReminder"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_alarm_add_black_24px"
-        android:text="@string/noteToolReminder" />
+        android:text="@string/noteToolReminder"
+        app:layout_constraintTop_toBottomOf="@id/toolsAttachment" />
 
     <com.nrs.nsnik.notes.view.customViews.NikTextView
         android:id="@+id/toolsAudio"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_music_note_black_24px"
-        android:text="@string/noteToolAudio" />
+        android:text="@string/noteToolAudio"
+        app:layout_constraintTop_toBottomOf="@id/toolsReminder" />
 
     <com.nrs.nsnik.notes.view.customViews.NikTextView
         android:id="@+id/toolsColor"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_color_lens_black_24px"
-        android:text="@string/noteToolColor" />
+        android:text="@string/noteToolColor"
+        app:layout_constraintTop_toBottomOf="@id/toolsAudio" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
 

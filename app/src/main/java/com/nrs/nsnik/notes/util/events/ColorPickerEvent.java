@@ -12,7 +12,7 @@ package com.nrs.nsnik.notes.util.events;
 
 public class ColorPickerEvent {
 
-    private String mColor;
+    private final String mColor;
 
     public ColorPickerEvent(String color) {
         this.mColor = color;

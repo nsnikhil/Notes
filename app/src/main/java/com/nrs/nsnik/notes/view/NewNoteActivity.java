@@ -14,9 +14,9 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -28,6 +28,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
@@ -35,6 +36,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -42,7 +44,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,19 +51,19 @@ import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.model.data.TableNames;
-import com.nrs.nsnik.notes.model.objects.CheckListObject;
-import com.nrs.nsnik.notes.model.objects.NoteObject;
-import com.nrs.nsnik.notes.util.FileOperation;
+import com.nrs.nsnik.notes.data.NoteEntity;
+import com.nrs.nsnik.notes.model.CheckListObject;
+import com.nrs.nsnik.notes.util.FileUtil;
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent;
-import com.nrs.nsnik.notes.util.interfaces.OnAddClickListener;
-import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
 import com.nrs.nsnik.notes.util.receiver.NotificationReceiver;
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter;
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter;
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter;
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment;
+import com.nrs.nsnik.notes.view.listeners.OnAddClickListener;
+import com.nrs.nsnik.notes.viewmodel.NoteViewModel;
 import com.squareup.leakcanary.RefWatcher;
 
 import org.greenrobot.eventbus.EventBus;
@@ -71,6 +72,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -80,8 +82,9 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
-public class NewNoteActivity extends AppCompatActivity implements OnAddClickListener, OnItemRemoveListener {
+public class NewNoteActivity extends AppCompatActivity implements OnAddClickListener {
 
     private static final int ATTACH_PICTURE_REQUEST_CODE = 205;
     private static final int TAKE_PICTURE_REQUEST_CODE = 206;
@@ -93,33 +96,36 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     @Nullable
     @BindView(R.id.newNoteToolbar)
     Toolbar mNoteToolbar;
+
     @Nullable
     @BindView(R.id.newNoteContent)
     EditText mNote;
+
     @Nullable
     @BindView(R.id.newNoteTitle)
     EditText mTitle;
+
     @Nullable
     @BindView(R.id.newNoteImageList)
     RecyclerView mImageRecyclerView;
+
     @Nullable
     @BindView(R.id.newNoteAudioList)
     RecyclerView mAudioRecyclerView;
+
     @Nullable
     @BindView(R.id.newNoteCheckList)
     RecyclerView mCheckListRecyclerView;
+
     @Nullable
     @BindView(R.id.activity_new_note)
     CoordinatorLayout mNoteContainer;
-
-    //Bottom Sheet View
-    BottomSheetBehavior mBottomSheetBehavior;
     @Nullable
     @BindView(R.id.toolsDate)
     TextView mBottomDate;
     @Nullable
     @BindView(R.id.toolsBottomSheet)
-    LinearLayout mBottomSheet;
+    ConstraintLayout mBottomSheet;
     @Nullable
     @BindView(R.id.toolsCheckList)
     TextView mBottomCheckList;
@@ -140,42 +146,54 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     TextView mBottomColor;
     @InjectExtra
     @Nullable
-    NoteObject mNoteObject;
+    NoteEntity mNoteEntity;
     @InjectExtra
     int mNoteId;
     @InjectExtra
     @Nullable
     String mFolderNameBundle;
+    //Bottom Sheet View
+    private BottomSheetBehavior mBottomSheetBehavior;
+
     //Variables used in saving or updating note
     @Nullable
     private String mFolderName = "nofolder";
+
     private int mIsLocked, mIsStarred, mHasReminder;
+
     private String mColorCode;
+
     @Nullable
     private Uri mIntentUri = null;
+
     private MenuItem mStarMenu, mLockMenu;
+
     private String mCurrentPhotoPath;
+
     private List<String> mImagesLocations, mAudioLocations;
     private List<CheckListObject> mCheckList;
     private List<String> mFilesToDelete;
+
     private ImageAdapter mImageAdapter;
     private AudioListAdapter mAudioListAdapter;
     private CheckListAdapter mCheckListAdapter;
-    private FileOperation mFileOperation;
-    private File mRootFolder;
+
     private CompositeDisposable mCompositeDisposable;
+    private NoteViewModel mNoteViewModel;
+    private FileUtil mFileUtil;
+    private File mRootFolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_note);
         ButterKnife.bind(this);
-        mFileOperation = ((MyApplication) getApplicationContext()).getFileOperations();
-        mRootFolder = ((MyApplication) getApplicationContext()).getRootFolder();
         Dart.inject(this);
+        mFileUtil = ((MyApplication) getApplication()).getFileUtil();
+        mRootFolder = mFileUtil.getRootFolder();
         initialize();
         listeners();
-        if (getSupportActionBar() != null && mNoteObject != null) {
+        if (getSupportActionBar() != null && mNoteEntity != null) {
             getSupportActionBar().setTitle(getResources().getString(R.string.editNote));
             setNote();
         } else if (mFolderNameBundle != null) {
@@ -190,6 +208,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private void initialize() {
+        mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
         setSupportActionBar(mNoteToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -221,7 +240,8 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         if (mImageRecyclerView != null) {
             mImageRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         }
-        mImageAdapter = new ImageAdapter(this, mImagesLocations, this, false);
+        mImageAdapter = new ImageAdapter(this, mImagesLocations, false);
+        mImageRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mImageRecyclerView.setAdapter(mImageAdapter);
 
 
@@ -230,7 +250,8 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         if (mAudioRecyclerView != null) {
             mAudioRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         }
-        mAudioListAdapter = new AudioListAdapter(this, mAudioLocations, this);
+        mAudioListAdapter = new AudioListAdapter(this, mAudioLocations);
+        mAudioRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mAudioRecyclerView.setAdapter(mAudioListAdapter);
 
 
@@ -240,6 +261,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             mCheckListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         }
         mCheckListAdapter = new CheckListAdapter(this, mCheckList, this);
+        mCheckListRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mCheckListRecyclerView.setAdapter(mCheckListAdapter);
 
         //Other initializations
@@ -256,38 +278,38 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             mCompositeDisposable.add(RxView.clicks(mBottomCheckList).subscribe(v -> {
                 changeState();
                 addCheckListItem();
-            }));
+            }, throwable -> Timber.d(throwable.getMessage())));
         }
         if (mBottomCamera != null) {
             mCompositeDisposable.add(RxView.clicks(mBottomCamera).subscribe(v -> {
                 changeState();
                 checkWriteExternalStoragePermission();
-            }));
+            }, throwable -> Timber.d(throwable.getMessage())));
         }
         if (mBottomAttachment != null) {
             mCompositeDisposable.add(RxView.clicks(mBottomAttachment).subscribe(v -> {
                 changeState();
                 checkReadExternalStoragePermission();
-            }));
+            }, throwable -> Timber.d(throwable.getMessage())));
         }
         if (mBottomAudio != null) {
             mCompositeDisposable.add(RxView.clicks(mBottomAudio).subscribe(v -> {
                 changeState();
                 checkAudioRecordPermission();
-            }));
+            }, throwable -> Timber.d(throwable.getMessage())));
         }
         if (mBottomReminder != null) {
             mCompositeDisposable.add(RxView.clicks(mBottomReminder).subscribe(v -> {
                 changeState();
                 setReminder();
-            }));
+            }, throwable -> Timber.d(throwable.getMessage())));
         }
         if (mBottomColor != null) {
             mCompositeDisposable.add(RxView.clicks(mBottomColor).subscribe(v -> {
                 changeState();
                 ColorPickerDialogFragment pickerDialogFragment = new ColorPickerDialogFragment();
                 pickerDialogFragment.show(getSupportFragmentManager(), "color");
-            }));
+            }, throwable -> Timber.d(throwable.getMessage())));
         }
     }
 
@@ -344,50 +366,73 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private void setNote() {
-        if (mNoteObject != null && mNoteId != 0) {
-            mIntentUri = Uri.withAppendedPath(TableNames.mContentUri, "noteId/" + mNoteId);
-            if (mNoteObject != null) {
-                if (mTitle != null) {
-                    mTitle.setText(mNoteObject.title());
-                }
-                if (mNote != null) {
-                    mNote.setText(mNoteObject.noteContent());
-                }
-                mFolderName = mNoteObject.folderName();
-                mColorCode = mNoteObject.color();
-                mTitle.setTextColor(Color.parseColor(mColorCode));
-                mIsStarred = mNoteObject.isPinned();
-                mIsLocked = mNoteObject.isLocked();
-                String editedDate = getResources().getString(R.string.editedHead, mFileOperation.formatDate(mNoteObject.time()));
-                if (mBottomDate != null) {
-                    mBottomDate.setText(editedDate);
-                }
-                if (mNoteObject.imagesList().size() > 0) {
-                    if (mImageRecyclerView != null) {
-                        mImageRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                    mImagesLocations.addAll(mNoteObject.imagesList());
-                    mImageAdapter.notifyDataSetChanged();
-                }
-                if (mNoteObject.audioList().size() > 0) {
-                    if (mAudioRecyclerView != null) {
-                        mAudioRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                    mAudioLocations.addAll(mNoteObject.audioList());
-                    mImageAdapter.notifyDataSetChanged();
-                }
-                if (mNoteObject.checkList().size() > 0) {
-                    if (mCheckListRecyclerView != null) {
-                        mCheckListRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                    mCheckList.addAll(mNoteObject.checkList());
-                    mCheckListAdapter.notifyDataSetChanged();
-                }
-                if (mNoteObject.hasReminder() != 0) {
-                    mHasReminder = 1;
-                }
+        if (mNoteEntity != null) {
+
+            //TITLE
+            if (mTitle != null) {
+                mTitle.setText(mNoteEntity.getTitle());
             }
+
+            //NOTE CONTENT
+            if (mNote != null) {
+                mNote.setText(mNoteEntity.getNoteContent());
+            }
+
+            //FOLDER NAME
+            mFolderName = mNoteEntity.getFolderName();
+
+            //COLOR CODE
+            mColorCode = mNoteEntity.getColor();
+
+            //COLOR AGAIN
+            mTitle.setTextColor(Color.parseColor(mColorCode));
+
+            //IS STARED
+            mIsStarred = mNoteEntity.getIsPinned();
+
+            //IS LOCKED
+            mIsLocked = mNoteEntity.getIsLocked();
+
+            //DATE
+            if (mBottomDate != null && mNoteEntity.getDateModified() != null) {
+                mBottomDate.setText(mNoteEntity.getDateModified().toString());
+            }
+
+            //IMAGES
+            if (mNoteEntity.getImageList().size() > 0) {
+                if (mImageRecyclerView != null) {
+                    mImageRecyclerView.setVisibility(View.VISIBLE);
+                }
+                mImagesLocations.addAll(mNoteEntity.getImageList());
+                mImageAdapter.notifyDataSetChanged();
+            }
+
+            //AUDIO
+            if (mNoteEntity.getAudioList().size() > 0) {
+                if (mAudioRecyclerView != null) {
+                    mAudioRecyclerView.setVisibility(View.VISIBLE);
+                }
+                mAudioLocations.addAll(mNoteEntity.getAudioList());
+                mImageAdapter.notifyDataSetChanged();
+            }
+
+
+            //CHECKLIST
+            if (mNoteEntity.getCheckList().size() > 0) {
+                if (mCheckListRecyclerView != null) {
+                    mCheckListRecyclerView.setVisibility(View.VISIBLE);
+                }
+                mCheckList.addAll(mNoteEntity.getCheckList());
+                mCheckListAdapter.notifyDataSetChanged();
+            }
+
+            //REMINDER
+            if (mNoteEntity.getHasReminder() != 0) {
+                mHasReminder = 1;
+            }
+
         }
+
     }
 
     private void setMenuIconState() {
@@ -530,8 +575,8 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         Uri imageUri = data.getData();
         try {
             Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-            String imageFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.IMAGE);
-            mFileOperation.saveImage(imageFileName, image);
+            String imageFileName = makeName(FILE_TYPES.IMAGE);
+            mFileUtil.saveImage(image, imageFileName);
             addImageToList(imageFileName);
         } catch (IOException e) {
             e.printStackTrace();
@@ -540,15 +585,19 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     private void addCameraPhotoToList() {
         Bitmap image = BitmapFactory.decodeFile(mCurrentPhotoPath);
-        String imageFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.IMAGE);
-        mFileOperation.saveImage(imageFileName, image);
-        addImageToList(imageFileName);
+        String imageFileName = makeName(FILE_TYPES.IMAGE);
+        try {
+            mFileUtil.saveImage(image, imageFileName);
+            addImageToList(imageFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     private void recordAudio() {
         //Creating new file for audio
-        String audioFileName = mFileOperation.makeName(FileOperation.FILE_TYPES.AUDIO);
+        String audioFileName = makeName(FILE_TYPES.AUDIO);
         File audioFileAbsolutePath = new File(mRootFolder, audioFileName);
 
         //Initializing the media recorder
@@ -608,74 +657,49 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         if (mColorCode == null) {
             mColorCode = "#333333";
         }
-        Calendar calendar = Calendar.getInstance();
-        String time = String.valueOf(calendar.getTimeInMillis());
-        NoteObject noteObject = null;
+        NoteEntity noteEntity;
         if (mTitle != null && mNote != null) {
-            noteObject = NoteObject.builder()
-                    .title(mTitle.getText().toString())
-                    .noteContent(mNote.getText().toString())
-                    .folderName(mFolderName)
-                    .color(mColorCode)
-                    .time(time)
-                    .imagesList(mImagesLocations)
-                    .audioList(mAudioLocations)
-                    .checkList(mCheckList)
-                    .isPinned(mIsStarred)
-                    .isLocked(mIsLocked)
-                    .hasReminder(mHasReminder)
-                    .build();
-
+            noteEntity = new NoteEntity();
+            noteEntity.setTitle(mTitle.getText().toString());
+            noteEntity.setNoteContent(mNote.getText().toString());
+            noteEntity.setFolderName(mFolderName);
+            noteEntity.setFileName(makeName(FILE_TYPES.TEXT));
+            noteEntity.setColor(mColorCode);
+            noteEntity.setDateModified(LocalDateTime.now());
+            noteEntity.setImageList(mImagesLocations);
+            noteEntity.setAudioList(mAudioLocations);
+            noteEntity.setCheckList(mCheckList);
+            noteEntity.setIsPinned(mIsStarred);
+            noteEntity.setIsLocked(mIsLocked);
+            noteEntity.setHasReminder(mHasReminder);
+            mNoteViewModel.insertNote(noteEntity);
         }
-        mFileOperation.saveNote(mFileOperation.makeName(FileOperation.FILE_TYPES.TEXT), noteObject, mIsStarred, mIsLocked, time, mColorCode);
     }
 
     private void updateNote() {
         if (mColorCode == null) {
             mColorCode = "#333333";
         }
-        Calendar calendar = Calendar.getInstance();
-        String time = String.valueOf(calendar.getTimeInMillis());
-        Cursor c = null;
-        if (mIntentUri != null) {
-            c = getContentResolver().query(mIntentUri, null, null, null, null);
+        if (mNoteEntity != null && mTitle != null && mNote != null) {
+            mNoteEntity.setTitle(mTitle.getText().toString());
+            mNoteEntity.setNoteContent(mNote.getText().toString());
+            mNoteEntity.setFolderName(mFolderName);
+            mNoteEntity.setFileName(makeName(FILE_TYPES.TEXT));
+            mNoteEntity.setColor(mColorCode);
+            mNoteEntity.setDateModified(LocalDateTime.now());
+            mNoteEntity.setImageList(mImagesLocations);
+            mNoteEntity.setAudioList(mAudioLocations);
+            mNoteEntity.setCheckList(mCheckList);
+            mNoteEntity.setIsPinned(mIsStarred);
+            mNoteEntity.setIsLocked(mIsLocked);
+            mNoteEntity.setHasReminder(mHasReminder);
+            mNoteViewModel.updateNote(mNoteEntity);
         }
-        try {
-            if (c != null && c.moveToFirst()) {
-                NoteObject noteObject = null;
-                if (mTitle != null && mNote != null) {
-                    noteObject = NoteObject.builder()
-                            .title(mTitle.getText().toString())
-                            .noteContent(mNote.getText().toString())
-                            .folderName(mFolderName)
-                            .color(mColorCode)
-                            .time(time)
-                            .imagesList(mImagesLocations)
-                            .audioList(mAudioLocations)
-                            .checkList(mCheckList)
-                            .isPinned(mIsStarred)
-                            .isLocked(mIsLocked)
-                            .hasReminder(mHasReminder)
-                            .build();
-                }
-                if (noteObject != null) {
-                    mFileOperation.updateNote(c.getString(c.getColumnIndex(TableNames.table1.mFileName)), noteObject, mIntentUri, mIsStarred, mIsLocked, time, mColorCode);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (c != null) c.close();
-        }
-        deleteClearedItems();
     }
 
     private boolean verifyAndSave() {
-        if (mNote != null && mNote.getText().toString().isEmpty()) {
+        if ((mNote != null && mTitle != null) && (mNote.getText().toString().isEmpty() || mTitle.getText().toString().isEmpty())) {
             Toast.makeText(this, getResources().getString(R.string.noNote), Toast.LENGTH_SHORT).show();
-            return false;
-        } else if (mTitle != null && mTitle.getText().toString().isEmpty()) {
-            Toast.makeText(this, getResources().getString(R.string.noTitle), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -729,25 +753,21 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     private void deleteClearedItems() {
         if (mFilesToDelete.size() > 0) {
-            mFileOperation.deleteFileList(mFilesToDelete);
+            //mFileOperation.deleteFileList(mFilesToDelete);
         }
     }
 
-    @Override
-    public void onItemRemoved(int position, @NonNull FileOperation.FILE_TYPES types, String fileName) {
-        switch (types) {
+    private String makeName(@NonNull FILE_TYPES type) {
+        Calendar c = Calendar.getInstance();
+        switch (type) {
+            case TEXT:
+                return c.getTimeInMillis() + ".txt";
             case IMAGE:
-                mFilesToDelete.add(fileName);
-                mImagesLocations.remove(position);
-                mImageAdapter.notifyItemRemoved(position);
-                displayImageList();
-                break;
+                return c.getTimeInMillis() + ".jpg";
             case AUDIO:
-                mFilesToDelete.add(fileName);
-                mAudioLocations.remove(position);
-                mAudioListAdapter.notifyItemRemoved(position);
-                displayAudioListView();
-                break;
+                return c.getTimeInMillis() + ".3gp";
+            default:
+                throw new IllegalArgumentException("Invalid type " + type.toString());
         }
     }
 
@@ -770,4 +790,6 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             mTitle.setTextColor(Color.parseColor(mColorCode));
         }
     }
+
+    private enum FILE_TYPES {TEXT, IMAGE, AUDIO}
 }

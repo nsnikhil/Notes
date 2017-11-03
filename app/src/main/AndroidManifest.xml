@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".view.MyApplication"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,15 +34,8 @@
             android:configChanges="orientation"
             android:label="@string/addNote" />
 
-        <provider
-            android:name=".model.data.TableProvider"
-            android:authorities="com.nrs.nsnik.notes"
-            android:enabled="true"
-            android:exported="false" />
-
         <receiver android:name=".util.receiver.NotificationReceiver" />
 
-        <activity android:name=".view.ContainerActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

@@ -13,36 +13,11 @@
     style="@style/verticalLinearLayout"
     tools:context="com.nrs.nsnik.notes.view.SearchActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/searchToolBar"
-        style="@style/toolbar">
+    <include layout="@layout/search_layout" />
 
-        <com.nrs.nsnik.notes.view.customViews.NikEditText
-            android:id="@+id/searchText"
-            style="@style/matchParent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="9"
-            android:background="@null"
-            android:hint="@string/searchHint"
-            android:imeOptions="actionSearch"
-            android:inputType="textAutoComplete"
-            android:maxLines="1" />
-
-    </android.support.v7.widget.Toolbar>
-
-    <include
-        android:id="@+id/searchEmptyState"
-        layout="@layout/empty_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/searchList"
-        layout="@layout/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize" />
+    <FrameLayout
+        android:id="@+id/searchListContainer"
+        style="@style/matchParent"
+        android:layout_marginTop="?android:actionBarSize" />
 
 </merge>

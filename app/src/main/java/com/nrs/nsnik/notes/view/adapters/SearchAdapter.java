@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.model.objects.SearchObject;
+import com.nrs.nsnik.notes.model.SearchObject;
 
 import java.util.List;
 
@@ -32,11 +32,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
 
-/*
-this adapter takes of list of search object which
-contains two fields, first the name of and second a
-boolean that specifies if the item is folder
-or note
+/**
+ * this adapter takes of list of search object which
+ * contains two fields, first the name of and second a
+ * boolean that specifies if the item is folder
+ * or note
  */
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {

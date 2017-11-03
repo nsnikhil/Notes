@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-import com.nrs.nsnik.notes.util.interfaces.ItemTouchListener;
+import com.nrs.nsnik.notes.view.listeners.ItemTouchListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class RvItemTouchHelper extends ItemTouchHelper.Callback {
     private int mDragFromPosition = -1, mDragToPosition = -1;
 
     /**
-     * @param listener     instance of ItemTouchListener
+     * @param listener instance of ItemTouchListener
      */
     public RvItemTouchHelper(ItemTouchListener listener) {
         mListener = listener;

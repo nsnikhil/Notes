@@ -11,29 +11,23 @@
 package com.nrs.nsnik.notes.view;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.nrs.nsnik.notes.BuildConfig;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.model.data.TableNames;
-import com.nrs.nsnik.notes.model.objects.SearchObject;
-import com.nrs.nsnik.notes.view.adapters.SearchAdapter;
+import com.nrs.nsnik.notes.model.SearchObject;
 import com.squareup.leakcanary.RefWatcher;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -52,18 +46,12 @@ public class SearchActivity extends AppCompatActivity {
     @Nullable
     @BindView(R.id.searchToolBar)
     Toolbar mSearchToolbar;
-    @Nullable
-    @BindView(R.id.searchList)
-    RecyclerView mSearchList;
+
     @Nullable
     @BindView(R.id.searchText)
     EditText mSearchText;
-    @Nullable
-    @BindView(R.id.searchEmptyState)
-    TextView mEmptyState;
+
     private PublishSubject<String> mSubject;
-    private String mCurrentSearch;
-    private SearchAdapter mSearchAdapter;
     private List<SearchObject> mQueryList;
 
     private CompositeDisposable mCompositeDisposable;
@@ -90,14 +78,6 @@ public class SearchActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         mQueryList = new ArrayList<>();
-        if (mSearchList != null) {
-            mSearchList.setLayoutManager(new LinearLayoutManager(this));
-        }
-        mSearchAdapter = new SearchAdapter(this, mQueryList);
-        mSearchList.setAdapter(mSearchAdapter);
-        if (mEmptyState != null) {
-            mEmptyState.setText(getResources().getString(R.string.emptyStateSearch));
-        }
         /*
         Subject is special in a sense that its is both the
         observer and observable i.e. you can pass data using
@@ -109,35 +89,24 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void listeners() {
-        if (mSearchText != null && mEmptyState != null) {
+        if (mSearchText != null) {
             mCompositeDisposable.add(RxTextView.textChanges(mSearchText).debounce(200, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(charSequence -> {
-                if (!charSequence.toString().isEmpty() && charSequence.toString().length() > 0) {
-                    mCurrentSearch = charSequence.toString();
-                    performSearch(mCurrentSearch, false);
-                } else {
-                    mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
-                }
+
             }));
             mCompositeDisposable.add(RxTextView.editorActionEvents(mSearchText).observeOn(AndroidSchedulers.mainThread()).subscribe(textViewEditorActionEvent -> {
                 if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_SEARCH) {
-                    if (!textViewEditorActionEvent.view().getText().toString().isEmpty() && textViewEditorActionEvent.view().getText().toString().length() > 0) {
-                        mCurrentSearch = textViewEditorActionEvent.view().getText().toString();
-                        performSearch(mCurrentSearch, true);
-                    } else {
-                        mEmptyState.setText(getResources().getString(R.string.emptyStateSearchNoString));
-                    }
+
                 }
             }));
         }
     }
 
     /**
-     * @param text             the search query text
-     * @param fromKeyPress     flag to check if search button on keyboard was clicked or not
+     * @param text         the search query text
+     * @param fromKeyPress flag to check if search button on keyboard was clicked or not
      */
     private void performSearch(String text, boolean fromKeyPress) {
         mQueryList.clear();
-        mSearchAdapter.modifyList(mQueryList);
         if (mSearchText != null) {
             mSearchText.clearFocus();
         }
@@ -162,17 +131,7 @@ public class SearchActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(@android.support.annotation.NonNull @NonNull List<SearchObject> searchObjects) {
-                        if (mEmptyState != null) {
-                            if (searchObjects.size() > 0) {
-                                mEmptyState.setVisibility(View.GONE);
-                                mQueryList = searchObjects;
-                                mSearchAdapter.modifyList(mQueryList);
-                            } else {
-                                String noResults = getResources().getString(R.string.emptyStateSearch, mCurrentSearch);
-                                mEmptyState.setText(noResults);
-                                mEmptyState.setVisibility(View.VISIBLE);
-                            }
-                        }
+
                     }
 
                     @Override
@@ -193,7 +152,8 @@ public class SearchActivity extends AppCompatActivity {
      */
     @android.support.annotation.NonNull
     private List<SearchObject> getSearchList(String s) {
-        List<SearchObject> mList = new ArrayList<>();
+        return Collections.emptyList();
+        /*List<SearchObject> mList = new ArrayList<>();
         String query = "search/" + s;
         Cursor folderCursor = getContentResolver().query(Uri.withAppendedPath(TableNames.mFolderContentUri, query), null, null, null, null);
         Cursor noteCursor = getContentResolver().query(Uri.withAppendedPath(TableNames.mContentUri, query), null, null, null, null);
@@ -222,7 +182,7 @@ public class SearchActivity extends AppCompatActivity {
                 noteCursor.close();
             }
         }
-        return mList;
+        return mList;*/
     }
 
 

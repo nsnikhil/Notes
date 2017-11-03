@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/searchToolBar"
+    style="@style/toolbar">
+
+    <com.nrs.nsnik.notes.view.customViews.NikEditText
+        android:id="@+id/searchText"
+        style="@style/matchParent"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="9"
+        android:background="@null"
+        android:hint="@string/searchHint"
+        android:imeOptions="actionSearch"
+        android:inputType="textAutoComplete"
+        android:maxLines="1" />
+
+</android.support.v7.widget.Toolbar>
+

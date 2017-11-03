@@ -23,11 +23,8 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 import com.jakewharton.rxbinding2.view.RxView;
+import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.model.dagger.components.DaggerMediaComponent;
-import com.nrs.nsnik.notes.util.FileOperation;
-import com.nrs.nsnik.notes.util.interfaces.OnItemRemoveListener;
-import com.nrs.nsnik.notes.view.MyApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +39,6 @@ import timber.log.Timber;
 public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyViewHolder> implements Runnable {
 
     private final Context mContext;
-    private final OnItemRemoveListener mOnItemRemoveListener;
     private final List<String> mAudioLocationList;
     @NonNull
     private final CompositeDisposable mCompositeDisposable;
@@ -51,11 +47,10 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
     @Nullable
     private SeekBar mAdapterSeekBar;
 
-    public AudioListAdapter(Context context, List<String> list, OnItemRemoveListener onItemRemoveListener) {
+    public AudioListAdapter(Context context, List<String> list) {
         mContext = context;
         mAudioLocationList = list;
-        mOnItemRemoveListener = onItemRemoveListener;
-        mMediaPlayer = DaggerMediaComponent.builder().build().getMediaPlayer();
+        //mMediaPlayer = DaggerMediaComponent.builder().build().getMediaPlayer();
         mCompositeDisposable = new CompositeDisposable();
     }
 
@@ -167,7 +162,7 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.MyVi
             if (mRemove != null) {
                 mCompositeDisposable.add(RxView.clicks(mRemove).subscribe(v -> {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileOperation.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition()));
+                        //mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileUtil.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition()));
                     }
                 }));
             }

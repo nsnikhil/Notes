@@ -8,7 +8,8 @@
   ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/stretchedHorizontally">
 
     <com.nrs.nsnik.notes.view.customViews.NikEditText
@@ -17,14 +18,41 @@
         android:background="@null"
         android:hint="@string/newfoldername"
         android:maxLines="1"
-        android:padding="@dimen/twentyFour" />
+        android:minWidth="300dp"
+        android:padding="@dimen/twentyFour"
+        app:layout_constraintEnd_toStartOf="@+id/dialogFolderColor"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/dialogFolderColor"
         style="@style/twentyFour"
-        android:layout_gravity="end|center_vertical"
-        android:layout_margin="@dimen/sixteen"
+        android:layout_marginEnd="@dimen/sixteen"
         android:background="@drawable/circle"
-        android:contentDescription="@string/imageDescription" />
-</FrameLayout>
+        android:backgroundTint="@color/colorAccent"
+        android:contentDescription="@string/imageDescription"
+        app:layout_constraintBottom_toTopOf="@+id/dialogFolderCreate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/dialogFolderCreate"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:text="@string/create"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialogFolderName" />
+
+    <Button
+        android:id="@+id/dialogFolderCancel"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:text="@string/cancel"
+        app:layout_constraintEnd_toStartOf="@id/dialogFolderCreate"
+        app:layout_constraintTop_toBottomOf="@id/dialogFolderName" />
+
+</android.support.constraint.ConstraintLayout>
 

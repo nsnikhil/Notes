@@ -29,8 +29,8 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.nrs.nsnik.notes.R;
-import com.nrs.nsnik.notes.model.objects.CheckListObject;
-import com.nrs.nsnik.notes.util.interfaces.OnAddClickListener;
+import com.nrs.nsnik.notes.model.CheckListObject;
+import com.nrs.nsnik.notes.view.listeners.OnAddClickListener;
 
 import java.util.List;
 
