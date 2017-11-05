@@ -1,32 +1,22 @@
 # Notes
 
-[![PLay Store Link](http://www21.filehosting.org/f0a70b091397c67320d2318a8106a267/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
+[PLay Store Link](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
 
 ## Info
 
-### This project demonstrates the use of following concepts and classes 
-
-- Observer Pattern.
-- RecycelrView with Cursor.
-- RecyclerView itemtouchhelper.
-- Using Rx Java with MAP operator.
-- Sqlite in android.
+Simple Notes app build using new architecture component, it follows the mvp pattern and also uses dagger and rx java
 
 ## To-Do
 
-- [ ] Replace Notify set data change with diff util in all the adapters.
 - [ ] Implmentation of the starred and vault fragments.
 - [ ] Finish the share and star menu items.
-- [ ] Replace Object Class with AutoValue Library.
 - [ ] Complete the Page indicator custom view class.
-- [ ] Complete custom animation fro RecycelrView.
 - [ ] Complete Diff.Util callback class for Notes and Folders.
 - [ ] Complete intro activity.
 
 ## Issues 
-
-- Crashes when going back to home after creating lot of new folder and notes inside a folder due shared element not behaving properly.
-- Draging and Droping items over a huge distance might sometime lead to some unexpected swapping to items.
+- Lots of bug after switching to new architecture component
+- Draging and Droping dosen't work.
 
 
 ## License
