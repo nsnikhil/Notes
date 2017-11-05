@@ -16,7 +16,7 @@ android {
     buildToolsVersion '27.0.0'
     defaultConfig {
         applicationId "com.nrs.nsnik.notes"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 30
         versionName "2.9.3"
@@ -27,8 +27,14 @@ android {
             abi {
                 enable true
                 reset()
-                include 'x86_64', 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips'
+                include "x86_64", "x86", "armeabi", "armeabi-v7a", "arm64-v8a", "mips"
                 universalApk false
+            }
+            density{
+                enable true
+                reset()
+                include "ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"
+                //compatibleScreens 'small', 'normal', 'large', 'xlarge'
             }
         }
         javaCompileOptions {
@@ -41,9 +47,14 @@ android {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
     buildTypes {
+        debug{
+            //applicationIdSuffix '.debug'
+            //versionNameSuffix '-DEBUG'
+            ext.alwaysUpdateBuildId = false
+        }
         release {
-            shrinkResources false
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -54,15 +65,26 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
+    if (project.hasProperty('devBuild')) {
+        splits.density.enable = false
+        splits.abi.enable  = false
+        aaptOptions {
+            cruncherEnabled = false
+        }
+    }
 }
 
-ext.versionCodes = ['armeabi': 3, 'armeabi-v7a': 4, 'arm64-v8a': 5, mips: 6, 'x86': 7, 'x86_64': 8]
+ext.abiCodes = ['armeabi': 3, 'armeabi-v7a': 4, 'arm64-v8a': 5, mips: 6, 'x86': 7, 'x86_64': 8]
+ext.densityCodes = ['ldpi': 3,'mdpi': 4, 'hdpi': 5,'xhdpi': 6,'xxhdpi': 7,'xxxhdpi': 8]
 import com.android.build.OutputFile
 
 android.applicationVariants.all { variant ->
     variant.outputs.each { output ->
-        output.versionCodeOverride =
-                project.ext.versionCodes.get(output.getFilter(OutputFile.ABI)) * 1000 + android.defaultConfig.versionCode
+        def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
+        def baseDensityVersionCode = project.ext.densityCodes.get(output.getFilter(OutputFile.DENSITY))
+        if (baseAbiVersionCode != null && baseDensityVersionCode !=null) {
+            output.versionCodeOverride = baseAbiVersionCode * 1000 + baseDensityVersionCode * 1000 + variant.versionCode
+        }
     }
 }
 

@@ -14,6 +14,7 @@ import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.bumptech.glide.RequestManager;
 import com.crashlytics.android.Crashlytics;
@@ -38,6 +39,10 @@ import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class MyApplication extends MultiDexApplication {
+
+    static {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    }
 
     private ContextModule mContextModule;
     private RefWatcher refWatcher;

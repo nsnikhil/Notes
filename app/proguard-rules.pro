@@ -21,6 +21,7 @@
 -allowaccessmodification
 -assumenosideeffects
 -verbose
+-keepattributes Signature
 
 -assumenosideeffects class timber.log.Timber {
  public static *** d(...);
@@ -65,3 +66,23 @@
 
 -dontwarn okio.**
 
+-dontwarn javax.annotation.**
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+-dontwarn org.mockito.**
