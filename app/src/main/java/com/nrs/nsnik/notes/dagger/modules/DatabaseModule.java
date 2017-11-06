@@ -29,7 +29,7 @@ import dagger.Provides;
 public class DatabaseModule {
 
     private static final String DATABASE_NAME = "notesDb";
-    private final String DEFAULT_FOLDER_NAME = "noFolder";
+    private static final String DEFAULT_FOLDER_NAME = "noFolder";
 
     @NotNull
     @Provides

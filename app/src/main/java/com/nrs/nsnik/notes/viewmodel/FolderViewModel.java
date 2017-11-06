@@ -22,8 +22,8 @@ import java.util.List;
 
 public class FolderViewModel extends AndroidViewModel {
 
+    private final DbUtil mDbUtil;
     private LiveData<List<FolderEntity>> mFolderList;
-    private DbUtil mDbUtil;
 
 
     public FolderViewModel(Application application) {

@@ -71,12 +71,8 @@ public class CreateFolderDialog extends DialogFragment {
                 pickerDialogFragment.show(getFragmentManager(), "color");
             }
         }));
-        mCompositeDisposable.add(RxView.clicks(mCreate).subscribe(o -> {
-            createFolder();
-        }));
-        mCompositeDisposable.add(RxView.clicks(mCancel).subscribe(o -> {
-            dismiss();
-        }));
+        mCompositeDisposable.add(RxView.clicks(mCreate).subscribe(o -> createFolder()));
+        mCompositeDisposable.add(RxView.clicks(mCancel).subscribe(o -> dismiss()));
     }
 
     private void createFolder() {

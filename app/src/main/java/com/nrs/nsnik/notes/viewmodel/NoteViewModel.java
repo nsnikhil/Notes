@@ -23,7 +23,7 @@ import java.util.List;
 
 public class NoteViewModel extends AndroidViewModel {
 
-    private DbUtil mDbUtil;
+    private final DbUtil mDbUtil;
     private LiveData<List<NoteEntity>> mNoteList;
 
     public NoteViewModel(Application application) {

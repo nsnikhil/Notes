@@ -10,10 +10,10 @@
 
 package com.nrs.nsnik.notes;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.bumptech.glide.RequestManager;
@@ -38,7 +38,7 @@ import java.io.File;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
-public class MyApplication extends MultiDexApplication {
+public class MyApplication extends Application {
 
     static {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -63,7 +63,7 @@ public class MyApplication extends MultiDexApplication {
             Timber.plant(new Timber.DebugTree() {
                 @NonNull
                 @Override
-                protected String createStackElementTag(StackTraceElement element) {
+                protected String createStackElementTag(@NonNull StackTraceElement element) {
                     return super.createStackElementTag(element) + ":" + element.getLineNumber();
                 }
             });

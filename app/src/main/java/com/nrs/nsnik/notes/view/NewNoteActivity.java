@@ -72,7 +72,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -163,8 +162,6 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
     private String mColorCode;
 
-    @Nullable
-    private Uri mIntentUri = null;
 
     private MenuItem mStarMenu, mLockMenu;
 
@@ -331,7 +328,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         switch (item.getItemId()) {
             case R.id.newNoteMenuSave:
                 if (verifyAndSave()) {
-                    if (mIntentUri == null) {
+                    if (mNoteEntity == null) {
                         saveNote();
                     } else {
                         updateNote();
@@ -665,7 +662,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             noteEntity.setFolderName(mFolderName);
             noteEntity.setFileName(makeName(FILE_TYPES.TEXT));
             noteEntity.setColor(mColorCode);
-            noteEntity.setDateModified(LocalDateTime.now());
+            noteEntity.setDateModified(Calendar.getInstance().getTime());
             noteEntity.setImageList(mImagesLocations);
             noteEntity.setAudioList(mAudioLocations);
             noteEntity.setCheckList(mCheckList);
@@ -686,7 +683,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             mNoteEntity.setFolderName(mFolderName);
             mNoteEntity.setFileName(makeName(FILE_TYPES.TEXT));
             mNoteEntity.setColor(mColorCode);
-            mNoteEntity.setDateModified(LocalDateTime.now());
+            mNoteEntity.setDateModified(Calendar.getInstance().getTime());
             mNoteEntity.setImageList(mImagesLocations);
             mNoteEntity.setAudioList(mAudioLocations);
             mNoteEntity.setCheckList(mCheckList);

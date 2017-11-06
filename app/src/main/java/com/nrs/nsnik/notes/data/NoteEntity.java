@@ -20,7 +20,7 @@ import android.os.Parcelable;
 import com.nrs.nsnik.notes.model.CheckListObject;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ public class NoteEntity implements Serializable, Parcelable {
     private int mIsPinned;
     private int mIsLocked;
     @TypeConverters(DateConverter.class)
-    private LocalDateTime mDateModified;
+    private Date mDateModified;
     private String mColor;
     @Ignore
     private List<String> mImageList;
@@ -137,11 +137,11 @@ public class NoteEntity implements Serializable, Parcelable {
         this.mIsLocked = mIsLocked;
     }
 
-    public LocalDateTime getDateModified() {
+    public Date getDateModified() {
         return mDateModified;
     }
 
-    public void setDateModified(LocalDateTime mDateModified) {
+    public void setDateModified(Date mDateModified) {
         this.mDateModified = mDateModified;
     }
 

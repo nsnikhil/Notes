@@ -14,23 +14,20 @@ import android.arch.persistence.room.TypeConverter;
 
 import org.jetbrains.annotations.Contract;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.TimeZone;
+import java.util.Date;
 
 public class DateConverter {
 
     @Contract("null -> null")
     @TypeConverter
-    public static LocalDateTime longToDate(Long date) {
-        return date == null ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(date), TimeZone.getDefault().toZoneId());
+    public static Date longToDate(Long date) {
+        return date == null ? null : new Date(date);
     }
 
     @Contract("null -> null")
     @TypeConverter
-    public static Long dateToLong(LocalDateTime localDateTime) {
-        return localDateTime == null ? null : localDateTime.atZone(ZoneId.systemDefault()).toEpochSecond();
+    public static Long dateToLong(Date date) {
+        return date == null ? null : date.getTime();
     }
 
 }

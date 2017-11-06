@@ -47,7 +47,7 @@ import com.nrs.nsnik.notes.viewmodel.NoteViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -73,7 +73,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final CompositeDisposable mCompositeDisposable;
     private final NoteViewModel mNoteViewModel;
     private final FolderViewModel mFolderViewModel;
-    private File mRootFolder;
+    private final File mRootFolder;
     private List<NoteEntity> mNotesList;
     private List<FolderEntity> mFolderList;
 
@@ -240,25 +240,8 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @NonNull
-    private String formatDate(LocalDateTime date) {
-        LocalDateTime now = LocalDateTime.now();
-        if (now.getYear() == date.getYear()) {
-            if (now.getMonth() == date.getMonth()) {
-                if (now.getDayOfMonth() == date.getDayOfMonth()) {
-                    if (now.getHour() == date.getHour()) {
-                        return (now.getMinute() - date.getMinute()) + " minutes ago";
-                    } else {
-                        return (now.getHour() - date.getHour()) + " hours ago";
-                    }
-                } else {
-                    return (now.getDayOfMonth() - date.getDayOfMonth()) + " days ago";
-                }
-            } else {
-                return (now.getMonth().getValue() - date.getMonth().getValue()) + " months ago";
-            }
-        } else {
-            return (now.getYear() - date.getYear()) + " years ago";
-        }
+    private String formatDate(Date date) {
+        return date.toString();
     }
 
     @Override

@@ -51,12 +51,14 @@ public class ColorPickerDialogFragment extends DialogFragment {
     }
 
     private void initialize() {
-        List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
-        if (mColorList != null) {
-            mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+        if (getActivity() != null) {
+            List<String> colorList = Arrays.asList(getActivity().getResources().getStringArray(R.array.backgroundColors));
+            if (mColorList != null) {
+                mColorList.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+            }
+            ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList/*, this*/);
+            mColorList.setAdapter(colorPickerAdapter);
         }
-        ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getActivity(), colorList/*, this*/);
-        mColorList.setAdapter(colorPickerAdapter);
     }
 
     @Override

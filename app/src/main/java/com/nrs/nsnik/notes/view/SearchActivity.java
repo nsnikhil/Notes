@@ -10,13 +10,11 @@
 
 package com.nrs.nsnik.notes.view;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -26,7 +24,6 @@ import com.nrs.nsnik.notes.R;
 import com.nrs.nsnik.notes.model.SearchObject;
 import com.squareup.leakcanary.RefWatcher;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +49,6 @@ public class SearchActivity extends AppCompatActivity {
     EditText mSearchText;
 
     private PublishSubject<String> mSubject;
-    private List<SearchObject> mQueryList;
 
     private CompositeDisposable mCompositeDisposable;
 
@@ -77,7 +73,6 @@ public class SearchActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mQueryList = new ArrayList<>();
         /*
         Subject is special in a sense that its is both the
         observer and observable i.e. you can pass data using
@@ -106,16 +101,6 @@ public class SearchActivity extends AppCompatActivity {
      * @param fromKeyPress flag to check if search button on keyboard was clicked or not
      */
     private void performSearch(String text, boolean fromKeyPress) {
-        mQueryList.clear();
-        if (mSearchText != null) {
-            mSearchText.clearFocus();
-        }
-        if (fromKeyPress) {
-            InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (in != null) {
-                in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
-            }
-        }
         //Call the next method on subject
         mSubject.onNext(text);
     }

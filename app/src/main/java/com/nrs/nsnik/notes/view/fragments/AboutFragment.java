@@ -146,11 +146,13 @@ public class AboutFragment extends Fragment {
      */
     private void chromeCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setToolbarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
-        builder.setSecondaryToolbarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
-        builder.setExitAnimations(getActivity(), android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(getActivity(), Uri.parse(url));
+        if (getActivity() != null) {
+            builder.setToolbarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
+            builder.setSecondaryToolbarColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
+            builder.setExitAnimations(getActivity(), android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            CustomTabsIntent customTabsIntent = builder.build();
+            customTabsIntent.launchUrl(getActivity(), Uri.parse(url));
+        }
     }
 
     /**
@@ -159,14 +161,16 @@ public class AboutFragment extends Fragment {
      * in a chrome custom tab
      */
     private void showLibrariesList() {
-        AlertDialog.Builder choosePath = new AlertDialog.Builder(getActivity());
-        choosePath.setTitle(getActivity().getResources().getString(R.string.aboutLibrariesHead));
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
-        for (String aLibraryName : mLibraryNames) {
-            arrayAdapter.add(aLibraryName);
+        if (getActivity() != null) {
+            AlertDialog.Builder choosePath = new AlertDialog.Builder(getActivity());
+            choosePath.setTitle(getActivity().getResources().getString(R.string.aboutLibrariesHead));
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+            for (String aLibraryName : mLibraryNames) {
+                arrayAdapter.add(aLibraryName);
+            }
+            choosePath.setAdapter(arrayAdapter, (dialog, position) -> chromeCustomTab(mLibraryLinks[position]));
+            choosePath.create().show();
         }
-        choosePath.setAdapter(arrayAdapter, (dialog, position) -> chromeCustomTab(mLibraryLinks[position]));
-        choosePath.create().show();
     }
 
     private void cleanUp() {
@@ -182,7 +186,7 @@ public class AboutFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         cleanUp();
-        if (BuildConfig.DEBUG) {
+        if (getActivity() != null && BuildConfig.DEBUG) {
             RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
             refWatcher.watch(this);
         }
