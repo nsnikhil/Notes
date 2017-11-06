@@ -2,22 +2,7 @@
 
 [PLay Store Link](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
 
-## Info
-
-Simple Notes app build using new architecture component, it follows the mvp pattern and also uses dagger and rx java
-
-## To-Do
-
-- [ ] Implmentation of the starred and vault fragments.
-- [ ] Finish the share and star menu items.
-- [ ] Complete the Page indicator custom view class.
-- [ ] Complete Diff.Util callback class for Notes and Folders.
-- [ ] Complete intro activity.
-
-## Issues 
-- Lots of bug after switching to new architecture component
-- Draging and Droping dosen't work.
-
+# It's my playground
 
 ## License
 
