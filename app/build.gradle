@@ -138,9 +138,6 @@ dependencies {
     //TIMBER LOGGER
     implementation 'com.jakewharton.timber:timber:4.6.0'
 
-    //GUAVA
-    implementation 'com.google.guava:guava:23.0'
-
     //DAGGER 2
     implementation 'com.google.dagger:dagger-android:2.12'
     implementation 'com.google.dagger:dagger-android-support:2.12'

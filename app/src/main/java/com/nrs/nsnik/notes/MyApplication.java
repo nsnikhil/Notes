@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatDelegate;
 
 import com.bumptech.glide.RequestManager;
 import com.crashlytics.android.Crashlytics;
+import com.github.moduth.blockcanary.BlockCanary;
 import com.nrs.nsnik.notes.dagger.components.DaggerDatabaseComponent;
 import com.nrs.nsnik.notes.dagger.components.DaggerFileComponent;
 import com.nrs.nsnik.notes.dagger.components.DaggerFolderComponent;
@@ -27,6 +28,7 @@ import com.nrs.nsnik.notes.dagger.components.FileComponent;
 import com.nrs.nsnik.notes.dagger.components.FolderComponent;
 import com.nrs.nsnik.notes.dagger.components.GlideComponent;
 import com.nrs.nsnik.notes.dagger.modules.ContextModule;
+import com.nrs.nsnik.notes.util.AppBlockCanaryContext;
 import com.nrs.nsnik.notes.util.DbUtil;
 import com.nrs.nsnik.notes.util.FileUtil;
 import com.rollbar.android.Rollbar;
@@ -81,6 +83,7 @@ public class MyApplication extends Application {
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
+        BlockCanary.install(this, new AppBlockCanaryContext()).start();
         Rollbar.init(this, "3b2ad6f009e643fdaf91228cdc54acab", "development");
         moduleSetter();
     }

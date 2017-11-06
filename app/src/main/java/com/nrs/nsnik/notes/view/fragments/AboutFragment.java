@@ -58,7 +58,6 @@ public class AboutFragment extends Fragment {
             "RxBinding",
             "Chrome custom tabs",
             "Timber",
-            "Guava",
             "Dagger 2",
             "Butter Knife",
             "Glide",
@@ -69,32 +68,42 @@ public class AboutFragment extends Fragment {
             "Leak Canary",
             "Block Canary",
             "Dart & Henson",
-            "Room"
+            "Android Lifecycle Components",
+            "Room",
+            "Paging",
+            "OkIO",
+            "Mockito",
+            "Jetbrains Annotation"
     };
 
 
     private final String[] mLibraryLinks = {
-            "https://github.com/android/platform_frameworks_support",   //Android Support library
-            "https://github.com/spotbugs/spotbugs",                     //FindBug JSR305
-            "https://firebase.google.com/terms/",                       //FireBase
-            "https://developers.google.com/terms/",                     //Google Play Services
-            "https://github.com/ReactiveX/RxAndroid",                   //RxAndroid
-            "https://github.com/ReactiveX/RxJava",                      //RxJava
-            "https://github.com/JakeWharton/RxBinding",                 //RxBinding
-            "https://github.com/GoogleChrome/custom-tabs-client",       //Chrome custom tabs
-            "https://github.com/JakeWharton/timber",                    //Timber
-            "https://github.com/google/guava",                          //Guava
-            "https://google.github.io/dagger/",                         //Dagger
-            "https://github.com/JakeWharton/butterknife",               //Butter Knife
-            "https://github.com/bumptech/glide",                        //Glide
-            "https://github.com/rollbar/rollbar-android",               //RollBar
-            "https://github.com/greenrobot/EventBus",                   //EventBus
-            "https://github.com/google/auto/tree/master/value",         //Auto Value
-            "https://github.com/rharter/auto-value-parcel",             //Auto Parcel
-            "https://github.com/square/leakcanary",                     //Leak Canary
-            "https://github.com/markzhai/AndroidPerformanceMonitor",    //Block Canary
-            "https://github.com/f2prateek/dart",                                    //Dart & Henson
-            "https://developer.android.com/topic/libraries/architecture/room.html"  //ROOM
+            "https://github.com/android/platform_frameworks_support",                       //Android Support library
+            "https://github.com/spotbugs/spotbugs",                                         //FindBug JSR305
+            "https://firebase.google.com/terms/",                                           //FireBase
+            "https://developers.google.com/terms/",                                         //Google Play Services
+            "https://github.com/ReactiveX/RxAndroid",                                       //RxAndroid
+            "https://github.com/ReactiveX/RxJava",                                          //RxJava
+            "https://github.com/JakeWharton/RxBinding",                                     //RxBinding
+            "https://github.com/GoogleChrome/custom-tabs-client",                           //Chrome custom tabs
+            "https://github.com/JakeWharton/timber",                                        //Timber
+            "https://google.github.io/dagger/",                                             //Dagger
+            "https://github.com/JakeWharton/butterknife",                                   //Butter Knife
+            "https://github.com/bumptech/glide",                                            //Glide
+            "https://github.com/rollbar/rollbar-android",                                   //RollBar
+            "https://github.com/greenrobot/EventBus",                                       //EventBus
+            "https://github.com/google/auto/tree/master/value",                             //Auto Value
+            "https://github.com/rharter/auto-value-parcel",                                 //Auto Parcel
+            "https://github.com/square/leakcanary",                                         //Leak Canary
+            "https://github.com/markzhai/AndroidPerformanceMonitor",                        //Block Canary
+            "https://github.com/f2prateek/dart",                                            //Dart & Henson
+            "https://developer.android.com/topic/libraries/architecture/lifecycle.html",    //ANDROID LIFECYCLE COMPONENTS
+            "https://developer.android.com/topic/libraries/architecture/room.html",         //ROOM
+            "https://developer.android.com/topic/libraries/architecture/paging.html",       //PAGING
+            "https://github.com/square/okio",                                               //OK IO
+            "https://github.com/mockito/mockito",                                           //MOCKITO
+            "https://mvnrepository.com/artifact/org.jetbrains/annotations/13.0"             //JETBRAINS ANNOTATION
+
     };
 
     @Nullable
