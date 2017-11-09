@@ -49,6 +49,7 @@ import android.widget.Toast;
 
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
+import com.jakewharton.rxbinding2.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.MyApplication;
@@ -198,18 +199,15 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         }
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        finish();
-        return super.onSupportNavigateUp();
-    }
 
     private void initialize() {
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
         setSupportActionBar(mNoteToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
         //BottomSheet
         if (mBottomSheet != null) {
             mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
@@ -308,16 +306,43 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
                 pickerDialogFragment.show(getSupportFragmentManager(), "color");
             }, throwable -> Timber.d(throwable.getMessage())));
         }
+
+        if (mNoteToolbar != null) {
+            mCompositeDisposable.add(RxToolbar.navigationClicks(mNoteToolbar).subscribe(v -> {
+                onBackPressed();
+            }));
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isEmpty()) {
+            super.onBackPressed();
+        } else {
+            if (verifyAndSave()) {
+                if (mNoteEntity == null) {
+                    saveNote();
+                } else {
+                    updateNote();
+                }
+                finish();
+            }
+        }
+
+    }
+
+    private boolean isEmpty() {
+        return mTitle != null && mNote != null && mTitle.getText().toString().isEmpty() && mNote.getText().toString().isEmpty();
     }
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.new_note_menu, menu);
-        if (menu.getItem(1) != null) {
-            mStarMenu = menu.getItem(1);
+        if (menu.getItem(0) != null) {
+            mStarMenu = menu.getItem(0);
         }
-        if (menu.getItem(2) != null) {
-            mLockMenu = menu.getItem(2);
+        if (menu.getItem(1) != null) {
+            mLockMenu = menu.getItem(1);
         }
         setMenuIconState();
         return true;
@@ -326,16 +351,6 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.newNoteMenuSave:
-                if (verifyAndSave()) {
-                    if (mNoteEntity == null) {
-                        saveNote();
-                    } else {
-                        updateNote();
-                    }
-                    finish();
-                }
-                break;
             case R.id.newNoteMenuStar:
                 if (mIsStarred == 0) {
                     item.setIcon(R.drawable.ic_star_black_48px);
@@ -396,7 +411,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             }
 
             //IMAGES
-            if (mNoteEntity.getImageList().size() > 0) {
+            if (mNoteEntity.getImageList() != null && mNoteEntity.getImageList().size() > 0) {
                 if (mImageRecyclerView != null) {
                     mImageRecyclerView.setVisibility(View.VISIBLE);
                 }
@@ -405,7 +420,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
             }
 
             //AUDIO
-            if (mNoteEntity.getAudioList().size() > 0) {
+            if (mNoteEntity.getAudioList() != null && mNoteEntity.getAudioList().size() > 0) {
                 if (mAudioRecyclerView != null) {
                     mAudioRecyclerView.setVisibility(View.VISIBLE);
                 }
@@ -415,7 +430,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
 
 
             //CHECKLIST
-            if (mNoteEntity.getCheckList().size() > 0) {
+            if (mNoteEntity.getCheckList() != null && mNoteEntity.getCheckList().size() > 0) {
                 if (mCheckListRecyclerView != null) {
                     mCheckListRecyclerView.setVisibility(View.VISIBLE);
                 }
@@ -695,7 +710,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     }
 
     private boolean verifyAndSave() {
-        if ((mNote != null && mTitle != null) && (mNote.getText().toString().isEmpty() || mTitle.getText().toString().isEmpty())) {
+        if ((mNote != null && mTitle != null) && (mNote.getText().toString().isEmpty() && mTitle.getText().toString().isEmpty())) {
             Toast.makeText(this, getResources().getString(R.string.noNote), Toast.LENGTH_SHORT).show();
             return false;
         }

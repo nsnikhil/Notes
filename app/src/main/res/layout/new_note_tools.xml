@@ -21,48 +21,48 @@
     app:behavior_peekHeight="48dp"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    <com.nrs.nsnik.notes.view.customViews.NikTextView
+    <TextView
         android:id="@+id/toolsDate"
         style="@style/bottomToolText"
         android:drawableEnd="@drawable/ic_add_box_black_24px"
         android:text="@string/noteToolsDate" />
 
-    <com.nrs.nsnik.notes.view.customViews.NikTextView
+    <TextView
         android:id="@+id/toolsCheckList"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_list_black_24px"
         android:text="@string/noteToolCheckList"
         app:layout_constraintTop_toBottomOf="@id/toolsDate" />
 
-    <com.nrs.nsnik.notes.view.customViews.NikTextView
+    <TextView
         android:id="@+id/toolsCamera"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_camera_alt_black_24px"
         android:text="@string/noteToolCamera"
         app:layout_constraintTop_toBottomOf="@id/toolsCheckList" />
 
-    <com.nrs.nsnik.notes.view.customViews.NikTextView
+    <TextView
         android:id="@+id/toolsAttachment"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_attach_file_black_24px"
         android:text="@string/noteToolAttachment"
         app:layout_constraintTop_toBottomOf="@id/toolsCamera" />
 
-    <com.nrs.nsnik.notes.view.customViews.NikTextView
+    <TextView
         android:id="@+id/toolsReminder"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_alarm_add_black_24px"
         android:text="@string/noteToolReminder"
         app:layout_constraintTop_toBottomOf="@id/toolsAttachment" />
 
-    <com.nrs.nsnik.notes.view.customViews.NikTextView
+    <TextView
         android:id="@+id/toolsAudio"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_music_note_black_24px"
         android:text="@string/noteToolAudio"
         app:layout_constraintTop_toBottomOf="@id/toolsReminder" />
 
-    <com.nrs.nsnik.notes.view.customViews.NikTextView
+    <TextView
         android:id="@+id/toolsColor"
         style="@style/bottomToolText"
         android:drawableStart="@drawable/ic_color_lens_black_24px"

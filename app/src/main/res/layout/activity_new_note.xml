@@ -37,10 +37,11 @@
                 style="@style/stretchedHorizontally"
                 android:visibility="gone" />
 
-            <com.nrs.nsnik.notes.view.customViews.NikEditText
+            <EditText
                 android:id="@+id/newNoteTitle"
                 style="@style/newNoteHeading"
                 android:background="@null"
+                android:fontFamily="@font/roboto_mono_bold"
                 android:labelFor="@+id/newNoteTitle"
                 android:maxLines="1"
                 android:padding="@dimen/sixteen"
@@ -51,9 +52,10 @@
                 style="@style/stretchedHorizontally"
                 android:visibility="gone" />
 
-            <com.nrs.nsnik.notes.view.customViews.NikEditText
+            <EditText
                 android:id="@+id/newNoteContent"
                 style="@style/newNoteContent"
+                android:fontFamily="@font/roboto_mono_medium"
                 android:inputType="textMultiLine"
                 android:labelFor="@+id/newNoteContent"
                 android:lineSpacingMultiplier="1.22" />

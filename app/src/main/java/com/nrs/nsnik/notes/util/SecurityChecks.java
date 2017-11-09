@@ -79,7 +79,7 @@ public class SecurityChecks {
      */
     @NonNull
     private String getSystemProperty(String name) throws Exception {
-        @SuppressLint("PrivateApi") Class systemPropertyClazz = Class.forName("android.os.SystemProperties");
+        @SuppressLint("PrivateApi") Class<?> systemPropertyClazz = Class.forName("android.os.SystemProperties");
         return (String) systemPropertyClazz.getMethod("get", new Class[]{String.class}).invoke(systemPropertyClazz, name);
     }
 

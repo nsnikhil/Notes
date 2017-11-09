@@ -17,11 +17,12 @@
         android:id="@+id/checkListTicker"
         style="@style/wrapContent" />
 
-    <com.nrs.nsnik.notes.view.customViews.NikEditText
+    <EditText
         android:id="@+id/checkListItem"
         style="@style/wrapContent"
         android:layout_gravity="center_vertical"
         android:background="@null"
+        android:fontFamily="@font/roboto_mono_medium"
         android:hint="@string/checkListAddItem"
         android:imeOptions="actionNext"
         android:inputType="text"

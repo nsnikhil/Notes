@@ -10,17 +10,11 @@
 
 package com.nrs.nsnik.notes.view;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -48,20 +42,19 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String[] mFragTags = {"home", "starred", "vault", "about"};
     @Nullable
-    @BindView(R.id.mainToolbar)
-    Toolbar mMainToolbar;
-    @Nullable
     @BindView(R.id.mainDrawerLayout)
     DrawerLayout mDrawerLayout;
     @Nullable
-    @BindView(R.id.mainNaviagtionView)
+    @BindView(R.id.mainNavigationView)
     NavigationView mNavigationView;
     @Nullable
-    @BindView(R.id.mainToolBarText)
+    @BindView(R.id.mainToolbar)
+    Toolbar mMainToolbar;
+    @Nullable
+    @BindView(R.id.mainToolbarText)
     TextView mToolbarText;
     private String mCurrentFragment;
     private boolean mIsClicked;
-
     private CompositeDisposable mCompositeDisposable;
 
     @Override
@@ -75,57 +68,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialize(@Nullable Bundle savedInstanceState) {
-        setSupportActionBar(mMainToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+
         if (savedInstanceState == null && mToolbarText != null) {
+            setSupportActionBar(mMainToolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
+
             mCurrentFragment = mFragTags[0];
-            getSupportFragmentManager().beginTransaction().add(R.id.mainContainer, new HomeFragment(), mCurrentFragment).commit();
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, new HomeFragment(), mCurrentFragment).commit();
             mToolbarText.setText(getResources().getString(R.string.app_name));
         }
         mCompositeDisposable = new CompositeDisposable();
-    }
-
-    /**
-     * @return true if connected to interned else false
-     */
-    private boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-        }
-        return false;
-    }
-
-    private void addOnConnection() {
-        if (!isConnected()) {
-            removeOffConnection();
-        }
-    }
-
-    private void removeOffConnection() {
-        if (mDrawerLayout != null) {
-            Snackbar.make(mDrawerLayout, getResources().getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getResources().getString(R.string.errorRetry), view -> addOnConnection()).show();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menuMainSearch:
-                startActivity(new Intent(MainActivity.this, SearchActivity.class));
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -159,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             mCompositeDisposable.add(RxNavigationView.itemSelections(mNavigationView).subscribe(menuItem -> {
                 switch (menuItem.getItemId()) {
                     case R.id.navItem1:
-                        if (!mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
+                        if (mCurrentFragment != null && !mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
                             mCurrentFragment = mFragTags[0];
                             mIsClicked = true;
                         }
@@ -174,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "To-Do", Toast.LENGTH_LONG).show();
                         break;
                     case R.id.navItem5:
-                        if (!mCurrentFragment.equalsIgnoreCase(mFragTags[3])) {
+                        if (mCurrentFragment != null && !mCurrentFragment.equalsIgnoreCase(mFragTags[3])) {
                             mCurrentFragment = mFragTags[3];
                             mIsClicked = true;
                         }
@@ -206,10 +161,9 @@ public class MainActivity extends AppCompatActivity {
      * @param tag      the tag for the new fragment
      */
     public void replaceFragment(Fragment fragment, String tag) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainContainer, fragment, tag);
-        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-        ft.commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, fragment, tag)
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .commit();
     }
 
     private void cleanUp() {
@@ -217,6 +171,21 @@ public class MainActivity extends AppCompatActivity {
             mCompositeDisposable.clear();
             mCompositeDisposable.dispose();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menuMainSearch:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

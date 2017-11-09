@@ -65,6 +65,7 @@ public class NoteEntity implements Serializable, Parcelable {
 
     }
 
+    @SuppressWarnings("unchecked")
     protected NoteEntity(Parcel in) {
         mUid = in.readInt();
         mTitle = in.readString();

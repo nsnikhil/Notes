@@ -12,10 +12,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/stretchedHorizontally">
 
-    <com.nrs.nsnik.notes.view.customViews.NikEditText
+    <EditText
         android:id="@+id/dialogFolderName"
         style="@style/wrapContent"
         android:background="@null"
+        android:fontFamily="@font/roboto_mono_bold"
         android:hint="@string/newfoldername"
         android:maxLines="1"
         android:minWidth="300dp"

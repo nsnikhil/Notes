@@ -40,6 +40,9 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="e3979606d7bddaddef52cc923bf7cc5cc18c38dd" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -66,13 +69,7 @@
         </activity>
 
 
-        <activity
-            android:name=".view.SearchActivity"
-            android:label="@string/serach" />
-
         <activity android:name=".view.ImageFullActivity" />
-
-        <activity android:name=".view.IntroActivity" />
 
     </application>
 

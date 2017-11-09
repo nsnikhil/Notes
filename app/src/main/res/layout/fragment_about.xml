@@ -14,46 +14,27 @@
     style="@style/matchParent"
     tools:context=".view.fragments.AboutFragment">
 
-    <android.support.constraint.ConstraintLayout style="@style/matchParent">
+    <android.support.constraint.ConstraintLayout
+        style="@style/matchParent"
+        android:layout_gravity="center">
 
-        <com.nrs.nsnik.notes.view.customViews.NikTextView
-            android:id="@+id/aboutHeading"
-            style="@style/wrapContent"
-            android:layout_height="300dp"
-            android:gravity="center_vertical"
-            android:text="@string/app_name"
-            android:textAllCaps="true"
-            android:textSize="96sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.nrs.nsnik.notes.view.customViews.NikTextView
-            android:id="@+id/aboutSummary"
-            style="@style/wrapContent"
-            android:padding="@dimen/sixteen"
-            android:text="@string/aboutApp"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/aboutHeading" />
-
-        <com.nrs.nsnik.notes.view.customViews.NikTextView
+        <TextView
             android:id="@+id/aboutNikhil"
             style="@style/wrapContent"
             android:layout_marginTop="@dimen/sixteen"
+            android:fontFamily="@font/roboto_mono_medium"
             android:text="@string/aboutNikhil"
             android:textAlignment="center"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/aboutSummary" />
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <com.nrs.nsnik.notes.view.customViews.NikTextView
+        <TextView
             android:id="@+id/aboutSourceCode"
             style="@style/wrapContent"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/sixteen"
+            android:fontFamily="@font/roboto_mono_medium"
             android:padding="@dimen/sixteen"
             android:text="@string/aboutSourceCode"
             android:textAlignment="center"
@@ -69,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/sixteen"
+            android:fontFamily="@font/roboto_mono_medium"
             android:text="@string/aboutLibraries"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -81,6 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/sixteen"
+            android:fontFamily="@font/roboto_mono_medium"
             android:text="@string/aboutLicense"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

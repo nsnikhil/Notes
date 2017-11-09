@@ -3,12 +3,11 @@
     android:id="@+id/searchToolBar"
     style="@style/toolbar">
 
-    <com.nrs.nsnik.notes.view.customViews.NikEditText
+    <EditText
         android:id="@+id/searchText"
         style="@style/matchParent"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="9"
         android:background="@null"
+        android:fontFamily="@font/roboto_mono_bold"
         android:hint="@string/searchHint"
         android:imeOptions="actionSearch"
         android:inputType="textAutoComplete"

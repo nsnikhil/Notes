@@ -12,5 +12,5 @@
     <item android:drawable="@color/colorBackground" />
     <item
         android:drawable="@drawable/splash_vector"
-        android:gravity="center"></item>
+        android:gravity="center" />
 </layer-list>

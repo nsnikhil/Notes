@@ -145,7 +145,7 @@ public class AboutFragment extends Fragment {
         if (mLibraries != null) {
             mCompositeDisposable.add(RxView.clicks(mLibraries).subscribe(v -> showLibrariesList()));
         }
-        if (mLicense != null) {
+        if (mLicense != null && getActivity() != null) {
             mCompositeDisposable.add(RxView.clicks(mLicense).subscribe(v -> chromeCustomTab(getActivity().getResources().getString(R.string.aboutLicenseUrl))));
         }
     }

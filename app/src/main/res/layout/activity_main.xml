@@ -22,26 +22,20 @@
             android:id="@+id/mainToolbar"
             style="@style/toolbar">
 
-            <com.nrs.nsnik.notes.view.customViews.NikTextView
-                android:id="@+id/mainToolBarText"
-                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/app_name"
-                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/mainToolbarText"
+                style="@style/toolbarText" />
 
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout
             android:id="@+id/mainContainer"
-            style="@style/matchParent"
-            android:layout_marginTop="?android:actionBarSize" />
+            style="@style/frameLayout" />
 
     </FrameLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/mainNaviagtionView"
+        android:id="@+id/mainNavigationView"
         android:layout_width="@dimen/drawerWidth"
         android:layout_height="match_parent"
         android:layout_gravity="start"

@@ -59,10 +59,10 @@ public class HomeFragment extends Fragment {
     FloatingActionButton mAddFolder;
 
     @BindView(R.id.fabAddNoteContainer)
-    LinearLayout mAddNoteFabConatiner;
+    LinearLayout mAddNoteFabContainer;
 
     @BindView(R.id.fabAddFolderContainer)
-    LinearLayout mAddFolderFabConatiner;
+    LinearLayout mAddFolderFabContainer;
 
     private boolean mIsVisible;
 
@@ -78,6 +78,7 @@ public class HomeFragment extends Fragment {
         mUnbinder = ButterKnife.bind(this, v);
         initialize();
         listeners();
+        setHasOptionsMenu(true);
         return v;
     }
 
@@ -94,12 +95,16 @@ public class HomeFragment extends Fragment {
     }
 
     public void attachFragment(String folderName) {
+
         if (getFragmentManager() != null && getActivity() != null) {
             Bundle bundle = new Bundle();
             bundle.putString(getActivity().getResources().getString(R.string.bundleListFragmentFolderName), folderName);
             ListFragment listFragment = new ListFragment();
             listFragment.setArguments(bundle);
-            getFragmentManager().beginTransaction().addToBackStack("backStack").replace(R.id.homeListContainer, listFragment).commit();
+
+            getFragmentManager().beginTransaction().addToBackStack("backStack").replace(R.id.homeContainer, listFragment)
+                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                    .commit();
         }
     }
 
@@ -138,6 +143,7 @@ public class HomeFragment extends Fragment {
             }));
         }
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -183,18 +189,16 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mIsVisible = true;
-                        mAddNoteFabConatiner.setVisibility(View.VISIBLE);
-                        mAddFolderFabConatiner.setVisibility(View.VISIBLE);
+                        mAddNoteFabContainer.setVisibility(View.VISIBLE);
+                        mAddFolderFabContainer.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
                     }
                 });
-                if (mAddFolderFabConatiner != null && mAddNoteFabConatiner != null) {
-                    mAddFolderFabConatiner.startAnimation(scaleUp);
-                    mAddNoteFabConatiner.startAnimation(scaleUp);
-                }
+                mAddFolderFabContainer.startAnimation(scaleUp);
+                mAddNoteFabContainer.startAnimation(scaleUp);
             }
 
             @Override
@@ -232,18 +236,16 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mIsVisible = false;
-                        mAddNoteFabConatiner.setVisibility(View.INVISIBLE);
-                        mAddFolderFabConatiner.setVisibility(View.INVISIBLE);
+                        mAddNoteFabContainer.setVisibility(View.INVISIBLE);
+                        mAddFolderFabContainer.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
                     }
                 });
-                if (mAddFolderFabConatiner != null && mAddNoteFabConatiner != null) {
-                    mAddFolderFabConatiner.startAnimation(scaleDown);
-                    mAddNoteFabConatiner.startAnimation(scaleDown);
-                }
+                mAddFolderFabContainer.startAnimation(scaleDown);
+                mAddNoteFabContainer.startAnimation(scaleDown);
             }
 
             @Override

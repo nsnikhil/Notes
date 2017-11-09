@@ -188,10 +188,10 @@
     <string name="aboutLibrariesHead">Notes is built with the help of these great libraries</string>
     <string name="aboutLicense">License Info</string>
     <string name="aboutLicenseUrl" translatable="false">https://github.com/nsnikhil/Notes/blob/master/LICENSE</string>
-    <string name="aboutApp">Notes is a multimedia note taking open source application which demonstrates various programming pattern and concepts, it serves as a good example of asynchronous programming pattern.</string>
+    <string name="aboutApp">It\'s my little playground</string>
 
     <string name="aboutNikhil" translatable="false">Notes is written by Nikhil Soni\n
-                   <a href="https://twitter.com/imnsnik">Twitter</a>|<a href="https://plus.google.com/+NikhilSoni">Google+</a> </string>
+                   <a href="https://twitter.com/imnsnik">Twitter</a>|<a href="https://github.com/nsnikhil/">Github</a> </string>
 
     <string name="aboutSourceCode" translatable="false">The source code is available on <a href="https://github.com/nsnikhil/Notes">Github</a></string>
     <!-- -->

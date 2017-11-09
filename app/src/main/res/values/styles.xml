@@ -41,6 +41,10 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
+    <style name="frameLayout" parent="matchParent">
+        <item name="android:layout_marginTop">?android:actionBarSize</item>
+    </style>
+
     <style name="twentyFour">
         <item name="android:layout_width">@dimen/twentyFour</item>
         <item name="android:layout_height">@dimen/twentyFour</item>
@@ -72,6 +76,8 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:padding">@dimen/eight</item>
+        <item name="android:fontFamily">@font/roboto_mono_bold</item>
+        <item name="android:maxLines">1</item>
         <item name="android:hint">@string/title</item>
         <item name="android:textSize">@dimen/headingText</item>
     </style>
@@ -80,8 +86,11 @@
         <item name="android:textColor">@color/cardview_dark_background</item>
         <item name="android:background">@null</item>
         <item name="android:padding">@dimen/sixteen</item>
+        <item name="android:maxLines">6</item>
+        <item name="android:lineSpacingExtra">2dp</item>
         <item name="android:hint">@string/newNote</item>
         <item name="android:textSize">@dimen/smallHeadingText</item>
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
         <item name="android:gravity">start</item>
     </style>
 
@@ -113,6 +122,7 @@
     <style name="bottomToolText" parent="stretchedHorizontally">
         <item name="android:background">?android:selectableItemBackground</item>
         <item name="android:clickable">true</item>
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
         <item name="android:focusable">true</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:drawablePadding">@dimen/eight</item>
@@ -132,6 +142,14 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
+    <style name="toolbarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/app_name</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/roboto_mono_bold</item>
+    </style>
+
     <style name="myCardView" parent="CardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -143,6 +161,16 @@
         <item name="cardElevation">1dp</item>
         <item name="cardMaxElevation">2dp</item>
         <item name="cardUseCompatPadding">true</item>
+    </style>
+
+    <style name="revealFabText" parent="wrapContent">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_margin">@dimen/eight</item>
+        <item name="android:background">@color/cardview_dark_background</item>
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">@color/cardview_light_background</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="splashTheme" parent="AppTheme">

@@ -44,6 +44,7 @@ public class ImageFullActivity extends AppCompatActivity {
     @InjectExtra
     @Nullable
     ArrayList<String> mImageLocations;
+
     @InjectExtra
     int mPosition;
 
