@@ -331,6 +331,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+
     class FolderViewHolder extends RecyclerView.ViewHolder {
         @Nullable
         @BindView(R.id.singleFolderName)

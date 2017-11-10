@@ -16,6 +16,7 @@
     <color name="materialWhite">#FAFAFA</color>
     <color name="launcherShortcutBackground">#F5F5F5</color>
     <color name="grey">#C2C2C2</color>
+    <color name="selector">#80C2C2C2</color>
     <color name="transparent">#00000000</color>
 
     <string-array name="backgroundColors">

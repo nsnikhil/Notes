@@ -1,13 +1,9 @@
 # Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in C:\Users\nsnik\AppData\Local\Android\Sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
-
-# Add any project specific keep options here:
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
@@ -16,12 +12,13 @@
 #   public *;
 #}
 
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
 
--optimizationpasses 5
--allowaccessmodification
--assumenosideeffects
--verbose
--keepattributes Signature
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
 
 -assumenosideeffects class timber.log.Timber {
  public static *** d(...);
@@ -41,7 +38,7 @@
     @butterknife.* <methods>;
 }
 
--libraryjars <java.home>/lib/rt.jar
+-dontwarn com.google.errorprone.annotations.*
 
 -dontwarn com.f2prateek.dart.internal.**
 -keep class **$$ExtraInjector { *; }
@@ -64,25 +61,19 @@
 <init>(...);
 }
 
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.GeneratedAppGlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+    **[] $VALUES;
+    public *;
+}
+
+-dontwarn sun.misc.Unsafe
+
+-dontwarn org.w3c.dom.bootstrap.DOMImplementationRegistry
+
 -dontwarn okio.**
 
 -dontwarn javax.annotation.**
-
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
-
--keep class * implements android.os.Parcelable {
-    public static final android.os.Parcelable$Creator *;
-}
-
--keepclasseswithmembers class * {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
-
--keepclasseswithmembers class * {
-    public <init>(android.content.Context, android.util.AttributeSet, int);
-}
 
 -dontwarn org.mockito.**

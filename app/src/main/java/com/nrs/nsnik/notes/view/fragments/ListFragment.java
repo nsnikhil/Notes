@@ -38,6 +38,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import timber.log.Timber;
 
 public class ListFragment extends Fragment implements NoteItemClickListener {
 
@@ -211,6 +212,7 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
     public void onLongClick(int position, int itemViewType) {
         switch (itemViewType) {
             case 0:
+                Timber.d(String.valueOf(position));
                 break;
             case 1:
                 break;
