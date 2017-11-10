@@ -212,6 +212,10 @@ dependencies {
     //OK IO
     implementation 'com.squareup.okio:okio:1.13.0'
 
+    //TODO CONVERT OKIO TO SERIAL
+    //SERIAL
+    implementation 'com.twitter.serial:serial:0.1.4'
+
     //MOCKITO
     testImplementation "org.mockito:mockito-core:2.11.0"
 

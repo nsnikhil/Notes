@@ -32,7 +32,11 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.model.LibraryObject;
 import com.squareup.leakcanary.RefWatcher;
+
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,63 +52,170 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class AboutFragment extends Fragment {
 
-    private final String[] mLibraryNames = {
-            "Android Support Library",
-            "FindBug JSR305",
-            "FireBase",
-            "Google Play Services",
-            "RxAndroid",
-            "RxJava",
-            "RxBinding",
-            "Chrome custom tabs",
-            "Timber",
-            "Dagger 2",
-            "Butter Knife",
-            "Glide",
-            "RollBar",
-            "EventBus",
-            "AutoValue",
-            "Auto Parcel",
-            "Leak Canary",
-            "Block Canary",
-            "Dart & Henson",
-            "Android Lifecycle Components",
-            "Room",
-            "Paging",
-            "OkIO",
-            "Mockito",
-            "Jetbrains Annotation"
-    };
+    private final List<LibraryObject> mLibraryList = Arrays.asList(
 
+            LibraryObject
+                    .builder()
+                    .libraryName("Android Support Library")
+                    .libraryLink("https://github.com/android/platform_frameworks_support")
+                    .build(),
 
-    private final String[] mLibraryLinks = {
-            "https://github.com/android/platform_frameworks_support",                       //Android Support library
-            "https://github.com/spotbugs/spotbugs",                                         //FindBug JSR305
-            "https://firebase.google.com/terms/",                                           //FireBase
-            "https://developers.google.com/terms/",                                         //Google Play Services
-            "https://github.com/ReactiveX/RxAndroid",                                       //RxAndroid
-            "https://github.com/ReactiveX/RxJava",                                          //RxJava
-            "https://github.com/JakeWharton/RxBinding",                                     //RxBinding
-            "https://github.com/GoogleChrome/custom-tabs-client",                           //Chrome custom tabs
-            "https://github.com/JakeWharton/timber",                                        //Timber
-            "https://google.github.io/dagger/",                                             //Dagger
-            "https://github.com/JakeWharton/butterknife",                                   //Butter Knife
-            "https://github.com/bumptech/glide",                                            //Glide
-            "https://github.com/rollbar/rollbar-android",                                   //RollBar
-            "https://github.com/greenrobot/EventBus",                                       //EventBus
-            "https://github.com/google/auto/tree/master/value",                             //Auto Value
-            "https://github.com/rharter/auto-value-parcel",                                 //Auto Parcel
-            "https://github.com/square/leakcanary",                                         //Leak Canary
-            "https://github.com/markzhai/AndroidPerformanceMonitor",                        //Block Canary
-            "https://github.com/f2prateek/dart",                                            //Dart & Henson
-            "https://developer.android.com/topic/libraries/architecture/lifecycle.html",    //ANDROID LIFECYCLE COMPONENTS
-            "https://developer.android.com/topic/libraries/architecture/room.html",         //ROOM
-            "https://developer.android.com/topic/libraries/architecture/paging.html",       //PAGING
-            "https://github.com/square/okio",                                               //OK IO
-            "https://github.com/mockito/mockito",                                           //MOCKITO
-            "https://mvnrepository.com/artifact/org.jetbrains/annotations/13.0"             //JETBRAINS ANNOTATION
+            LibraryObject
+                    .builder()
+                    .libraryName("FindBug JSR305")
+                    .libraryLink("https://github.com/spotbugs/spotbugs")
+                    .build(),
 
-    };
+            LibraryObject
+                    .builder()
+                    .libraryName("FireBase")
+                    .libraryLink("https://firebase.google.com/terms/")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Google Play Services")
+                    .libraryLink("https://developers.google.com/terms/")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RxAndroid")
+                    .libraryLink("https://github.com/ReactiveX/RxAndroid")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RxJava")
+                    .libraryLink("https://github.com/ReactiveX/RxJava")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RxJava")
+                    .libraryLink("https://github.com/ReactiveX/RxJava")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RxBinding")
+                    .libraryLink("https://github.com/JakeWharton/RxBinding")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Chrome custom tabs")
+                    .libraryLink("https://github.com/GoogleChrome/custom-tabs-client")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Timber")
+                    .libraryLink("https://github.com/JakeWharton/timber")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Dagger 2")
+                    .libraryLink("https://google.github.io/dagger/")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Butter Knife")
+                    .libraryLink("https://github.com/JakeWharton/butterknife")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Glide")
+                    .libraryLink("https://github.com/bumptech/glide")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RollBar")
+                    .libraryLink("https://github.com/rollbar/rollbar-android")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("EventBus")
+                    .libraryLink("https://github.com/greenrobot/EventBus")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("AutoValue")
+                    .libraryLink("https://github.com/google/auto/tree/master/value")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Auto Parcel")
+                    .libraryLink("https://github.com/rharter/auto-value-parcel")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Leak Canary")
+                    .libraryLink("https://github.com/square/leakcanary")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Block Canary")
+                    .libraryLink("https://github.com/markzhai/AndroidPerformanceMonitor")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Dart & Henson")
+                    .libraryLink("https://github.com/f2prateek/dart")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Android Lifecycle Components")
+                    .libraryLink("https://developer.android.com/topic/libraries/architecture/lifecycle.html")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Room")
+                    .libraryLink("https://developer.android.com/topic/libraries/architecture/room.html")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Paging")
+                    .libraryLink("https://developer.android.com/topic/libraries/architecture/paging.html")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("OkIO")
+                    .libraryLink("https://github.com/square/okio")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Mockito")
+                    .libraryLink("https://github.com/mockito/mockito")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Jetbrains Annotation")
+                    .libraryLink("https://mvnrepository.com/artifact/org.jetbrains/annotations/13.0")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Serial")
+                    .libraryLink("https://github.com/twitter/Serial")
+                    .build()
+    );
 
     @Nullable
     @BindView(R.id.aboutLibraries)
@@ -174,10 +285,10 @@ public class AboutFragment extends Fragment {
             AlertDialog.Builder choosePath = new AlertDialog.Builder(getActivity());
             choosePath.setTitle(getActivity().getResources().getString(R.string.aboutLibrariesHead));
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
-            for (String aLibraryName : mLibraryNames) {
-                arrayAdapter.add(aLibraryName);
+            for (LibraryObject libraryObject : mLibraryList) {
+                arrayAdapter.add(libraryObject.libraryName());
             }
-            choosePath.setAdapter(arrayAdapter, (dialog, position) -> chromeCustomTab(mLibraryLinks[position]));
+            choosePath.setAdapter(arrayAdapter, (dialog, position) -> chromeCustomTab(mLibraryList.get(position).libraryLink()));
             choosePath.create().show();
         }
     }

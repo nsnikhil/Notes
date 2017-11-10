@@ -115,7 +115,6 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
         if (folderEntityList == null) return;
         mFolderList = folderEntityList;
         mNotesAdapter.updateFolderList(folderEntityList);
-        mNotesAdapter.notifyDataSetChanged();
         setEmpty();
     }
 
@@ -123,7 +122,6 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
         if (noteEntityList == null) return;
         mNotesList = noteEntityList;
         mNotesAdapter.updateNotesList(mNotesList);
-        mNotesAdapter.notifyDataSetChanged();
         setEmpty();
     }
 

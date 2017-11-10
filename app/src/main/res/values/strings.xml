@@ -97,6 +97,10 @@
 
     <string name="bundleCreateFolderParentFolder">bundleCreateFolderParentFolder</string>
     <string name="bundleListFragmentFolderName">bundleListFragmentFolderName</string>
+
+    <string name="bundleNoteTitlePayback">bundleNoteTitlePayback</string>
+    <string name="bundleNoteBodyPayback">bundleNoteBodyPayback</string>
+    <string name="bundleNoteImagePayback">bundleNotImageePayback</string>
     <!-- -->
 
     <!-- menuStrings-->

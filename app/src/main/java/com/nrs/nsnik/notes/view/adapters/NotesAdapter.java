@@ -124,11 +124,6 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
-        super.onBindViewHolder(holder, position, payloads);
-    }
-
     /**
      * @param holder   HeaderViewHolder object
      * @param position Position of/in the list
@@ -234,11 +229,13 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     //TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
     public void updateNotesList(@NonNull List<NoteEntity> noteList) {
         mNotesList = noteList;
+        notifyDataSetChanged();
     }
 
     //TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
     public void updateFolderList(@NonNull List<FolderEntity> folderList) {
         mFolderList = folderList;
+        notifyDataSetChanged();
     }
 
     @Override
