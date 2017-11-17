@@ -12,7 +12,7 @@
     "properties": {
       "packageId": "com.nrs.nsnik.notes",
       "split": "",
-      "minSdkVersion": "24"
+      "minSdkVersion": "26"
     }
   }
 ]

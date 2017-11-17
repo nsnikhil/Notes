@@ -82,7 +82,7 @@
         <item name="android:textSize">@dimen/headingText</item>
     </style>
 
-    <style name="newNoteContent" parent="matchParent">
+    <style name="newNoteContent" parent="stretchedHorizontally">
         <item name="android:textColor">@color/cardview_dark_background</item>
         <item name="android:background">@null</item>
         <item name="android:padding">@dimen/sixteen</item>
@@ -154,8 +154,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:animateLayoutChanges">true</item>
-        <item name="android:background">@drawable/list_item_selector</item>
-        <item name="android:foreground">@drawable/list_item_selector</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:foreground">?android:selectableItemBackground</item>
         <item name="android:stateListAnimator">@animator/card_item_animator</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>

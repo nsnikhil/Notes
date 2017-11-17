@@ -161,8 +161,10 @@ public class MainActivity extends AppCompatActivity {
      * @param tag      the tag for the new fragment
      */
     public void replaceFragment(Fragment fragment, String tag) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, fragment, tag)
+        getSupportFragmentManager()
+                .beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.mainContainer, fragment, tag)
                 .commit();
     }
 
@@ -171,6 +173,11 @@ public class MainActivity extends AppCompatActivity {
             mCompositeDisposable.clear();
             mCompositeDisposable.dispose();
         }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

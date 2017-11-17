@@ -97,13 +97,17 @@ public class HomeFragment extends Fragment {
     public void attachFragment(String folderName) {
 
         if (getFragmentManager() != null && getActivity() != null) {
+
             Bundle bundle = new Bundle();
             bundle.putString(getActivity().getResources().getString(R.string.bundleListFragmentFolderName), folderName);
             ListFragment listFragment = new ListFragment();
             listFragment.setArguments(bundle);
 
-            getFragmentManager().beginTransaction().addToBackStack("backStack").replace(R.id.homeContainer, listFragment)
-                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+            getFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.homeContainer, listFragment)
+                    .addToBackStack("backStack")
                     .commit();
         }
     }

@@ -38,7 +38,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import timber.log.Timber;
 
 public class ListFragment extends Fragment implements NoteItemClickListener {
 
@@ -61,6 +60,9 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
     private NotesAdapter mNotesAdapter;
     private FileUtil mFileUtil;
 
+    private boolean mInEditorMode;
+    private List<Integer> mSelectedNoteId, mSelectedFolderId;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,6 +81,9 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
         if (getActivity() != null) {
             mFileUtil = ((MyApplication) getActivity().getApplication()).getFileUtil();
         }
+
+        mSelectedNoteId = new ArrayList<>();
+        mSelectedFolderId = new ArrayList<>();
 
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
         mFolderViewModel = ViewModelProviders.of(this).get(FolderViewModel.class);
@@ -212,9 +217,14 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
     public void onLongClick(int position, int itemViewType) {
         switch (itemViewType) {
             case 0:
-                Timber.d(String.valueOf(position));
+                if (!mInEditorMode) {
+
+                }
                 break;
             case 1:
+                if (!mInEditorMode) {
+
+                }
                 break;
         }
     }
