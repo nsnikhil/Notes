@@ -13,10 +13,10 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
+    buildToolsVersion rootProject.buildToolsVersion
     defaultConfig {
         applicationId "com.nrs.nsnik.notes"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 30
         versionName "2.9.3"
@@ -72,6 +72,9 @@ android {
             options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xlint:cast" << "-Xlint:empty"
         }
     }
+    testOptions {
+        execution 'ANDROID_TEST_ORCHESTRATOR'
+    }
 }
 
 ext.abiCodes = ['armeabi': 3, 'armeabi-v7a': 4, 'arm64-v8a': 5, mips: 6, 'x86': 7, 'x86_64': 8]
@@ -94,131 +97,147 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') { transitive = true }
 
     //APPCOMPAT LIBRARY
-    implementation 'com.android.support:appcompat-v7:27.0.1'
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
 
     //RECYCLER VIEW
-    implementation 'com.android.support:recyclerview-v7:27.0.1'
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
 
     //ANNOTATION SUPPORT LIBRARY
-    implementation 'com.android.support:support-annotations:27.0.1'
+    implementation "com.android.support:support-annotations:$rootProject.supportLibVersion"
 
     //DESIGN SUPPORT LIBRARY
-    implementation 'com.android.support:design:27.0.1'
+    implementation "com.android.support:design:$rootProject.supportLibVersion"
 
     //CONSTRAINT LAYOUT
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
 
     //CARD VIEW
-    implementation 'com.android.support:cardview-v7:27.0.1'
+    implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
 
     //PALETTE
-    implementation 'com.android.support:palette-v7:27.0.1'
+    implementation "com.android.support:palette-v7:$rootProject.supportLibVersion"
 
     //FINDBUGS JSR305
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation "com.google.code.findbugs:jsr305:$rootProject.findBugJsr305Version"
 
     //FIRE BASE
-    implementation 'com.google.firebase:firebase-ads:11.6.0'
-    implementation 'com.google.android.gms:play-services-ads:11.6.0'
+    implementation "com.google.firebase:firebase-ads:$rootProject.firebaseVersion"
+    implementation "com.google.android.gms:play-services-ads:$rootProject.firebaseVersion"
 
     //RX JAVA & ANDROID
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.6'
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
 
     //RX BINDING
-    implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
-    implementation 'com.jakewharton.rxbinding2:rxbinding-support-v4:2.0.0'
-    implementation 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.0.0'
-    implementation 'com.jakewharton.rxbinding2:rxbinding-design:2.0.0'
-    implementation 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:2.0.0'
+    implementation "com.jakewharton.rxbinding2:rxbinding:$rootProject.rxBindingVersion"
+    implementation "com.jakewharton.rxbinding2:rxbinding-support-v4:$rootProject.rxBindingVersion"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:$rootProject.rxBindingVersion"
+    implementation "com.jakewharton.rxbinding2:rxbinding-design:$rootProject.rxBindingVersion"
+    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$rootProject.rxBindingVersion"
 
     //CHROME CUSTOM TABS
-    implementation 'com.android.support:customtabs:27.0.1'
+    implementation "com.android.support:customtabs:$rootProject.supportLibVersion"
 
     //TIMBER LOGGER
-    implementation 'com.jakewharton.timber:timber:4.6.0'
+    implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
 
     //DAGGER 2
-    implementation 'com.google.dagger:dagger-android:2.12'
-    implementation 'com.google.dagger:dagger-android-support:2.12'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.12'
+    implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
 
     //BUTTER KNIFE
-    implementation 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
 
     //GLIDE
-    implementation 'com.github.bumptech.glide:glide:4.2.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.2.0'
+    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
 
     //ROLL BAR
-    implementation 'com.rollbar:rollbar-android:0.2.1'
+    implementation "com.rollbar:rollbar-android:$rootProject.rollBarVersion"
 
     //EVENT BUS
-    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation "org.greenrobot:eventbus:$rootProject.eventBusVersion"
 
     //AUTO VALUE
-    compileOnly "com.google.auto.value:auto-value:1.5.2"
-    annotationProcessor "com.google.auto.value:auto-value:1.5.2"
+    compileOnly "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
+    annotationProcessor "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
 
     //AUTO PARCEL
-    annotationProcessor 'com.ryanharter.auto.value:auto-value-parcel:0.2.5'
+    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:$rootProject.autoParcelVersion"
 
     //LEAK CANARY
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
 
     //BLOCK CANARY
-    implementation 'com.github.markzhai:blockcanary-android:1.5.0'
+    implementation "com.github.markzhai:blockcanary-android:$rootProject.blockCanaryVersion"
 
     //DART
-    implementation 'com.f2prateek.dart:dart:2.0.2'
-    annotationProcessor 'com.f2prateek.dart:dart-processor:2.0.2'
+    implementation "com.f2prateek.dart:dart:$rootProject.dartVersion"
+    annotationProcessor "com.f2prateek.dart:dart-processor:$rootProject.dartVersion"
 
     //HENSON
-    implementation 'com.f2prateek.dart:henson:2.0.2'
-    annotationProcessor 'com.f2prateek.dart:henson-processor:2.0.2'
+    implementation "com.f2prateek.dart:henson:$rootProject.hensonVersion"
+    annotationProcessor "com.f2prateek.dart:henson-processor:$rootProject.hensonVersion"
 
     //LIFE CYCLE EXTENSIONS
-    implementation "android.arch.lifecycle:extensions:1.0.0"
+    implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponentVersion"
 
     //LIFE CYCLE JAVA 8
-    implementation "android.arch.lifecycle:common-java8:1.0.0"
+    implementation "android.arch.lifecycle:common-java8:$rootProject.architectureComponentVersion"
 
     //LIVE DATA BACKGROUND TEST
-    testImplementation "android.arch.core:core-testing:1.0.0"
+    testImplementation "android.arch.core:core-testing:$rootProject.architectureComponentVersion"
 
     //LIVE DATA WITH REACTIVE STREAMS
-    implementation "android.arch.lifecycle:reactivestreams:1.0.0"
+    implementation "android.arch.lifecycle:reactivestreams:$rootProject.architectureComponentVersion"
 
     //ROOM
-    implementation "android.arch.persistence.room:runtime:1.0.0"
-    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
+    implementation "android.arch.persistence.room:runtime:$rootProject.architectureComponentVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.architectureComponentVersion"
 
     //ROOM TEST MIGRATION
-    testImplementation "android.arch.persistence.room:testing:1.0.0"
+    testImplementation "android.arch.persistence.room:testing:$rootProject.architectureComponentVersion"
 
     //ROOM RxJAVA
-    implementation "android.arch.persistence.room:rxjava2:1.0.0"
+    implementation "android.arch.persistence.room:rxjava2:$rootProject.architectureComponentVersion"
 
     //PAGING
-    implementation "android.arch.paging:runtime:1.0.0-alpha3"
+    implementation "android.arch.paging:runtime:$rootProject.pagingVersion"
 
     //OK IO
-    implementation 'com.squareup.okio:okio:1.13.0'
+    implementation "com.squareup.okio:okio:$rootProject.okIOVeriosn"
 
-    //TODO CONVERT OKIO TO SERIAL
+    //TODO CONVERT OK-IO TO SERIAL
     //SERIAL
-    implementation 'com.twitter.serial:serial:0.1.4'
+    implementation "com.twitter.serial:serial:$rootProject.serialVersion"
 
     //MOCKITO
-    testImplementation "org.mockito:mockito-core:2.11.0"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
 
     //JETBRAINS ANNOTATION
-    implementation 'org.jetbrains:annotations:13.0'
+    implementation "org.jetbrains:annotations:$rootProject.jetBrainsAnnotationVersion"
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    //JUNIT 4
+    testImplementation "junit:junit:$rootProject.jUnitVersion"
+
+    // ANDROID JUNIT RUNNER AND JUNIT RULES
+    androidTestImplementation "com.android.support.test:runner:$rootProject.runnerVersion"
+    androidTestImplementation "com.android.support.test:rules:$rootProject.rulesVersion"
+    androidTestUtil "com.android.support.test:orchestrator:$rootProject.orchestratorVersion"
+
+    //ESPRESSO
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
+    androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:$rootProject.espressoVersion"
+    //androidTestImplementation "com.android.support.test.espresso:espresso-accessibility:$rootProject.espressoVersion"
+    implementation "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
+
+    //ROBO-ELECTRIC
+    testImplementation "org.robolectric:robolectric:$rootProject.roboElectricVersion"
 }
+
 apply plugin: 'com.google.gms.google-services'

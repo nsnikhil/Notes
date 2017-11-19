@@ -308,9 +308,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         }
 
         if (mNoteToolbar != null) {
-            mCompositeDisposable.add(RxToolbar.navigationClicks(mNoteToolbar).subscribe(v -> {
-                onBackPressed();
-            }));
+            mCompositeDisposable.add(RxToolbar.navigationClicks(mNoteToolbar).subscribe(v -> onBackPressed()));
         }
     }
 
@@ -769,6 +767,7 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         }
     }
 
+    @NonNull
     private String makeName(@NonNull FILE_TYPES type) {
         Calendar c = Calendar.getInstance();
         switch (type) {

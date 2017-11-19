@@ -62,86 +62,14 @@ public class AboutFragment extends Fragment {
 
             LibraryObject
                     .builder()
-                    .libraryName("FindBug JSR305")
-                    .libraryLink("https://github.com/spotbugs/spotbugs")
+                    .libraryName("Android Testing Support Library")
+                    .libraryLink("https://google.github.io/android-testing-support-library/")
                     .build(),
 
             LibraryObject
                     .builder()
-                    .libraryName("FireBase")
-                    .libraryLink("https://firebase.google.com/terms/")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("Google Play Services")
-                    .libraryLink("https://developers.google.com/terms/")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("RxAndroid")
-                    .libraryLink("https://github.com/ReactiveX/RxAndroid")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("RxJava")
-                    .libraryLink("https://github.com/ReactiveX/RxJava")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("RxJava")
-                    .libraryLink("https://github.com/ReactiveX/RxJava")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("RxBinding")
-                    .libraryLink("https://github.com/JakeWharton/RxBinding")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("Chrome custom tabs")
-                    .libraryLink("https://github.com/GoogleChrome/custom-tabs-client")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("Timber")
-                    .libraryLink("https://github.com/JakeWharton/timber")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("Dagger 2")
-                    .libraryLink("https://google.github.io/dagger/")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("Butter Knife")
-                    .libraryLink("https://github.com/JakeWharton/butterknife")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("Glide")
-                    .libraryLink("https://github.com/bumptech/glide")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("RollBar")
-                    .libraryLink("https://github.com/rollbar/rollbar-android")
-                    .build(),
-
-            LibraryObject
-                    .builder()
-                    .libraryName("EventBus")
-                    .libraryLink("https://github.com/greenrobot/EventBus")
+                    .libraryName("Android Lifecycle Components")
+                    .libraryLink("https://developer.android.com/topic/libraries/architecture/lifecycle.html")
                     .build(),
 
             LibraryObject
@@ -158,14 +86,26 @@ public class AboutFragment extends Fragment {
 
             LibraryObject
                     .builder()
-                    .libraryName("Leak Canary")
-                    .libraryLink("https://github.com/square/leakcanary")
+                    .libraryName("Block Canary")
+                    .libraryLink("https://github.com/markzhai/AndroidPerformanceMonitor")
                     .build(),
 
             LibraryObject
                     .builder()
-                    .libraryName("Block Canary")
-                    .libraryLink("https://github.com/markzhai/AndroidPerformanceMonitor")
+                    .libraryName("Butter Knife")
+                    .libraryLink("https://github.com/JakeWharton/butterknife")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Chrome custom tabs")
+                    .libraryLink("https://github.com/GoogleChrome/custom-tabs-client")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Dagger 2")
+                    .libraryLink("https://google.github.io/dagger/")
                     .build(),
 
             LibraryObject
@@ -176,32 +116,32 @@ public class AboutFragment extends Fragment {
 
             LibraryObject
                     .builder()
-                    .libraryName("Android Lifecycle Components")
-                    .libraryLink("https://developer.android.com/topic/libraries/architecture/lifecycle.html")
+                    .libraryName("EventBus")
+                    .libraryLink("https://github.com/greenrobot/EventBus")
                     .build(),
 
             LibraryObject
                     .builder()
-                    .libraryName("Room")
-                    .libraryLink("https://developer.android.com/topic/libraries/architecture/room.html")
+                    .libraryName("FindBug JSR305")
+                    .libraryLink("https://github.com/spotbugs/spotbugs")
                     .build(),
 
             LibraryObject
                     .builder()
-                    .libraryName("Paging")
-                    .libraryLink("https://developer.android.com/topic/libraries/architecture/paging.html")
+                    .libraryName("FireBase")
+                    .libraryLink("https://firebase.google.com/terms/")
                     .build(),
 
             LibraryObject
                     .builder()
-                    .libraryName("OkIO")
-                    .libraryLink("https://github.com/square/okio")
+                    .libraryName("Glide")
+                    .libraryLink("https://github.com/bumptech/glide")
                     .build(),
 
             LibraryObject
                     .builder()
-                    .libraryName("Mockito")
-                    .libraryLink("https://github.com/mockito/mockito")
+                    .libraryName("Google Play Services")
+                    .libraryLink("https://developers.google.com/terms/")
                     .build(),
 
             LibraryObject
@@ -212,8 +152,80 @@ public class AboutFragment extends Fragment {
 
             LibraryObject
                     .builder()
+                    .libraryName("jUnit4")
+                    .libraryLink("https://github.com/junit-team/junit4")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Leak Canary")
+                    .libraryLink("https://github.com/square/leakcanary")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Mockito")
+                    .libraryLink("https://github.com/mockito/mockito")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("OkIO")
+                    .libraryLink("https://github.com/square/okio")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Paging")
+                    .libraryLink("https://developer.android.com/topic/libraries/architecture/paging.html")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Robelectric")
+                    .libraryLink("https://github.com/robolectric/robolectric")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RollBar")
+                    .libraryLink("https://github.com/rollbar/rollbar-android")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Room")
+                    .libraryLink("https://developer.android.com/topic/libraries/architecture/room.html")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RxAndroid")
+                    .libraryLink("https://github.com/ReactiveX/RxAndroid")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RxBinding")
+                    .libraryLink("https://github.com/JakeWharton/RxBinding")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("RxJava")
+                    .libraryLink("https://github.com/ReactiveX/RxJava")
+                    .build(),
+
+            LibraryObject
+                    .builder()
                     .libraryName("Serial")
                     .libraryLink("https://github.com/twitter/Serial")
+                    .build(),
+
+            LibraryObject
+                    .builder()
+                    .libraryName("Timber")
+                    .libraryLink("https://github.com/JakeWharton/timber")
                     .build()
     );
 

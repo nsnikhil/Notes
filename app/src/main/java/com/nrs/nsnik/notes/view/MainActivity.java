@@ -13,7 +13,9 @@ package com.nrs.nsnik.notes.view;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.NavigationView;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,6 +31,7 @@ import com.jakewharton.rxbinding2.support.design.widget.RxNavigationView;
 import com.nrs.nsnik.notes.BuildConfig;
 import com.nrs.nsnik.notes.MyApplication;
 import com.nrs.nsnik.notes.R;
+import com.nrs.nsnik.notes.util.idlingResource.SimpleIdlingResource;
 import com.nrs.nsnik.notes.view.fragments.AboutFragment;
 import com.nrs.nsnik.notes.view.fragments.HomeFragment;
 import com.squareup.leakcanary.RefWatcher;
@@ -57,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean mIsClicked;
     private CompositeDisposable mCompositeDisposable;
 
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +71,16 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initialize(savedInstanceState);
         initializeDrawer();
+        getIdlingResource();
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
     }
 
     private void initialize(@Nullable Bundle savedInstanceState) {
@@ -112,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if (mNavigationView != null) {
             mCompositeDisposable.add(RxNavigationView.itemSelections(mNavigationView).subscribe(menuItem -> {
+                if (mIdlingResource != null) {
+                    mIdlingResource.setIdleState(false);
+                }
                 switch (menuItem.getItemId()) {
                     case R.id.navItem1:
                         if (mCurrentFragment != null && !mCurrentFragment.equalsIgnoreCase(mFragTags[0])) {
@@ -153,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new AboutFragment(), mCurrentFragment);
                 mToolbarText.setText(getResources().getString(R.string.navItem5));
             }
+        }
+        if (mIdlingResource != null) {
+            mIdlingResource.setIdleState(true);
         }
     }
 

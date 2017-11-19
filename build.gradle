@@ -34,3 +34,69 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    buildToolsVersion = "27.0.1"
+
+    supportLibVersion = "27.0.1"
+
+    constraintLayoutVersion = "1.1.0-beta3"
+
+    findBugJsr305Version = "3.0.2"
+
+    firebaseVersion = "11.6.0"
+
+    rxJavaVersion = "2.1.6"
+
+    rxAndroidVersion = "2.0.1"
+
+    rxBindingVersion = "2.0.0"
+
+    timberVersion = "4.6.0"
+
+    daggerVersion = "2.12"
+
+    butterKnifeVersion = "8.8.1"
+
+    glideVersion = "4.2.0"
+
+    rollBarVersion = "0.2.1"
+
+    eventBusVersion = "3.1.1"
+
+    autoValueVersion = "1.5.2"
+
+    autoParcelVersion = "0.2.5"
+
+    leakCanaryVersion = "1.5.4"
+
+    blockCanaryVersion = "1.5.0"
+
+    dartVersion = "2.0.2"
+
+    hensonVersion = "2.0.2"
+
+    architectureComponentVersion = "1.0.0"
+
+    pagingVersion = "1.0.0-alpha3"
+
+    okIOVeriosn = "1.13.0"
+
+    serialVersion = "0.1.4"
+
+    mockitoVersion = "2.11.0"
+
+    jetBrainsAnnotationVersion = "13.0"
+
+    jUnitVersion = "4.12"
+
+    runnerVersion = "1.0.1"
+
+    rulesVersion = "1.0.1"
+
+    orchestratorVersion = "1.0.1"
+
+    espressoVersion = "3.0.1"
+
+    roboElectricVersion = "3.5.1"
+}
