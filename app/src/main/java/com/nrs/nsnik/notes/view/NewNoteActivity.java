@@ -28,9 +28,11 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.VisibleForTesting;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -58,6 +60,7 @@ import com.nrs.nsnik.notes.data.NoteEntity;
 import com.nrs.nsnik.notes.model.CheckListObject;
 import com.nrs.nsnik.notes.util.FileUtil;
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent;
+import com.nrs.nsnik.notes.util.idlingResource.SimpleIdlingResource;
 import com.nrs.nsnik.notes.util.receiver.NotificationReceiver;
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter;
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter;
@@ -120,38 +123,51 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     @Nullable
     @BindView(R.id.activity_new_note)
     CoordinatorLayout mNoteContainer;
+
     @Nullable
     @BindView(R.id.toolsDate)
     TextView mBottomDate;
+
     @Nullable
     @BindView(R.id.toolsBottomSheet)
     ConstraintLayout mBottomSheet;
+
     @Nullable
     @BindView(R.id.toolsCheckList)
     TextView mBottomCheckList;
+
     @Nullable
     @BindView(R.id.toolsCamera)
     TextView mBottomCamera;
+
     @Nullable
     @BindView(R.id.toolsAttachment)
     TextView mBottomAttachment;
+
     @Nullable
     @BindView(R.id.toolsReminder)
     TextView mBottomReminder;
+
     @Nullable
     @BindView(R.id.toolsAudio)
     TextView mBottomAudio;
+
     @Nullable
     @BindView(R.id.toolsColor)
     TextView mBottomColor;
+
     @InjectExtra
     @Nullable
     NoteEntity mNoteEntity;
+
+    @Nullable
     @InjectExtra
     int mNoteId;
+
     @InjectExtra
     @Nullable
     String mFolderNameBundle;
+
     //Bottom Sheet View
     private BottomSheetBehavior mBottomSheetBehavior;
 
@@ -181,6 +197,9 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     private FileUtil mFileUtil;
     private File mRootFolder;
 
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -197,6 +216,16 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
         } else if (mFolderNameBundle != null) {
             mFolderName = mFolderNameBundle;
         }
+        getIdlingResource();
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
     }
 
 
