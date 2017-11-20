@@ -3,6 +3,7 @@ package com.nrs.nsnik.notes;
 
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
+import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
+@LargeTest
 public class NewNoteActivityScreenTest {
 
     private static final String TEMP_NOTE_TITLE = "testNoteTitle";
@@ -30,12 +32,18 @@ public class NewNoteActivityScreenTest {
         IdlingRegistry.getInstance().register(mIdlingResource);
     }
 
+    /**
+     * TODO FIND A WAY TO CLICK ON ITEM BY NOT APPLYING THREAD SLEP
+     */
     @Test
     public void openBottomSheetTest() {
         //onView(withId(R.id.toolsDate)).perform(click());
         //onView(withId(R.id.toolsColor)).check(matches(isDisplayed()));
     }
 
+    /**
+     * TODO FIND A WAY TO CLICK ON ITEM BY NOT APPLYING THREAD SLEP
+     */
     @Test
     public void addCheckList() throws InterruptedException {
         //onView(withId(R.id.toolsDate)).perform(click());

@@ -78,7 +78,6 @@ public class HomeFragment extends Fragment {
         mUnbinder = ButterKnife.bind(this, v);
         initialize();
         listeners();
-        setHasOptionsMenu(true);
         return v;
     }
 
@@ -105,7 +104,7 @@ public class HomeFragment extends Fragment {
 
             getFragmentManager()
                     .beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.homeContainer, listFragment)
                     .addToBackStack("backStack")
                     .commit();
@@ -260,7 +259,6 @@ public class HomeFragment extends Fragment {
             mAddSpinner.startAnimation(rotateAnimation);
         }
     }
-
 
     private void cleanUp() {
         if (mUnbinder != null) {

@@ -161,6 +161,22 @@ public class DbUtil {
         return mNotesDatabase.getNoteDao().getNoteByFolderName(folderName);
     }
 
+    public LiveData<List<NoteEntity>> getNoteByFolderNameNoPinNoLock(String folderName) {
+        return mNotesDatabase.getNoteDao().getNotesByFolderNameNotPinnedNotLocked(folderName);
+    }
+
+    public LiveData<List<NoteEntity>> getNoteByFolderNamePinNoLock(String folderName) {
+        return mNotesDatabase.getNoteDao().getNotesByFolderNamePinnedNotLocked(folderName);
+    }
+
+    public LiveData<List<NoteEntity>> getNoteByFolderNameNoPinLock(String folderName) {
+        return mNotesDatabase.getNoteDao().getNotesByFolderNameNotPinnedLocked(folderName);
+    }
+
+    public LiveData<List<NoteEntity>> getNoteByFolderNamePinLock(String folderName) {
+        return mNotesDatabase.getNoteDao().getNotesByFolderNamePinnedLocked(folderName);
+    }
+
     public LiveData<List<NoteEntity>> searchNote(String query) {
         return mNotesDatabase.getNoteDao().getNoteByQuery(query);
     }
@@ -307,6 +323,22 @@ public class DbUtil {
 
     public LiveData<List<FolderEntity>> getFolderByParent(String parentFolder) {
         return mNotesDatabase.getFolderDao().getFolderByParent(parentFolder);
+    }
+
+    public LiveData<List<FolderEntity>> getFolderByParentNoPinNoLock(String parentFolder) {
+        return mNotesDatabase.getFolderDao().getFolderByParentNoPinNoLock(parentFolder);
+    }
+
+    public LiveData<List<FolderEntity>> getFolderByParentPinNoLock(String parentFolder) {
+        return mNotesDatabase.getFolderDao().getFolderByParentPinNoLock(parentFolder);
+    }
+
+    public LiveData<List<FolderEntity>> getFolderByParentNoPinLock(String parentFolder) {
+        return mNotesDatabase.getFolderDao().getFolderByParentNoPinLock(parentFolder);
+    }
+
+    public LiveData<List<FolderEntity>> getFolderByParentPinLock(String parentFolder) {
+        return mNotesDatabase.getFolderDao().getFolderByParentPinLock(parentFolder);
     }
 
     public LiveData<List<FolderEntity>> getFolderByPin(int isPinned) {

@@ -112,9 +112,9 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
     }
 
     private void setViewModel() {
-        mNoteViewModel.getNoteByFolderName(mFolderName).observe(this, this::swapNotes);
+        mNoteViewModel.getNoteByFolderNameNoPinNoLock(mFolderName).observe(this, this::swapNotes);
 
-        mFolderViewModel.getFolderByParent(mFolderName).observe(this, this::swapFolder);
+        mFolderViewModel.getFolderByParentNoPinNoLock(mFolderName).observe(this, this::swapFolder);
     }
 
     private void swapFolder(List<FolderEntity> folderEntityList) {
@@ -166,9 +166,10 @@ public class ListFragment extends Fragment implements NoteItemClickListener {
             int currPos = position - startPos;
             NoteEntity noteEntity = mFileUtil.getNote(mNotesList.get(currPos).getFileName());
 
+
             Intent noteIntent = Henson.with(getActivity())
                     .gotoNewNoteActivity()
-                    .mNoteId(noteEntity.getUid())
+                    .mNoteId(mNotesList.get(currPos).getUid())
                     .mNoteEntity(noteEntity)
                     .build();
 

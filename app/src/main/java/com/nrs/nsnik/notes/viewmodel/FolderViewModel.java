@@ -72,6 +72,22 @@ public class FolderViewModel extends AndroidViewModel {
         return mDbUtil.getFolderByParent(parentFolderName);
     }
 
+    public LiveData<List<FolderEntity>> getFolderByParentNoPinNoLock(String parentFolderName) {
+        return mDbUtil.getFolderByParentNoPinNoLock(parentFolderName);
+    }
+
+    public LiveData<List<FolderEntity>> getFolderByParentPinNoLock(String parentFolderName) {
+        return mDbUtil.getFolderByParentPinNoLock(parentFolderName);
+    }
+
+    public LiveData<List<FolderEntity>> getFolderByParentNoPinLock(String parentFolderName) {
+        return mDbUtil.getFolderByParentNoPinLock(parentFolderName);
+    }
+
+    public LiveData<List<FolderEntity>> getFolderByParentPinLock(String parentFolderName) {
+        return mDbUtil.getFolderByParentPinLock(parentFolderName);
+    }
+
     public LiveData<List<FolderEntity>> getFolderByPin(int isPinned) {
         return mDbUtil.getFolderByPin(isPinned);
 

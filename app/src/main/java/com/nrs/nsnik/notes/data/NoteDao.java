@@ -32,6 +32,18 @@ public interface NoteDao {
     @Query("SELECT * FROM NoteEntity WHERE mFolderName = :folderName")
     LiveData<List<NoteEntity>> getNoteByFolderName(String folderName);
 
+    @Query("SELECT * FROM NoteEntity WHERE mFolderName = :folderName AND mIsLocked = 0 And mIsPinned = 0")
+    LiveData<List<NoteEntity>> getNotesByFolderNameNotPinnedNotLocked(String folderName);
+
+    @Query("SELECT * FROM NoteEntity WHERE mFolderName = :folderName AND mIsLocked = 0 And mIsPinned = 1")
+    LiveData<List<NoteEntity>> getNotesByFolderNamePinnedNotLocked(String folderName);
+
+    @Query("SELECT * FROM NoteEntity WHERE mFolderName = :folderName AND mIsLocked = 1 And mIsPinned = 0")
+    LiveData<List<NoteEntity>> getNotesByFolderNameNotPinnedLocked(String folderName);
+
+    @Query("SELECT * FROM NoteEntity WHERE mFolderName = :folderName AND mIsLocked = 1 And mIsPinned = 1")
+    LiveData<List<NoteEntity>> getNotesByFolderNamePinnedLocked(String folderName);
+
     @Query("SELECT * FROM NoteEntity WHERE mTitle LIKE :query")
     LiveData<List<NoteEntity>> getNoteByQuery(String query);
 
@@ -53,7 +65,7 @@ public interface NoteDao {
     @Query("DELETE FROM NoteEntity WHERE mFolderName = :folderName")
     void deleteNoteByFolderName(String folderName);
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateNote(NoteEntity... noteEntities);
 }
 

@@ -14,6 +14,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
@@ -37,6 +38,18 @@ public interface FolderDao {
     @Query("SELECT * FROM FolderEntity WHERE mParentFolderName = :parentFolder")
     LiveData<List<FolderEntity>> getFolderByParent(String parentFolder);
 
+    @Query("SELECT * FROM FolderEntity WHERE mParentFolderName = :parentFolder AND mIsPinned = 0 AND mIsLocked = 0")
+    LiveData<List<FolderEntity>> getFolderByParentNoPinNoLock(String parentFolder);
+
+    @Query("SELECT * FROM FolderEntity WHERE mParentFolderName = :parentFolder AND mIsPinned = 1 AND mIsLocked = 0")
+    LiveData<List<FolderEntity>> getFolderByParentPinNoLock(String parentFolder);
+
+    @Query("SELECT * FROM FolderEntity WHERE mParentFolderName = :parentFolder AND mIsPinned = 0 AND mIsLocked = 1")
+    LiveData<List<FolderEntity>> getFolderByParentNoPinLock(String parentFolder);
+
+    @Query("SELECT * FROM FolderEntity WHERE mParentFolderName = :parentFolder AND mIsPinned = 1 AND mIsLocked = 1")
+    LiveData<List<FolderEntity>> getFolderByParentPinLock(String parentFolder);
+
     @Query("SELECT * FROM FolderEntity WHERE mIsPinned = :isPinned")
     LiveData<List<FolderEntity>> getFolderByPin(int isPinned);
 
@@ -46,21 +59,19 @@ public interface FolderDao {
     @Query("SELECT * FROM FolderEntity WHERE mColor = :color")
     LiveData<List<FolderEntity>> getFolderByColor(String color);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertFolders(FolderEntity... folderEntities);
 
     @Delete
     void deleteFolders(FolderEntity... folderEntities);
 
-    //DELETE USING FOLDER NAME
     @Query("DELETE FROM FolderEntity WHERE mFolderName = :folderName")
     void deleteFolderByName(String folderName);
 
-    //DELETE USING PARENT FOLDER NAME
     @Query("DELETE FROM FolderEntity WHERE mParentFolderName = :parentFolderName")
     void deleteFolderByParent(String parentFolderName);
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateFolders(FolderEntity... folderEntities);
 
 }

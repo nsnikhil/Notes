@@ -2,6 +2,7 @@ package com.nrs.nsnik.notes;
 
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
+import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -26,11 +27,13 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
+@LargeTest
 public class HomeFragmentScreenTest {
 
-    private static final String TEST_FOLDER_NAME = "testFolder";
-    private static final String TEMP_NOTE_TITLE = "testNoteTitle";
-    private static final String TEMP_NOTE_BODY = "testNoteBody";
+    private static final String TEST_FOLDER_NAME = "folder";
+    private static final String TEMP_NOTE_TITLE = "title";
+    private static final String TEMP_NOTE_TITLE_UPDATE = "update";
+    private static final String TEMP_NOTE_BODY = "body";
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
     private IdlingResource mIdlingResource;
@@ -86,6 +89,7 @@ public class HomeFragmentScreenTest {
         onView(withId(R.id.commonList)).check(matches(isDisplayed()));
         onView(withId(R.id.commonList)).check(matches(hasDescendant(withText(TEMP_NOTE_TITLE))));
     }
+
 
     @After
     public void unregisterIdlingResource() {

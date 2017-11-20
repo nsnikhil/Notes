@@ -60,6 +60,22 @@ public class NoteViewModel extends AndroidViewModel {
         return mDbUtil.getNoteByFolderName(folderName);
     }
 
+    public LiveData<List<NoteEntity>> getNoteByFolderNameNoPinNoLock(String folderName) {
+        return mDbUtil.getNoteByFolderNameNoPinNoLock(folderName);
+    }
+
+    public LiveData<List<NoteEntity>> getNoteByFolderNamePinNoLock(String folderName) {
+        return mDbUtil.getNoteByFolderNamePinNoLock(folderName);
+    }
+
+    public LiveData<List<NoteEntity>> getNoteByFolderNameNoPinLock(String folderName) {
+        return mDbUtil.getNoteByFolderNameNoPinLock(folderName);
+    }
+
+    public LiveData<List<NoteEntity>> getNoteByFolderNamePinLock(String folderName) {
+        return mDbUtil.getNoteByFolderNamePinLock(folderName);
+    }
+
     public LiveData<List<NoteEntity>> searchNote(String query) {
         return mDbUtil.searchNote(query);
     }

@@ -2,9 +2,11 @@ package com.nrs.nsnik.notes;
 
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
-import android.support.test.espresso.contrib.RecyclerViewActions;
+import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.Gravity;
 
 import com.nrs.nsnik.notes.view.MainActivity;
 
@@ -17,18 +19,16 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
-public class ListFragmentScreenTest {
+public class AboutFragmentScreenTest {
 
-    private static final String TEST_FOLDER_NAME = "testFolder";
-    private static final String TEMP_NOTE_TITLE = "testNoteTitle";
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
     private IdlingResource mIdlingResource;
 
     @Before
@@ -37,22 +37,30 @@ public class ListFragmentScreenTest {
         IdlingRegistry.getInstance().register(mIdlingResource);
     }
 
-    /**
-     * TODO THIS IS A FLAKY TEST REPLACE ONCE YOU MAKE A MATCHER FOR VIEW-HOLDER
-     */
-    @Test
-    public void openNotesActivityTest() {
-        onView(withId(R.id.commonList)).check(matches(isDisplayed()));
-        onView(withId(R.id.commonList)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText(TEMP_NOTE_TITLE)), click()));
+
+    public void openAboutFragment() {
+        onView(withId(R.id.mainDrawerLayout))
+                .check(matches(isClosed(Gravity.START)))
+                .perform(DrawerActions.open());
+
+        onView(withId(R.id.mainNavigationView))
+                .perform(NavigationViewActions.navigateTo(R.id.navItem5));
+
+        onView(withId(R.id.aboutNikhil)).check(matches(isDisplayed()));
     }
 
-    /**
-     * TODO THIS IS A FLAKY TEST REPLACE ONCE YOU MAKE A MATCHER FOR VIEW-HOLDER
-     */
     @Test
-    public void openFolderTest() {
-        onView(withId(R.id.commonList)).check(matches(isDisplayed()));
-        onView(withId(R.id.commonList)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText(TEST_FOLDER_NAME)), click()));
+    public void openLibrariesListTest() {
+        openAboutFragment();
+        onView(withId(R.id.aboutLibraries)).check(matches(isDisplayed()));
+        onView(withId(R.id.aboutLibraries)).perform(click());
+    }
+
+    @Test
+    public void openLicenseTest() {
+        openAboutFragment();
+        onView(withId(R.id.aboutLicense)).check(matches(isDisplayed()));
+        onView(withId(R.id.aboutLicense)).perform(click());
     }
 
     @After

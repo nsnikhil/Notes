@@ -232,15 +232,19 @@ public class AboutFragment extends Fragment {
     @Nullable
     @BindView(R.id.aboutLibraries)
     Button mLibraries;
+
     @Nullable
     @BindView(R.id.aboutLicense)
     Button mLicense;
+
     @Nullable
     @BindView(R.id.aboutSourceCode)
     TextView mSourceCode;
+
     @Nullable
     @BindView(R.id.aboutNikhil)
     TextView mNikhilLinks;
+
     private Unbinder mUnbinder;
 
     private CompositeDisposable mCompositeDisposable;

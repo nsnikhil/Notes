@@ -407,6 +407,9 @@ public class NewNoteActivity extends AppCompatActivity implements OnAddClickList
     private void setNote() {
         if (mNoteEntity != null) {
 
+            //ID
+            mNoteEntity.setUid(mNoteId);
+
             //TITLE
             if (mTitle != null) {
                 mTitle.setText(mNoteEntity.getTitle());
