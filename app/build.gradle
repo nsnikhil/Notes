@@ -15,7 +15,6 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion rootProject.buildToolsVersion
     defaultConfig {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
@@ -80,6 +79,7 @@ android {
     testOptions {
         execution 'ANDROID_TEST_ORCHESTRATOR'
     }
+    buildToolsVersion "27.0.3"
 }
 
 ext.abiCodes = ['armeabi': 3, 'armeabi-v7a': 4, 'arm64-v8a': 5, mips: 6, 'x86': 7, 'x86_64': 8]
@@ -202,14 +202,14 @@ dependencies {
     implementation "android.arch.lifecycle:reactivestreams:$rootProject.architectureComponentVersion"
 
     //ROOM
-    implementation "android.arch.persistence.room:runtime:$rootProject.architectureComponentVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.architectureComponentVersion"
+    implementation "android.arch.persistence.room:runtime:$rootProject.roomRuntimeVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomCompilerVersion"
 
     //ROOM TEST MIGRATION
-    testImplementation "android.arch.persistence.room:testing:$rootProject.architectureComponentVersion"
+    testImplementation "android.arch.persistence.room:testing:$rootProject.roomTestingVersion"
 
     //ROOM RxJAVA
-    implementation "android.arch.persistence.room:rxjava2:$rootProject.architectureComponentVersion"
+    implementation "android.arch.persistence.room:rxjava2:$rootProject.roomRxJavaVersion"
 
     //PAGING
     implementation "android.arch.paging:runtime:$rootProject.pagingVersion"
