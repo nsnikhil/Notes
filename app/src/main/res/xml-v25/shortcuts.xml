@@ -19,7 +19,7 @@
         android:shortcutShortLabel="@string/shortcutAddNoteShortMsg">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="com.nrs.nsnik.notes.view.NewNoteActivity"
+            android:targetClass="com.nrs.nsnik.notes.view.fragments.NewNoteFragment"
             android:targetPackage="com.nrs.nsnik.notes" />
     </shortcut>
 

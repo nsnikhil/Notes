@@ -2,64 +2,64 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0975fba0f34064bee701d34ad2f66c21",
+    "identityHash": "9512428eec52bcdd20fc0c7900e2d087",
     "entities": [
       {
         "tableName": "NoteEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mUid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mTitle` TEXT, `mFileName` TEXT, `mFolderName` TEXT, `mIsPinned` INTEGER NOT NULL, `mIsLocked` INTEGER NOT NULL, `mDateModified` INTEGER, `mColor` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `fileName` TEXT, `folderName` TEXT, `pinned` INTEGER NOT NULL, `locked` INTEGER NOT NULL, `dateModified` INTEGER, `color` TEXT)",
         "fields": [
           {
-            "fieldPath": "mUid",
-            "columnName": "mUid",
+            "fieldPath": "uid",
+            "columnName": "uid",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "mTitle",
-            "columnName": "mTitle",
+            "fieldPath": "title",
+            "columnName": "title",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "mFileName",
-            "columnName": "mFileName",
+            "fieldPath": "fileName",
+            "columnName": "fileName",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "mFolderName",
-            "columnName": "mFolderName",
+            "fieldPath": "folderName",
+            "columnName": "folderName",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "mIsPinned",
-            "columnName": "mIsPinned",
+            "fieldPath": "pinned",
+            "columnName": "pinned",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "mIsLocked",
-            "columnName": "mIsLocked",
+            "fieldPath": "locked",
+            "columnName": "locked",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "mDateModified",
-            "columnName": "mDateModified",
+            "fieldPath": "dateModified",
+            "columnName": "dateModified",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
-            "fieldPath": "mColor",
-            "columnName": "mColor",
+            "fieldPath": "color",
+            "columnName": "color",
             "affinity": "TEXT",
             "notNull": false
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "mUid"
+            "uid"
           ],
           "autoGenerate": true
         },
@@ -68,48 +68,48 @@
       },
       {
         "tableName": "FolderEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mUid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mFolderName` TEXT, `mParentFolderName` TEXT, `mIsPinned` INTEGER NOT NULL, `mIsLocked` INTEGER NOT NULL, `mColor` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `folderName` TEXT, `parentFolderName` TEXT, `pinned` INTEGER NOT NULL, `locked` INTEGER NOT NULL, `color` TEXT)",
         "fields": [
           {
-            "fieldPath": "mUid",
-            "columnName": "mUid",
+            "fieldPath": "uid",
+            "columnName": "uid",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "mFolderName",
-            "columnName": "mFolderName",
+            "fieldPath": "folderName",
+            "columnName": "folderName",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "mParentFolderName",
-            "columnName": "mParentFolderName",
+            "fieldPath": "parentFolderName",
+            "columnName": "parentFolderName",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "mIsPinned",
-            "columnName": "mIsPinned",
+            "fieldPath": "pinned",
+            "columnName": "pinned",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "mIsLocked",
-            "columnName": "mIsLocked",
+            "fieldPath": "locked",
+            "columnName": "locked",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "mColor",
-            "columnName": "mColor",
+            "fieldPath": "color",
+            "columnName": "color",
             "affinity": "TEXT",
             "notNull": false
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "mUid"
+            "uid"
           ],
           "autoGenerate": true
         },
@@ -119,7 +119,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"0975fba0f34064bee701d34ad2f66c21\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"9512428eec52bcdd20fc0c7900e2d087\")"
     ]
   }
 }

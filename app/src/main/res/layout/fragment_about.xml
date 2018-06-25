@@ -14,7 +14,7 @@
     style="@style/matchParent"
     tools:context=".view.fragments.AboutFragment">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/matchParent"
         android:layout_gravity="center">
 
@@ -69,6 +69,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/aboutLibraries" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

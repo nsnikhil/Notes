@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2017 nsnikhil
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_new_note"
+    style="@style/matchParent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/newNoteToolbar"
+        style="@style/toolbar"
+        layout="@layout/toolbar" />
+
+    <ScrollView
+        style="@style/matchParent"
+        android:layout_marginTop="?android:actionBarSize"
+        android:clipToPadding="false"
+        android:paddingBottom="48dp">
+
+        <LinearLayout
+            style="@style/verticalLinearLayout"
+            android:transitionName="noteContainer">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/newNoteImageList"
+                style="@style/stretchedHorizontally"
+                android:layout_height="@dimen/newNoteImage"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/newNoteAudioList"
+                style="@style/stretchedHorizontally"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/newNoteTitle"
+                style="@style/newNoteHeading"
+                android:background="@null"
+                android:fontFamily="@font/roboto_mono_bold"
+                android:labelFor="@+id/newNoteTitle"
+                android:maxLines="1"
+                android:padding="@dimen/sixteen"
+                android:autofillHints=""
+                android:inputType="text"
+                android:textSize="24sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/newNoteCheckList"
+                style="@style/stretchedHorizontally"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/newNoteContent"
+                style="@style/newNoteContent"
+                android:fontFamily="@font/roboto_mono_medium"
+                android:inputType="textMultiLine"
+                android:labelFor="@+id/newNoteContent"
+                android:autofillHints=""
+                android:lineSpacingMultiplier="1.22" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <include layout="@layout/new_note_tools" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

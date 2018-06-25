@@ -10,32 +10,23 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.oss.licenses.plugin'
+apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
+    buildToolsVersion '28.0.0 rc2'
     defaultConfig {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 30
         versionName "2.9.3"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
-        splits {
-            abi {
-                enable true
-                reset()
-                include "x86_64", "x86", "armeabi", "armeabi-v7a", "arm64-v8a", "mips"
-                universalApk false
-            }
-            density {
-                enable true
-                reset()
-                include "ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"
-            }
-        }
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
@@ -64,187 +55,142 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    if (project.hasProperty('devBuild')) {
-        splits.density.enable = false
-        splits.abi.enable = false
-        aaptOptions {
-            cruncherEnabled = false
-        }
-    }
     allprojects {
         tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xlint:cast" << "-Xlint:empty"
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xlint:cast" << "-Xlint:empty" << "-Xmaxerrs"
         }
     }
     testOptions {
-        execution 'ANDROID_TEST_ORCHESTRATOR'
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
-    buildToolsVersion "27.0.3"
-}
-
-ext.abiCodes = ['armeabi': 3, 'armeabi-v7a': 4, 'arm64-v8a': 5, mips: 6, 'x86': 7, 'x86_64': 8]
-ext.densityCodes = ['ldpi': 3, 'mdpi': 4, 'hdpi': 5, 'xhdpi': 6, 'xxhdpi': 7, 'xxxhdpi': 8]
-import com.android.build.OutputFile
-
-android.applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-        def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
-        def baseDensityVersionCode = project.ext.densityCodes.get(output.getFilter(OutputFile.DENSITY))
-        if (baseAbiVersionCode != null && baseDensityVersionCode != null) {
-            output.versionCodeOverride = baseAbiVersionCode * 1000 + baseDensityVersionCode * 1000 + variant.versionCode
-        }
+    androidExtensions {
+        experimental = true
+    }
+    kapt {
+        correctErrorTypes = true
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') { transitive = true }
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
+        transitive = true
+    }
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$rootProject.kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    //APPCOMPAT LIBRARY
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
+    implementation "androidx.core:core-ktx:1.0.0-alpha3"
+    implementation 'androidx.fragment:fragment-ktx:1.0.0-alpha3'
+    implementation 'androidx.collection:collection-ktx:1.0.0-alpha3'
 
-    //RECYCLER VIEW
-    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
+    implementation "androidx.appcompat:appcompat:1.0.0-alpha3"
 
-    //ANNOTATION SUPPORT LIBRARY
-    implementation "com.android.support:support-annotations:$rootProject.supportLibVersion"
+    implementation "androidx.recyclerview:recyclerview:1.0.0-alpha3"
+    implementation 'androidx.recyclerview:recyclerview-selection:1.0.0-alpha3'
 
-    //DESIGN SUPPORT LIBRARY
-    implementation "com.android.support:design:$rootProject.supportLibVersion"
+    implementation "androidx.annotation:annotation:1.0.0-alpha3"
 
-    //CONSTRAINT LAYOUT
-    implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
+    implementation 'androidx.webkit:webkit:1.0.0-alpha3'
 
-    //CARD VIEW
-    implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
+    implementation 'com.google.android.material:material:1.0.0-alpha3'
 
-    //PALETTE
-    implementation "com.android.support:palette-v7:$rootProject.supportLibVersion"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
 
-    //FINDBUGS JSR305
-    implementation "com.google.code.findbugs:jsr305:$rootProject.findBugJsr305Version"
+    implementation 'androidx.palette:palette:1.0.0-alpha3'
 
-    //FIRE BASE
-    implementation "com.google.firebase:firebase-ads:$rootProject.firebaseVersion"
-    implementation "com.google.android.gms:play-services-ads:$rootProject.firebaseVersion"
+    implementation 'androidx.cardview:cardview:1.0.0-alpha3'
 
-    //RX JAVA & ANDROID
-    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
-    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    //RX BINDING
-    implementation "com.jakewharton.rxbinding2:rxbinding:$rootProject.rxBindingVersion"
-    implementation "com.jakewharton.rxbinding2:rxbinding-support-v4:$rootProject.rxBindingVersion"
-    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:$rootProject.rxBindingVersion"
-    implementation "com.jakewharton.rxbinding2:rxbinding-design:$rootProject.rxBindingVersion"
-    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$rootProject.rxBindingVersion"
+    implementation('com.google.android.gms:play-services-oss-licenses:15.0.1', {
+        exclude group: 'com.google.android.gms'
+    })
 
-    //CHROME CUSTOM TABS
-    implementation "com.android.support:customtabs:$rootProject.supportLibVersion"
+    implementation 'androidx.browser:browser:1.0.0-alpha3'
 
-    //TIMBER LOGGER
-    implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+    implementation "io.reactivex.rxjava2:rxjava:2.1.12"
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
-    //DAGGER 2
-    implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+    implementation "com.jakewharton.rxbinding2:rxbinding-kotlin:2.1.1"
+    implementation "com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:2.1.1"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:2.1.1"
+    implementation "com.jakewharton.rxbinding2:rxbinding-design-kotlin:2.1.1"
+    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:2.1.1"
 
-    //BUTTER KNIFE
-    implementation "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
-    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
+    implementation "com.jakewharton.timber:timber:4.7.0"
 
-    //GLIDE
-    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
-    annotationProcessor "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
+    implementation 'org.greenrobot:eventbus:3.1.1'
 
-    //ROLL BAR
-    implementation "com.rollbar:rollbar-android:$rootProject.rollBarVersion"
+    implementation 'com.google.dagger:dagger:2.16'
+    kapt 'com.google.dagger:dagger-compiler:2.16'
+    implementation 'com.google.dagger:dagger-android:2.16'
+    implementation 'com.google.dagger:dagger-android-support:2.16'
+    kapt 'com.google.dagger:dagger-android-processor:2.16'
 
-    //EVENT BUS
-    implementation "org.greenrobot:eventbus:$rootProject.eventBusVersion"
+    implementation "org.greenrobot:eventbus:3.1.1"
 
-    //AUTO VALUE
-    compileOnly "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
-    annotationProcessor "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.5.4"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4"
 
-    //AUTO PARCEL
-    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:$rootProject.autoParcelVersion"
+    implementation "com.github.markzhai:blockcanary-android:1.5.0"
 
-    //LEAK CANARY
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0-alpha1'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0-alpha1'
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.0.0-alpha1'
+    testImplementation 'androidx.arch.core:core-testing:2.0.0-alpha1'
 
-    //BLOCK CANARY
-    implementation "com.github.markzhai:blockcanary-android:$rootProject.blockCanaryVersion"
+    implementation 'androidx.room:room-runtime:2.0.0-alpha1'
+    kapt 'androidx.room:room-compiler:2.0.0-alpha1'
+    implementation 'androidx.room:room-rxjava2:2.0.0-alpha1'
+    implementation 'androidx.room:room-guava:2.0.0-alpha1'
+    testImplementation 'androidx.room:room-testing:2.0.0-alpha1'
 
-    //DART
-    implementation "com.f2prateek.dart:dart:$rootProject.dartVersion"
-    annotationProcessor "com.f2prateek.dart:dart-processor:$rootProject.dartVersion"
+    implementation 'androidx.paging:paging-runtime:2.0.0-alpha1'
+    implementation 'androidx.paging:paging-rxjava2:2.0.0-alpha1'
 
-    //HENSON
-    implementation "com.f2prateek.dart:henson:$rootProject.hensonVersion"
-    annotationProcessor "com.f2prateek.dart:henson-processor:$rootProject.hensonVersion"
+    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha02'
+    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0-alpha02'
+    androidTestImplementation 'android.arch.navigation:navigation-testing-ktx:1.0.0-alpha02'
 
-    //LIFE CYCLE EXTENSIONS
-    implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponentVersion"
+    implementation 'android.arch.work:work-runtime-ktx:1.0.0-alpha03'
+    implementation "android.arch.work:work-firebase:1.0.0-alpha03"
+    androidTestImplementation "android.arch.work:work-testing:1.0.0-alpha03"
 
-    //LIFE CYCLE JAVA 8
-    implementation "android.arch.lifecycle:common-java8:$rootProject.architectureComponentVersion"
+    implementation "com.twitter.serial:serial:0.1.6"
+    testImplementation "org.mockito:mockito-core:2.16.0"
+    implementation "org.jetbrains:annotations:16.0.1"
 
-    //LIVE DATA BACKGROUND TEST
-    testImplementation "android.arch.core:core-testing:$rootProject.architectureComponentVersion"
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    kapt 'com.github.bumptech.glide:compiler:4.7.1'
 
-    //LIVE DATA WITH REACTIVE STREAMS
-    implementation "android.arch.lifecycle:reactivestreams:$rootProject.architectureComponentVersion"
+    testImplementation "junit:junit:4.12"
 
-    //ROOM
-    implementation "android.arch.persistence.room:runtime:$rootProject.roomRuntimeVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomCompilerVersion"
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
+    androidTestImplementation 'androidx.test:rules:1.1.0-alpha3'
+    androidTestUtil 'androidx.test:orchestrator:1.1.0-alpha3'
 
-    //ROOM TEST MIGRATION
-    testImplementation "android.arch.persistence.room:testing:$rootProject.roomTestingVersion"
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha3'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0-alpha3'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.0-alpha3'
+    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.1.0-alpha3'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.0-alpha3'
+    implementation 'androidx.test.espresso.idling:idling-concurrent:3.1.0-alpha3'
 
-    //ROOM RxJAVA
-    implementation "android.arch.persistence.room:rxjava2:$rootProject.roomRxJavaVersion"
+    testImplementation "org.robolectric:robolectric:3.8"
 
-    //PAGING
-    implementation "android.arch.paging:runtime:$rootProject.pagingVersion"
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-ads:15.0.1'
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
 
-    //OK IO
-    implementation "com.squareup.okio:okio:$rootProject.okIOVeriosn"
+    implementation 'com.rollbar:rollbar-java:1.0.1'
+    implementation 'com.rollbar:rollbar-android:1.0.1@aar'
 
-    //TODO CONVERT OK-IO TO SERIAL
-    //SERIAL
-    implementation "com.twitter.serial:serial:$rootProject.serialVersion"
+    implementation 'com.squareup.okio:okio:1.14.1'
 
-    //MOCKITO
-    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
-
-    //JETBRAINS ANNOTATION
-    implementation "org.jetbrains:annotations:$rootProject.jetBrainsAnnotationVersion"
-
-    //JUNIT 4
-    testImplementation "junit:junit:$rootProject.jUnitVersion"
-
-    // ANDROID JUNIT RUNNER AND JUNIT RULES
-    androidTestImplementation "com.android.support.test:runner:$rootProject.runnerVersion"
-    androidTestImplementation "com.android.support.test:rules:$rootProject.rulesVersion"
-    androidTestUtil "com.android.support.test:orchestrator:$rootProject.orchestratorVersion"
-
-    //ESPRESSO
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
-    androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:$rootProject.espressoVersion"
-    //androidTestImplementation "com.android.support.test.espresso:espresso-accessibility:$rootProject.espressoVersion"
-    implementation "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
-
-    //ROBO-ELECTRIC
-    testImplementation "org.robolectric:robolectric:$rootProject.roboElectricVersion"
+    implementation "com.google.auto.value:auto-value-annotations:1.6"
+    kapt "com.google.auto.value:auto-value:1.6"
 }
 
 apply plugin: 'com.google.gms.google-services'

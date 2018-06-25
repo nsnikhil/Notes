@@ -12,19 +12,19 @@
     <group android:id="@+id/headerGroup1">
 
         <item
-            android:id="@+id/navItem1"
+            android:id="@+id/navItemNotes"
             android:checkable="true"
             android:checked="true"
             android:icon="@drawable/ic_create_black_48px"
             android:title="@string/navItem1" />
         <item
-            android:id="@+id/navItem2"
+            android:id="@+id/navItemStarred"
             android:checkable="true"
             android:checked="false"
             android:icon="@drawable/ic_star_black_48px"
             android:title="@string/navItem2" />
         <item
-            android:id="@+id/navItem3"
+            android:id="@+id/navItemVault"
             android:checkable="true"
             android:checked="false"
             android:icon="@drawable/ic_lock_black_48px"
@@ -35,14 +35,14 @@
     <group android:id="@+id/headerGroup2">
 
         <item
-            android:id="@+id/navItem4"
+            android:id="@+id/navItemSettings"
             android:checkable="true"
             android:checked="false"
             android:icon="@drawable/ic_settings_black_48px"
             android:title="@string/navItem4" />
 
         <item
-            android:id="@+id/navItem5"
+            android:id="@+id/navItemAbout"
             android:checkable="true"
             android:icon="@drawable/ic_info_black_48px"
             android:title="@string/navItem5" />
