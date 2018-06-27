@@ -28,10 +28,13 @@ class CreateFolderDialog : DialogFragment() {
     private var mParentFolderName: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.new_folder_dialog, container, false)
+        return inflater.inflate(R.layout.new_folder_dialog, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initialize()
         listeners()
-        return v
     }
 
     private fun initialize() {

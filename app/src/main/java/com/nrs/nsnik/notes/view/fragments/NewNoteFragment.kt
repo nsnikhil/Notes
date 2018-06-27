@@ -105,15 +105,15 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_new_note, container, false)
-
         mFileUtil = (activity?.application as MyApplication).fileUtil
-
         mRootFolder = mFileUtil!!.rootFolder
+        return view
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initialize()
         listeners()
-
-        return view
     }
 
 

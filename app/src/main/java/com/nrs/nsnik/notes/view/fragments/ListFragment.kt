@@ -10,6 +10,7 @@ import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -106,21 +107,21 @@ class ListFragment : Fragment(), NoteItemClickListener {
     private fun listeners() {
 
         compositeDisposable.addAll(
-                RxView.clicks(fabAddNote).subscribe({ if (isRevealed) disappear() else reveal() },
+                RxView.clicks(fabAdd).subscribe({ if (isRevealed) disappear() else reveal() },
                         { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(fabAddNote).subscribe { disappear() },
+                RxView.clicks(fabAddNote).subscribe {
+                    fabAddNote.findNavController().navigate(R.id.listToAddNewNote)
+                    disappear()
+                },
 
                 RxView.clicks(fabAddFolder).subscribe {
                     disappear()
                     val bundle = Bundle()
-                    if (activity != null && fragmentManager != null) {
-                        bundle.putString(activity?.resources?.getString(R.string.bundleCreateFolderParentFolder), mFolderName)
-                        CreateFolderDialog().apply {
-                            arguments = bundle
-                            show(fragmentManager, "createFolder")
-                        }
-                    }
+                    bundle.putString(activity?.resources?.getString(R.string.bundleCreateFolderParentFolder), mFolderName)
+                    val dialog = CreateFolderDialog()
+                    dialog.arguments = bundle
+                    dialog.show(fragmentManager, "createFolderDialog")
                 }
         )
     }
@@ -238,19 +239,19 @@ class ListFragment : Fragment(), NoteItemClickListener {
                     override fun onAnimationEnd(animation: Animation) {
                         isRevealed = true
                         fabAddNoteContainer.visibility = View.VISIBLE
-                        fabAddFolderContainer!!.visibility = View.VISIBLE
+                        fabAddFolderContainer.visibility = View.VISIBLE
                     }
 
                     override fun onAnimationRepeat(animation: Animation) {}
                 })
-                fabAddFolderContainer!!.startAnimation(scaleUp)
+                fabAddFolderContainer.startAnimation(scaleUp)
                 fabAddNoteContainer.startAnimation(scaleUp)
             }
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
 
-        fabAddNote.startAnimation(rotateAnimation)
+        fabAdd.startAnimation(rotateAnimation)
 
     }
 
@@ -275,19 +276,19 @@ class ListFragment : Fragment(), NoteItemClickListener {
                     override fun onAnimationEnd(animation: Animation) {
                         isRevealed = false
                         fabAddNoteContainer.visibility = View.INVISIBLE
-                        fabAddFolderContainer!!.visibility = View.INVISIBLE
+                        fabAddFolderContainer.visibility = View.INVISIBLE
                     }
 
                     override fun onAnimationRepeat(animation: Animation) {}
                 })
-                fabAddFolderContainer!!.startAnimation(scaleDown)
+                fabAddFolderContainer.startAnimation(scaleDown)
                 fabAddNoteContainer.startAnimation(scaleDown)
             }
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
 
-        fabAddNote.startAnimation(rotateAnimation)
+        fabAdd.startAnimation(rotateAnimation)
 
     }
 

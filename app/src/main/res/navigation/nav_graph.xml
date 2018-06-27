@@ -8,6 +8,19 @@
         android:id="@+id/listFragment"
         android:name="com.nrs.nsnik.notes.view.fragments.ListFragment"
         android:label="list"
-        tools:layout="@layout/list_layout" />
+        tools:layout="@layout/list_layout">
+
+        <action
+            android:id="@+id/listToAddNewNote"
+            app:destination="@id/newNoteFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/newNoteFragment"
+        android:name="com.nrs.nsnik.notes.view.fragments.NewNoteFragment"
+        android:label="note"
+        tools:layout="@layout/fragment_new_note" />
+
 
 </navigation>
