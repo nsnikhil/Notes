@@ -21,8 +21,7 @@ import com.nrs.nsnik.notes.util.DbUtil
 class FolderViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mDbUtil: DbUtil?
-    val folderList: LiveData<List<FolderEntity>>
-
+    private val folderList: LiveData<List<FolderEntity>>
 
     init {
         mDbUtil = (application as MyApplication).dbUtil

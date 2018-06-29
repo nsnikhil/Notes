@@ -21,7 +21,7 @@ import com.nrs.nsnik.notes.data.NotesDatabase
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = arrayOf(ContextModule::class))
+@Module(includes = [(ContextModule::class)])
 class DatabaseModule {
 
     internal val databaseName: String
@@ -43,9 +43,8 @@ class DatabaseModule {
     }
 
     companion object {
-
-        private val DATABASE_NAME = "notesDb"
-        private val DEFAULT_FOLDER_NAME = "noFolder"
+        private const val DATABASE_NAME = "notesDb"
+        private const val DEFAULT_FOLDER_NAME = "noFolder"
     }
 
 }

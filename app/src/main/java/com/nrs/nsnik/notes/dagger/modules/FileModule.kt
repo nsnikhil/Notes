@@ -19,7 +19,7 @@ import dagger.Module
 import dagger.Provides
 import java.io.File
 
-@Module(includes = arrayOf(ContextModule::class))
+@Module(includes = [(ContextModule::class)])
 class FileModule {
 
     @ApplicationScope

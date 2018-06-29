@@ -22,7 +22,7 @@ import com.nrs.nsnik.notes.util.DbUtil
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mDbUtil: DbUtil?
-    val noteList: LiveData<List<NoteEntity>>
+    private val noteList: LiveData<List<NoteEntity>>
 
     init {
         mDbUtil = (application as MyApplication).dbUtil

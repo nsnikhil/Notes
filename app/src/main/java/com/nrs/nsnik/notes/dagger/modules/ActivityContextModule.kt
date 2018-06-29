@@ -20,7 +20,6 @@ import dagger.Provides
 @Module
 class ActivityContextModule(private val mActivityContext: Context) {
 
-
     @Provides
     @ActivityQualifier
     internal fun provideActivityContext(): Context {

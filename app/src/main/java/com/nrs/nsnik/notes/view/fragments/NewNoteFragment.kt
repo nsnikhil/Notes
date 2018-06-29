@@ -50,6 +50,7 @@ import com.nrs.nsnik.notes.view.adapters.ImageAdapter
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
+import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_new_note.*
 import kotlinx.android.synthetic.main.new_note_tools.*
@@ -72,14 +73,13 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     //Variables used in saving or updating note
-    private var mFolderName: String? = "nofolder"
+    private var mFolderName: String? = "noFolder"
 
     private var mIsLocked: Int = 0
     private var mIsStarred: Int = 0
     private var mHasReminder: Int = 0
 
     private var mColorCode: String? = null
-
 
     private var mStarMenu: MenuItem? = null
     private var mLockMenu: MenuItem? = null
@@ -100,6 +100,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     private var mFileUtil: FileUtil? = null
     private var mRootFolder: File? = null
 
+    private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
 
     private var mNoteEntity: NoteEntity? = null
 
@@ -107,6 +108,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         val view: View = inflater.inflate(R.layout.fragment_new_note, container, false)
         mFileUtil = (activity?.application as MyApplication).fileUtil
         mRootFolder = mFileUtil!!.rootFolder
+        setHasOptionsMenu(true)
         return view
     }
 
@@ -120,14 +122,14 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     private fun initialize() {
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
 
+        if (arguments != null) setNote()
 
-        if (arguments != null) {
-            setNote()
-        }
+        mBottomSheetBehavior = BottomSheetBehavior.from(toolsBottomSheet)
 
         toolsBottomSheet.apply {
-            BottomSheetBehavior.from(toolsBottomSheet).setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onSlide(bottomSheet: View, newState: Float) {
+
                 }
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -170,48 +172,57 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
     private fun listeners() {
         compositeDisposable.addAll(
+
                 RxView.clicks(toolsDate).subscribe { changeState() },
+
                 RxView.clicks(toolsCheckList).subscribe({
                     changeState()
                     addCheckListItem()
                 }, { throwable -> Timber.d(throwable.message) }),
+
                 RxView.clicks(toolsCamera).subscribe({
                     changeState()
                     checkWriteExternalStoragePermission()
                 }, { throwable -> Timber.d(throwable.message) }),
+
                 RxView.clicks(toolsAttachment).subscribe({
                     changeState()
                     checkReadExternalStoragePermission()
                 }, { throwable -> Timber.d(throwable.message) }),
+
                 RxView.clicks(toolsAudio).subscribe({
                     changeState()
                     checkAudioRecordPermission()
                 }, { throwable -> Timber.d(throwable.message) }),
+
                 RxView.clicks(toolsReminder).subscribe({
                     changeState()
                     setReminder()
                 }, { throwable -> Timber.d(throwable.message) }),
+
                 RxView.clicks(toolsColor).subscribe({
                     changeState()
                     ColorPickerDialogFragment().show(fragmentManager, "color")
                 }, { throwable -> Timber.d(throwable.message) })
+
         )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.new_note_menu, menu)
-        if (menu?.getItem(0) != null) {
-            mStarMenu = menu.getItem(0)
-        }
-        if (menu?.getItem(1) != null) {
-            mLockMenu = menu.getItem(1)
-        }
+        if (menu?.getItem(1) != null) mStarMenu = menu.getItem(1)
+        if (menu?.getItem(2) != null) mLockMenu = menu.getItem(2)
         setMenuIconState()
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.newNoteMenuSave -> {
+                if (verifyAndSave()) if (mNoteEntity == null) noteAction(NoteEntity(), ACTIONTYPE.SAVE) else noteAction(mNoteEntity!!, ACTIONTYPE.UPDATE)
+            }
+            R.id.newNoteMenuDelete -> {
+            }
             R.id.newNoteMenuStar -> mIsStarred = setMenuState(mIsStarred, item, R.drawable.ic_star_black_48px, R.drawable.ic_star_border_black_48px, "Starred")
             R.id.newNoteMenuLock -> mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_black_48px, R.drawable.ic_lock_open_black_48px, "Locked")
         }
@@ -231,49 +242,54 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     private fun setNote() {
-        if (mNoteEntity != null) {
 
-            //mNoteEntity!!.uid = mNoteId
+        mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName))
 
-            newNoteTitle.setText(mNoteEntity!!.title)
-            newNoteContent.setText(mNoteEntity!!.noteContent)
+        mNoteEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteSerialId)), NoteEntity.SERIALIZER)
 
-            mFolderName = mNoteEntity!!.folderName
+        if (mNoteEntity == null) return
 
-            mColorCode = mNoteEntity!!.color
+        //mNoteEntity!!.uid = mNoteId
 
-            newNoteTitle!!.setTextColor(Color.parseColor(mColorCode))
+        newNoteTitle.setText(mNoteEntity!!.title)
+        newNoteContent.setText(mNoteEntity!!.noteContent)
 
-            mIsStarred = mNoteEntity!!.pinned
+        mFolderName = mNoteEntity!!.folderName
 
-            mIsLocked = mNoteEntity!!.locked
+        mColorCode = mNoteEntity!!.color
 
-            toolsDate!!.text = mNoteEntity!!.dateModified!!.toString()
+        newNoteTitle!!.setTextColor(Color.parseColor(mColorCode))
 
-            if (mNoteEntity!!.imageList!!.isNotEmpty()) {
-                newNoteImageList.visibility = View.VISIBLE
-                mImagesLocations!!.addAll(mNoteEntity!!.imageList!!)
-                mImageAdapter?.notifyDataSetChanged()
-            }
+        mIsStarred = mNoteEntity!!.pinned
 
+        mIsLocked = mNoteEntity!!.locked
 
-            if (mNoteEntity!!.audioList!!.isNotEmpty()) {
-                newNoteAudioList!!.visibility = View.VISIBLE
-                mAudioLocations!!.addAll(mNoteEntity!!.audioList!!)
-                mAudioListAdapter?.notifyDataSetChanged()
-            }
+        toolsDate!!.text = mNoteEntity!!.dateModified!!.toString()
 
-
-            if (mNoteEntity!!.checkList!!.isNotEmpty()) {
-                newNoteCheckList!!.visibility = View.VISIBLE
-                mCheckList!!.addAll(mNoteEntity!!.checkList!!)
-                mCheckListAdapter?.notifyDataSetChanged()
-            }
-
-            if (mNoteEntity!!.hasReminder != 0) {
-                mHasReminder = 1
-            }
+        if (mNoteEntity!!.imageList!!.isNotEmpty()) {
+            newNoteImageList.visibility = View.VISIBLE
+            mImagesLocations!!.addAll(mNoteEntity!!.imageList!!)
+            mImageAdapter?.notifyDataSetChanged()
         }
+
+
+        if (mNoteEntity!!.audioList!!.isNotEmpty()) {
+            newNoteAudioList!!.visibility = View.VISIBLE
+            mAudioLocations!!.addAll(mNoteEntity!!.audioList!!)
+            mAudioListAdapter?.notifyDataSetChanged()
+        }
+
+
+        if (mNoteEntity!!.checkList!!.isNotEmpty()) {
+            newNoteCheckList!!.visibility = View.VISIBLE
+            mCheckList!!.addAll(mNoteEntity!!.checkList!!)
+            mCheckListAdapter?.notifyDataSetChanged()
+        }
+
+        if (mNoteEntity!!.hasReminder != 0) {
+            mHasReminder = 1
+        }
+
     }
 
     private fun setMenuIconState() {
@@ -299,22 +315,20 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             text = ""
             done = false
         })
-        mCheckListAdapter!!.notifyDataSetChanged()
+        mCheckListAdapter?.submitList(mCheckList)
         if (mCheckList!!.isNotEmpty()) newNoteCheckList.visibility = View.VISIBLE else View.GONE
     }
 
 
     private fun addAudioToList(audioFileLocation: String) {
         mAudioLocations!!.add(audioFileLocation)
-        mAudioListAdapter!!.notifyDataSetChanged()
+        mAudioListAdapter?.submitList(mAudioLocations)
         if (mAudioLocations!!.isNotEmpty()) newNoteAudioList.visibility = View.VISIBLE else View.GONE
-
     }
-
 
     private fun addImageToList(imageLocation: String) {
         mImagesLocations!!.add(imageLocation)
-        mImageAdapter!!.notifyDataSetChanged()
+        mImageAdapter?.submitList(mImagesLocations)
         if (mImagesLocations!!.isNotEmpty()) newNoteImageList.visibility = View.VISIBLE else View.GONE
     }
 
@@ -488,11 +502,10 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     private fun changeState() {
-//        if (mBottomSheetBehavior!!.getState() === BottomSheetBehavior.STATE_EXPANDED) {
-//            mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
-//        } else {
-//            mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
-//        }
+        if (mBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
+        else
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -532,7 +545,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             FILE_TYPES.TEXT -> c.timeInMillis.toString() + ".txt"
             FILE_TYPES.IMAGE -> c.timeInMillis.toString() + ".jpg"
             FILE_TYPES.AUDIO -> c.timeInMillis.toString() + ".3gp"
-            else -> throw IllegalArgumentException("Invalid type " + type.toString())
         }
     }
 

@@ -12,7 +12,6 @@ package com.nrs.nsnik.notes.dagger.scopes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
-
 import javax.inject.Scope
 
 @Scope

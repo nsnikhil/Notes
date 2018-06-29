@@ -17,7 +17,7 @@ import dagger.Component
 import java.io.File
 
 @ApplicationScope
-@Component(modules = arrayOf(FileModule::class))
+@Component(modules = [(FileModule::class)])
 interface FolderComponent {
     @get:RootFolder
     val rootFolder: File

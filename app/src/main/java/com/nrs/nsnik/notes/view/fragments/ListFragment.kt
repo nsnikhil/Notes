@@ -1,9 +1,7 @@
 package com.nrs.nsnik.notes.view.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
@@ -16,23 +14,20 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
-import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
-import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.util.RvItemTouchHelper
-import com.nrs.nsnik.notes.util.events.FolderClickEvent
 import com.nrs.nsnik.notes.view.adapters.NotesAdapter
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.CreateFolderDialog
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
+import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.empty_state.*
 import kotlinx.android.synthetic.main.fab_reveal.*
 import kotlinx.android.synthetic.main.list_layout.*
-import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import java.util.*
 
@@ -44,13 +39,12 @@ class ListFragment : Fragment(), NoteItemClickListener {
     private var mNotesList: List<NoteEntity>? = null
     private var mFolderList: List<FolderEntity>? = null
 
-    private var mFolderName: String? = null
+    private var mFolderName: String? = "noFolder"
     private var mNotesAdapter: NotesAdapter? = null
-    private var mFileUtil: FileUtil? = null
+    //private var mFileUtil: FileUtil? = null
 
     private val mInEditorMode: Boolean = false
-    private var mSelectedNoteId: List<Int>? = null
-    private var mSelectedFolderId: List<Int>? = null
+
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var isRevealed: Boolean = false
@@ -63,27 +57,31 @@ class ListFragment : Fragment(), NoteItemClickListener {
         super.onViewCreated(view, savedInstanceState)
         initialize()
         listeners()
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.main_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menuMainSearch -> {
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun initialize() {
 
-        if (activity != null && arguments != null) {
-            mFolderName = arguments!!.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName))
-        }
-
-        if (activity != null) {
-            mFileUtil = (activity?.application as MyApplication).fileUtil
-        }
-
-        mSelectedNoteId = ArrayList()
-        mSelectedFolderId = ArrayList()
+        mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")
 
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
         mFolderViewModel = ViewModelProviders.of(this).get(FolderViewModel::class.java)
 
         mNotesList = ArrayList()
         mFolderList = ArrayList()
-
 
         //Setting up recycler view
 
@@ -96,11 +94,10 @@ class ListFragment : Fragment(), NoteItemClickListener {
             adapter = mNotesAdapter
         }
 
-
         val touchHelper = ItemTouchHelper(RvItemTouchHelper(mNotesAdapter!!))
         touchHelper.attachToRecyclerView(commonList)
 
-        setViewModel()
+        setViewModel(mFolderName!!)
 
     }
 
@@ -111,8 +108,8 @@ class ListFragment : Fragment(), NoteItemClickListener {
                         { throwable -> Timber.d(throwable.message) }),
 
                 RxView.clicks(fabAddNote).subscribe {
-                    fabAddNote.findNavController().navigate(R.id.listToAddNewNote)
                     disappear()
+                    openNoteEditor(mFolderName, null)
                 },
 
                 RxView.clicks(fabAddFolder).subscribe {
@@ -126,10 +123,9 @@ class ListFragment : Fragment(), NoteItemClickListener {
         )
     }
 
-    private fun setViewModel() {
-//        mNoteViewModel!!.getNoteByFolderNameNoPinNoLock(mFolderName).observe(this, ???({ this.swapNotes(it) }))
-//
-//        mFolderViewModel!!.getFolderByParentNoPinNoLock(mFolderName).observe(this, ???({ this.swapFolder(it) }))
+    private fun setViewModel(folderName: String) {
+        mFolderViewModel!!.getFolderByParentNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
+        mNoteViewModel!!.getNoteByFolderNameNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
     }
 
     private fun swapFolder(folderEntityList: List<FolderEntity>?) {
@@ -158,19 +154,29 @@ class ListFragment : Fragment(), NoteItemClickListener {
         if (position != RecyclerView.NO_POSITION) {
             val startPos = 1
             val currPos = position - startPos
-            EventBus.getDefault().post(FolderClickEvent(mFolderList!![currPos].folderName!!))
+            setViewModel(mFolderList?.get(currPos)?.folderName!!)
         }
     }
 
     @Throws(Exception::class)
     private fun openNote(position: Int) {
-        if (activity != null) {
+        val startPos = mFolderList!!.size + 2
+        val currPos = position - startPos
+        openNoteEditor(null, mNotesList?.get(currPos))
+    }
 
-            val startPos = mFolderList!!.size + 2
-            val currPos = position - startPos
-            val noteEntity = mFileUtil!!.getNote(mNotesList!![currPos].fileName!!)
+    private fun openNoteEditor(folderName: String?, noteEntity: NoteEntity?) {
+        val bundle = Bundle()
 
+        if (folderName != null)
+            bundle.putString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), mFolderName)
+
+        if (noteEntity != null) {
+            val byteArray: ByteArray = ByteBufferSerial().toByteArray(noteEntity, NoteEntity.SERIALIZER)
+            bundle.putByteArray(activity?.resources?.getString(R.string.bundleNoteEntity), byteArray)
         }
+
+        fabAddNote.findNavController().navigate(R.id.listToAddNewNote, bundle)
     }
 
     private fun makeDeleteDialog(message: String, folderEntity: FolderEntity, noteEntity: NoteEntity, isFolder: Boolean) {

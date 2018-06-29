@@ -29,16 +29,21 @@ import org.greenrobot.eventbus.Subscribe
 class ColorPickerDialogFragment : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.recycler_view, container, false)
+        return inflater.inflate(R.layout.recycler_view, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initialize()
-        return v
     }
 
     private fun initialize() {
+        val colorAdapter = ColorPickerAdapter()
         recyclerView.apply {
             layoutManager = GridLayoutManager(activity, 4)
-            adapter = ColorPickerAdapter()
+            adapter = colorAdapter
         }
+        colorAdapter.submitList(activity?.resources?.getStringArray(R.array.backgroundColors)?.toList())
     }
 
     override fun onAttach(context: Context) {

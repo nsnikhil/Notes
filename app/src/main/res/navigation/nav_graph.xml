@@ -2,12 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/listFragment">
+    app:startDestination="@id/navItemNotes">
 
     <fragment
-        android:id="@+id/listFragment"
+        android:id="@+id/navItemNotes"
         android:name="com.nrs.nsnik.notes.view.fragments.ListFragment"
-        android:label="list"
+        android:label="Notes"
         tools:layout="@layout/list_layout">
 
         <action
@@ -19,8 +19,19 @@
     <fragment
         android:id="@+id/newNoteFragment"
         android:name="com.nrs.nsnik.notes.view.fragments.NewNoteFragment"
-        android:label="note"
+        android:label="New Note"
         tools:layout="@layout/fragment_new_note" />
 
+
+    <fragment
+        android:id="@+id/navItemAbout"
+        android:name="com.nrs.nsnik.notes.view.fragments.AboutFragment"
+        android:label="About"
+        tools:layout="@layout/fragment_about" />
+
+    <fragment
+        android:id="@+id/navItemSettings"
+        android:name="com.nrs.nsnik.notes.view.fragments.PrefFragment"
+        android:label="Settings" />
 
 </navigation>

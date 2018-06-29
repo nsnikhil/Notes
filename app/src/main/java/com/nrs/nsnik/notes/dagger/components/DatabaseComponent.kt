@@ -18,7 +18,7 @@ import com.nrs.nsnik.notes.util.DbUtil
 import dagger.Component
 
 @ApplicationScope
-@Component(modules = arrayOf(DatabaseModule::class, FileModule::class))
+@Component(modules = [(DatabaseModule::class), (FileModule::class)])
 interface DatabaseComponent {
     val dbUtil: DbUtil
 }

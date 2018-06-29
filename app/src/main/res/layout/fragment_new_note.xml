@@ -9,17 +9,11 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_new_note"
+    android:id="@+id/newNoteContainer"
     style="@style/matchParent">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/newNoteToolbar"
-        style="@style/toolbar"
-        layout="@layout/toolbar" />
 
     <ScrollView
         style="@style/matchParent"
-        android:layout_marginTop="?android:actionBarSize"
         android:clipToPadding="false"
         android:paddingBottom="48dp">
 
@@ -41,13 +35,13 @@
             <EditText
                 android:id="@+id/newNoteTitle"
                 style="@style/newNoteHeading"
+                android:autofillHints=""
                 android:background="@null"
                 android:fontFamily="@font/roboto_mono_bold"
+                android:inputType="text"
                 android:labelFor="@+id/newNoteTitle"
                 android:maxLines="1"
                 android:padding="@dimen/sixteen"
-                android:autofillHints=""
-                android:inputType="text"
                 android:textSize="24sp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -58,10 +52,10 @@
             <EditText
                 android:id="@+id/newNoteContent"
                 style="@style/newNoteContent"
+                android:autofillHints=""
                 android:fontFamily="@font/roboto_mono_medium"
                 android:inputType="textMultiLine"
                 android:labelFor="@+id/newNoteContent"
-                android:autofillHints=""
                 android:lineSpacingMultiplier="1.22" />
 
         </LinearLayout>

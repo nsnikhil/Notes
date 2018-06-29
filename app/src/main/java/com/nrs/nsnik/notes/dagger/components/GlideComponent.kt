@@ -17,7 +17,7 @@ import com.nrs.nsnik.notes.dagger.scopes.ApplicationScope
 import dagger.Component
 
 @ApplicationScope
-@Component(modules = arrayOf(GlideModule::class))
+@Component(modules = [(GlideModule::class)])
 interface GlideComponent {
     val requestManager: RequestManager
 }

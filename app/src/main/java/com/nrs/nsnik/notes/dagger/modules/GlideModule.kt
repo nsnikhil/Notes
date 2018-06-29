@@ -20,7 +20,7 @@ import com.nrs.nsnik.notes.dagger.scopes.ApplicationScope
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = arrayOf(ContextModule::class))
+@Module(includes = [(ContextModule::class)])
 class GlideModule {
 
     @ApplicationScope

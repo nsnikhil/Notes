@@ -46,16 +46,19 @@ class CreateFolderDialog : DialogFragment() {
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(dialogFolderColor).subscribe { ColorPickerDialogFragment().apply { show(fragmentManager, "color") } },
+                RxView.clicks(dialogFolderColor).subscribe {
+                    val dialog = ColorPickerDialogFragment()
+                    dialog.show(fragmentManager, "color")
+                },
                 RxView.clicks(dialogFolderCreate).subscribe { createFolder() },
                 RxView.clicks(dialogFolderCancel).subscribe { dismiss() }
         )
     }
 
     private fun createFolder() {
-        if (!dialogFolderName!!.text.toString().isEmpty()) {
+        if (dialogFolderName!!.text.toString().isNotEmpty()) {
             val folderEntity = FolderEntity()
-            folderEntity.folderName = dialogFolderName!!.text.toString()
+            folderEntity.folderName = dialogFolderName.text.toString()
             folderEntity.color = mColor
             folderEntity.locked = 0
             folderEntity.pinned = 0
@@ -63,9 +66,7 @@ class CreateFolderDialog : DialogFragment() {
             mFolderViewModel!!.insertFolder(folderEntity)
             dismiss()
         } else {
-            if (activity != null) {
-                dialogFolderName!!.error = activity?.resources?.getString(R.string.errorNoFolderName)
-            }
+            dialogFolderName!!.error = activity?.resources?.getString(R.string.errorNoFolderName)
         }
     }
 

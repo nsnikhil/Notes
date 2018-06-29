@@ -18,7 +18,7 @@ import com.nrs.nsnik.notes.dagger.scopes.MediaPlayerScope
 import dagger.Component
 
 @MediaPlayerScope
-@Component(modules = arrayOf(MediaPlayerModule::class))
+@Component(modules = [(MediaPlayerModule::class)])
 interface MediaComponent {
     val mediaPlayer: MediaPlayer
 }

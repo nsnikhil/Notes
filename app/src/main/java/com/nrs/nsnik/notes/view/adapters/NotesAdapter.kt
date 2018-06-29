@@ -99,7 +99,6 @@ class NotesAdapter(private val mContext: Context,
                 } catch (e: ClassCastException) {
                     e.printStackTrace()
                 }
-
                 bindHeaderData(holder, position)
             }
         }

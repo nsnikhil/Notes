@@ -46,16 +46,16 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
             }
 
             override fun onSuccess(longs: LongArray) {
-                for (noteEntity in noteEntities) {
+                noteEntities.forEach {
                     try {
-                        mFileUtil.saveNote(noteEntity, noteEntity.fileName!!)
+                        mFileUtil.saveNote(it, it.fileName!!)
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
 
                 }
-                for (aLong in longs) {
-                    Timber.d(aLong.toString())
+                longs.forEach {
+                    Timber.d(it.toString())
                 }
             }
 
@@ -113,13 +113,12 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
             }
 
             override fun onSuccess(t: Int) {
-                for (noteEntity in noteEntities) {
+                noteEntities.forEach {
                     try {
-                        mFileUtil.saveNote(noteEntity, noteEntity.fileName!!)
+                        mFileUtil.saveNote(it, it.fileName!!)
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
-
                 }
                 Timber.d(t.toString())
             }
@@ -170,16 +169,23 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
         return mNotesDatabase.noteDao.getNoteByColor(color)
     }
 
+
+    /**
+     * FOLDER
+     */
+
     fun insertFolder(vararg folderEntities: FolderEntity) {
-        val single = Single.fromCallable { mNotesDatabase.folderDao.insertFolders(*folderEntities) }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        val single = Single.fromCallable {
+            mNotesDatabase.folderDao.insertFolders(*folderEntities)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         single.subscribe(object : SingleObserver<LongArray> {
             override fun onSubscribe(d: Disposable) {
 
             }
 
             override fun onSuccess(longs: LongArray) {
-                for (aLong in longs) {
-                    Timber.d(aLong.toString())
+                longs.forEach {
+                    Timber.d(it.toString())
                 }
             }
 

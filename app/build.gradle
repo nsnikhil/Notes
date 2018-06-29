@@ -103,6 +103,9 @@ dependencies {
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
+    implementation 'androidx.preference:preference:1.0.0-alpha3'
+    implementation 'androidx.legacy:legacy-preference-v14:1.0.0-alpha3'
+
     implementation('com.google.android.gms:play-services-oss-licenses:15.0.1', {
         exclude group: 'com.google.android.gms'
     })
@@ -154,9 +157,9 @@ dependencies {
     implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0-alpha02'
     androidTestImplementation 'android.arch.navigation:navigation-testing-ktx:1.0.0-alpha02'
 
-    implementation 'android.arch.work:work-runtime-ktx:1.0.0-alpha03'
-    implementation "android.arch.work:work-firebase:1.0.0-alpha03"
-    androidTestImplementation "android.arch.work:work-testing:1.0.0-alpha03"
+    implementation 'android.arch.work:work-runtime-ktx:1.0.0-alpha04'
+    implementation "android.arch.work:work-firebase:1.0.0-alpha04"
+    androidTestImplementation "android.arch.work:work-testing:1.0.0-alpha04"
 
     implementation "com.twitter.serial:serial:0.1.6"
     testImplementation "org.mockito:mockito-core:2.16.0"

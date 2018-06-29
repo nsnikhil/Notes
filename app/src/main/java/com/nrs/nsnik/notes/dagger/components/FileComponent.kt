@@ -7,7 +7,7 @@ import com.nrs.nsnik.notes.util.FileUtil
 import dagger.Component
 
 @ApplicationScope
-@Component(modules = arrayOf(FileModule::class))
+@Component(modules = [(FileModule::class)])
 interface FileComponent {
     val fileUtil: FileUtil
 }

@@ -12,12 +12,13 @@ package com.nrs.nsnik.notes.view
 
 import android.os.Bundle
 import android.view.Gravity
-import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.test.espresso.IdlingResource
 import com.nrs.nsnik.notes.BuildConfig
 import com.nrs.nsnik.notes.MyApplication
@@ -40,6 +41,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initialize() {
         setSupportActionBar(mainToolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px)
+        }
+
+        val controller = findNavController(R.id.mainNavHost)
+        setupActionBarWithNavController(this, controller, mainDrawerLayout)
 
         mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -56,10 +64,12 @@ class MainActivity : AppCompatActivity() {
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemSettings -> {
+                    findNavController(R.id.mainNavHost).navigate(R.id.navItemSettings)
                     mainDrawerLayout.closeDrawer(Gravity.START)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemAbout -> {
+                    findNavController(R.id.mainNavHost).navigate(R.id.navItemAbout)
                     mainDrawerLayout.closeDrawer(Gravity.START)
                     return@setNavigationItemSelectedListener true
                 }
@@ -68,16 +78,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menuMainSearch -> {
-            }
+            android.R.id.home -> mainDrawerLayout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
     }
