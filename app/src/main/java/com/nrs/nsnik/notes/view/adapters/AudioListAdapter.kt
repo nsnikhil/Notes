@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.dagger.components.DaggerMediaComponent
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.single_audio_item.view.*
@@ -34,12 +35,9 @@ class AudioListAdapter : ListAdapter<String, AudioListAdapter.MyViewHolder>(Stri
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var context: Context
-    private var mMediaPlayer: MediaPlayer? = null
+    private var mMediaPlayer: MediaPlayer? = DaggerMediaComponent.builder().build().mediaPlayer
     private var mAdapterSeekBar: SeekBar? = null
 
-    init {
-        //mMediaPlayer = DaggerMediaComponent.builder().build().getMediaPlayer();
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         context = parent.context

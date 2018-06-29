@@ -15,7 +15,6 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
@@ -24,8 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxCompoundButton
-import com.jakewharton.rxbinding2.widget.RxTextView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.view.adapters.diffUtil.CheckListDiffUtil
@@ -75,36 +72,7 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
         val addNew: ImageButton = itemView.checkListAdd
 
         init {
-
-            compositeDisposable.addAll(
-                    RxTextView.textChanges(text).subscribe {
-                        if (adapterPosition != RecyclerView.NO_POSITION) {
-//                            mCheckList!![adapterPosition] = CheckListObject.builder()
-//                                    .text(it.toString())
-//                                    .done(checkBox.isChecked)
-//                                    .build()
-                        }
-                    },
-                    RxTextView.editorActionEvents(text).subscribe { textViewEditorActionEvent ->
-                        if (textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_NEXT) {
-                            mOnAddClickListener.addClickListener()
-                            text.requestFocus()
-                        }
-                    },
-                    RxView.clicks(addNew).subscribe { mOnAddClickListener.addClickListener() },
-                    RxCompoundButton.checkedChanges(checkBox).subscribe { aBoolean ->
-                        if (adapterPosition != RecyclerView.NO_POSITION) {
-//                                mCheckList!![adapterPosition] = CheckListObject.builder()
-//                                        .text(text.text.toString())
-//                                        .done(aBoolean)
-//                                        .build()
-                            if (text.text.toString().isNotEmpty()) {
-                                modifyText(text, aBoolean)
-                            }
-                        }
-                    }
-            )
-
+            compositeDisposable.addAll(RxView.clicks(addNew).subscribe { mOnAddClickListener.addClickListener() })
         }
     }
 }

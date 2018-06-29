@@ -11,6 +11,7 @@
 package com.nrs.nsnik.notes.view.fragments
 
 import android.Manifest
+import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -33,6 +34,7 @@ import androidx.core.content.FileProvider
 import androidx.core.widget.toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -86,9 +88,9 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
     private var mCurrentPhotoPath: String? = null
 
-    private var mImagesLocations: MutableList<String>? = null
-    private var mAudioLocations: MutableList<String>? = null
-    private var mCheckList: MutableList<CheckListObject>? = null
+    private var mImagesLocations: MutableList<String> = mutableListOf()
+    private var mAudioLocations: MutableList<String> = mutableListOf()
+    private var mCheckList: MutableList<CheckListObject> = mutableListOf()
     private var mFilesToDelete: List<String>? = null
 
     private var mImageAdapter: ImageAdapter? = null
@@ -122,8 +124,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     private fun initialize() {
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
 
-        if (arguments != null) setNote()
-
         mBottomSheetBehavior = BottomSheetBehavior.from(toolsBottomSheet)
 
         toolsBottomSheet.apply {
@@ -138,34 +138,33 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             })
         }
 
-
-        mImagesLocations = ArrayList()
+        mImageAdapter = ImageAdapter(false)
         newNoteImageList.apply {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
-            adapter = ImageAdapter(false)
+            adapter = mImageAdapter
         }
 
 
-        //Audio List Setup
-        mAudioLocations = ArrayList()
+        mAudioListAdapter = AudioListAdapter()
         newNoteAudioList.apply {
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
-            adapter = AudioListAdapter()
+            adapter = mAudioListAdapter
         }
 
 
-        //Check List Setup
-        mCheckList = ArrayList()
+        mCheckListAdapter = CheckListAdapter(this)
         newNoteCheckList.apply {
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
-            adapter = CheckListAdapter(this@NewNoteFragment)
+            adapter = mCheckListAdapter
         }
 
         //Other initializations
         mFilesToDelete = ArrayList()
+
+        if (arguments != null) setNote()
 
     }
 
@@ -245,51 +244,50 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
         mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName))
 
-        mNoteEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteSerialId)), NoteEntity.SERIALIZER)
+        mNoteEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteEntity)), NoteEntity.SERIALIZER)
 
         if (mNoteEntity == null) return
 
-        //mNoteEntity!!.uid = mNoteId
+        newNoteTitle.setText(mNoteEntity?.title)
+        newNoteContent.setText(mNoteEntity?.noteContent)
 
-        newNoteTitle.setText(mNoteEntity!!.title)
-        newNoteContent.setText(mNoteEntity!!.noteContent)
+        mFolderName = mNoteEntity?.folderName
 
-        mFolderName = mNoteEntity!!.folderName
+        mColorCode = mNoteEntity?.color
 
-        mColorCode = mNoteEntity!!.color
+        newNoteTitle.setTextColor(Color.parseColor(mColorCode))
 
-        newNoteTitle!!.setTextColor(Color.parseColor(mColorCode))
+        mIsStarred = mNoteEntity?.pinned!!
 
-        mIsStarred = mNoteEntity!!.pinned
+        mIsLocked = mNoteEntity?.locked!!
 
-        mIsLocked = mNoteEntity!!.locked
+        toolsDate.text = mNoteEntity?.dateModified.toString()
 
-        toolsDate!!.text = mNoteEntity!!.dateModified!!.toString()
-
-        if (mNoteEntity!!.imageList!!.isNotEmpty()) {
+        if (mNoteEntity?.imageList != null && mNoteEntity?.imageList?.isNotEmpty()!!) {
             newNoteImageList.visibility = View.VISIBLE
-            mImagesLocations!!.addAll(mNoteEntity!!.imageList!!)
-            mImageAdapter?.notifyDataSetChanged()
+            mImagesLocations.addAll(mNoteEntity?.imageList!!)
+            mImageAdapter?.submitList(mImagesLocations)
         }
 
 
-        if (mNoteEntity!!.audioList!!.isNotEmpty()) {
+        if (mNoteEntity?.audioList != null && mNoteEntity?.audioList?.isNotEmpty()!!) {
             newNoteAudioList!!.visibility = View.VISIBLE
-            mAudioLocations!!.addAll(mNoteEntity!!.audioList!!)
-            mAudioListAdapter?.notifyDataSetChanged()
+            mAudioLocations.addAll(mNoteEntity?.audioList!!)
+            mAudioListAdapter?.submitList(mAudioLocations)
         }
 
 
-        if (mNoteEntity!!.checkList!!.isNotEmpty()) {
+        if (mNoteEntity?.checkList != null && mNoteEntity?.checkList?.isNotEmpty()!!) {
             newNoteCheckList!!.visibility = View.VISIBLE
-            mCheckList!!.addAll(mNoteEntity!!.checkList!!)
-            mCheckListAdapter?.notifyDataSetChanged()
+            mCheckList.addAll(mNoteEntity?.checkList!!)
+            mCheckListAdapter?.submitList(mCheckList)
         }
 
-        if (mNoteEntity!!.hasReminder != 0) {
+        if (mNoteEntity?.hasReminder != 0) {
             mHasReminder = 1
         }
 
+        setMenuIconState()
     }
 
     private fun setMenuIconState() {
@@ -311,25 +309,26 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
 
     private fun addCheckListItem() {
-        mCheckList!!.add(CheckListObject().apply {
-            text = ""
-            done = false
-        })
+        val list = CheckListObject()
+        list.text = ""
+        list.done = false
+        mCheckList.add(list)
         mCheckListAdapter?.submitList(mCheckList)
-        if (mCheckList!!.isNotEmpty()) newNoteCheckList.visibility = View.VISIBLE else View.GONE
+        if (mCheckList.isNotEmpty()) newNoteCheckList.visibility = View.VISIBLE else View.GONE
     }
 
 
     private fun addAudioToList(audioFileLocation: String) {
-        mAudioLocations!!.add(audioFileLocation)
+        mAudioLocations.add(audioFileLocation)
         mAudioListAdapter?.submitList(mAudioLocations)
-        if (mAudioLocations!!.isNotEmpty()) newNoteAudioList.visibility = View.VISIBLE else View.GONE
+        Timber.d(mAudioListAdapter?.itemCount.toString())
+        if (mAudioLocations.isNotEmpty()) newNoteAudioList.visibility = View.VISIBLE else View.GONE
     }
 
     private fun addImageToList(imageLocation: String) {
-        mImagesLocations!!.add(imageLocation)
+        mImagesLocations.add(imageLocation)
         mImageAdapter?.submitList(mImagesLocations)
-        if (mImagesLocations!!.isNotEmpty()) newNoteImageList.visibility = View.VISIBLE else View.GONE
+        if (mImagesLocations.isNotEmpty()) newNoteImageList.visibility = View.VISIBLE else View.GONE
     }
 
 
@@ -389,6 +388,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     private fun startGalleryIntent() {
         val chosePicture = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        chosePicture.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (chosePicture.resolveActivity(activity?.packageManager) != null) {
             startActivityForResult(chosePicture, ATTACH_PICTURE_REQUEST_CODE)
         } else {
@@ -401,12 +401,11 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         try {
             val image = MediaStore.Images.Media.getBitmap(activity?.contentResolver, imageUri)
             val imageFileName = makeName(FILE_TYPES.IMAGE)
-            mFileUtil!!.saveImage(image, imageFileName)
+            mFileUtil?.saveImage(image, imageFileName)
             addImageToList(imageFileName)
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
 
     private fun addCameraPhotoToList() {
@@ -469,7 +468,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
         myIntent.putExtra(resources.getString(R.string.notificationTitle), newNoteTitle.text.toString())
 
-
         myIntent.putExtra(resources.getString(R.string.notificationContent), newNoteContent.text.toString())
 
         val alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
@@ -482,6 +480,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     private fun noteAction(noteEntity: NoteEntity, action: ACTIONTYPE) {
         noteEntity.title = newNoteTitle.text.toString()
         noteEntity.noteContent = newNoteContent.text.toString()
+        Timber.d(noteEntity.noteContent
+        )
         noteEntity.folderName = mFolderName
         noteEntity.fileName = makeName(FILE_TYPES.TEXT)
         noteEntity.color = if (mColorCode != null) mColorCode else "#333333"
@@ -493,6 +493,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         noteEntity.locked = mIsLocked
         noteEntity.hasReminder = mHasReminder
         if (action == ACTIONTYPE.SAVE) mNoteViewModel!!.insertNote(noteEntity) else mNoteViewModel!!.updateNote(noteEntity)
+        activity?.findNavController(R.id.mainNavHost)?.navigateUp()
     }
 
     private fun verifyAndSave(): Boolean {
@@ -508,12 +509,14 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            ATTACH_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK) {
-                addGalleryPhotoToList(data)
+            ATTACH_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
+                if (data != null) {
+                    addGalleryPhotoToList(data)
+                }
             }
-            TAKE_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK) {
+            TAKE_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
                 addCameraPhotoToList()
             }
         }
@@ -534,7 +537,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     private fun deleteClearedItems() {
-        if (mFilesToDelete!!.size > 0) {
+        if (mFilesToDelete!!.isNotEmpty()) {
             //mFileOperation.deleteFileList(mFilesToDelete);
         }
     }

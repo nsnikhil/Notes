@@ -20,7 +20,7 @@
             android:id="@+id/singleNoteImage"
             style="@style/stretchedHorizontally"
             android:contentDescription="@string/imageDescription"
-            android:maxHeight="100dp"
+            android:layout_height="100dp"
             android:scaleType="centerCrop"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/singleNoteTitle"

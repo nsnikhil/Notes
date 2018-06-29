@@ -30,6 +30,7 @@ import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.single_image_view.view.*
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -54,9 +55,10 @@ class ImageAdapter(private val mFullScreen: Boolean) : ListAdapter<String, Image
     }
 
     override fun onBindViewHolder(holder: ImageAdapter.MyViewHolder, position: Int) {
-        glideRequestManager.load(File((context.applicationContext as MyApplication).rootFolder, getItem(position).toString()))
+        glideRequestManager.load(File((context.applicationContext as MyApplication).rootFolder, getItem(position)))
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                        Timber.d(e?.message)
                         return false
                     }
 
@@ -69,7 +71,6 @@ class ImageAdapter(private val mFullScreen: Boolean) : ListAdapter<String, Image
                 .into(holder.image)
 
     }
-
 
     private fun cleanUp() {
         compositeDisposable.clear()
@@ -107,7 +108,6 @@ class ImageAdapter(private val mFullScreen: Boolean) : ListAdapter<String, Image
                         },
                         RxView.clicks(image).subscribe {
                             if (adapterPosition != RecyclerView.NO_POSITION) {
-
 
                             }
                         }
