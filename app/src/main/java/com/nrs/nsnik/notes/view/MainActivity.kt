@@ -64,13 +64,13 @@ class MainActivity : AppCompatActivity() {
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemSettings -> {
-                    findNavController(R.id.mainNavHost).navigate(R.id.navItemSettings)
                     mainDrawerLayout.closeDrawer(Gravity.START)
+                    findNavController(R.id.mainNavHost).navigate(R.id.navItemSettings)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemAbout -> {
-                    findNavController(R.id.mainNavHost).navigate(R.id.navItemAbout)
                     mainDrawerLayout.closeDrawer(Gravity.START)
+                    findNavController(R.id.mainNavHost).navigate(R.id.navItemAbout)
                     return@setNavigationItemSelectedListener true
                 }
                 else -> return@setNavigationItemSelectedListener false
@@ -80,7 +80,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> mainDrawerLayout.openDrawer(GravityCompat.START)
+            android.R.id.home -> {
+                mainDrawerLayout.openDrawer(GravityCompat.START)
+            }
         }
         return super.onOptionsItemSelected(item)
     }

@@ -23,12 +23,15 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxCompoundButton
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.view.adapters.diffUtil.CheckListDiffUtil
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.single_check_list_item.view.*
+import java.util.concurrent.TimeUnit
 
 class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : ListAdapter<CheckListObject, CheckListAdapter.MyViewHolder>(CheckListDiffUtil()) {
 
@@ -66,13 +69,28 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
     }
 
     inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
         val checkBox: CheckBox = itemView.checkListTicker
         val text: EditText = itemView.checkListItem
         val addNew: ImageButton = itemView.checkListAdd
 
         init {
-            compositeDisposable.addAll(RxView.clicks(addNew).subscribe { mOnAddClickListener.addClickListener() })
+            compositeDisposable.addAll(
+
+                    RxView.clicks(addNew).subscribe { mOnAddClickListener.addClickListener() },
+
+                    RxTextView.textChanges(text).debounce(500, TimeUnit.MILLISECONDS).subscribe {
+                        val newContent: String = it.toString()
+                        //getItem(adapterPosition).text = newContent
+                    },
+
+                    RxCompoundButton.checkedChanges(checkBox).subscribe {
+                        val value: String = it.toString()
+                        val newValue = value.toBoolean()
+//                        modifyText(text,newValue)
+//                        getItem(adapterPosition).done = false
+                    }
+
+            )
         }
     }
 }

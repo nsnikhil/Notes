@@ -141,7 +141,9 @@ class ListFragment : Fragment(), NoteItemClickListener {
         if (position != RecyclerView.NO_POSITION) {
             val startPos = 1
             val currPos = position - startPos
-            setViewModel(mFolderList[currPos].folderName!!)
+            val bundle = Bundle()
+            bundle.putString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), mFolderList[currPos].folderName!!)
+            activity?.findNavController(R.id.mainNavHost)?.navigate(R.id.navItemNotes, bundle)
         }
     }
 

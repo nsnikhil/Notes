@@ -204,5 +204,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- -->
 
+    <!-- PREFERENCE -->
+    <string name="preferenceCategoryGeneral">General</string>
+
+
+    <string name="preferenceDarkMode">Dark Mode</string>
+    <!-- -->
 
 </resources>

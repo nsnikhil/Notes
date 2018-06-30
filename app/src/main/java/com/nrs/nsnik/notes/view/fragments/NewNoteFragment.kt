@@ -120,7 +120,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         listeners()
     }
 
-
     private fun initialize() {
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
 
@@ -167,7 +166,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         if (arguments != null) setNote()
 
     }
-
 
     private fun listeners() {
         compositeDisposable.addAll(
@@ -224,6 +222,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             }
             R.id.newNoteMenuStar -> mIsStarred = setMenuState(mIsStarred, item, R.drawable.ic_star_black_48px, R.drawable.ic_star_border_black_48px, "Starred")
             R.id.newNoteMenuLock -> mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_black_48px, R.drawable.ic_lock_open_black_48px, "Locked")
+            android.R.id.home -> activity?.findNavController(R.id.mainNavHost)?.navigateUp()
         }
         return true
     }
@@ -248,44 +247,44 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
         if (mNoteEntity == null) return
 
-        mNoteEntity = mFileUtil.getNote(mNoteEntity?.fileName!!)
+        val noteEntity: NoteEntity = mFileUtil.getNote(mNoteEntity?.fileName!!)
 
-        newNoteTitle.setText(mNoteEntity?.title)
-        newNoteContent.setText(mNoteEntity?.noteContent)
+        newNoteTitle.setText(noteEntity.title)
+        newNoteContent.setText(noteEntity.noteContent)
 
-        mFolderName = mNoteEntity?.folderName!!
+        mFolderName = noteEntity.folderName!!
 
-        mColorCode = mNoteEntity?.color!!
+        mColorCode = noteEntity.color!!
 
         newNoteTitle.setTextColor(Color.parseColor(mColorCode))
 
-        mIsStarred = mNoteEntity?.pinned!!
+        mIsStarred = noteEntity.pinned
 
-        mIsLocked = mNoteEntity?.locked!!
+        mIsLocked = noteEntity.locked
 
-        toolsDate.text = mNoteEntity?.dateModified.toString()
+        toolsDate.text = getTimeDifference(Calendar.getInstance().timeInMillis - noteEntity.dateModified?.time!!)
 
-        if (mNoteEntity?.imageList != null && mNoteEntity?.imageList?.isNotEmpty()!!) {
+        if (noteEntity.imageList != null && noteEntity.imageList?.isNotEmpty()!!) {
             newNoteImageList.visibility = View.VISIBLE
-            mImagesLocations.addAll(mNoteEntity?.imageList!!)
+            mImagesLocations.addAll(noteEntity.imageList!!)
             mImageAdapter.submitList(mImagesLocations)
         }
 
 
-        if (mNoteEntity?.audioList != null && mNoteEntity?.audioList?.isNotEmpty()!!) {
+        if (noteEntity.audioList != null && noteEntity.audioList?.isNotEmpty()!!) {
             newNoteAudioList!!.visibility = View.VISIBLE
-            mAudioLocations.addAll(mNoteEntity?.audioList!!)
+            mAudioLocations.addAll(noteEntity.audioList!!)
             mAudioListAdapter.submitList(mAudioLocations)
         }
 
 
-        if (mNoteEntity?.checkList != null && mNoteEntity?.checkList?.isNotEmpty()!!) {
+        if (noteEntity.checkList != null && noteEntity.checkList?.isNotEmpty()!!) {
             newNoteCheckList!!.visibility = View.VISIBLE
-            mCheckList.addAll(mNoteEntity?.checkList!!)
+            mCheckList.addAll(noteEntity.checkList!!)
             mCheckListAdapter.submitList(mCheckList)
         }
 
-        if (mNoteEntity?.hasReminder != 0) {
+        if (noteEntity.hasReminder != 0) {
             mHasReminder = 1
         }
 
@@ -293,22 +292,18 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     private fun setMenuIconState() {
-        if (mStarMenu != null) {
-            if (mIsStarred == 1) {
-                mStarMenu!!.setIcon(R.drawable.ic_star_black_48px)
-            } else {
-                mStarMenu!!.setIcon(R.drawable.ic_star_border_black_48px)
-            }
-        }
-        if (mLockMenu != null) {
-            if (mIsLocked == 1) {
-                mLockMenu!!.setIcon(R.drawable.ic_lock_black_48px)
-            } else {
-                mLockMenu!!.setIcon(R.drawable.ic_lock_open_black_48px)
-            }
-        }
+        mStarMenu?.setIcon(if (mIsStarred == 1) R.drawable.ic_star_black_48px else R.drawable.ic_star_border_black_48px)
+        mLockMenu?.setIcon(if (mIsLocked == 1) R.drawable.ic_lock_black_48px else R.drawable.ic_lock_open_black_48px)
     }
 
+    private fun getTimeDifference(diff: Long): String {
+        val seconds = (diff / 1000).toInt()
+        if (seconds < 60) return "$seconds sec ago"
+        val minutes = (seconds / 60)
+        if (minutes < 60) return "$minutes min ago"
+        val hours = (minutes / 60)
+        return "$hours hrs ago"
+    }
 
     private fun addCheckListItem() {
         val list = CheckListObject()
@@ -491,8 +486,16 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         noteEntity.pinned = mIsStarred
         noteEntity.locked = mIsLocked
         noteEntity.hasReminder = mHasReminder
-        if (action == ACTIONTYPE.SAVE) mNoteViewModel.insertNote(noteEntity) else mNoteViewModel.updateNote(noteEntity)
-        activity?.findNavController(R.id.mainNavHost)?.navigateUp()
+        Timber.d(mCheckList.size.toString())
+        Timber.d(noteEntity.checkList?.size.toString())
+        mCheckList.forEach {
+            Timber.d(it.text)
+        }
+        noteEntity.checkList?.forEach {
+            Timber.d(it.text)
+        }
+        //if (action == ACTIONTYPE.SAVE) mNoteViewModel.insertNote(noteEntity) else mNoteViewModel.updateNote(noteEntity)
+        //activity?.findNavController(R.id.mainNavHost)?.navigateUp()
     }
 
     private fun verifyAndSave(): Boolean {
@@ -502,10 +505,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     private fun changeState() {
-        if (mBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
-        else
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
+        mBottomSheetBehavior.state = if (mBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) BottomSheetBehavior.STATE_COLLAPSED else BottomSheetBehavior.STATE_EXPANDED
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -573,12 +573,4 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     private enum class ACTIONTYPE {
         SAVE, UPDATE
     }
-
-//    private inner class InsertNoteWorker : Worker() {
-//
-//        override fun doWork(): WorkerResult {
-//            return WorkerResult.SUCCESS
-//        }
-//
-//    }
 }

@@ -55,7 +55,7 @@ class AboutFragment : Fragment() {
     private fun listeners() {
         compositeDisposable.addAll(
                 RxView.clicks(aboutLibraries).subscribe { startActivity(Intent(activity, OssLicensesMenuActivity::class.java)) },
-                RxView.clicks(aboutLicense).subscribe { chromeCustomTab(activity?.resources?.getString(R.string.aboutLicense)!!) }
+                RxView.clicks(aboutLicense).subscribe { chromeCustomTab(activity?.resources?.getString(R.string.aboutLicenseUrl)!!) }
         )
     }
 

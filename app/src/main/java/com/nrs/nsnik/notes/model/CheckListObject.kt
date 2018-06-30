@@ -15,9 +15,10 @@ import com.twitter.serial.serializer.ObjectSerializer
 import com.twitter.serial.serializer.SerializationContext
 import com.twitter.serial.stream.SerializerInput
 import com.twitter.serial.stream.SerializerOutput
+import java.io.Serializable
 
 
-class CheckListObject {
+class CheckListObject : Serializable {
 
     var text: String = ""
     var done: Boolean = false
