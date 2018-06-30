@@ -45,8 +45,8 @@ import java.io.File
  */
 
 class NotesAdapter(private val mContext: Context,
-                   private var mNotesList: List<NoteEntity>?,
-                   private var mFolderList: List<FolderEntity>?,
+                   private var mNotesList: List<NoteEntity>,
+                   private var mFolderList: List<FolderEntity>,
                    private val mNoteItemClickListener: NoteItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchListener {
 
 
@@ -84,7 +84,7 @@ class NotesAdapter(private val mContext: Context,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        var pos = mFolderList!!.size + 2
+        var pos = mFolderList.size + 2
         val tempPOS = position - 1
         when (holder.itemViewType) {
             FOLDER -> bindFolderData(holder, tempPOS)
@@ -105,7 +105,7 @@ class NotesAdapter(private val mContext: Context,
     }
 
     override fun getItemCount(): Int {
-        return if (mNotesList != null && mFolderList != null) mNotesList!!.size + mFolderList!!.size + 2 else 2
+        return mNotesList.size + mFolderList.size + 2
     }
 
     /**
@@ -121,14 +121,14 @@ class NotesAdapter(private val mContext: Context,
     private fun bindHeaderData(holder: RecyclerView.ViewHolder, position: Int) {
         val headerViewHolder = holder as HeaderViewHolder
         if (position == 0) {
-            if (mFolderList!!.isNotEmpty()) {
+            if (mFolderList.isNotEmpty()) {
                 headerViewHolder.itemHeader.visibility = View.VISIBLE
                 headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingFolder)
             } else {
                 headerViewHolder.itemHeader.visibility = View.GONE
             }
         } else {
-            if (mNotesList!!.isNotEmpty()) {
+            if (mNotesList.isNotEmpty()) {
                 headerViewHolder.itemHeader.visibility = View.VISIBLE
                 headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingNotes)
             } else {
@@ -148,8 +148,8 @@ class NotesAdapter(private val mContext: Context,
      */
     private fun bindFolderData(holder: RecyclerView.ViewHolder, position: Int) {
         val folderViewHolder = holder as FolderViewHolder
-        folderViewHolder.folderName.text = mFolderList!![position].folderName
-        folderViewHolder.folderName.compoundDrawableTintList = stateList(mFolderList!![position].color)
+        folderViewHolder.folderName.text = mFolderList[position].folderName
+        folderViewHolder.folderName.compoundDrawableTintList = stateList(mFolderList[position].color)
     }
 
     /**
@@ -165,10 +165,9 @@ class NotesAdapter(private val mContext: Context,
         val noteViewHolder = holder as NoteViewHolder
         val noteEntity: NoteEntity
         try {
-            noteEntity = mFileUtil!!.getNote(mNotesList!![position].fileName!!)
+            noteEntity = mFileUtil!!.getNote(mNotesList[position].fileName!!)
 
             //TITLE
-
             if (noteEntity.title != null && !noteEntity.title!!.isEmpty()) {
                 noteViewHolder.noteTitle.visibility = View.VISIBLE
                 noteViewHolder.noteTitle.text = noteEntity.title
@@ -179,7 +178,6 @@ class NotesAdapter(private val mContext: Context,
 
 
             //CONTENT
-
             if (noteEntity.noteContent != null && !noteEntity.noteContent!!.isEmpty()) {
                 noteViewHolder.noteContent.visibility = View.VISIBLE
                 noteViewHolder.noteContent.text = noteEntity.noteContent
@@ -192,7 +190,7 @@ class NotesAdapter(private val mContext: Context,
 
             if (noteEntity.imageList != null && noteEntity.imageList!!.isNotEmpty()) {
                 noteViewHolder.noteImage.visibility = View.VISIBLE
-                mRequestManager!!.load(File(mRootFolder, noteEntity.imageList!![0])).into(noteViewHolder.noteImage)
+                mRequestManager?.load(File(mRootFolder, noteEntity.imageList!![0]))?.into(noteViewHolder.noteImage)
             } else {
                 noteViewHolder.noteImage.visibility = View.GONE
             }
@@ -216,11 +214,11 @@ class NotesAdapter(private val mContext: Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (position == 0 || position == mFolderList!!.size + 1) {
+        if (position == 0 || position == mFolderList.size + 1) {
             return HEADER
-        } else if (position > 0 && position <= mFolderList!!.size) {
+        } else if (position > 0 && position <= mFolderList.size) {
             return FOLDER
-        } else if (position > mFolderList!!.size + 1 && position < mNotesList!!.size) {
+        } else if (position > mFolderList.size + 1 && position < mNotesList.size) {
             return NOTES
         }
         return super.getItemViewType(position)
@@ -236,7 +234,7 @@ class NotesAdapter(private val mContext: Context,
     override fun onItemMoved(fromPosition: Int, toPosition: Int, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         var startPos = -100
         if (viewHolder.itemViewType == NOTES) {
-            startPos = mFolderList!!.size + 2
+            startPos = mFolderList.size + 2
         }
         if (viewHolder.itemViewType == FOLDER) {
             startPos = 1

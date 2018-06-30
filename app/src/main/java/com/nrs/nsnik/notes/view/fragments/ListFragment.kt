@@ -29,22 +29,19 @@ import kotlinx.android.synthetic.main.empty_state.*
 import kotlinx.android.synthetic.main.fab_reveal.*
 import kotlinx.android.synthetic.main.list_layout.*
 import timber.log.Timber
-import java.util.*
 
 class ListFragment : Fragment(), NoteItemClickListener {
 
-    private var mNoteViewModel: NoteViewModel? = null
-    private var mFolderViewModel: FolderViewModel? = null
+    private lateinit var mNoteViewModel: NoteViewModel
+    private lateinit var mFolderViewModel: FolderViewModel
 
-    private var mNotesList: List<NoteEntity>? = null
-    private var mFolderList: List<FolderEntity>? = null
+    private var mNotesList: List<NoteEntity> = mutableListOf()
+    private var mFolderList: List<FolderEntity> = mutableListOf()
 
-    private var mFolderName: String? = "noFolder"
-    private var mNotesAdapter: NotesAdapter? = null
-    //private var mFileUtil: FileUtil? = null
+    private var mFolderName: String = "noFolder"
+    private lateinit var mNotesAdapter: NotesAdapter
 
     private val mInEditorMode: Boolean = false
-
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var isRevealed: Boolean = false
@@ -75,17 +72,13 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     private fun initialize() {
 
-        mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")
+        mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
 
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
         mFolderViewModel = ViewModelProviders.of(this).get(FolderViewModel::class.java)
 
-        mNotesList = ArrayList()
-        mFolderList = ArrayList()
-
         //Setting up recycler view
-
-        mNotesAdapter = NotesAdapter(activity!!, mNotesList!!, mFolderList!!, this)
+        mNotesAdapter = NotesAdapter(activity!!, mNotesList, mFolderList, this)
 
         commonList.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -94,15 +87,13 @@ class ListFragment : Fragment(), NoteItemClickListener {
             adapter = mNotesAdapter
         }
 
-        val touchHelper = ItemTouchHelper(RvItemTouchHelper(mNotesAdapter!!))
+        val touchHelper = ItemTouchHelper(RvItemTouchHelper(mNotesAdapter))
         touchHelper.attachToRecyclerView(commonList)
 
-        setViewModel(mFolderName!!)
-
+        setViewModel(mFolderName)
     }
 
     private fun listeners() {
-
         compositeDisposable.addAll(
                 RxView.clicks(fabAdd).subscribe({ if (isRevealed) disappear() else reveal() },
                         { throwable -> Timber.d(throwable.message) }),
@@ -124,48 +115,45 @@ class ListFragment : Fragment(), NoteItemClickListener {
     }
 
     private fun setViewModel(folderName: String) {
-        mFolderViewModel!!.getFolderByParentNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
-        mNoteViewModel!!.getNoteByFolderNameNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
+        mFolderViewModel.getFolderByParentNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
+        mNoteViewModel.getNoteByFolderNameNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
     }
 
     private fun swapFolder(folderEntityList: List<FolderEntity>?) {
         if (folderEntityList == null) return
         mFolderList = folderEntityList
-        mNotesAdapter!!.updateFolderList(folderEntityList)
+        mNotesAdapter.updateFolderList(folderEntityList)
         setEmpty()
     }
 
     private fun swapNotes(noteEntityList: List<NoteEntity>?) {
         if (noteEntityList == null) return
         mNotesList = noteEntityList
-        mNotesAdapter!!.updateNotesList(mNotesList!!)
+        mNotesAdapter.updateNotesList(mNotesList)
         setEmpty()
     }
 
     private fun setEmpty() {
-        if (mNotesList!!.isEmpty() && mFolderList!!.isEmpty()) {
-            emptyState.visibility = View.VISIBLE
-        } else {
-            emptyState.visibility = View.GONE
-        }
+        emptyState.visibility = if (mNotesList.isEmpty() && mFolderList.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun openFolder(position: Int) {
         if (position != RecyclerView.NO_POSITION) {
             val startPos = 1
             val currPos = position - startPos
-            setViewModel(mFolderList?.get(currPos)?.folderName!!)
+            setViewModel(mFolderList[currPos].folderName!!)
         }
     }
 
     @Throws(Exception::class)
     private fun openNote(position: Int) {
-        val startPos = mFolderList!!.size + 2
+        val startPos = mFolderList.size + 2
         val currPos = position - startPos
-        openNoteEditor(null, mNotesList?.get(currPos))
+        openNoteEditor(null, mNotesList[currPos])
     }
 
     private fun openNoteEditor(folderName: String?, noteEntity: NoteEntity?) {
+
         val bundle = Bundle()
 
         if (folderName != null)
@@ -194,21 +182,12 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
 
     private fun delete(isFolder: Boolean, folderEntity: FolderEntity, noteEntity: NoteEntity) {
-        if (isFolder) {
-            mFolderViewModel!!.deleteFolder(folderEntity)
-        } else {
-            mNoteViewModel!!.deleteNote(noteEntity)
-        }
+        if (isFolder) mFolderViewModel.deleteFolder(folderEntity) else mNoteViewModel.deleteNote(noteEntity)
     }
 
     override fun onClick(position: Int, itemViewType: Int) {
         when (itemViewType) {
-            0 -> try {
-                openNote(position)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
+            0 -> openNote(position)
             1 -> openFolder(position)
         }
     }
@@ -216,10 +195,8 @@ class ListFragment : Fragment(), NoteItemClickListener {
     override fun onLongClick(position: Int, itemViewType: Int) {
         when (itemViewType) {
             0 -> if (!mInEditorMode) {
-
             }
             1 -> if (!mInEditorMode) {
-
             }
         }
     }

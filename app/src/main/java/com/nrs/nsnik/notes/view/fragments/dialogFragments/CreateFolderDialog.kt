@@ -102,4 +102,11 @@ class CreateFolderDialog : DialogFragment() {
         super.onDestroy()
         cleanUp()
     }
+
+//    private inner class InsertFolderWorker : Worker() {
+//
+//        override fun doWork(): Result {
+//            return Result.SUCCESS
+//        }
+//    }
 }

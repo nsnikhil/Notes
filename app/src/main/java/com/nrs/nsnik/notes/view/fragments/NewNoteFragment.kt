@@ -75,13 +75,13 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     //Variables used in saving or updating note
-    private var mFolderName: String? = "noFolder"
+    private var mFolderName: String = "noFolder"
 
     private var mIsLocked: Int = 0
     private var mIsStarred: Int = 0
     private var mHasReminder: Int = 0
 
-    private var mColorCode: String? = null
+    private var mColorCode: String = "#333333"
 
     private var mStarMenu: MenuItem? = null
     private var mLockMenu: MenuItem? = null
@@ -93,14 +93,14 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     private var mCheckList: MutableList<CheckListObject> = mutableListOf()
     private var mFilesToDelete: List<String>? = null
 
-    private var mImageAdapter: ImageAdapter? = null
-    private var mAudioListAdapter: AudioListAdapter? = null
-    private var mCheckListAdapter: CheckListAdapter? = null
+    private lateinit var mImageAdapter: ImageAdapter
+    private lateinit var mAudioListAdapter: AudioListAdapter
+    private lateinit var mCheckListAdapter: CheckListAdapter
 
-    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private var mNoteViewModel: NoteViewModel? = null
-    private var mFileUtil: FileUtil? = null
-    private var mRootFolder: File? = null
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private lateinit var mNoteViewModel: NoteViewModel
+    private lateinit var mFileUtil: FileUtil
+    private lateinit var mRootFolder: File
 
     private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
 
@@ -109,7 +109,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_new_note, container, false)
         mFileUtil = (activity?.application as MyApplication).fileUtil
-        mRootFolder = mFileUtil!!.rootFolder
+        mRootFolder = mFileUtil.rootFolder
         setHasOptionsMenu(true)
         return view
     }
@@ -242,18 +242,20 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
     private fun setNote() {
 
-        mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName))
+        mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
 
         mNoteEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteEntity)), NoteEntity.SERIALIZER)
 
         if (mNoteEntity == null) return
 
+        mNoteEntity = mFileUtil.getNote(mNoteEntity?.fileName!!)
+
         newNoteTitle.setText(mNoteEntity?.title)
         newNoteContent.setText(mNoteEntity?.noteContent)
 
-        mFolderName = mNoteEntity?.folderName
+        mFolderName = mNoteEntity?.folderName!!
 
-        mColorCode = mNoteEntity?.color
+        mColorCode = mNoteEntity?.color!!
 
         newNoteTitle.setTextColor(Color.parseColor(mColorCode))
 
@@ -266,21 +268,21 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         if (mNoteEntity?.imageList != null && mNoteEntity?.imageList?.isNotEmpty()!!) {
             newNoteImageList.visibility = View.VISIBLE
             mImagesLocations.addAll(mNoteEntity?.imageList!!)
-            mImageAdapter?.submitList(mImagesLocations)
+            mImageAdapter.submitList(mImagesLocations)
         }
 
 
         if (mNoteEntity?.audioList != null && mNoteEntity?.audioList?.isNotEmpty()!!) {
             newNoteAudioList!!.visibility = View.VISIBLE
             mAudioLocations.addAll(mNoteEntity?.audioList!!)
-            mAudioListAdapter?.submitList(mAudioLocations)
+            mAudioListAdapter.submitList(mAudioLocations)
         }
 
 
         if (mNoteEntity?.checkList != null && mNoteEntity?.checkList?.isNotEmpty()!!) {
             newNoteCheckList!!.visibility = View.VISIBLE
             mCheckList.addAll(mNoteEntity?.checkList!!)
-            mCheckListAdapter?.submitList(mCheckList)
+            mCheckListAdapter.submitList(mCheckList)
         }
 
         if (mNoteEntity?.hasReminder != 0) {
@@ -313,21 +315,20 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         list.text = ""
         list.done = false
         mCheckList.add(list)
-        mCheckListAdapter?.submitList(mCheckList)
+        mCheckListAdapter.submitList(mCheckList)
         if (mCheckList.isNotEmpty()) newNoteCheckList.visibility = View.VISIBLE else View.GONE
     }
 
 
     private fun addAudioToList(audioFileLocation: String) {
         mAudioLocations.add(audioFileLocation)
-        mAudioListAdapter?.submitList(mAudioLocations)
-        Timber.d(mAudioListAdapter?.itemCount.toString())
+        mAudioListAdapter.submitList(mAudioLocations)
         if (mAudioLocations.isNotEmpty()) newNoteAudioList.visibility = View.VISIBLE else View.GONE
     }
 
     private fun addImageToList(imageLocation: String) {
         mImagesLocations.add(imageLocation)
-        mImageAdapter?.submitList(mImagesLocations)
+        mImageAdapter.submitList(mImagesLocations)
         if (mImagesLocations.isNotEmpty()) newNoteImageList.visibility = View.VISIBLE else View.GONE
     }
 
@@ -401,7 +402,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         try {
             val image = MediaStore.Images.Media.getBitmap(activity?.contentResolver, imageUri)
             val imageFileName = makeName(FILE_TYPES.IMAGE)
-            mFileUtil?.saveImage(image, imageFileName)
+            mFileUtil.saveImage(image, imageFileName)
             addImageToList(imageFileName)
         } catch (e: IOException) {
             e.printStackTrace()
@@ -412,7 +413,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         val image = BitmapFactory.decodeFile(mCurrentPhotoPath)
         val imageFileName = makeName(FILE_TYPES.IMAGE)
         try {
-            mFileUtil!!.saveImage(image, imageFileName)
+            mFileUtil.saveImage(image, imageFileName)
             addImageToList(imageFileName)
         } catch (e: IOException) {
             e.printStackTrace()
@@ -480,11 +481,9 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     private fun noteAction(noteEntity: NoteEntity, action: ACTIONTYPE) {
         noteEntity.title = newNoteTitle.text.toString()
         noteEntity.noteContent = newNoteContent.text.toString()
-        Timber.d(noteEntity.noteContent
-        )
         noteEntity.folderName = mFolderName
         noteEntity.fileName = makeName(FILE_TYPES.TEXT)
-        noteEntity.color = if (mColorCode != null) mColorCode else "#333333"
+        noteEntity.color = mColorCode
         noteEntity.dateModified = Calendar.getInstance().time
         noteEntity.imageList = mImagesLocations
         noteEntity.audioList = mAudioLocations
@@ -492,7 +491,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         noteEntity.pinned = mIsStarred
         noteEntity.locked = mIsLocked
         noteEntity.hasReminder = mHasReminder
-        if (action == ACTIONTYPE.SAVE) mNoteViewModel!!.insertNote(noteEntity) else mNoteViewModel!!.updateNote(noteEntity)
+        if (action == ACTIONTYPE.SAVE) mNoteViewModel.insertNote(noteEntity) else mNoteViewModel.updateNote(noteEntity)
         activity?.findNavController(R.id.mainNavHost)?.navigateUp()
     }
 
@@ -575,4 +574,11 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         SAVE, UPDATE
     }
 
+//    private inner class InsertNoteWorker : Worker() {
+//
+//        override fun doWork(): WorkerResult {
+//            return WorkerResult.SUCCESS
+//        }
+//
+//    }
 }
