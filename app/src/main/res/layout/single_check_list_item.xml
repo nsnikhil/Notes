@@ -29,13 +29,4 @@
         android:maxLines="1"
         app:layout_constraintStart_toEndOf="@id/checkListTicker" />
 
-
-    <ImageButton
-        android:id="@+id/checkListAdd"
-        style="@style/twentyFour"
-        android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_add_box_black_24px"
-        android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@id/checkListTicker" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

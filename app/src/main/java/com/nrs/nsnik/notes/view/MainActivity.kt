@@ -30,6 +30,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var mIdlingResource: SimpleIdlingResource? = null
+    private var isOnListFragment: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +48,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         val controller = findNavController(R.id.mainNavHost)
+
+        controller.addOnNavigatedListener { navController, destination ->
+            isOnListFragment = destination.id == R.id.navItemNotes
+        }
+
         setupActionBarWithNavController(this, controller, mainDrawerLayout)
 
         mainNavigationView.setNavigationItemSelectedListener { menuItem ->
@@ -81,7 +87,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                mainDrawerLayout.openDrawer(GravityCompat.START)
+                if (isOnListFragment)
+                    mainDrawerLayout.openDrawer(GravityCompat.START)
             }
         }
         return super.onOptionsItemSelected(item)

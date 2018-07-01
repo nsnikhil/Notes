@@ -37,6 +37,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
@@ -277,7 +278,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             mAudioListAdapter.submitList(mAudioLocations)
         }
 
-
         if (noteEntity.checkList != null && noteEntity.checkList?.isNotEmpty()!!) {
             newNoteCheckList!!.visibility = View.VISIBLE
             mCheckList.addAll(noteEntity.checkList!!)
@@ -306,27 +306,30 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     private fun addCheckListItem() {
+        Timber.d("here")
         val list = CheckListObject()
         list.text = ""
         list.done = false
         mCheckList.add(list)
         mCheckListAdapter.submitList(mCheckList)
-        if (mCheckList.isNotEmpty()) newNoteCheckList.visibility = View.VISIBLE else View.GONE
+        changeVisibility(mCheckList, newNoteCheckList)
     }
-
 
     private fun addAudioToList(audioFileLocation: String) {
         mAudioLocations.add(audioFileLocation)
         mAudioListAdapter.submitList(mAudioLocations)
-        if (mAudioLocations.isNotEmpty()) newNoteAudioList.visibility = View.VISIBLE else View.GONE
+        changeVisibility(mAudioLocations, newNoteAudioList)
     }
 
     private fun addImageToList(imageLocation: String) {
         mImagesLocations.add(imageLocation)
         mImageAdapter.submitList(mImagesLocations)
-        if (mImagesLocations.isNotEmpty()) newNoteImageList.visibility = View.VISIBLE else View.GONE
+        changeVisibility(mImagesLocations, newNoteImageList)
     }
 
+    private fun changeVisibility(list: List<Any>, recyclerView: RecyclerView) {
+        recyclerView.visibility = if (list.isNotEmpty()) View.VISIBLE else View.GONE
+    }
 
     private fun checkWriteExternalStoragePermission() {
         if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -486,16 +489,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         noteEntity.pinned = mIsStarred
         noteEntity.locked = mIsLocked
         noteEntity.hasReminder = mHasReminder
-        Timber.d(mCheckList.size.toString())
-        Timber.d(noteEntity.checkList?.size.toString())
-        mCheckList.forEach {
-            Timber.d(it.text)
-        }
-        noteEntity.checkList?.forEach {
-            Timber.d(it.text)
-        }
-        //if (action == ACTIONTYPE.SAVE) mNoteViewModel.insertNote(noteEntity) else mNoteViewModel.updateNote(noteEntity)
-        //activity?.findNavController(R.id.mainNavHost)?.navigateUp()
+        if (action == ACTIONTYPE.SAVE) mNoteViewModel.insertNote(noteEntity) else mNoteViewModel.updateNote(noteEntity)
+        activity?.findNavController(R.id.mainNavHost)?.navigateUp()
     }
 
     private fun verifyAndSave(): Boolean {

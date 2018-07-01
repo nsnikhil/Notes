@@ -273,7 +273,6 @@ class NotesAdapter(private val mContext: Context,
         init {
 
             mCompositeDisposable.addAll(
-
                     RxView.clicks(itemView).subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mNoteItemClickListener.onClick(adapterPosition, itemViewType)
@@ -316,7 +315,6 @@ class NotesAdapter(private val mContext: Context,
         val itemHeader: TextView = itemView.itemHeader
 
         init {
-
         }
     }
 }

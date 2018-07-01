@@ -15,14 +15,13 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxCompoundButton
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.nrs.nsnik.notes.R
@@ -45,7 +44,6 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val checkList = getItem(position)
-        if (position == itemCount - 1) holder.addNew.visibility = View.VISIBLE else holder.addNew.visibility = View.GONE
         holder.text.setText(checkList.text)
         holder.checkBox.isChecked = checkList.done
         if (holder.text.text.toString().isNotEmpty()) modifyText(holder.text, checkList.done)
@@ -54,7 +52,7 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
     private fun modifyText(textView: TextView, done: Boolean) {
         textView.apply {
             paintFlags = if (done) textView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            if (done) textView.setTextColor(ContextCompat.getColor(context, R.color.grey)) else textView.setTextColor(ContextCompat.getColor(context, android.R.color.background_light))
+            if (done) textView.setTextColor(ContextCompat.getColor(context, R.color.grey)) else textView.setTextColor(ContextCompat.getColor(context, android.R.color.background_dark))
         }
     }
 
@@ -71,16 +69,18 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
     inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val checkBox: CheckBox = itemView.checkListTicker
         val text: EditText = itemView.checkListItem
-        val addNew: ImageButton = itemView.checkListAdd
 
         init {
             compositeDisposable.addAll(
 
-                    RxView.clicks(addNew).subscribe { mOnAddClickListener.addClickListener() },
-
                     RxTextView.textChanges(text).debounce(500, TimeUnit.MILLISECONDS).subscribe {
                         val newContent: String = it.toString()
+                        getItem(adapterPosition).text = newContent
                         //getItem(adapterPosition).text = newContent
+                    },
+
+                    RxTextView.editorActions(text).subscribe {
+                        if (it == EditorInfo.IME_ACTION_NEXT) mOnAddClickListener.addClickListener()
                     },
 
                     RxCompoundButton.checkedChanges(checkBox).subscribe {
