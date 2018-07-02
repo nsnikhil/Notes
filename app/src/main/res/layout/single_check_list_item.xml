@@ -29,4 +29,15 @@
         android:maxLines="1"
         app:layout_constraintStart_toEndOf="@id/checkListTicker" />
 
+    <ImageView
+        android:id="@+id/checkListRemove"
+        style="@style/wrapContent"
+        android:layout_marginEnd="@dimen/sixteen"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/imageDescription"
+        android:focusable="true"
+        android:src="@drawable/ic_cancel_black_24px"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

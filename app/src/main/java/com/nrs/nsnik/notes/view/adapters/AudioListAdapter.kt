@@ -25,13 +25,15 @@ import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.dagger.components.DaggerMediaComponent
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
+import com.nrs.nsnik.notes.view.listeners.AdapterType
+import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.single_audio_item.view.*
 import java.io.File
 import java.io.IOException
 
 
-class AudioListAdapter : ListAdapter<String, AudioListAdapter.MyViewHolder>(StringDiffUtil()), Runnable {
+class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) : ListAdapter<String, AudioListAdapter.MyViewHolder>(StringDiffUtil()), Runnable {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var context: Context
@@ -130,6 +132,7 @@ class AudioListAdapter : ListAdapter<String, AudioListAdapter.MyViewHolder>(Stri
                     },
                     RxView.clicks(remove).subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
+                            onItemRemoveListener.onItemRemoved(adapterPosition,AdapterType.AUDIO_ADAPTER)
                             //mOnItemRemoveListener.onItemRemoved(getAdapterPosition(), FileUtil.FILE_TYPES.AUDIO, mAudioLocationList.get(getAdapterPosition()));
                         }
                     }

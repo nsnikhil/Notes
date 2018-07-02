@@ -30,6 +30,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.widget.toast
 import androidx.fragment.app.Fragment
@@ -39,6 +40,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
@@ -51,11 +53,14 @@ import com.nrs.nsnik.notes.view.adapters.AudioListAdapter
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment
+import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
+import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
 import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_new_note.*
+import kotlinx.android.synthetic.main.list_layout.*
 import kotlinx.android.synthetic.main.new_note_tools.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -65,7 +70,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NewNoteFragment : Fragment(), OnAddClickListener {
+class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
     companion object {
         private const val ATTACH_PICTURE_REQUEST_CODE = 205
@@ -138,7 +143,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             })
         }
 
-        mImageAdapter = ImageAdapter(false)
+        mImageAdapter = ImageAdapter(false, this)
         newNoteImageList.apply {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
@@ -146,7 +151,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         }
 
 
-        mAudioListAdapter = AudioListAdapter()
+        mAudioListAdapter = AudioListAdapter(this)
         newNoteAudioList.apply {
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
@@ -154,7 +159,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
         }
 
 
-        mCheckListAdapter = CheckListAdapter(this)
+        mCheckListAdapter = CheckListAdapter(this, this)
         newNoteCheckList.apply {
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
@@ -527,6 +532,37 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
 
     override fun addClickListener() {
         addCheckListItem()
+    }
+
+    override fun onItemRemoved(position: Int, adapterType: AdapterType) {
+        when (adapterType) {
+            AdapterType.IMAGE_ADAPTER -> {
+                showUndoBar(position)
+                mImagesLocations.removeAt(position)
+                mImageAdapter.submitList(mImagesLocations)
+                mImageAdapter.notifyItemRemoved(position)
+            }
+            AdapterType.AUDIO_ADAPTER -> {
+                showUndoBar(position)
+                mAudioLocations.removeAt(position)
+                mAudioListAdapter.submitList(mAudioLocations)
+                mAudioListAdapter.notifyItemRemoved(position)
+            }
+            AdapterType.CHECKLIST_ADAPTER -> {
+                showUndoBar(position)
+                mCheckList.removeAt(position)
+                mCheckListAdapter.submitList(mCheckList)
+                mCheckListAdapter.notifyItemRemoved(position)
+            }
+        }
+    }
+
+    private fun showUndoBar(position: Int) {
+        val resources = activity?.resources
+        Snackbar.make(activity?.findViewById(R.id.mainDrawerLayout)!!, resources?.getString(R.string.itemRemoved)!!, Snackbar.LENGTH_LONG)
+                .setAction(resources.getString(R.string.undo)) { Timber.d(position.toString()) }
+                .setActionTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
+                .show()
     }
 
     private fun deleteClearedItems() {

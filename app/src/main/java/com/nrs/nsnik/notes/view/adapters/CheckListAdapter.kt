@@ -18,21 +18,25 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxCompoundButton
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.view.adapters.diffUtil.CheckListDiffUtil
+import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
+import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.single_check_list_item.view.*
 import java.util.concurrent.TimeUnit
 
-class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : ListAdapter<CheckListObject, CheckListAdapter.MyViewHolder>(CheckListDiffUtil()) {
+class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, private val onItemRemoveListener: OnItemRemoveListener) : ListAdapter<CheckListObject, CheckListAdapter.MyViewHolder>(CheckListDiffUtil()) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var context: Context
@@ -69,6 +73,7 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
     inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val checkBox: CheckBox = itemView.checkListTicker
         val text: EditText = itemView.checkListItem
+        private val remove: ImageView = itemView.checkListRemove
 
         init {
             compositeDisposable.addAll(
@@ -90,6 +95,11 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
                             getItem(adapterPosition).done = value
                             modifyText(text, value)
                         }
+                    },
+
+                    RxView.clicks(remove).subscribe {
+                        if (adapterPosition != RecyclerView.NO_POSITION)
+                            onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.CHECKLIST_ADAPTER)
                     }
 
             )

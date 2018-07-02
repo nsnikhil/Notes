@@ -12,15 +12,13 @@ package com.nrs.nsnik.notes
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import com.bumptech.glide.RequestManager
 import com.crashlytics.android.Crashlytics
 import com.github.moduth.blockcanary.BlockCanary
-import com.nrs.nsnik.notes.dagger.components.DaggerDatabaseComponent
-import com.nrs.nsnik.notes.dagger.components.DaggerFileComponent
-import com.nrs.nsnik.notes.dagger.components.DaggerFolderComponent
-import com.nrs.nsnik.notes.dagger.components.DaggerGlideComponent
+import com.nrs.nsnik.notes.dagger.components.*
 import com.nrs.nsnik.notes.dagger.modules.ContextModule
 import com.nrs.nsnik.notes.util.AppBlockCanaryContext
 import com.nrs.nsnik.notes.util.DbUtil
@@ -52,6 +50,7 @@ class MyApplication : Application() {
     lateinit var dbUtil: DbUtil
     lateinit var rootFolder: File
     lateinit var fileUtil: FileUtil
+    lateinit var sharedPreferences: SharedPreferences
 
 
     override fun onCreate() {
@@ -86,6 +85,7 @@ class MyApplication : Application() {
         setFileComponent()
         setGlideComponent()
         setFolderComponent()
+        setSharedPrefComponent()
     }
 
     private fun setDatabaseComponent() {
@@ -106,6 +106,11 @@ class MyApplication : Application() {
     private fun setGlideComponent() {
         val glideComponent = DaggerGlideComponent.builder().contextModule(contextModule).build()
         requestManager = glideComponent.requestManager
+    }
+
+    private fun setSharedPrefComponent(){
+        val sharedPrefComponent = DaggerSharedPrefComponent.builder().contextModule(contextModule).build()
+        sharedPreferences = sharedPrefComponent.sharedPreferences
     }
 
 }

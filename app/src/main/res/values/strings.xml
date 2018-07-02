@@ -25,7 +25,15 @@
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
     <string name="enter">Enter</string>
+    <string name="save">Save</string>
+    <string name="undo">Undo</string>
     <!-- -->
+
+    <!-- actions-->
+    <string name="itemRemoved">Item Removed</string>
+    <!-- -->
+
+    <string name="enterNewPassword">New Password…</string>
 
     <!-- headers-->
     <string name="headingNotes">Notes</string>
@@ -57,6 +65,7 @@
     <string name="errorNoInternet">No Internet</string>
     <string name="errorRetry">Retry</string>
     <string name="errorNoFolderName">Enter the folder name</string>
+    <string name="errorNopassword">Enter a valid password</string>
     <!-- -->
 
     <!-- emptyStateStrings-->
@@ -151,7 +160,7 @@
 
     <!-- popUps-->
     <string name="popUpStar">Star</string>
-    <string name="popUpLock">Add to vault</string>
+    <string name="popUpLock">Lock</string>
     <string name="popUpEdit">Edit</string>
     <string name="popUpMoveTo">Move To</string>
     <string name="popUpShare">Share</string>
@@ -219,5 +228,8 @@
 
     <string name="dialogPasswordFieldHint">Password…</string>
     <string name="dialogPasswordShowPassword">Show Password</string>
+
+
+    <string name="sharedPreferencePasswordKey">sharedPreferencePasswordKey</string>
 
 </resources>

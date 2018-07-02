@@ -28,6 +28,8 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
+import com.nrs.nsnik.notes.view.listeners.AdapterType
+import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.single_image_view.view.*
 import timber.log.Timber
@@ -42,7 +44,7 @@ import java.io.File
  * KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
  */
 
-class ImageAdapter(private val mFullScreen: Boolean) : ListAdapter<String, ImageAdapter.MyViewHolder>(StringDiffUtil()) {
+class ImageAdapter(private val mFullScreen: Boolean,private val onItemRemoveListener: OnItemRemoveListener) : ListAdapter<String, ImageAdapter.MyViewHolder>(StringDiffUtil()) {
 
     private lateinit var glideRequestManager: RequestManager
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -106,7 +108,7 @@ class ImageAdapter(private val mFullScreen: Boolean) : ListAdapter<String, Image
                 compositeDisposable.addAll(
                         RxView.clicks(remove).subscribe {
                             if (adapterPosition != RecyclerView.NO_POSITION) {
-
+                                onItemRemoveListener.onItemRemoved(adapterPosition,AdapterType.IMAGE_ADAPTER)
                             }
                         },
                         RxView.clicks(image).subscribe {
