@@ -3,10 +3,13 @@ package com.nrs.nsnik.notes.view.fragments.dialogFragments
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxbinding2.view.RxView
@@ -24,7 +27,9 @@ class CreateFolderDialog : DialogFragment() {
 
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var mColor = "#212121"
-    private var mFolderViewModel: FolderViewModel? = null
+    private var isLocked = 0
+    private var isStarred = 0
+    private lateinit var mFolderViewModel: FolderViewModel
     private var mParentFolderName: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,22 +56,37 @@ class CreateFolderDialog : DialogFragment() {
                     dialog.show(fragmentManager, "color")
                 },
                 RxView.clicks(dialogFolderCreate).subscribe { createFolder() },
-                RxView.clicks(dialogFolderCancel).subscribe { dismiss() }
+                RxView.clicks(dialogFolderCancel).subscribe { dismiss() },
+                RxView.clicks(dialogFolderLock).subscribe {
+                    isLocked = changeValue(dialogFolderLock, isLocked,
+                            ContextCompat.getDrawable(activity!!, R.drawable.ic_lock_black_48px)!!,
+                            ContextCompat.getDrawable(activity!!, R.drawable.ic_lock_open_black_48px)!!)
+                },
+                RxView.clicks(dialogFolderStar).subscribe {
+                    isStarred = changeValue(dialogFolderStar, isStarred,
+                            ContextCompat.getDrawable(activity!!, R.drawable.ic_star_black_48px)!!,
+                            ContextCompat.getDrawable(activity!!, R.drawable.ic_star_border_black_48px)!!)
+                }
         )
     }
 
+    private fun changeValue(imageView: ImageView, value: Int, drawable: Drawable, drawableAlt: Drawable): Int {
+        imageView.setImageDrawable(if (value == 0) drawable else drawableAlt)
+        return if (value == 0) 1 else 0
+    }
+
     private fun createFolder() {
-        if (dialogFolderName!!.text.toString().isNotEmpty()) {
+        if (dialogFolderName.text.toString().isNotEmpty()) {
             val folderEntity = FolderEntity()
             folderEntity.folderName = dialogFolderName.text.toString()
             folderEntity.color = mColor
-            folderEntity.locked = 0
-            folderEntity.pinned = 0
+            folderEntity.locked = isLocked
+            folderEntity.pinned = isStarred
             folderEntity.parentFolderName = mParentFolderName
-            mFolderViewModel!!.insertFolder(folderEntity)
+            mFolderViewModel.insertFolder(folderEntity)
             dismiss()
         } else {
-            dialogFolderName!!.error = activity?.resources?.getString(R.string.errorNoFolderName)
+            dialogFolderName.error = activity?.resources?.getString(R.string.errorNoFolderName)
         }
     }
 

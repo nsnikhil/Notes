@@ -10,7 +10,7 @@
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarColor">@color/materialWhite</item>
+        <item name="android:navigationBarColor">@color/colorBackground</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 </resources>

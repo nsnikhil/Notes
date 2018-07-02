@@ -24,11 +24,11 @@ class RvItemTouchHelper(private val mListener: ItemTouchListener) : ItemTouchHel
 
 
     override fun isLongPressDragEnabled(): Boolean {
-        return true
+        return false
     }
 
     override fun isItemViewSwipeEnabled(): Boolean {
-        return true
+        return false
     }
 
     /*

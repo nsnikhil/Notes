@@ -74,9 +74,10 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
             compositeDisposable.addAll(
 
                     RxTextView.textChanges(text).debounce(500, TimeUnit.MILLISECONDS).subscribe {
-                        val newContent: String = it.toString()
-                        getItem(adapterPosition).text = newContent
-                        //getItem(adapterPosition).text = newContent
+                        if (adapterPosition != RecyclerView.NO_POSITION) {
+                            val newContent: String = it.toString()
+                            getItem(adapterPosition).text = newContent
+                        }
                     },
 
                     RxTextView.editorActions(text).subscribe {
@@ -84,10 +85,11 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener) : Li
                     },
 
                     RxCompoundButton.checkedChanges(checkBox).subscribe {
-                        val value: String = it.toString()
-                        val newValue = value.toBoolean()
-//                        modifyText(text,newValue)
-//                        getItem(adapterPosition).done = false
+                        if (adapterPosition != RecyclerView.NO_POSITION) {
+                            val value: Boolean = it
+                            getItem(adapterPosition).done = value
+                            modifyText(text, value)
+                        }
                     }
 
             )

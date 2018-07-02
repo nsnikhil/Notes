@@ -271,7 +271,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
             mImageAdapter.submitList(mImagesLocations)
         }
 
-
         if (noteEntity.audioList != null && noteEntity.audioList?.isNotEmpty()!!) {
             newNoteAudioList!!.visibility = View.VISIBLE
             mAudioLocations.addAll(noteEntity.audioList!!)
@@ -306,24 +305,26 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     }
 
     private fun addCheckListItem() {
-        Timber.d("here")
         val list = CheckListObject()
         list.text = ""
         list.done = false
         mCheckList.add(list)
         mCheckListAdapter.submitList(mCheckList)
+        mCheckListAdapter.notifyItemInserted(mCheckList.size - 1)
         changeVisibility(mCheckList, newNoteCheckList)
     }
 
     private fun addAudioToList(audioFileLocation: String) {
         mAudioLocations.add(audioFileLocation)
         mAudioListAdapter.submitList(mAudioLocations)
+        mAudioListAdapter.notifyItemInserted(mAudioLocations.size - 1)
         changeVisibility(mAudioLocations, newNoteAudioList)
     }
 
     private fun addImageToList(imageLocation: String) {
         mImagesLocations.add(imageLocation)
         mImageAdapter.submitList(mImagesLocations)
+        mImageAdapter.notifyItemInserted(mImagesLocations.size - 1)
         changeVisibility(mImagesLocations, newNoteImageList)
     }
 
@@ -506,9 +507,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             ATTACH_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
-                if (data != null) {
-                    addGalleryPhotoToList(data)
-                }
+                if (data != null) addGalleryPhotoToList(data)
             }
             TAKE_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
                 addCameraPhotoToList()

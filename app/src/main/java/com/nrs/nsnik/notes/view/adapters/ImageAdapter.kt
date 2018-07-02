@@ -55,6 +55,7 @@ class ImageAdapter(private val mFullScreen: Boolean) : ListAdapter<String, Image
     }
 
     override fun onBindViewHolder(holder: ImageAdapter.MyViewHolder, position: Int) {
+        Timber.d(getItem(position))
         glideRequestManager.load(File((context.applicationContext as MyApplication).rootFolder, getItem(position)))
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
@@ -104,7 +105,9 @@ class ImageAdapter(private val mFullScreen: Boolean) : ListAdapter<String, Image
             } else {
                 compositeDisposable.addAll(
                         RxView.clicks(remove).subscribe {
+                            if (adapterPosition != RecyclerView.NO_POSITION) {
 
+                            }
                         },
                         RxView.clicks(image).subscribe {
                             if (adapterPosition != RecyclerView.NO_POSITION) {

@@ -24,6 +24,7 @@
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
+    <string name="enter">Enter</string>
     <!-- -->
 
     <!-- headers-->
@@ -206,9 +207,17 @@
 
     <!-- PREFERENCE -->
     <string name="preferenceCategoryGeneral">General</string>
+    <string name="preferenceCategorySecurity">Security</string>
 
 
     <string name="preferenceDarkMode">Dark Mode</string>
+    <string name="preferenceChangeCode">Change Code</string>
+
+    <string name="preferenceDarkModeKey">darkModeKey</string>
+    <string name="preferenceChangeCodeKey">changeCodeKey</string>
     <!-- -->
+
+    <string name="dialogPasswordFieldHint">Password…</string>
+    <string name="dialogPasswordShowPassword">Show Password</string>
 
 </resources>

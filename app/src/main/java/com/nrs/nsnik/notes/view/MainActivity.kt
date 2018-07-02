@@ -24,6 +24,7 @@ import com.nrs.nsnik.notes.BuildConfig
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.util.idlingResource.SimpleIdlingResource
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.navItemVault -> {
                     mainDrawerLayout.closeDrawer(Gravity.START)
+                    PasswordDialogFragment().show(supportFragmentManager, "password")
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemSettings -> {

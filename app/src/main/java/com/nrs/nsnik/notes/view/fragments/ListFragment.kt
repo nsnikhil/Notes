@@ -5,6 +5,7 @@ import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
+import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxPopupMenu
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
@@ -194,13 +196,37 @@ class ListFragment : Fragment(), NoteItemClickListener {
         }
     }
 
-    override fun onLongClick(position: Int, itemViewType: Int) {
+    override fun onLongClick(position: Int, itemViewType: Int, view: View) {
         when (itemViewType) {
             0 -> if (!mInEditorMode) {
+                inflatePopUpMenu(view)
             }
             1 -> if (!mInEditorMode) {
+                inflatePopUpMenu(view)
             }
         }
+    }
+
+    private fun inflatePopUpMenu(view: View) {
+        val popupMenu = PopupMenu(activity, view, Gravity.END)
+        popupMenu.inflate(R.menu.pop_up_menu)
+        RxPopupMenu.itemClicks(popupMenu).subscribe {
+            when (it.itemId) {
+                R.id.popUpStar -> {
+                }
+                R.id.popUpLock -> {
+                }
+                R.id.popUpEdit -> {
+                }
+                R.id.popUpMove -> {
+                }
+                R.id.popUpShare -> {
+                }
+                R.id.popUpDelete -> {
+                }
+            }
+        }
+        popupMenu.show()
     }
 
     /**

@@ -25,14 +25,44 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
+        android:id="@+id/dialogFolderLock"
+        style="@style/twentyFour"
+        android:layout_marginStart="@dimen/eight"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/imageDescription"
+        android:focusable="true"
+        android:src="@drawable/ic_lock_open_black_48px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dialogFolderName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialogFolderName" />
+
+    <ImageView
+        android:id="@+id/dialogFolderStar"
+        style="@style/twentyFour"
+        android:layout_marginStart="@dimen/eight"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/imageDescription"
+        android:focusable="true"
+        android:src="@drawable/ic_star_border_black_48px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dialogFolderLock"
+        app:layout_constraintTop_toBottomOf="@id/dialogFolderName" />
+
+    <ImageView
         android:id="@+id/dialogFolderColor"
         style="@style/twentyFour"
         android:layout_marginEnd="@dimen/sixteen"
         android:background="@drawable/circle"
         android:backgroundTint="@color/colorAccent"
+        android:clickable="true"
         android:contentDescription="@string/imageDescription"
-        app:layout_constraintBottom_toTopOf="@+id/dialogFolderCreate"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@id/dialogFolderCreate"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dialogFolderName"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button

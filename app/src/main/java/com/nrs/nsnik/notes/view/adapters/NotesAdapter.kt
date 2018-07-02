@@ -281,7 +281,7 @@ class NotesAdapter(private val mContext: Context,
 
                     RxView.longClicks(itemView).subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
-                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType)
+                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, itemView)
                         }
                     }, { throwable -> Timber.d(throwable.message) })
             )
@@ -302,7 +302,7 @@ class NotesAdapter(private val mContext: Context,
                     },
                     RxView.longClicks(itemView).subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
-                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType)
+                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, itemView)
                         }
                     }, { throwable -> Timber.d(throwable.message) })
 
