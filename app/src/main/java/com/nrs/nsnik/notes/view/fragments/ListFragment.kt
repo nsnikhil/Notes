@@ -1,3 +1,26 @@
+/*
+ *     Credit Card Security V1  Copyright (C) 2018  sid-sun
+ *     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+ *     This is free software, and you are welcome to redistribute it
+ *     under certain conditions; type `show c' for details.
+ *
+ * The hypothetical commands `show w' and `show c' should show the appropriate
+ * parts of the General Public License.  Of course, your program's commands
+ * might be different; for a GUI interface, you would use an "about box".
+ *
+ *   You should also get your employer (if you work as a programmer) or school,
+ * if any, to sign a "copyright disclaimer" for the program, if necessary.
+ * For more information on this, and how to apply and follow the GNU GPL, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ *   The GNU General Public License does not permit incorporating your program
+ * into proprietary programs.  If your program is a subroutine library, you
+ * may consider it more useful to permit linking proprietary applications with
+ * the library.  If this is what you want to do, use the GNU Lesser General
+ * Public License instead of this License.  But first, please read
+ * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+ */
+
 package com.nrs.nsnik.notes.view.fragments
 
 import android.os.Bundle
@@ -66,8 +89,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menuMainSearch -> {
-            }
+            R.id.menuMainSearch -> activity?.findNavController(R.id.mainNavHost)?.navigate(R.id.listToSearch)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -117,9 +139,10 @@ class ListFragment : Fragment(), NoteItemClickListener {
     }
 
     private fun setViewModel(folderName: String) {
-        mFolderViewModel.getFolderByParentNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
-        mNoteViewModel.getNoteByFolderNameNoPinNoLock(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
+        mFolderViewModel.getFolderByParentOrdered(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
+        mNoteViewModel.getNoteByFolderNameOrdered(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
     }
+
 
     private fun swapFolder(folderEntityList: List<FolderEntity>?) {
         if (folderEntityList == null) return
@@ -199,15 +222,15 @@ class ListFragment : Fragment(), NoteItemClickListener {
     override fun onLongClick(position: Int, itemViewType: Int, view: View) {
         when (itemViewType) {
             0 -> if (!mInEditorMode) {
-                inflatePopUpMenu(view)
+                inflatePopUpMenu(position, view, mNotesList)
             }
             1 -> if (!mInEditorMode) {
-                inflatePopUpMenu(view)
+                //inflatePopUpMenu(view)
             }
         }
     }
 
-    private fun inflatePopUpMenu(view: View) {
+    private fun inflatePopUpMenu(position: Int, view: View, list: List<NoteEntity>) {
         val popupMenu = PopupMenu(activity, view, Gravity.END)
         popupMenu.inflate(R.menu.pop_up_menu)
         RxPopupMenu.itemClicks(popupMenu).subscribe {

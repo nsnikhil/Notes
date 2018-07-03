@@ -1,11 +1,24 @@
 /*
- * Copyright (C) 2017 nsnikhil
+ *     Credit Card Security V1  Copyright (C) 2018  sid-sun
+ *     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+ *     This is free software, and you are welcome to redistribute it
+ *     under certain conditions; type `show c' for details.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * The hypothetical commands `show w' and `show c' should show the appropriate
+ * parts of the General Public License.  Of course, your program's commands
+ * might be different; for a GUI interface, you would use an "about box".
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   You should also get your employer (if you work as a programmer) or school,
+ * if any, to sign a "copyright disclaimer" for the program, if necessary.
+ * For more information on this, and how to apply and follow the GNU GPL, see
+ * <http://www.gnu.org/licenses/>.
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *   The GNU General Public License does not permit incorporating your program
+ * into proprietary programs.  If your program is a subroutine library, you
+ * may consider it more useful to permit linking proprietary applications with
+ * the library.  If this is what you want to do, use the GNU Lesser General
+ * Public License instead of this License.  But first, please read
+ * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
 package com.nrs.nsnik.notes.view.fragments
@@ -48,6 +61,7 @@ import com.nrs.nsnik.notes.data.NoteEntity
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
+import com.nrs.nsnik.notes.util.events.FullScreenEvent
 import com.nrs.nsnik.notes.util.receiver.NotificationReceiver
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter
@@ -57,10 +71,11 @@ import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
+import com.twitter.serial.serializer.CollectionSerializers
+import com.twitter.serial.serializer.CoreSerializers
 import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_new_note.*
-import kotlinx.android.synthetic.main.list_layout.*
 import kotlinx.android.synthetic.main.new_note_tools.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -138,6 +153,18 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
                 }
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                        }
+                        BottomSheetBehavior.STATE_EXPANDED -> {
+                        }
+                        BottomSheetBehavior.STATE_COLLAPSED -> {
+                        }
+                        BottomSheetBehavior.STATE_DRAGGING -> {
+                        }
+                        BottomSheetBehavior.STATE_SETTLING -> {
+                        }
+                    }
                 }
 
             })
@@ -561,7 +588,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         val resources = activity?.resources
         Snackbar.make(activity?.findViewById(R.id.mainDrawerLayout)!!, resources?.getString(R.string.itemRemoved)!!, Snackbar.LENGTH_LONG)
                 .setAction(resources.getString(R.string.undo)) { Timber.d(position.toString()) }
-                .setActionTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
+                .setActionTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
                 .show()
     }
 
@@ -594,6 +621,16 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     fun onColorPickerEvent(colorPickerEvent: ColorPickerEvent) {
         mColorCode = colorPickerEvent.color
         newNoteTitle.setTextColor(Color.parseColor(mColorCode))
+    }
+
+    @Subscribe
+    fun onFullScreenEvent(fullScreenEvent: FullScreenEvent) {
+        val resources = activity?.resources
+        val bundle = Bundle()
+        val byteArray: ByteArray = ByteBufferSerial().toByteArray(mImagesLocations, CollectionSerializers.getListSerializer(CoreSerializers.STRING))
+        bundle.putByteArray(resources?.getString(R.string.bundleImageList), byteArray)
+        bundle.putInt(resources?.getString(R.string.bundleImageListPosition), fullScreenEvent.position)
+        newNoteImageList.findNavController().navigate(R.id.noteToImageList, bundle)
     }
 
     private enum class FILE_TYPES {

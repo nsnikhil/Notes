@@ -1,11 +1,24 @@
 /*
- * Copyright (C) 2017 nsnikhil
+ *     Credit Card Security V1  Copyright (C) 2018  sid-sun
+ *     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+ *     This is free software, and you are welcome to redistribute it
+ *     under certain conditions; type `show c' for details.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * The hypothetical commands `show w' and `show c' should show the appropriate
+ * parts of the General Public License.  Of course, your program's commands
+ * might be different; for a GUI interface, you would use an "about box".
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   You should also get your employer (if you work as a programmer) or school,
+ * if any, to sign a "copyright disclaimer" for the program, if necessary.
+ * For more information on this, and how to apply and follow the GNU GPL, see
+ * <http://www.gnu.org/licenses/>.
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *   The GNU General Public License does not permit incorporating your program
+ * into proprietary programs.  If your program is a subroutine library, you
+ * may consider it more useful to permit linking proprietary applications with
+ * the library.  If this is what you want to do, use the GNU Lesser General
+ * Public License instead of this License.  But first, please read
+ * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
 package com.nrs.nsnik.notes.viewmodel
@@ -20,77 +33,81 @@ import com.nrs.nsnik.notes.util.DbUtil
 
 class FolderViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val mDbUtil: DbUtil?
-    private val folderList: LiveData<List<FolderEntity>>
+    private val mDbUtil: DbUtil = (application as MyApplication).dbUtil
+    private val folderList: LiveData<List<FolderEntity>> = mDbUtil.folderList
 
     init {
-        mDbUtil = (application as MyApplication).dbUtil
-        folderList = mDbUtil.folderList
+//        mDbUtil = (application as MyApplication).dbUtil
+//        folderList = mDbUtil.folderList
     }
 
     fun insertFolder(vararg folderEntities: FolderEntity) {
-        mDbUtil!!.insertFolder(*folderEntities)
+        mDbUtil.insertFolder(*folderEntities)
     }
 
     fun updateFolder(vararg folderEntities: FolderEntity) {
-        mDbUtil!!.updateFolder(*folderEntities)
+        mDbUtil.updateFolder(*folderEntities)
     }
 
     fun deleteFolder(vararg folderEntities: FolderEntity) {
-        mDbUtil!!.deleteFolder(*folderEntities)
+        mDbUtil.deleteFolder(*folderEntities)
     }
 
     fun deleteFolderByName(name: String) {
-        mDbUtil!!.deleteFolderByName(name)
+        mDbUtil.deleteFolderByName(name)
     }
 
     fun deleteFolderByParent(parentFolderName: String) {
-        mDbUtil!!.deleteFolderByParent(parentFolderName)
+        mDbUtil.deleteFolderByParent(parentFolderName)
     }
 
     fun getFolderById(id: Int): LiveData<FolderEntity> {
-        return mDbUtil!!.getFolderById(id)
+        return mDbUtil.getFolderById(id)
     }
 
     fun getFolderByName(name: String): LiveData<FolderEntity> {
-        return mDbUtil!!.getFolderByName(name)
+        return mDbUtil.getFolderByName(name)
     }
 
     fun searchFolder(query: String): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.searchFolder(query)
+        return mDbUtil.searchFolder(query)
     }
 
     fun getFolderByParent(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByParent(parentFolderName)
+        return mDbUtil.getFolderByParent(parentFolderName)
     }
 
     fun getFolderByParentNoPinNoLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByParentNoPinNoLock(parentFolderName)
+        return mDbUtil.getFolderByParentNoPinNoLock(parentFolderName)
     }
 
     fun getFolderByParentPinNoLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByParentPinNoLock(parentFolderName)
+        return mDbUtil.getFolderByParentPinNoLock(parentFolderName)
     }
 
     fun getFolderByParentNoPinLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByParentNoPinLock(parentFolderName)
+        return mDbUtil.getFolderByParentNoPinLock(parentFolderName)
     }
 
     fun getFolderByParentPinLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByParentPinLock(parentFolderName)
+        return mDbUtil.getFolderByParentPinLock(parentFolderName)
+    }
+
+    fun getFolderByParentOrdered(parentFolderName: String): LiveData<List<FolderEntity>> {
+        return mDbUtil.getFolderByParentOrdered(parentFolderName)
     }
 
     fun getFolderByPin(isPinned: Int): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByPin(isPinned)
+        return mDbUtil.getFolderByPin(isPinned)
 
     }
 
     fun getFolderByLock(isLocked: Int): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByLock(isLocked)
+        return mDbUtil.getFolderByLock(isLocked)
 
     }
 
     fun getFolderByColor(color: String): LiveData<List<FolderEntity>> {
-        return mDbUtil!!.getFolderByColor(color)
+        return mDbUtil.getFolderByColor(color)
     }
 }

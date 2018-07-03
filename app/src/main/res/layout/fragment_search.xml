@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~     Credit Card Security V1  Copyright (C) 2018  sid-sun
   ~     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
   ~     This is free software, and you are welcome to redistribute it
@@ -21,13 +21,9 @@
   ~ <http://www.gnu.org/philosophy/why-not-lgpl.html>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    style="@style/matchParent"
+    tools:context="com.nrs.nsnik.notes.view.fragments.SearchFragment">
 
-    <item
-        android:id="@+id/menuMainSearch"
-        android:icon="@drawable/ic_search_black_48px"
-        android:title="@string/serach"
-        app:showAsAction="collapseActionView|ifRoom" />
 
-</menu>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,24 @@
 /*
- * Copyright (C) 2017 nsnikhil
+ *     Credit Card Security V1  Copyright (C) 2018  sid-sun
+ *     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+ *     This is free software, and you are welcome to redistribute it
+ *     under certain conditions; type `show c' for details.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * The hypothetical commands `show w' and `show c' should show the appropriate
+ * parts of the General Public License.  Of course, your program's commands
+ * might be different; for a GUI interface, you would use an "about box".
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   You should also get your employer (if you work as a programmer) or school,
+ * if any, to sign a "copyright disclaimer" for the program, if necessary.
+ * For more information on this, and how to apply and follow the GNU GPL, see
+ * <http://www.gnu.org/licenses/>.
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *   The GNU General Public License does not permit incorporating your program
+ * into proprietary programs.  If your program is a subroutine library, you
+ * may consider it more useful to permit linking proprietary applications with
+ * the library.  If this is what you want to do, use the GNU Lesser General
+ * Public License instead of this License.  But first, please read
+ * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
 package com.nrs.nsnik.notes.view
@@ -17,6 +30,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.test.espresso.IdlingResource
@@ -24,7 +38,6 @@ import com.nrs.nsnik.notes.BuildConfig
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.util.idlingResource.SimpleIdlingResource
-import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -52,6 +65,15 @@ class MainActivity : AppCompatActivity() {
 
         controller.addOnNavigatedListener { navController, destination ->
             isOnListFragment = destination.id == R.id.navItemNotes
+            mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            mainNavigationView.setCheckedItem(
+                    when (destination.id) {
+                        R.id.navItemNotes -> R.id.navItemNotes
+                        R.id.navItemSettings -> R.id.navItemSettings
+                        R.id.navItemAbout -> R.id.navItemAbout
+                        else -> R.id.navItemNotes
+                    }
+            )
         }
 
         setupActionBarWithNavController(this, controller, mainDrawerLayout)
@@ -60,15 +82,6 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.navItemNotes -> {
                     mainDrawerLayout.closeDrawer(Gravity.START)
-                    return@setNavigationItemSelectedListener true
-                }
-                R.id.navItemStarred -> {
-                    mainDrawerLayout.closeDrawer(Gravity.START)
-                    return@setNavigationItemSelectedListener true
-                }
-                R.id.navItemVault -> {
-                    mainDrawerLayout.closeDrawer(Gravity.START)
-                    PasswordDialogFragment().show(supportFragmentManager, "password")
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemSettings -> {
