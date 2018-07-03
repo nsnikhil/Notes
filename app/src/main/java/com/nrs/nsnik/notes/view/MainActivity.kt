@@ -26,6 +26,7 @@ package com.nrs.nsnik.notes.view
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
@@ -86,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.navItemSettings -> {
                     mainDrawerLayout.closeDrawer(Gravity.START)
+                    Toast.makeText(this, "NOTHING WORKS HERE", Toast.LENGTH_LONG).show()
                     findNavController(R.id.mainNavHost).navigate(R.id.navItemSettings)
                     return@setNavigationItemSelectedListener true
                 }

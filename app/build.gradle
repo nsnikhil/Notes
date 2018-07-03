@@ -94,26 +94,26 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "androidx.core:core-ktx:1.0.0-alpha3"
-    implementation 'androidx.fragment:fragment-ktx:1.0.0-alpha3'
-    implementation 'androidx.collection:collection-ktx:1.0.0-alpha3'
+    implementation "androidx.core:core-ktx:1.0.0-beta01"
+    implementation 'androidx.fragment:fragment-ktx:1.0.0-beta01'
+    implementation 'androidx.collection:collection-ktx:1.0.0-beta01'
 
-    implementation "androidx.appcompat:appcompat:1.0.0-alpha3"
+    implementation "androidx.appcompat:appcompat:1.0.0-beta01"
 
-    implementation "androidx.recyclerview:recyclerview:1.0.0-alpha3"
-    implementation 'androidx.recyclerview:recyclerview-selection:1.0.0-alpha3'
+    implementation "androidx.recyclerview:recyclerview:1.0.0-beta01"
+    implementation 'androidx.recyclerview:recyclerview-selection:1.0.0-beta01'
 
-    implementation "androidx.annotation:annotation:1.0.0-alpha3"
+    implementation "androidx.annotation:annotation:1.0.0-beta01"
 
-    implementation 'androidx.webkit:webkit:1.0.0-alpha3'
+    implementation 'androidx.webkit:webkit:1.0.0-beta01'
 
-    implementation 'com.google.android.material:material:1.0.0-alpha3'
+    implementation 'com.google.android.material:material:1.0.0-beta01'
 
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
 
-    implementation 'androidx.palette:palette:1.0.0-alpha3'
+    implementation 'androidx.palette:palette:1.0.0-beta01'
 
-    implementation 'androidx.cardview:cardview:1.0.0-alpha3'
+    implementation 'androidx.cardview:cardview:1.0.0-beta01'
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
@@ -124,7 +124,7 @@ dependencies {
         exclude group: 'com.google.android.gms'
     })
 
-    implementation 'androidx.browser:browser:1.0.0-alpha3'
+    implementation 'androidx.browser:browser:1.0.0-beta01'
 
     implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
     implementation "io.reactivex.rxjava2:rxjava:2.1.12"
@@ -153,19 +153,19 @@ dependencies {
 
     implementation "com.github.markzhai:blockcanary-android:1.5.0"
 
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0-alpha1'
-    implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0-alpha1'
-    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.0.0-alpha1'
-    testImplementation 'androidx.arch.core:core-testing:2.0.0-alpha1'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0-beta01'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0-beta01'
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.0.0-beta01'
+    testImplementation 'androidx.arch.core:core-testing:2.0.0-beta01'
 
-    implementation 'androidx.room:room-runtime:2.0.0-alpha1'
-    kapt 'androidx.room:room-compiler:2.0.0-alpha1'
-    implementation 'androidx.room:room-rxjava2:2.0.0-alpha1'
-    implementation 'androidx.room:room-guava:2.0.0-alpha1'
-    testImplementation 'androidx.room:room-testing:2.0.0-alpha1'
+    implementation 'androidx.room:room-runtime:2.0.0-beta01'
+    kapt 'androidx.room:room-compiler:2.0.0-beta01'
+    implementation 'androidx.room:room-rxjava2:2.0.0-beta01'
+    implementation 'androidx.room:room-guava:2.0.0-beta01'
+    testImplementation 'androidx.room:room-testing:2.0.0-beta01'
 
-    implementation 'androidx.paging:paging-runtime:2.0.0-alpha1'
-    implementation 'androidx.paging:paging-rxjava2:2.0.0-alpha1'
+    implementation 'androidx.paging:paging-runtime:2.0.0-beta01'
+    implementation 'androidx.paging:paging-rxjava2:2.0.0-beta01'
 
     implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha02'
     implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0-alpha02'
@@ -176,7 +176,7 @@ dependencies {
     androidTestImplementation "android.arch.work:work-testing:1.0.0-alpha04"
 
     implementation "com.twitter.serial:serial:0.1.6"
-    testImplementation "org.mockito:mockito-core:2.16.0"
+    testImplementation "org.mockito:mockito-core:2.19.0"
     implementation "org.jetbrains:annotations:16.0.1"
 
     implementation 'com.github.bumptech.glide:glide:4.7.1'

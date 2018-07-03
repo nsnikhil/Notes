@@ -45,7 +45,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.widget.toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
@@ -60,6 +59,7 @@ import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.NoteEntity
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.util.FileUtil
+import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
 import com.nrs.nsnik.notes.util.events.FullScreenEvent
 import com.nrs.nsnik.notes.util.receiver.NotificationReceiver
@@ -254,20 +254,26 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
             R.id.newNoteMenuDelete -> {
             }
             R.id.newNoteMenuStar -> mIsStarred = setMenuState(mIsStarred, item, R.drawable.ic_star_black_48px, R.drawable.ic_star_border_black_48px, "Starred")
-            R.id.newNoteMenuLock -> mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_black_48px, R.drawable.ic_lock_open_black_48px, "Locked")
+            R.id.newNoteMenuLock -> setLock(item)
             android.R.id.home -> activity?.findNavController(R.id.mainNavHost)?.navigateUp()
         }
         return true
     }
 
+    private fun setLock(item: MenuItem) {
+        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password")) {
+            mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_black_48px, R.drawable.ic_lock_open_black_48px, "Locked")
+        }
+    }
+
     private fun setMenuState(state: Int, item: MenuItem, drawable: Int = 0, drawableAlt: Int = 0, message: String): Int {
         return if (state == 0) {
             item.setIcon(drawable)
-            activity?.toast(message, Toast.LENGTH_LONG)
+            Toast.makeText(activity!!, message, Toast.LENGTH_LONG).show()
             1
         } else {
             item.setIcon(drawableAlt)
-            activity?.toast("Un $message", Toast.LENGTH_LONG)
+            Toast.makeText(activity!!, "Un $message", Toast.LENGTH_LONG).show()
             0
         }
     }
@@ -424,7 +430,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         if (chosePicture.resolveActivity(activity?.packageManager) != null) {
             startActivityForResult(chosePicture, ATTACH_PICTURE_REQUEST_CODE)
         } else {
-            activity?.toast("getResources().getString(R.string.noGallery)", Toast.LENGTH_LONG)
+            Toast.makeText(activity!!, "getResources().getString(R.string.noGallery)", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -528,7 +534,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
     private fun verifyAndSave(): Boolean {
         if (newNoteTitle.text.toString().isEmpty() && newNoteContent.text.toString().isEmpty())
-            activity?.toast(resources.getString(R.string.noNote), Toast.LENGTH_LONG)
+            Toast.makeText(activity!!, resources.getString(R.string.noNote), Toast.LENGTH_LONG).show()
         return true
     }
 

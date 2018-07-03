@@ -1,3 +1,26 @@
+/*
+ *     Credit Card Security V1  Copyright (C) 2018  sid-sun
+ *     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+ *     This is free software, and you are welcome to redistribute it
+ *     under certain conditions; type `show c' for details.
+ *
+ * The hypothetical commands `show w' and `show c' should show the appropriate
+ * parts of the General Public License.  Of course, your program's commands
+ * might be different; for a GUI interface, you would use an "about box".
+ *
+ *   You should also get your employer (if you work as a programmer) or school,
+ * if any, to sign a "copyright disclaimer" for the program, if necessary.
+ * For more information on this, and how to apply and follow the GNU GPL, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ *   The GNU General Public License does not permit incorporating your program
+ * into proprietary programs.  If your program is a subroutine library, you
+ * may consider it more useful to permit linking proprietary applications with
+ * the library.  If this is what you want to do, use the GNU Lesser General
+ * Public License instead of this License.  But first, please read
+ * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+ */
+
 package com.nrs.nsnik.notes.view.fragments.dialogFragments
 
 import android.content.Context
@@ -13,8 +36,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxbinding2.view.RxView
+import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
+import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -57,17 +82,22 @@ class CreateFolderDialog : DialogFragment() {
                 },
                 RxView.clicks(dialogFolderCreate).subscribe { createFolder() },
                 RxView.clicks(dialogFolderCancel).subscribe { dismiss() },
-                RxView.clicks(dialogFolderLock).subscribe {
-                    isLocked = changeValue(dialogFolderLock, isLocked,
-                            ContextCompat.getDrawable(activity!!, R.drawable.ic_lock_black_48px)!!,
-                            ContextCompat.getDrawable(activity!!, R.drawable.ic_lock_open_black_48px)!!)
-                },
+                RxView.clicks(dialogFolderLock).subscribe { setLock() },
                 RxView.clicks(dialogFolderStar).subscribe {
-                    isStarred = changeValue(dialogFolderStar, isStarred,
-                            ContextCompat.getDrawable(activity!!, R.drawable.ic_star_black_48px)!!,
-                            ContextCompat.getDrawable(activity!!, R.drawable.ic_star_border_black_48px)!!)
+                    isStarred = changeValue(dialogFolderStar, isStarred, getDrawable(R.drawable.ic_star_black_48px),
+                            getDrawable(R.drawable.ic_star_border_black_48px))
                 }
         )
+    }
+
+    private fun setLock() {
+        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password")) {
+            isLocked = changeValue(dialogFolderLock, isLocked, getDrawable(R.drawable.ic_lock_black_48px), getDrawable(R.drawable.ic_lock_black_48px))
+        }
+    }
+
+    private fun getDrawable(drawableId: Int): Drawable {
+        return ContextCompat.getDrawable(activity!!, drawableId)!!
     }
 
     private fun changeValue(imageView: ImageView, value: Int, drawable: Drawable, drawableAlt: Drawable): Int {

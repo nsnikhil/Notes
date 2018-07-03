@@ -29,13 +29,13 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxPopupMenu
@@ -43,8 +43,10 @@ import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
 import com.nrs.nsnik.notes.util.RvItemTouchHelper
+import com.nrs.nsnik.notes.util.events.PasswordEvent
 import com.nrs.nsnik.notes.view.adapters.NotesAdapter
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.CreateFolderDialog
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
@@ -53,6 +55,8 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.empty_state.*
 import kotlinx.android.synthetic.main.fab_reveal.*
 import kotlinx.android.synthetic.main.list_layout.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 
 class ListFragment : Fragment(), NoteItemClickListener {
@@ -65,8 +69,6 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     private var mFolderName: String = "noFolder"
     private lateinit var mNotesAdapter: NotesAdapter
-
-    private val mInEditorMode: Boolean = false
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var isRevealed: Boolean = false
@@ -119,16 +121,18 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(fabAdd).subscribe({ if (isRevealed) disappear() else reveal() },
-                        { throwable -> Timber.d(throwable.message) }),
+                RxView.clicks(fabAdd).subscribe({
+                    if (isRevealed) animate(135f, 0f, R.anim.jump_to_down)
+                    else animate(0f, 135f, R.anim.jump_from_down)
+                }, { throwable -> Timber.d(throwable.message) }),
 
                 RxView.clicks(fabAddNote).subscribe {
-                    disappear()
+                    animate(135f, 0f, R.anim.jump_to_down)
                     openNoteEditor(mFolderName, null)
                 },
 
                 RxView.clicks(fabAddFolder).subscribe {
-                    disappear()
+                    animate(135f, 0f, R.anim.jump_to_down)
                     val bundle = Bundle()
                     bundle.putString(activity?.resources?.getString(R.string.bundleCreateFolderParentFolder), mFolderName)
                     val dialog = CreateFolderDialog()
@@ -163,20 +167,33 @@ class ListFragment : Fragment(), NoteItemClickListener {
     }
 
     private fun openFolder(position: Int) {
-        if (position != RecyclerView.NO_POSITION) {
-            val startPos = 1
-            val currPos = position - startPos
-            val bundle = Bundle()
-            bundle.putString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), mFolderList[currPos].folderName!!)
-            activity?.findNavController(R.id.mainNavHost)?.navigate(R.id.navItemNotes, bundle)
-        }
+        val startPos = 1
+        val currPos = position - startPos
+        if (mFolderList[currPos].locked == 1) showPassWordDialog(ItemType.FOLDER, currPos)
+        else openFolderWithBundle(currPos)
+    }
+
+    private fun openFolderWithBundle(position: Int) {
+        val bundle = Bundle()
+        bundle.putString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), mFolderList[position].folderName!!)
+        activity?.findNavController(R.id.mainNavHost)?.navigate(R.id.navItemNotes, bundle)
     }
 
     @Throws(Exception::class)
     private fun openNote(position: Int) {
         val startPos = mFolderList.size + 2
         val currPos = position - startPos
-        openNoteEditor(null, mNotesList[currPos])
+        if (mNotesList[currPos].locked == 1) showPassWordDialog(ItemType.NOTES, currPos)
+        else openNoteEditor(null, mNotesList[currPos])
+    }
+
+    private fun showPassWordDialog(itemType: ItemType, position: Int) {
+        val bundle = Bundle()
+        bundle.putInt(activity?.resources?.getString(R.string.bundleItemType), itemType.ordinal)
+        bundle.putInt(activity?.resources?.getString(R.string.bundleItemPosition), position)
+        val dialog = PasswordDialogFragment()
+        dialog.arguments = bundle
+        dialog.show(fragmentManager, "password")
     }
 
     private fun openNoteEditor(folderName: String?, noteEntity: NoteEntity?) {
@@ -221,109 +238,96 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     override fun onLongClick(position: Int, itemViewType: Int, view: View) {
         when (itemViewType) {
-            0 -> if (!mInEditorMode) {
-                inflatePopUpMenu(position, view, mNotesList)
-            }
-            1 -> if (!mInEditorMode) {
-                //inflatePopUpMenu(view)
-            }
+            0 -> inflatePopUpMenu(position, view)
+            1 -> inflatePopUpMenu(position, view)
         }
     }
 
-    private fun inflatePopUpMenu(position: Int, view: View, list: List<NoteEntity>) {
+    private fun inflatePopUpMenu(position: Int, view: View) {
         val popupMenu = PopupMenu(activity, view, Gravity.END)
         popupMenu.inflate(R.menu.pop_up_menu)
         RxPopupMenu.itemClicks(popupMenu).subscribe {
             when (it.itemId) {
                 R.id.popUpStar -> {
+                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
                 }
                 R.id.popUpLock -> {
+                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
                 }
                 R.id.popUpEdit -> {
+                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
                 }
                 R.id.popUpMove -> {
+                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
                 }
                 R.id.popUpShare -> {
+                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
                 }
                 R.id.popUpDelete -> {
+                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
                 }
             }
         }
         popupMenu.show()
     }
 
-    /**
-     * if the add notes and folder fab is not visible
-     * the perform animation and then make them visible
-     */
-    private fun reveal() {
-        val rotateAnimation = RotateAnimation(0f, 135f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+    private fun animate(fromDegree: Float, toDegree: Float, animation: Int) {
+        val rotateAnimation = RotateAnimation(fromDegree, toDegree, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
         rotateAnimation.duration = 50
         rotateAnimation.fillAfter = true
         rotateAnimation.isFillEnabled = true
         rotateAnimation.setAnimationListener(object : Animation.AnimationListener {
-            val scaleUp = AnimationUtils.loadAnimation(activity, R.anim.jump_from_down)
+            val transitionAnimation = AnimationUtils.loadAnimation(activity, animation)
 
             override fun onAnimationStart(animation: Animation) {}
 
             override fun onAnimationEnd(animation: Animation) {
-                scaleUp.setAnimationListener(object : Animation.AnimationListener {
+                transitionAnimation.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationStart(animation: Animation) {}
 
                     override fun onAnimationEnd(animation: Animation) {
-                        isRevealed = true
-                        fabAddNoteContainer.visibility = View.VISIBLE
-                        fabAddFolderContainer.visibility = View.VISIBLE
+                        isRevealed = changeFabVisibility()
                     }
 
                     override fun onAnimationRepeat(animation: Animation) {}
                 })
-                fabAddFolderContainer.startAnimation(scaleUp)
-                fabAddNoteContainer.startAnimation(scaleUp)
+                fabAddFolderContainer.startAnimation(transitionAnimation)
+                fabAddNoteContainer.startAnimation(transitionAnimation)
             }
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
-
         fabAdd.startAnimation(rotateAnimation)
-
     }
 
-    /**
-     * if the add notes and folder fab is visible
-     * the perform animation and then make them in-visible
-     */
-    private fun disappear() {
-        val rotateAnimation = RotateAnimation(135f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
-        rotateAnimation.duration = 50
-        rotateAnimation.fillAfter = true
-        rotateAnimation.isFillEnabled = true
-        rotateAnimation.setAnimationListener(object : Animation.AnimationListener {
-            val scaleDown = AnimationUtils.loadAnimation(activity, R.anim.jump_to_down)
+    private fun changeFabVisibility(): Boolean {
+        return if (isRevealed) {
+            fabAddNoteContainer.visibility = View.INVISIBLE
+            fabAddFolderContainer.visibility = View.INVISIBLE
+            false
+        } else {
+            fabAddNoteContainer.visibility = View.VISIBLE
+            fabAddFolderContainer.visibility = View.VISIBLE
+            true
+        }
+    }
 
-            override fun onAnimationStart(animation: Animation) {}
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
 
-            override fun onAnimationEnd(animation: Animation) {
-                scaleDown.setAnimationListener(object : Animation.AnimationListener {
-                    override fun onAnimationStart(animation: Animation) {}
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
 
-                    override fun onAnimationEnd(animation: Animation) {
-                        isRevealed = false
-                        fabAddNoteContainer.visibility = View.INVISIBLE
-                        fabAddFolderContainer.visibility = View.INVISIBLE
-                    }
-
-                    override fun onAnimationRepeat(animation: Animation) {}
-                })
-                fabAddFolderContainer.startAnimation(scaleDown)
-                fabAddNoteContainer.startAnimation(scaleDown)
-            }
-
-            override fun onAnimationRepeat(animation: Animation) {}
-        })
-
-        fabAdd.startAnimation(rotateAnimation)
-
+    @Subscribe
+    fun onPasswordEvent(passwordEvent: PasswordEvent) {
+        when (passwordEvent.itemType) {
+            ItemType.NOTES -> openNoteEditor(null, mNotesList[passwordEvent.position])
+            ItemType.FOLDER -> openFolderWithBundle(passwordEvent.position)
+        }
     }
 
     private fun cleanUp() {
@@ -334,5 +338,9 @@ class ListFragment : Fragment(), NoteItemClickListener {
     override fun onDestroy() {
         super.onDestroy()
         cleanUp()
+    }
+
+    enum class ItemType {
+        NOTES, FOLDER
     }
 }

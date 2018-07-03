@@ -25,17 +25,11 @@
     style="@style/myCardView"
     android:transitionName="noteFolder">
 
-    <ImageView
-        android:id="@+id/singleFolderPin"
-        style="@style/wrapContent"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_gravity="end"
-        android:contentDescription="@string/imageDescription"
-        android:padding="@dimen/eight"
-        android:src="@drawable/ic_star_black_48px"
-        android:tint="@color/colorAccent"
-        android:visibility="gone" />
+    <include
+        layout="@layout/item_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end" />
 
     <TextView
         android:id="@+id/singleFolderName"

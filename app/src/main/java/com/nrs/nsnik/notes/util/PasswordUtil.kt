@@ -21,31 +21,43 @@
  * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
-package com.nrs.nsnik.notes.view.fragments
+package com.nrs.nsnik.notes.util
 
-
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.fragment.app.FragmentManager
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 
+class PasswordUtil {
 
-class SearchFragment : Fragment() {
+    companion object {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        private const val default: String = "NA"
+
+        private fun passwordExists(sharedPreferences: SharedPreferences, context: Context): Boolean {
+            return sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePasswordKey), default) != default
+        }
+
+        fun checkLock(sharedPreferences: SharedPreferences, context: Context, fragmentManager: FragmentManager, tag: String): Boolean {
+            if (!passwordExists(sharedPreferences, context)) {
+                showPasswordDialog(fragmentManager, tag)
+                return false
+            }
+            return true
+        }
+
+        fun showPasswordDialog(fragmentManager: FragmentManager, tag: String) {
+            PasswordDialogFragment().show(fragmentManager, tag)
+        }
+
+        fun encrypt(plainText: String): String {
+            return plainText
+        }
+
+        fun decrypt(cypherText: String): String {
+            return cypherText
+        }
+
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initialize()
-    }
-
-    private fun initialize() {
-        Toast.makeText(activity!!, "NOTHING WORKS HERE", Toast.LENGTH_LONG).show()
-    }
-
 }

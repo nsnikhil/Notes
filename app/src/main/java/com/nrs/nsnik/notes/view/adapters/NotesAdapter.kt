@@ -43,6 +43,7 @@ import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.view.listeners.ItemTouchListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.item_indicator.view.*
 import kotlinx.android.synthetic.main.single_folder_layout.view.*
 import kotlinx.android.synthetic.main.single_list_header.view.*
 import kotlinx.android.synthetic.main.single_note_layout.view.*
@@ -164,7 +165,8 @@ class NotesAdapter(private val mContext: Context,
         val folderEntity: FolderEntity = mFolderList[position]
         folderViewHolder.folderName.text = folderEntity.folderName
         folderViewHolder.folderName.compoundDrawableTintList = stateList(folderEntity.color)
-        folderViewHolder.isPinned.visibility = if (folderEntity.pinned == 1) View.VISIBLE else View.GONE
+        changeVisibility(folderViewHolder.isPinned, folderEntity.pinned)
+        changeVisibility(folderViewHolder.isLocked, folderEntity.locked)
     }
 
     /**
@@ -210,12 +212,16 @@ class NotesAdapter(private val mContext: Context,
                 noteViewHolder.noteImage.visibility = View.GONE
             }
 
-            noteViewHolder.isPinned.visibility = if (noteEntity.pinned == 1) View.VISIBLE else View.GONE
+            changeVisibility(noteViewHolder.isPinned, noteEntity.pinned)
+            changeVisibility(noteViewHolder.isLocked, noteEntity.locked)
 
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
 
+    private fun changeVisibility(imageView: ImageView, value: Int) {
+        imageView.visibility = if (value == 1) View.VISIBLE else View.GONE
     }
 
     //TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
@@ -286,7 +292,8 @@ class NotesAdapter(private val mContext: Context,
         val noteTitle: TextView = itemView.singleNoteTitle
         val noteContent: TextView = itemView.singleNoteContent
         val noteImage: ImageView = itemView.singleNoteImage
-        val isPinned: ImageView = itemView.singleNotePin
+        val isPinned: ImageView = itemView.itemIndicatorPin
+        val isLocked: ImageView = itemView.itemIndicatorLock
 
         init {
 
@@ -310,7 +317,8 @@ class NotesAdapter(private val mContext: Context,
     internal inner class FolderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val folderName: TextView = itemView.singleFolderName
-        val isPinned: ImageView = itemView.singleFolderPin
+        val isPinned: ImageView = itemView.itemIndicatorPin
+        val isLocked: ImageView = itemView.itemIndicatorLock
 
         init {
             mCompositeDisposable.addAll(
