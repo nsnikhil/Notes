@@ -33,13 +33,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout style="@style/verticalLinearLayout">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/singleNoteContentContainer"
+        style="@style/verticalLinearLayout">
 
         <ImageView
             android:id="@+id/singleNoteImage"
             style="@style/stretchedHorizontally"
-            android:contentDescription="@string/imageDescription"
             android:layout_height="100dp"
+            android:contentDescription="@string/imageDescription"
             android:scaleType="centerCrop"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/singleNoteTitle"
@@ -55,6 +57,7 @@
         <TextView
             android:id="@+id/singleNoteContent"
             style="@style/newNoteContent"
+            android:drawableTint="@color/grey"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintTop_toBottomOf="@id/singleNoteTitle" />
 

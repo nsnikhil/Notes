@@ -91,9 +91,6 @@ class PasswordDialogFragment : DialogFragment() {
                     dismiss()
                     Timber.d(passwordDialogText.inputType.toString())
                 }
-//                RxCompoundButton.checkedChanges(passwordDialogShowPassword).subscribe {
-//                    passwordDialogText.inputType = if (it) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD else InputType.TYPE_TEXT_VARIATION_PASSWORD
-//                }
         )
     }
 

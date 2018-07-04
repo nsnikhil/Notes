@@ -92,7 +92,7 @@ class CreateFolderDialog : DialogFragment() {
 
     private fun setLock() {
         if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password")) {
-            isLocked = changeValue(dialogFolderLock, isLocked, getDrawable(R.drawable.ic_lock_black_48px), getDrawable(R.drawable.ic_lock_black_48px))
+            isLocked = changeValue(dialogFolderLock, isLocked, getDrawable(R.drawable.ic_lock_black_48px), getDrawable(R.drawable.ic_lock_open_black_48px))
         }
     }
 

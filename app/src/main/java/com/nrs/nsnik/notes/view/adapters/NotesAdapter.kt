@@ -31,6 +31,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
@@ -49,6 +50,7 @@ import kotlinx.android.synthetic.main.single_list_header.view.*
 import kotlinx.android.synthetic.main.single_note_layout.view.*
 import timber.log.Timber
 import java.io.File
+
 
 /**
  * This adapter takes in a uri queries the uri and
@@ -193,27 +195,48 @@ class NotesAdapter(private val mContext: Context,
                 noteViewHolder.noteTitle.visibility = View.GONE
             }
 
+            if (noteEntity.locked == 0) {
+                if (noteEntity.noteContent != null && !noteEntity.noteContent!!.isEmpty()) {
+                    noteViewHolder.noteContent.visibility = View.VISIBLE
+                    noteViewHolder.noteContent.text = noteEntity.noteContent
+                } else {
+                    noteViewHolder.noteContent.visibility = View.GONE
+                }
 
-            //CONTENT
-            if (noteEntity.noteContent != null && !noteEntity.noteContent!!.isEmpty()) {
-                noteViewHolder.noteContent.visibility = View.VISIBLE
-                noteViewHolder.noteContent.text = noteEntity.noteContent
+
+                if (noteEntity.imageList != null && noteEntity.imageList!!.isNotEmpty()) {
+                    noteViewHolder.noteImage.visibility = View.VISIBLE
+                    mRequestManager?.load(File(mRootFolder, noteEntity.imageList!![0]))?.into(noteViewHolder.noteImage)
+                } else {
+                    noteViewHolder.noteImage.visibility = View.GONE
+                }
             } else {
-                noteViewHolder.noteContent.visibility = View.GONE
+//                noteViewHolder.noteContent.visibility = View.GONE
+//                noteViewHolder.noteImage.visibility = View.VISIBLE
+//                noteViewHolder.noteImage.scaleType = ImageView.ScaleType.FIT_CENTER
+//
+//                val set = ConstraintSet()
+//                set.clone(noteViewHolder.noteContentContainer)
+//
+//                set.connect(noteViewHolder.noteImage.id,ConstraintSet.TOP,noteViewHolder.noteTitle.id,ConstraintSet.BOTTOM)
+//                set.connect(noteViewHolder.noteImage.id,ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM)
+//
+//                set.connect(noteViewHolder.noteTitle.id,ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP)
+//                set.connect(noteViewHolder.noteTitle.id,ConstraintSet.BOTTOM,noteViewHolder.noteImage.id,ConstraintSet.TOP)
+//
+//                set.applyTo(noteViewHolder.noteContentContainer)
+//
+//                noteViewHolder.noteImage.layoutParams.height = 80
+//                noteViewHolder.noteImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_lock_black_48px))
+
+                noteViewHolder.noteContent.text = mContext.resources?.getString(R.string.hidden)
+                noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.grey))
+                noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_lock_black_48px, 0, 0, 0)
+                noteViewHolder.noteContent.compoundDrawablePadding = 4
             }
 
-
-            //IMAGES
-
-            if (noteEntity.imageList != null && noteEntity.imageList!!.isNotEmpty()) {
-                noteViewHolder.noteImage.visibility = View.VISIBLE
-                mRequestManager?.load(File(mRootFolder, noteEntity.imageList!![0]))?.into(noteViewHolder.noteImage)
-            } else {
-                noteViewHolder.noteImage.visibility = View.GONE
-            }
 
             changeVisibility(noteViewHolder.isPinned, noteEntity.pinned)
-            changeVisibility(noteViewHolder.isLocked, noteEntity.locked)
 
         } catch (e: Exception) {
             e.printStackTrace()

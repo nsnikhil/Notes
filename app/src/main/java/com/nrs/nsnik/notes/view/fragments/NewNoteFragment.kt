@@ -30,6 +30,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context.ALARM_SERVICE
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -66,6 +67,7 @@ import com.nrs.nsnik.notes.util.receiver.NotificationReceiver
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.ActionAlertDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
@@ -112,7 +114,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     private var mImagesLocations: MutableList<String> = mutableListOf()
     private var mAudioLocations: MutableList<String> = mutableListOf()
     private var mCheckList: MutableList<CheckListObject> = mutableListOf()
-    private var mFilesToDelete: List<String>? = null
 
     private lateinit var mImageAdapter: ImageAdapter
     private lateinit var mAudioListAdapter: AudioListAdapter
@@ -193,9 +194,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
             adapter = mCheckListAdapter
         }
 
-        //Other initializations
-        mFilesToDelete = ArrayList()
-
         if (arguments != null) setNote()
 
     }
@@ -242,6 +240,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         inflater?.inflate(R.menu.new_note_menu, menu)
         if (menu?.getItem(1) != null) mStarMenu = menu.getItem(1)
         if (menu?.getItem(2) != null) mLockMenu = menu.getItem(2)
+        if (mNoteEntity == null) menu?.getItem(3)?.isVisible = false
         setMenuIconState()
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -252,6 +251,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
                 if (verifyAndSave()) if (mNoteEntity == null) noteAction(NoteEntity(), ACTIONTYPE.SAVE) else noteAction(mNoteEntity!!, ACTIONTYPE.UPDATE)
             }
             R.id.newNoteMenuDelete -> {
+                createDeleteDialog()
             }
             R.id.newNoteMenuStar -> mIsStarred = setMenuState(mIsStarred, item, R.drawable.ic_star_black_48px, R.drawable.ic_star_border_black_48px, "Starred")
             R.id.newNoteMenuLock -> setLock(item)
@@ -598,11 +598,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
                 .show()
     }
 
-    private fun deleteClearedItems() {
-        if (mFilesToDelete!!.isNotEmpty()) {
-            //mFileOperation.deleteFileList(mFilesToDelete);
-        }
-    }
 
     private fun makeName(type: FILE_TYPES): String {
         val c = Calendar.getInstance()
@@ -611,6 +606,24 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
             FILE_TYPES.IMAGE -> c.timeInMillis.toString() + ".jpg"
             FILE_TYPES.AUDIO -> c.timeInMillis.toString() + ".3gp"
         }
+    }
+
+    private fun createDeleteDialog() {
+        val resources = activity?.resources
+        ActionAlertDialog.showDialog(
+                activity!!,
+                resources?.getString(R.string.warning)!!,
+                resources.getString(R.string.deleteSingleNoteWarning)!!,
+                resources.getString(R.string.yes)!!,
+                resources.getString(R.string.no)!!,
+                DialogInterface.OnClickListener { dialogInterface, i ->
+                    activity?.findNavController(R.id.mainNavHost)?.navigateUp()
+                    mNoteViewModel.deleteNote(mNoteEntity!!)
+                },
+                DialogInterface.OnClickListener { dialogInterface, i ->
+
+                }
+        )
     }
 
     override fun onStart() {

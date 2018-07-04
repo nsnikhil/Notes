@@ -29,8 +29,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
 import android.widget.PopupMenu
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
@@ -211,23 +209,6 @@ class ListFragment : Fragment(), NoteItemClickListener {
         fabAddNote.findNavController().navigate(R.id.listToAddNewNote, bundle)
     }
 
-    private fun makeDeleteDialog(message: String, folderEntity: FolderEntity, noteEntity: NoteEntity, isFolder: Boolean) {
-        if (activity != null) {
-            val delete = AlertDialog.Builder(activity!!)
-            delete.setTitle(activity?.resources?.getString(R.string.warning))
-                    .setMessage(message)
-                    .setNegativeButton(activity?.resources?.getString(R.string.no)) { dialogInterface, i -> }
-                    .setPositiveButton(activity?.resources?.getString(R.string.yes)) { dialogInterface, i ->
-                        delete(isFolder, folderEntity, noteEntity)
-                    }
-            delete.create().show()
-        }
-    }
-
-
-    private fun delete(isFolder: Boolean, folderEntity: FolderEntity, noteEntity: NoteEntity) {
-        if (isFolder) mFolderViewModel.deleteFolder(folderEntity) else mNoteViewModel.deleteNote(noteEntity)
-    }
 
     override fun onClick(position: Int, itemViewType: Int) {
         when (itemViewType) {
@@ -238,33 +219,60 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     override fun onLongClick(position: Int, itemViewType: Int, view: View) {
         when (itemViewType) {
-            0 -> inflatePopUpMenu(position, view)
-            1 -> inflatePopUpMenu(position, view)
+            0 -> inflatePopUpMenu(position, itemViewType, view)
+            1 -> inflatePopUpMenu(position, itemViewType, view)
         }
     }
 
-    private fun inflatePopUpMenu(position: Int, view: View) {
+    private fun inflatePopUpMenu(position: Int, itemViewType: Int, view: View) {
+        val folderPosition = position - 1
+        val notePosition = position - (mFolderList.size + 2)
+
         val popupMenu = PopupMenu(activity, view, Gravity.END)
         popupMenu.inflate(R.menu.pop_up_menu)
         RxPopupMenu.itemClicks(popupMenu).subscribe {
             when (it.itemId) {
                 R.id.popUpStar -> {
-                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
+                    if (itemViewType == 0) {
+
+                    } else {
+
+                    }
                 }
                 R.id.popUpLock -> {
-                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
+                    if (itemViewType == 0) {
+
+                    } else {
+
+                    }
                 }
                 R.id.popUpEdit -> {
-                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
+                    if (itemViewType == 0) {
+
+                    } else {
+
+                    }
                 }
                 R.id.popUpMove -> {
-                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
+                    if (itemViewType == 0) {
+
+                    } else {
+
+                    }
                 }
                 R.id.popUpShare -> {
-                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
+                    if (itemViewType == 0) {
+
+                    } else {
+
+                    }
                 }
                 R.id.popUpDelete -> {
-                    Toast.makeText(activity!!, "TODO", Toast.LENGTH_SHORT).show()
+                    if (itemViewType == 0) {
+
+                    } else {
+
+                    }
                 }
             }
         }

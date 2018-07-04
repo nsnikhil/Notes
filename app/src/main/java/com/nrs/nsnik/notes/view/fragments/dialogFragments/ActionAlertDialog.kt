@@ -21,34 +21,31 @@
  * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
-buildscript {
-    ext.kotlin_version = '1.2.50'
-    repositories {
-        jcenter()
-        maven { url 'https://maven.fabric.io/public' }
-        google()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0-alpha02'
-        classpath 'com.google.gms:google-services:4.0.1'
-        classpath 'io.fabric.tools:gradle:1.25.4'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0-alpha02"
-        classpath "com.google.gms:oss-licenses:0.9.2"
-    }
-}
+package com.nrs.nsnik.notes.view.fragments.dialogFragments
 
-allprojects {
-    repositories {
-        jcenter()
-        maven { url 'https://maven.google.com' }
-        maven { url 'https://maven.fabric.io/public' }
-        mavenCentral()
-        google()
+import android.content.Context
+import android.content.DialogInterface
+import androidx.appcompat.app.AlertDialog
+
+class ActionAlertDialog {
+
+    companion object {
+
+        fun showDialog(context: Context,
+                       title: String,
+                       message: String,
+                       positive: String,
+                       negative: String,
+                       positiveListener: DialogInterface.OnClickListener,
+                       negativeListener: DialogInterface.OnClickListener) {
+            val dialog = AlertDialog.Builder(context)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(positive, positiveListener)
+                    .setNegativeButton(negative, negativeListener)
+            dialog.create().show()
+        }
+
     }
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
-
