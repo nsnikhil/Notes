@@ -154,6 +154,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?android:actionBarSize</item>
         <item name="android:background">@color/colorPrimary</item>
+        <item name="android:elevation">0dp</item>
     </style>
 
     <style name="toolbarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">

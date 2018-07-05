@@ -41,7 +41,7 @@ interface FolderDao {
     @Query("SELECT * FROM FolderEntity WHERE folderName = :folderName")
     fun getFolderByName(folderName: String): LiveData<FolderEntity>
 
-    @Query("SELECT * FROM FolderEntity WHERE folderName LIKE :query")
+    @Query("SELECT * FROM FolderEntity WHERE folderName LIKE :query|| '%'")
     fun getFolderByQuery(query: String): LiveData<List<FolderEntity>>
 
     @Query("SELECT * FROM FolderEntity WHERE parentFolderName = :parentFolder")

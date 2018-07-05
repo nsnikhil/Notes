@@ -199,6 +199,9 @@ class NotesAdapter(private val mContext: Context,
                 if (noteEntity.noteContent != null && !noteEntity.noteContent!!.isEmpty()) {
                     noteViewHolder.noteContent.visibility = View.VISIBLE
                     noteViewHolder.noteContent.text = noteEntity.noteContent
+                    noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
+                    noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
+                    noteViewHolder.noteContent.compoundDrawablePadding = 0
                 } else {
                     noteViewHolder.noteContent.visibility = View.GONE
                 }
@@ -209,6 +212,7 @@ class NotesAdapter(private val mContext: Context,
                 } else {
                     noteViewHolder.noteImage.visibility = View.GONE
                 }
+
             } else {
                 noteViewHolder.noteContent.text = mContext.resources?.getString(R.string.hidden)
                 noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.grey))

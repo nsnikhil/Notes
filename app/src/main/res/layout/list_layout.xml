@@ -34,6 +34,12 @@
         android:clipToPadding="false"
         android:paddingBottom="88dp" />
 
+    <ImageView
+        android:id="@+id/listBackground"
+        style="@style/matchParent"
+        android:background="@drawable/gradient"
+        android:visibility="gone" />
+
     <include
         layout="@layout/empty_state"
         android:layout_width="wrap_content"

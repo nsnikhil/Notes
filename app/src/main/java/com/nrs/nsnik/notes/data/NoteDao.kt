@@ -53,7 +53,7 @@ interface NoteDao {
     @Query("SELECT * FROM NoteEntity WHERE folderName = :folderName AND locked = 1 And pinned = 1")
     fun getNotesByFolderNamePinnedLocked(folderName: String): LiveData<List<NoteEntity>>
 
-    @Query("SELECT * FROM NoteEntity WHERE title LIKE :query")
+    @Query("SELECT * FROM NoteEntity WHERE title LIKE :query|| '%'")
     fun getNoteByQuery(query: String): LiveData<List<NoteEntity>>
 
     @Query("SELECT * FROM NoteEntity WHERE pinned = :isPinned")

@@ -23,6 +23,9 @@
 
 package com.nrs.nsnik.notes.view.fragments
 
+import android.annotation.SuppressLint
+import android.app.SearchManager
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
@@ -30,12 +33,15 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
 import android.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxPopupMenu
 import com.nrs.nsnik.notes.MyApplication
@@ -64,6 +70,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class ListFragment : Fragment(), NoteItemClickListener {
 
@@ -79,6 +86,8 @@ class ListFragment : Fragment(), NoteItemClickListener {
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var isRevealed: Boolean = false
 
+    private lateinit var searchView: SearchView
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.list_layout, container, false)
     }
@@ -92,12 +101,26 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.main_menu, menu)
+        searchView = menu?.findItem(R.id.menuMainSearch)?.actionView as SearchView
+        searchView.setSearchableInfo((activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager).getSearchableInfo(activity!!.componentName))
+        menuListener()
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    @SuppressLint("CheckResult")
+    private fun menuListener() {
+        RxSearchView.queryTextChanges(searchView)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    Timber.d(it.toString())
+                }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menuMainSearch -> activity?.findNavController(R.id.mainNavHost)?.navigate(R.id.listToSearch)
+            R.id.menuMainSearch -> {
+
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -251,7 +274,8 @@ class ListFragment : Fragment(), NoteItemClickListener {
                         updateNote((activity?.application as MyApplication).fileUtil,
                                 noteEntity,
                                 if (noteEntity.pinned == 0) 1 else 0,
-                                noteEntity.locked
+                                noteEntity.locked,
+                                noteEntity.folderName!!
                         )
                     } else {
                         val folderEntity = mFolderList[folderPosition]
@@ -315,11 +339,12 @@ class ListFragment : Fragment(), NoteItemClickListener {
     }
 
 
-    private fun updateNote(fileUtil: FileUtil, noteEntity: NoteEntity, pinned: Int, locked: Int) {
+    private fun updateNote(fileUtil: FileUtil, noteEntity: NoteEntity, pinned: Int, locked: Int, folderName: String) {
         val deSerialized = fileUtil.getNote(noteEntity.fileName!!)
+        deSerialized.uid = noteEntity.uid
         deSerialized.title = deSerialized.title
         deSerialized.noteContent = deSerialized.noteContent
-        deSerialized.folderName = deSerialized.folderName
+        deSerialized.folderName = folderName
         deSerialized.fileName = deSerialized.fileName
         deSerialized.color = deSerialized.color
         deSerialized.dateModified = Calendar.getInstance().time
@@ -340,7 +365,8 @@ class ListFragment : Fragment(), NoteItemClickListener {
                     updateNote((activity?.application as MyApplication).fileUtil,
                             noteEntity,
                             noteEntity.pinned,
-                            if (noteEntity.locked == 0) 1 else 0
+                            if (noteEntity.locked == 0) 1 else 0,
+                            noteEntity.folderName!!
                     )
                 }
                 ListFragment.ItemType.FOLDER -> {
@@ -414,6 +440,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
             override fun onAnimationStart(animation: Animation) {}
 
             override fun onAnimationEnd(animation: Animation) {
+                listBackground.visibility = if (listBackground.isVisible) View.GONE else View.VISIBLE
                 transitionAnimation.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationStart(animation: Animation) {}
 
@@ -489,7 +516,10 @@ class ListFragment : Fragment(), NoteItemClickListener {
     @Subscribe
     fun onFolderClickEvent(folderClickEvent: FolderClickEvent) {
         when (folderClickEvent.itemType) {
-            ListFragment.ItemType.NOTES -> mNoteViewModel.changeNoteFolder(mNotesList[folderClickEvent.itemClickPosition].uid, folderClickEvent.folderName)
+            ListFragment.ItemType.NOTES -> {
+                val noteEntity = mNotesList[folderClickEvent.itemClickPosition]
+                updateNote((activity?.application as MyApplication).fileUtil, noteEntity, noteEntity.pinned, noteEntity.locked, folderClickEvent.folderName)
+            }
             ListFragment.ItemType.FOLDER -> mFolderViewModel.changeFolderParent(mFolderList[folderClickEvent.itemClickPosition].uid, folderClickEvent.folderName)
         }
     }

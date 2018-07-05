@@ -36,10 +36,6 @@
             android:id="@+id/listToAddNewNote"
             app:destination="@id/newNoteFragment" />
 
-        <action
-            android:id="@+id/listToSearch"
-            app:destination="@id/searchFragment" />
-
     </fragment>
 
     <fragment
@@ -70,18 +66,6 @@
         android:id="@+id/imageListFragment"
         android:name="com.nrs.nsnik.notes.view.fragments.ImageListFragment"
         android:label="image"
-        tools:layout="@layout/recycler_view" />
-
-    <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.nrs.nsnik.notes.view.fragments.SearchFragment"
-        android:label="Search"
-        tools:layout="@layout/fragment_search" />
-
-    <fragment
-        android:id="@+id/folderListDialog"
-        android:name="com.nrs.nsnik.notes.view.fragments.dialogFragments.MoveListDialogFragment"
-        android:label="Folders"
         tools:layout="@layout/recycler_view" />
 
 </navigation>
