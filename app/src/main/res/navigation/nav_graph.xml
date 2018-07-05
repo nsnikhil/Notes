@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~     Credit Card Security V1  Copyright (C) 2018  sid-sun
   ~     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
   ~     This is free software, and you are welcome to redistribute it
@@ -76,7 +75,13 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.nrs.nsnik.notes.view.fragments.SearchFragment"
-        android:label="search"
+        android:label="Search"
         tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/folderListDialog"
+        android:name="com.nrs.nsnik.notes.view.fragments.dialogFragments.MoveListDialogFragment"
+        android:label="Folders"
+        tools:layout="@layout/recycler_view" />
 
 </navigation>

@@ -50,6 +50,7 @@ class PasswordDialogFragment : DialogFragment() {
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var itemType: ListFragment.ItemType
     private var itemPosition: Int = -1
+    private lateinit var eventType: ListFragment.EventType
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_password_dialog, container, false)
@@ -67,6 +68,7 @@ class PasswordDialogFragment : DialogFragment() {
         if (arguments != null) {
             itemType = ListFragment.ItemType.values()[arguments?.getInt(resources?.getString(R.string.bundleItemType), 0)!!]
             itemPosition = arguments?.getInt(resources?.getString(R.string.bundleItemPosition), -1)!!
+            eventType = ListFragment.EventType.values()[arguments?.getInt(resources?.getString(R.string.bundleItemEvent), 0)!!]
         }
 
         sharedPreferences = (activity?.applicationContext as MyApplication).sharedPreferences
@@ -105,7 +107,7 @@ class PasswordDialogFragment : DialogFragment() {
     private fun isPasswordCorrect(editText: TextInputEditText): Boolean {
         return if (value == editText.text.toString()) {
             dismiss()
-            EventBus.getDefault().post(PasswordEvent(itemType, itemPosition))
+            EventBus.getDefault().post(PasswordEvent(itemType, itemPosition, eventType))
             true
         } else {
             editText.error = activity?.resources?.getString(R.string.errorNopassword)

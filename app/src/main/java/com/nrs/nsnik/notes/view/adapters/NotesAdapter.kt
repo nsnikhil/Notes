@@ -24,7 +24,6 @@
 package com.nrs.nsnik.notes.view.adapters
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +39,7 @@ import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
+import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.view.listeners.ItemTouchListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
@@ -166,7 +166,7 @@ class NotesAdapter(private val mContext: Context,
         val folderViewHolder = holder as FolderViewHolder
         val folderEntity: FolderEntity = mFolderList[position]
         folderViewHolder.folderName.text = folderEntity.folderName
-        folderViewHolder.folderName.compoundDrawableTintList = stateList(folderEntity.color)
+        folderViewHolder.folderName.compoundDrawableTintList = AppUtil.stateList(folderEntity.color)
         changeVisibility(folderViewHolder.isPinned, folderEntity.pinned)
         changeVisibility(folderViewHolder.isLocked, folderEntity.locked)
     }
@@ -203,7 +203,6 @@ class NotesAdapter(private val mContext: Context,
                     noteViewHolder.noteContent.visibility = View.GONE
                 }
 
-
                 if (noteEntity.imageList != null && noteEntity.imageList!!.isNotEmpty()) {
                     noteViewHolder.noteImage.visibility = View.VISIBLE
                     mRequestManager?.load(File(mRootFolder, noteEntity.imageList!![0]))?.into(noteViewHolder.noteImage)
@@ -211,30 +210,11 @@ class NotesAdapter(private val mContext: Context,
                     noteViewHolder.noteImage.visibility = View.GONE
                 }
             } else {
-//                noteViewHolder.noteContent.visibility = View.GONE
-//                noteViewHolder.noteImage.visibility = View.VISIBLE
-//                noteViewHolder.noteImage.scaleType = ImageView.ScaleType.FIT_CENTER
-//
-//                val set = ConstraintSet()
-//                set.clone(noteViewHolder.noteContentContainer)
-//
-//                set.connect(noteViewHolder.noteImage.id,ConstraintSet.TOP,noteViewHolder.noteTitle.id,ConstraintSet.BOTTOM)
-//                set.connect(noteViewHolder.noteImage.id,ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM)
-//
-//                set.connect(noteViewHolder.noteTitle.id,ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP)
-//                set.connect(noteViewHolder.noteTitle.id,ConstraintSet.BOTTOM,noteViewHolder.noteImage.id,ConstraintSet.TOP)
-//
-//                set.applyTo(noteViewHolder.noteContentContainer)
-//
-//                noteViewHolder.noteImage.layoutParams.height = 80
-//                noteViewHolder.noteImage.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_lock_black_48px))
-
                 noteViewHolder.noteContent.text = mContext.resources?.getString(R.string.hidden)
                 noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.grey))
                 noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_lock_black_48px, 0, 0, 0)
                 noteViewHolder.noteContent.compoundDrawablePadding = 4
             }
-
 
             changeVisibility(noteViewHolder.isPinned, noteEntity.pinned)
 
@@ -292,13 +272,6 @@ class NotesAdapter(private val mContext: Context,
     //TODO
     override fun onItemDismiss(position: Int) {
         //notifyItemRemoved(position);
-    }
-
-    private fun stateList(colorString: String?): ColorStateList {
-        val states = arrayOf(intArrayOf(android.R.attr.state_enabled), intArrayOf(-android.R.attr.state_enabled), intArrayOf(-android.R.attr.state_checked), intArrayOf(android.R.attr.state_pressed))
-        val color = Color.parseColor(colorString)
-        val colors = intArrayOf(color, color, color, color)
-        return ColorStateList(states, colors)
     }
 
     private fun cleanUp() {

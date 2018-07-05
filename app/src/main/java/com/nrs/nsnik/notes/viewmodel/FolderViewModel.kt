@@ -34,12 +34,7 @@ import com.nrs.nsnik.notes.util.DbUtil
 class FolderViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mDbUtil: DbUtil = (application as MyApplication).dbUtil
-    private val folderList: LiveData<List<FolderEntity>> = mDbUtil.folderList
-
-    init {
-//        mDbUtil = (application as MyApplication).dbUtil
-//        folderList = mDbUtil.folderList
-    }
+    val folderList: LiveData<List<FolderEntity>> = mDbUtil.folderList
 
     fun insertFolder(vararg folderEntities: FolderEntity) {
         mDbUtil.insertFolder(*folderEntities)
@@ -59,6 +54,10 @@ class FolderViewModel(application: Application) : AndroidViewModel(application) 
 
     fun deleteFolderByParent(parentFolderName: String) {
         mDbUtil.deleteFolderByParent(parentFolderName)
+    }
+
+    fun getFolders(): LiveData<List<FolderEntity>> {
+        return mDbUtil.getFolders()
     }
 
     fun getFolderById(id: Int): LiveData<FolderEntity> {
@@ -109,5 +108,17 @@ class FolderViewModel(application: Application) : AndroidViewModel(application) 
 
     fun getFolderByColor(color: String): LiveData<List<FolderEntity>> {
         return mDbUtil.getFolderByColor(color)
+    }
+
+    fun changeFolderPinStatus(id: Int, pin: Int) {
+        return mDbUtil.changeFolderPinStatus(id, pin)
+    }
+
+    fun changeFolderLockStatus(id: Int, lock: Int) {
+        return mDbUtil.changeFolderLockStatus(id, lock)
+    }
+
+    fun changeFolderParent(id: Int, parentFolderName: String) {
+        return mDbUtil.changeFolderParent(id, parentFolderName)
     }
 }

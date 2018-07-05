@@ -21,26 +21,25 @@
   ~ <http://www.gnu.org/philosophy/why-not-lgpl.html>.
   -->
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/myCardView"
-    android:id="@+id/singleFolderContainer"
-    android:transitionName="noteFolder">
-
-    <include
-        layout="@layout/item_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end" />
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/matchParent">
 
     <TextView
-        android:id="@+id/singleFolderName"
-        style="@style/newNoteHeading"
-        android:drawableStart="@drawable/folder_icon"
-        android:drawablePadding="@dimen/eight"
-        android:fontFamily="@font/roboto_mono_bold"
-        android:maxLines="1"
-        android:textSize="18sp"
+        android:id="@+id/moveListHeading"
+        android:layout_width="match_parent"
+        android:layout_height="?listPreferredItemHeight"
+        android:gravity="center_vertical"
+        android:minWidth="300dp"
+        android:padding="@dimen/eight"
+        android:text="@string/moveTo"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
-</androidx.cardview.widget.CardView>
+    <include
+        layout="@layout/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/moveListHeading" />
 
+</androidx.constraintlayout.widget.ConstraintLayout>

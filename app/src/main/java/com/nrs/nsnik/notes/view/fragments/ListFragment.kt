@@ -23,6 +23,7 @@
 
 package com.nrs.nsnik.notes.view.fragments
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
 import android.view.animation.Animation
@@ -37,13 +38,19 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxPopupMenu
+import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
+import com.nrs.nsnik.notes.util.FileUtil
+import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.RvItemTouchHelper
+import com.nrs.nsnik.notes.util.events.FolderClickEvent
 import com.nrs.nsnik.notes.util.events.PasswordEvent
 import com.nrs.nsnik.notes.view.adapters.NotesAdapter
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.ActionAlertDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.CreateFolderDialog
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.MoveListDialogFragment
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
@@ -56,6 +63,7 @@ import kotlinx.android.synthetic.main.list_layout.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
+import java.util.*
 
 class ListFragment : Fragment(), NoteItemClickListener {
 
@@ -133,11 +141,15 @@ class ListFragment : Fragment(), NoteItemClickListener {
                     animate(135f, 0f, R.anim.jump_to_down)
                     val bundle = Bundle()
                     bundle.putString(activity?.resources?.getString(R.string.bundleCreateFolderParentFolder), mFolderName)
-                    val dialog = CreateFolderDialog()
-                    dialog.arguments = bundle
-                    dialog.show(fragmentManager, "createFolderDialog")
+                    showCreateFolderDialog(bundle)
                 }
         )
+    }
+
+    private fun showCreateFolderDialog(bundle: Bundle) {
+        val dialog = CreateFolderDialog()
+        dialog.arguments = bundle
+        dialog.show(fragmentManager, "createFolderDialog")
     }
 
     private fun setViewModel(folderName: String) {
@@ -167,7 +179,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
     private fun openFolder(position: Int) {
         val startPos = 1
         val currPos = position - startPos
-        if (mFolderList[currPos].locked == 1) showPassWordDialog(ItemType.FOLDER, currPos)
+        if (mFolderList[currPos].locked == 1) showPassWordDialog(ItemType.FOLDER, currPos, EventType.OPEN)
         else openFolderWithBundle(currPos)
     }
 
@@ -181,13 +193,14 @@ class ListFragment : Fragment(), NoteItemClickListener {
     private fun openNote(position: Int) {
         val startPos = mFolderList.size + 2
         val currPos = position - startPos
-        if (mNotesList[currPos].locked == 1) showPassWordDialog(ItemType.NOTES, currPos)
+        if (mNotesList[currPos].locked == 1) showPassWordDialog(ItemType.NOTES, currPos, EventType.OPEN)
         else openNoteEditor(null, mNotesList[currPos])
     }
 
-    private fun showPassWordDialog(itemType: ItemType, position: Int) {
+    private fun showPassWordDialog(itemType: ItemType, position: Int, eventType: EventType) {
         val bundle = Bundle()
         bundle.putInt(activity?.resources?.getString(R.string.bundleItemType), itemType.ordinal)
+        bundle.putInt(activity?.resources?.getString(R.string.bundleItemEvent), eventType.ordinal)
         bundle.putInt(activity?.resources?.getString(R.string.bundleItemPosition), position)
         val dialog = PasswordDialogFragment()
         dialog.arguments = bundle
@@ -234,30 +247,49 @@ class ListFragment : Fragment(), NoteItemClickListener {
             when (it.itemId) {
                 R.id.popUpStar -> {
                     if (itemViewType == 0) {
-
+                        val noteEntity = mNotesList[notePosition]
+                        updateNote((activity?.application as MyApplication).fileUtil,
+                                noteEntity,
+                                if (noteEntity.pinned == 0) 1 else 0,
+                                noteEntity.locked
+                        )
                     } else {
-
+                        val folderEntity = mFolderList[folderPosition]
+                        mFolderViewModel.changeFolderPinStatus(folderEntity.uid, if (folderEntity.pinned == 0) 1 else 0)
                     }
                 }
                 R.id.popUpLock -> {
                     if (itemViewType == 0) {
-
+                        if (mNotesList[notePosition].locked == 0) setLock(ItemType.NOTES, notePosition)
+                        else showPassWordDialog(ItemType.NOTES, notePosition, EventType.LOCK)
                     } else {
-
+                        if (mFolderList[folderPosition].locked == 0) setLock(ItemType.FOLDER, folderPosition)
+                        else showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.LOCK)
                     }
                 }
                 R.id.popUpEdit -> {
                     if (itemViewType == 0) {
-
+                        openNote(position)
                     } else {
-
+                        if (mFolderList[folderPosition].locked == 0) editFolder(folderPosition)
+                        else showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.EDIT)
                     }
                 }
                 R.id.popUpMove -> {
                     if (itemViewType == 0) {
-
+                        if (mNotesList[notePosition].locked == 0) openMoveListDialog(
+                                ItemType.NOTES,
+                                mNotesList[notePosition].folderName!!,
+                                mNotesList[notePosition].folderName!!,
+                                notePosition)
+                        else showPassWordDialog(ItemType.NOTES, notePosition, EventType.MOVE)
                     } else {
-
+                        if (mFolderList[folderPosition].locked == 0) openMoveListDialog(
+                                ItemType.FOLDER,
+                                mFolderList[folderPosition].folderName!!,
+                                mFolderList[folderPosition].parentFolderName!!,
+                                folderPosition)
+                        else showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.MOVE)
                     }
                 }
                 R.id.popUpShare -> {
@@ -269,14 +301,106 @@ class ListFragment : Fragment(), NoteItemClickListener {
                 }
                 R.id.popUpDelete -> {
                     if (itemViewType == 0) {
+                        if (mNotesList[notePosition].locked == 0) deleteNote(notePosition)
+                        else showPassWordDialog(ItemType.NOTES, notePosition, EventType.DELETE)
 
                     } else {
-
+                        if (mFolderList[folderPosition].locked == 0) deleteFolder(folderPosition)
+                        else showPassWordDialog(ItemType.NOTES, notePosition, EventType.DELETE)
                     }
                 }
             }
         }
         popupMenu.show()
+    }
+
+
+    private fun updateNote(fileUtil: FileUtil, noteEntity: NoteEntity, pinned: Int, locked: Int) {
+        val deSerialized = fileUtil.getNote(noteEntity.fileName!!)
+        deSerialized.title = deSerialized.title
+        deSerialized.noteContent = deSerialized.noteContent
+        deSerialized.folderName = deSerialized.folderName
+        deSerialized.fileName = deSerialized.fileName
+        deSerialized.color = deSerialized.color
+        deSerialized.dateModified = Calendar.getInstance().time
+        deSerialized.imageList = deSerialized.imageList
+        deSerialized.audioList = deSerialized.audioList
+        deSerialized.checkList = deSerialized.checkList
+        deSerialized.pinned = pinned
+        deSerialized.locked = locked
+        deSerialized.hasReminder = deSerialized.hasReminder
+        mNoteViewModel.updateNote(deSerialized)
+    }
+
+    private fun setLock(itemType: ItemType, position: Int) {
+        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password")) {
+            when (itemType) {
+                ListFragment.ItemType.NOTES -> {
+                    val noteEntity = mNotesList[position]
+                    updateNote((activity?.application as MyApplication).fileUtil,
+                            noteEntity,
+                            noteEntity.pinned,
+                            if (noteEntity.locked == 0) 1 else 0
+                    )
+                }
+                ListFragment.ItemType.FOLDER -> {
+                    val folderEntity = mFolderList[position]
+                    mFolderViewModel.changeFolderLockStatus(folderEntity.uid, if (folderEntity.locked == 0) 1 else 0)
+                }
+            }
+        }
+    }
+
+    private fun openMoveListDialog(itemType: ItemType, currentFolder: String, parentFolder: String, clickPosition: Int) {
+        val bundle = Bundle()
+        bundle.putInt(activity?.resources?.getString(R.string.bundleItemType), itemType.ordinal)
+        bundle.putString(activity?.resources?.getString(R.string.bundleEntityCurrentFolder), currentFolder)
+        bundle.putString(activity?.resources?.getString(R.string.bundleEntityParentFolder), parentFolder)
+        bundle.putInt(activity?.resources?.getString(R.string.bundleItemToMovePosition), clickPosition)
+        val dialog = MoveListDialogFragment()
+        dialog.arguments = bundle
+        dialog.show(fragmentManager, "move")
+    }
+
+    private fun deleteNote(position: Int) {
+        createDeleteDialog(
+                activity?.resources?.getString(R.string.deleteSingleNoteWarning)!!,
+                DialogInterface.OnClickListener { dialogInterface, i ->
+                    mNoteViewModel.deleteNote(mNotesList[position])
+                }
+        )
+    }
+
+    private fun deleteFolder(position: Int) {
+        createDeleteDialog(
+                activity?.resources?.getString(R.string.deleteSingleFolderWarning)!!,
+                DialogInterface.OnClickListener { dialogInterface, i ->
+                    mNoteViewModel.deleteNoteByFolderName(mFolderName[position].toString())
+                    mFolderViewModel.deleteFolder(mFolderList[position])
+                }
+        )
+    }
+
+    private fun editFolder(position: Int) {
+        val bundle = Bundle()
+        val byteArray: ByteArray = ByteBufferSerial().toByteArray(mFolderList[position], FolderEntity.SERIALIZER)
+        bundle.putByteArray(activity?.resources?.getString(R.string.bundleFolderEntity), byteArray)
+        showCreateFolderDialog(bundle)
+    }
+
+    private fun createDeleteDialog(message: String, positiveClick: DialogInterface.OnClickListener) {
+        val resources = activity?.resources
+        ActionAlertDialog.showDialog(
+                activity!!,
+                resources?.getString(R.string.warning)!!,
+                message,
+                resources.getString(R.string.yes)!!,
+                resources.getString(R.string.no)!!,
+                positiveClick,
+                DialogInterface.OnClickListener { dialogInterface, i ->
+
+                }
+        )
     }
 
     private fun animate(fromDegree: Float, toDegree: Float, animation: Int) {
@@ -333,8 +457,40 @@ class ListFragment : Fragment(), NoteItemClickListener {
     @Subscribe
     fun onPasswordEvent(passwordEvent: PasswordEvent) {
         when (passwordEvent.itemType) {
-            ItemType.NOTES -> openNoteEditor(null, mNotesList[passwordEvent.position])
-            ItemType.FOLDER -> openFolderWithBundle(passwordEvent.position)
+            ItemType.NOTES -> {
+                when (passwordEvent.eventType) {
+                    EventType.OPEN -> openNoteEditor(null, mNotesList[passwordEvent.position])
+                    EventType.EDIT -> openNoteEditor(null, mNotesList[passwordEvent.position])
+                    EventType.DELETE -> deleteNote(passwordEvent.position)
+                    EventType.MOVE -> openMoveListDialog(
+                            ItemType.NOTES,
+                            mNotesList[passwordEvent.position].folderName!!,
+                            mNotesList[passwordEvent.position].folderName!!,
+                            passwordEvent.position)
+                    EventType.LOCK -> setLock(ItemType.NOTES, passwordEvent.position)
+                }
+            }
+            ItemType.FOLDER -> {
+                when (passwordEvent.eventType) {
+                    EventType.OPEN -> openFolderWithBundle(passwordEvent.position)
+                    EventType.EDIT -> editFolder(passwordEvent.position)
+                    EventType.DELETE -> deleteFolder(passwordEvent.position)
+                    EventType.MOVE -> openMoveListDialog(
+                            ItemType.FOLDER,
+                            mFolderList[passwordEvent.position].folderName!!,
+                            mFolderList[passwordEvent.position].parentFolderName!!,
+                            passwordEvent.position)
+                    EventType.LOCK -> setLock(ItemType.FOLDER, passwordEvent.position)
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    fun onFolderClickEvent(folderClickEvent: FolderClickEvent) {
+        when (folderClickEvent.itemType) {
+            ListFragment.ItemType.NOTES -> mNoteViewModel.changeNoteFolder(mNotesList[folderClickEvent.itemClickPosition].uid, folderClickEvent.folderName)
+            ListFragment.ItemType.FOLDER -> mFolderViewModel.changeFolderParent(mFolderList[folderClickEvent.itemClickPosition].uid, folderClickEvent.folderName)
         }
     }
 
@@ -350,5 +506,9 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     enum class ItemType {
         NOTES, FOLDER
+    }
+
+    enum class EventType {
+        OPEN, EDIT, DELETE, LOCK, MOVE
     }
 }

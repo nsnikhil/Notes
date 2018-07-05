@@ -25,6 +25,7 @@ package com.nrs.nsnik.notes.view.fragments.dialogFragments
 
 import android.content.Context
 import android.content.DialogInterface
+import android.text.Html
 import androidx.appcompat.app.AlertDialog
 
 class ActionAlertDialog {
@@ -39,13 +40,12 @@ class ActionAlertDialog {
                        positiveListener: DialogInterface.OnClickListener,
                        negativeListener: DialogInterface.OnClickListener) {
             val dialog = AlertDialog.Builder(context)
-                    .setTitle(title)
+                    .setTitle(Html.fromHtml("<font color='#D32F2F'>$title</font>", Html.FROM_HTML_MODE_LEGACY))
                     .setMessage(message)
                     .setPositiveButton(positive, positiveListener)
                     .setNegativeButton(negative, negativeListener)
             dialog.create().show()
         }
-
     }
 
 }

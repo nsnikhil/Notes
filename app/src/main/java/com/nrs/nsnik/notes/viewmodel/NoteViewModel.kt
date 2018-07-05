@@ -37,11 +37,6 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     private val mDbUtil: DbUtil = (application as MyApplication).dbUtil
     private val noteList: LiveData<List<NoteEntity>> = mDbUtil.noteList
 
-    init {
-//        mDbUtil = (application as MyApplication).dbUtil
-//        noteList = mDbUtil.noteList
-    }
-
     fun insertNote(vararg noteEntities: NoteEntity) {
         mDbUtil.insertNote(*noteEntities)
     }
@@ -100,5 +95,17 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getNoteByColor(color: String): LiveData<List<NoteEntity>> {
         return mDbUtil.getNotesByColor(color)
+    }
+
+    fun changeNotePinStatus(id: Int, pin: Int) {
+        return mDbUtil.changeNotePinStatus(id, pin)
+    }
+
+    fun changeNoteLockStatus(id: Int, lock: Int) {
+        return mDbUtil.changeNoteLockStatus(id, lock)
+    }
+
+    fun changeNoteFolder(id: Int, folderName: String) {
+        return mDbUtil.changeNoteFolder(id, folderName)
     }
 }

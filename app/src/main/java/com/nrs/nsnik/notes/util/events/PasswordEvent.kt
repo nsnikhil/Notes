@@ -25,4 +25,4 @@ package com.nrs.nsnik.notes.util.events
 
 import com.nrs.nsnik.notes.view.fragments.ListFragment
 
-class PasswordEvent(val itemType: ListFragment.ItemType, val position: Int)
+class PasswordEvent(val itemType: ListFragment.ItemType, val position: Int, val eventType: ListFragment.EventType)

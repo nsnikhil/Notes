@@ -186,6 +186,63 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
         return mNotesDatabase.noteDao.getNoteByColor(color)
     }
 
+    fun changeNotePinStatus(id: Int, pin: Int) {
+        val single = Single.fromCallable {
+            mNotesDatabase.noteDao.changeNotePinStatus(id, pin)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Unit> {
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onSuccess(t: Unit) {
+                Timber.d("Updated")
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e.message)
+            }
+        })
+    }
+
+    fun changeNoteLockStatus(id: Int, lock: Int) {
+        val single = Single.fromCallable {
+            mNotesDatabase.noteDao.changeNoteLockStatus(id, lock)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Unit> {
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onSuccess(t: Unit) {
+                Timber.d("Updated")
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e.message)
+            }
+        })
+    }
+
+
+    fun changeNoteFolder(id: Int, folderName: String) {
+        val single = Single.fromCallable {
+            mNotesDatabase.noteDao.changeNoteFolder(id, folderName)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Unit> {
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onSuccess(t: Unit) {
+                Timber.d("Updated")
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e.message)
+            }
+        })
+    }
 
     /**
      * FOLDER
@@ -290,6 +347,10 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
         })
     }
 
+    fun getFolders(): LiveData<List<FolderEntity>> {
+        return mNotesDatabase.folderDao.getFolders()
+    }
+
     fun getFolderById(id: Int): LiveData<FolderEntity> {
         return mNotesDatabase.folderDao.getFolder(id)
     }
@@ -337,4 +398,63 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
     fun getFolderByColor(color: String): LiveData<List<FolderEntity>> {
         return mNotesDatabase.folderDao.getFolderByColor(color)
     }
+
+    fun changeFolderPinStatus(id: Int, pin: Int) {
+        val single = Single.fromCallable {
+            mNotesDatabase.folderDao.changeFolderPinStatus(id, pin)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Unit> {
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onSuccess(t: Unit) {
+                Timber.d("Updated")
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e.message)
+            }
+        })
+    }
+
+    fun changeFolderLockStatus(id: Int, lock: Int) {
+        val single = Single.fromCallable {
+            mNotesDatabase.folderDao.changeFolderLockStatus(id, lock)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Unit> {
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onSuccess(t: Unit) {
+                Timber.d("Updated")
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e.message)
+            }
+        })
+    }
+
+    fun changeFolderParent(id: Int, parentFolderName: String) {
+        val single = Single.fromCallable {
+            mNotesDatabase.folderDao.changeFolderParent(id, parentFolderName)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Unit> {
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onSuccess(t: Unit) {
+                Timber.d("Updated")
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e.message)
+            }
+        })
+    }
+
+
 }

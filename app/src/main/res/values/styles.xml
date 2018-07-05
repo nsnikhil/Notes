@@ -86,7 +86,7 @@
 
     <style name="newNoteHeading" parent="stretchedHorizontally">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/cardview_dark_background</item>
+        <item name="android:textColor">@color/colorAccent</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:padding">@dimen/eight</item>

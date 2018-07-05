@@ -21,18 +21,22 @@
  * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
-package com.nrs.nsnik.notes.view.fragments
+package com.nrs.nsnik.notes.util
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 
-import android.os.Bundle
-import androidx.preference.PreferenceFragmentCompat
-import com.nrs.nsnik.notes.R
+class AppUtil {
 
+    companion object {
 
-class PrefFragment : PreferenceFragmentCompat() {
+        fun stateList(colorString: String?): ColorStateList {
+            val states = arrayOf(intArrayOf(android.R.attr.state_enabled), intArrayOf(-android.R.attr.state_enabled), intArrayOf(-android.R.attr.state_checked), intArrayOf(android.R.attr.state_pressed))
+            val color = Color.parseColor(colorString)
+            val colors = intArrayOf(color, color, color, color)
+            return ColorStateList(states, colors)
+        }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        addPreferencesFromResource(R.xml.main_prefs)
     }
 
 }

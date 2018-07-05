@@ -21,18 +21,19 @@
  * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
-package com.nrs.nsnik.notes.view.fragments
+package com.nrs.nsnik.notes.view.adapters.diffUtil
 
+import androidx.recyclerview.widget.DiffUtil
+import com.nrs.nsnik.notes.data.FolderEntity
 
-import android.os.Bundle
-import androidx.preference.PreferenceFragmentCompat
-import com.nrs.nsnik.notes.R
+class FolderDiffUtil : DiffUtil.ItemCallback<FolderEntity>() {
 
+    override fun areItemsTheSame(oldItem: FolderEntity, newItem: FolderEntity): Boolean {
+        return oldItem.uid == newItem.uid
+    }
 
-class PrefFragment : PreferenceFragmentCompat() {
-
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        addPreferencesFromResource(R.xml.main_prefs)
+    override fun areContentsTheSame(oldItem: FolderEntity, newItem: FolderEntity): Boolean {
+        return oldItem == newItem
     }
 
 }

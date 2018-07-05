@@ -32,6 +32,8 @@
     <string name="imageError">Error</string>
     <string name="checkListAddItem">…</string>
     <string name="hidden">Hidden</string>
+    <string name="update">Update</string>
+    <string name="moveTo">Move To…</string>
 
     <!-- operations-->
     <string name="yes">Yes</string>
@@ -122,6 +124,11 @@
     <string name="bundleCreateFolderParentFolder">bundleCreateFolderParentFolder</string>
     <string name="bundleListFragmentFolderName">bundleListFragmentFolderName</string>
     <string name="bundleNoteEntity">bundleNoteEntity</string>
+    <string name="bundleFolderEntity">bundleFolderEntity</string>
+
+    <string name="bundleEntityCurrentFolder">bundleEntityFolder</string>
+    <string name="bundleEntityParentFolder">bundleEntityParentFolder</string>
+    <string name="bundleItemToMovePosition">bundleItemToMovePosition</string>
 
     <string name="bundleNoteTitlePayback">bundleNoteTitlePayback</string>
     <string name="bundleNoteBodyPayback">bundleNoteBodyPayback</string>
@@ -132,6 +139,7 @@
 
     <string name="bundleItemType">bundleItemType</string>
     <string name="bundleItemPosition">bundleItemPosition</string>
+    <string name="bundleItemEvent">bundleItemEvent</string>
     <!-- -->
 
     <!-- menuStrings-->

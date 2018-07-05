@@ -24,8 +24,6 @@
 package com.nrs.nsnik.notes.view.fragments.dialogFragments
 
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -39,9 +37,11 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
+import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
+import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.new_folder_dialog.*
 import org.greenrobot.eventbus.EventBus
@@ -56,6 +56,7 @@ class CreateFolderDialog : DialogFragment() {
     private var isStarred = 0
     private lateinit var mFolderViewModel: FolderViewModel
     private var mParentFolderName: String? = null
+    private var folderEntity: FolderEntity? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.new_folder_dialog, container, false)
@@ -71,6 +72,26 @@ class CreateFolderDialog : DialogFragment() {
         mFolderViewModel = ViewModelProviders.of(this).get(FolderViewModel::class.java)
         if (activity != null && arguments != null) {
             mParentFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleCreateFolderParentFolder))
+
+            folderEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleFolderEntity)), FolderEntity.SERIALIZER)
+
+            if (folderEntity != null) {
+
+                dialogFolderName.setText(folderEntity?.folderName)
+
+                mColor = folderEntity?.color!!
+                dialogFolderColor!!.backgroundTintList = AppUtil.stateList(mColor)
+
+                isLocked = folderEntity?.locked!!
+                dialogFolderLock.setImageDrawable(if (isLocked == 1) getDrawable(R.drawable.ic_lock_black_48px) else getDrawable(R.drawable.ic_lock_open_black_48px))
+
+                isStarred = folderEntity?.pinned!!
+                dialogFolderStar.setImageDrawable(if (isStarred == 1) getDrawable(R.drawable.ic_star_black_48px) else getDrawable(R.drawable.ic_star_border_black_48px))
+
+                mParentFolderName = folderEntity?.parentFolderName!!
+
+                dialogFolderCreate.text = activity?.resources?.getString(R.string.update)
+            }
         }
     }
 
@@ -80,7 +101,7 @@ class CreateFolderDialog : DialogFragment() {
                     val dialog = ColorPickerDialogFragment()
                     dialog.show(fragmentManager, "color")
                 },
-                RxView.clicks(dialogFolderCreate).subscribe { createFolder() },
+                RxView.clicks(dialogFolderCreate).subscribe { if (folderEntity == null) updateFolder(FolderEntity()) else updateFolder(folderEntity!!) },
                 RxView.clicks(dialogFolderCancel).subscribe { dismiss() },
                 RxView.clicks(dialogFolderLock).subscribe { setLock() },
                 RxView.clicks(dialogFolderStar).subscribe {
@@ -105,15 +126,14 @@ class CreateFolderDialog : DialogFragment() {
         return if (value == 0) 1 else 0
     }
 
-    private fun createFolder() {
+    private fun updateFolder(folderEntity: FolderEntity) {
         if (dialogFolderName.text.toString().isNotEmpty()) {
-            val folderEntity = FolderEntity()
             folderEntity.folderName = dialogFolderName.text.toString()
             folderEntity.color = mColor
             folderEntity.locked = isLocked
             folderEntity.pinned = isStarred
             folderEntity.parentFolderName = mParentFolderName
-            mFolderViewModel.insertFolder(folderEntity)
+            if (this.folderEntity == null) mFolderViewModel.insertFolder(folderEntity) else mFolderViewModel.updateFolder(folderEntity)
             dismiss()
         } else {
             dialogFolderName.error = activity?.resources?.getString(R.string.errorNoFolderName)
@@ -138,14 +158,7 @@ class CreateFolderDialog : DialogFragment() {
     @Subscribe
     fun onColorPickerEvent(colorPickerEvent: ColorPickerEvent) {
         mColor = colorPickerEvent.color
-        dialogFolderColor!!.backgroundTintList = stateList(mColor)
-    }
-
-    private fun stateList(colorString: String): ColorStateList {
-        val states = arrayOf(intArrayOf(android.R.attr.state_enabled), intArrayOf(-android.R.attr.state_enabled), intArrayOf(-android.R.attr.state_checked), intArrayOf(android.R.attr.state_pressed))
-        val color = Color.parseColor(colorString)
-        val colors = intArrayOf(color, color, color, color)
-        return ColorStateList(states, colors)
+        dialogFolderColor!!.backgroundTintList = AppUtil.stateList(mColor)
     }
 
     override fun onDestroy() {

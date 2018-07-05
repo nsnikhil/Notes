@@ -76,5 +76,14 @@ interface NoteDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateNote(vararg noteEntities: NoteEntity): Int
+
+    @Query("UPDATE NoteEntity SET pinned = :pin WHERE uid = :id")
+    fun changeNotePinStatus(id: Int, pin: Int)
+
+    @Query("UPDATE NoteEntity SET locked = :lock WHERE uid = :id")
+    fun changeNoteLockStatus(id: Int, lock: Int)
+
+    @Query("UPDATE NoteEntity SET folderName = :folderName WHERE uid = :id")
+    fun changeNoteFolder(id: Int, folderName: String)
 }
 

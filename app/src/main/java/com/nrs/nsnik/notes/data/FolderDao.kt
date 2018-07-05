@@ -32,6 +32,9 @@ interface FolderDao {
     @get:Query("SELECT * FROM FolderEntity")
     val foldersList: LiveData<List<FolderEntity>>
 
+    @Query("SELECT * FROM FolderEntity")
+    fun getFolders(): LiveData<List<FolderEntity>>
+
     @Query("SELECT * FROM FolderEntity WHERE uid = :id")
     fun getFolder(id: Int): LiveData<FolderEntity>
 
@@ -82,5 +85,14 @@ interface FolderDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateFolders(vararg folderEntities: FolderEntity): Int
+
+    @Query("UPDATE FolderEntity SET pinned = :pin WHERE uid = :id")
+    fun changeFolderPinStatus(id: Int, pin: Int)
+
+    @Query("UPDATE FolderEntity SET locked = :lock WHERE uid = :id")
+    fun changeFolderLockStatus(id: Int, lock: Int)
+
+    @Query("UPDATE FolderEntity SET parentFolderName = :parentFolderName WHERE uid = :id")
+    fun changeFolderParent(id: Int, parentFolderName: String)
 
 }
