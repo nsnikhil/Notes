@@ -30,7 +30,7 @@
         android:id="@+id/navItemNotes"
         android:name="com.nrs.nsnik.notes.view.fragments.ListFragment"
         android:label="Notes"
-        tools:layout="@layout/list_layout">
+        tools:layout="@layout/fragment_list">
 
         <action
             android:id="@+id/listToAddNewNote"

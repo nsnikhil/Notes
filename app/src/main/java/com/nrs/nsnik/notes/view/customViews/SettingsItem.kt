@@ -21,43 +21,10 @@
  * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
-package com.nrs.nsnik.notes.util
+package com.nrs.nsnik.notes.view.customViews
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.fragment.app.FragmentManager
-import com.nrs.nsnik.notes.R
-import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
+import android.util.AttributeSet
+import android.view.View
 
-class PasswordUtil {
-
-    companion object {
-
-        private const val default: String = "NA"
-
-        fun passwordExists(sharedPreferences: SharedPreferences, context: Context): Boolean {
-            return sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePasswordKey), default) != default
-        }
-
-        fun checkLock(sharedPreferences: SharedPreferences, context: Context, fragmentManager: FragmentManager, tag: String): Boolean {
-            if (!passwordExists(sharedPreferences, context)) {
-                showPasswordDialog(fragmentManager, tag)
-                return false
-            }
-            return true
-        }
-
-        fun showPasswordDialog(fragmentManager: FragmentManager, tag: String) {
-            PasswordDialogFragment().show(fragmentManager, tag)
-        }
-
-        fun encrypt(plainText: String): String {
-            return plainText
-        }
-
-        fun decrypt(cypherText: String): String {
-            return cypherText
-        }
-
-    }
-}
+class SettingsItem(context: Context, attributeSet: AttributeSet) : View(context, attributeSet)

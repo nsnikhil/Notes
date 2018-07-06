@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~     Credit Card Security V1  Copyright (C) 2018  sid-sun
   ~     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
   ~     This is free software, and you are welcome to redistribute it
@@ -25,37 +23,23 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/listContainer"
     style="@style/matchParent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/commonList"
-        style="@style/matchParent"
-        android:clipToPadding="false"
-        android:paddingBottom="88dp" />
+    <TextView
+        android:id="@+id/prefHeadingSecurity"
+        style="@style/prefHeading"
+        android:text="@string/preferenceCategorySecurity" />
 
-    <ImageView
-        android:id="@+id/listBackground"
-        style="@style/matchParent"
-        android:background="@drawable/gradient"
-        android:visibility="gone" />
+    <TextView
+        android:id="@+id/prefItemChangePassword"
+        style="@style/prefItem"
+        android:text="@string/preferenceChangeCodeSummary"
+        app:layout_constraintTop_toBottomOf="@id/prefHeadingSecurity" />
 
-    <include
-        layout="@layout/empty_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        layout="@layout/fab_reveal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line"
+        app:layout_constraintTop_toBottomOf="@id/prefItemChangePassword" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

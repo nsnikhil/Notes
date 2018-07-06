@@ -24,15 +24,44 @@
 package com.nrs.nsnik.notes.view.fragments
 
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.preference.PreferenceFragmentCompat
+import android.text.Html
+import android.text.Spanned
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
+import kotlinx.android.synthetic.main.fragment_preferences.*
 
 
-class PrefFragment : PreferenceFragmentCompat() {
+class PrefFragment : Fragment() {
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        addPreferencesFromResource(R.xml.main_prefs)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_preferences, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initializeItems()
+        initialize()
+    }
+
+    private fun initializeItems() {
+        prefItemChangePassword.text = getString(
+                activity?.resources?.getString(R.string.preferenceChangeCode)!!,
+                activity?.resources?.getString(R.string.preferenceChangeCodeSummary)!!
+        )
+    }
+
+    @SuppressLint("CheckResult")
+    private fun initialize() {
+        RxView.clicks(prefItemChangePassword).subscribe {}
+    }
+
+    private fun getString(title: String, summary: String): Spanned {
+        return Html.fromHtml("<font color='#000000'>$title</font> <br> <font color='#9E9E9E'>$summary</font>", Html.FROM_HTML_MODE_LEGACY)
+    }
 }

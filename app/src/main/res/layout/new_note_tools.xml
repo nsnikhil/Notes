@@ -32,6 +32,7 @@
     android:orientation="vertical"
     app:behavior_hideable="false"
     app:behavior_peekHeight="48dp"
+    android:elevation="16dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <TextView

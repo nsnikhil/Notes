@@ -249,6 +249,7 @@
 
     <string name="preferenceDarkMode">Dark Mode</string>
     <string name="preferenceChangeCode">Change Code</string>
+    <string name="preferenceChangeCodeSummary">Change Security Code</string>
 
     <string name="preferenceDarkModeKey">darkModeKey</string>
     <string name="preferenceChangeCodeKey">changeCodeKey</string>
@@ -259,5 +260,7 @@
 
 
     <string name="sharedPreferencePasswordKey">sharedPreferencePasswordKey</string>
+
+    <string name="preferenceNoValidError">Please enter a password between 1 – 8 characters</string>
 
 </resources>

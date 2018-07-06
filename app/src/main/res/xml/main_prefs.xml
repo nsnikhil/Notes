@@ -23,26 +23,15 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <PreferenceCategory android:title="@string/preferenceCategoryGeneral">
-
-        <SwitchPreference
-            android:id="@+id/preferenceDarkMode"
-            android:defaultValue="false"
-            android:summary="@string/preferenceDarkMode"
-            android:key="@string/preferenceDarkModeKey"
-            android:title="@string/preferenceDarkMode" />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/preferenceCategorySecurity">
 
         <EditTextPreference
             android:id="@+id/preferenceChangeCode"
             android:dialogTitle="@string/preferenceChangeCode"
-            android:inputType="numberPassword"
+            android:inputType="textPassword"
+            android:maxLength="8"
             android:key="@string/preferenceChangeCodeKey"
-            android:summary="@string/preferenceChangeCode"
+            android:summary="@string/preferenceChangeCodeSummary"
             android:title="@string/preferenceChangeCode" />
 
     </PreferenceCategory>

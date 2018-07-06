@@ -65,7 +65,7 @@ import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.empty_state.*
 import kotlinx.android.synthetic.main.fab_reveal.*
-import kotlinx.android.synthetic.main.list_layout.*
+import kotlinx.android.synthetic.main.fragment_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -89,7 +89,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
     private lateinit var searchView: SearchView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.list_layout, container, false)
+        return inflater.inflate(R.layout.fragment_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

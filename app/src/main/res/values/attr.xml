@@ -22,27 +22,8 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#F8F8FF</color>
-    <color name="colorPrimaryDark">#F8F8FF</color>
-    <color name="colorAccent">#212121</color>
-    <color name="colorBackground">#F8F8FF</color>
-    <color name="materialWhite">#FAFAFA</color>
-    <color name="launcherShortcutBackground">#F5F5F5</color>
-    <color name="grey">#C2C2C2</color>
-    <color name="selector">#80C2C2C2</color>
-    <color name="transparent">#00000000</color>
-    <color name="black">#000000</color>
-    <color name="line">#809E9E9E</color>
-
-    <string-array name="backgroundColors">
-        <item>#D32F2F</item>
-        <item>#F57C00</item>
-        <item>#FBC02D</item>
-        <item>#388E3C</item>
-        <item>#0097A7</item>
-        <item>#00796B</item>
-        <item>#1976D2</item>
-        <item>#303F9F</item>
-    </string-array>
-
+    <declare-styleable name="SettingsItem">
+        <attr name="title" format="string" />
+        <attr name="summary" format="string" />
+    </declare-styleable>
 </resources>
