@@ -1,6 +1,22 @@
-# Notes
+# Notes for Android
 
-[PLay Store Link](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
+An Open source multimedia note taking application, build using new Android Jetpack.
+Notes app is released as an alpha and is under heavy development.
+
+### Introduction
+
+Notes for android is build using new Android Jetpack libraries, it uses MVVM pattern and also uses Dagger and RxJava.
+You can download the latest stable release from [Play Store](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
+
+### Screenshots
+
+<img src="Screenshots/Screenshot_20180708-011647.png" width="30%" />
+<img src="Screenshots/Screenshot_20180708-011654.png" width="30%" />
+<img src="Screenshots/Screenshot_20180708-011738.png" width="30%" />
+
+### Getting Started
+
+Clone this repository or Import the project using Android Studio.
 
 ## License
 
