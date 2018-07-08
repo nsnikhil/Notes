@@ -99,6 +99,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (mainDrawerLayout.isDrawerOpen(GravityCompat.START)) mainDrawerLayout.closeDrawer(GravityCompat.START)
+        else super.onBackPressed()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> if (isOnListFragment) mainDrawerLayout.openDrawer(GravityCompat.START)

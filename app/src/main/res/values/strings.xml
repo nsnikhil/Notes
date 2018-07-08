@@ -52,6 +52,7 @@
     <string name="oldPassword">Old Password…</string>
     <string name="enterNewPassword">New Password…</string>
     <string name="reEnterNewPassword">Re Enter Password…</string>
+    <string name="password">Password…</string>
 
     <!-- headers-->
     <string name="headingNotes">Notes</string>

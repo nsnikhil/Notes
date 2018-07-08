@@ -463,7 +463,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
             override fun onAnimationStart(animation: Animation) {}
 
             override fun onAnimationEnd(animation: Animation) {
-                listBackground.visibility = if (isRevealed) View.GONE else View.VISIBLE
+                listBackground?.visibility = if (isRevealed) View.GONE else View.VISIBLE
                 transitionAnimation.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationStart(animation: Animation) {}
 
@@ -473,13 +473,13 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
                     override fun onAnimationRepeat(animation: Animation) {}
                 })
-                fabAddFolderContainer.startAnimation(transitionAnimation)
-                fabAddNoteContainer.startAnimation(transitionAnimation)
+                fabAddFolderContainer?.startAnimation(transitionAnimation)
+                fabAddNoteContainer?.startAnimation(transitionAnimation)
             }
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
-        fabAdd.startAnimation(rotateAnimation)
+        fabAdd?.startAnimation(rotateAnimation)
     }
 
     private fun changeFabVisibility(): Boolean {

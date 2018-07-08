@@ -94,6 +94,7 @@ class PasswordDialogFragment : DialogFragment() {
             } else {
                 passwordDialogTextContainerOld.visibility = View.GONE
                 passwordDialogCreate.text = resources?.getString(R.string.enter)
+                passwordDialogText.hint = resources?.getString(R.string.password)
             }
         }
     }

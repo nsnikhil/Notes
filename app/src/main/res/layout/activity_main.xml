@@ -31,15 +31,23 @@
 
     <FrameLayout style="@style/matchParent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/mainToolbar"
-            style="@style/toolbar" />
+        <com.google.android.material.appbar.AppBarLayout
+            style="@style/toolbar"
+            app:elevation="0dp">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/mainToolbar"
+                style="@style/toolbar"
+                app:layout_scrollFlags="scroll|enterAlways|snap" />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <fragment
             android:id="@+id/mainNavHost"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_marginTop="?actionBarSize"
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph" />
