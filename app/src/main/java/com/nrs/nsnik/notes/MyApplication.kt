@@ -125,5 +125,4 @@ class MyApplication : Application() {
         val sharedPrefComponent = DaggerSharedPrefComponent.builder().contextModule(contextModule).build()
         sharedPreferences = sharedPrefComponent.sharedPreferences
     }
-
 }
