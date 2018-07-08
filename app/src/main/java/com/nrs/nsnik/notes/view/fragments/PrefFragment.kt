@@ -34,10 +34,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_preferences.*
 
 
 class PrefFragment : Fragment() {
+
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_preferences, container, false)
@@ -58,10 +62,28 @@ class PrefFragment : Fragment() {
 
     @SuppressLint("CheckResult")
     private fun initialize() {
-        RxView.clicks(prefItemChangePassword).subscribe {}
+        compositeDisposable.addAll(
+                RxView.clicks(prefItemChangePassword).subscribe { openPasswordDialog() }
+        )
     }
 
     private fun getString(title: String, summary: String): Spanned {
         return Html.fromHtml("<font color='#000000'>$title</font> <br> <font color='#9E9E9E'>$summary</font>", Html.FROM_HTML_MODE_LEGACY)
+    }
+
+    private fun openPasswordDialog() {
+        val dialog = PasswordDialogFragment()
+        dialog.setTargetFragment(this, 1954)
+        dialog.show(fragmentManager, "changePassword")
+    }
+
+    private fun cleanUp() {
+        compositeDisposable.clear()
+        compositeDisposable.dispose()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cleanUp()
     }
 }

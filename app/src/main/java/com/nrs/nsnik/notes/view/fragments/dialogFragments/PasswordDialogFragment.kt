@@ -74,24 +74,47 @@ class PasswordDialogFragment : DialogFragment() {
         sharedPreferences = (activity?.applicationContext as MyApplication).sharedPreferences
         value = sharedPreferences.getString(resources?.getString(R.string.sharedPreferencePasswordKey), default)
 
-        if (value == default) {
+        Timber.d(targetRequestCode.toString())
+
+        setValues(value != default)
+    }
+
+    private fun setValues(hasPassword: Boolean) {
+        val resources = activity?.resources
+
+        if (!hasPassword) {
+            passwordDialogTextContainerOld.visibility = View.VISIBLE
             passwordDialogCreate.text = resources?.getString(R.string.save)
-            passwordDialogText.hint = resources?.getString(R.string.enterNewPassword)
+            setFields(resources?.getString(R.string.reEnterNewPassword), resources?.getString(R.string.enterNewPassword))
         } else {
-            passwordDialogCreate.text = resources?.getString(R.string.enter)
-            passwordDialogText.hint = resources?.getString(R.string.dialogPasswordFieldHint)
+            if (targetRequestCode == 1954) {
+                passwordDialogTextContainerOld.visibility = View.VISIBLE
+                passwordDialogCreate.text = resources?.getString(R.string.save)
+                setFields(resources?.getString(R.string.enterNewPassword), resources?.getString(R.string.oldPassword))
+            } else {
+                passwordDialogTextContainerOld.visibility = View.GONE
+                passwordDialogCreate.text = resources?.getString(R.string.enter)
+            }
         }
+    }
+
+    private fun setFields(newHint: String?, oldHint: String?) {
+        passwordDialogText.hint = newHint
+        passwordDialogTextOld.hint = oldHint
     }
 
     private fun listeners() {
         compositeDisposable.addAll(
                 RxView.clicks(passwordDialogCreate).subscribe {
                     if (isNotEmpty(passwordDialogText))
-                        if (value == default) addNewPassWord() else isPasswordCorrect(passwordDialogText)
+                        when {
+                            value == default -> addNewPassWord()
+                            targetRequestCode == 1954 -> changePassword()
+                            else -> isPasswordCorrect(passwordDialogText)
+                        }
                 },
                 RxView.clicks(passwordDialogCancel).subscribe {
                     dismiss()
-                    Timber.d(passwordDialogText.inputType.toString())
                 }
         )
     }
@@ -116,8 +139,22 @@ class PasswordDialogFragment : DialogFragment() {
     }
 
     private fun addNewPassWord() {
-        sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), passwordDialogText.text.toString()).apply()
-        dismiss()
+        if (passwordDialogText.text.toString() == passwordDialogTextOld.text.toString()) {
+            sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), passwordDialogText.text.toString()).apply()
+            dismiss()
+        } else
+            passwordDialogText.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
+    }
+
+    private fun changePassword() {
+        if (value == passwordDialogTextOld.text.toString()) {
+            sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), passwordDialogText.text.toString()).apply()
+            dismiss()
+        } else {
+            passwordDialogTextOld.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
+            passwordDialogText.setText("")
+        }
+
     }
 
 }

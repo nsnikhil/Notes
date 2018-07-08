@@ -31,6 +31,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
@@ -65,20 +66,17 @@ class NotesAdapter(private val mContext: Context,
                    private var mFolderList: List<FolderEntity>,
                    private val mNoteItemClickListener: NoteItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchListener {
 
-
     companion object {
         private const val NOTES = 0
         private const val FOLDER = 1
         private const val HEADER = 2
     }
 
-
     private val mLayoutInflater: LayoutInflater
     private val mRequestManager: RequestManager?
     private val mFileUtil: FileUtil?
     private val mCompositeDisposable: CompositeDisposable
     private val mRootFolder: File
-
 
     init {
 
@@ -91,12 +89,12 @@ class NotesAdapter(private val mContext: Context,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            FOLDER -> return FolderViewHolder(mLayoutInflater.inflate(R.layout.single_folder_layout, parent, false))
-            NOTES -> return NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
-            HEADER -> return HeaderViewHolder(mLayoutInflater.inflate(R.layout.single_list_header, parent, false))
+        return when (viewType) {
+            FOLDER -> FolderViewHolder(mLayoutInflater.inflate(R.layout.single_folder_layout, parent, false))
+            NOTES -> NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
+            HEADER -> HeaderViewHolder(mLayoutInflater.inflate(R.layout.single_list_header, parent, false))
+            else -> NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
         }
-        return NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -124,44 +122,17 @@ class NotesAdapter(private val mContext: Context,
         return mNotesList.size + mFolderList.size + 2
     }
 
-    /**
-     * @param holder   HeaderViewHolder object
-     * @param position Position of/in the list
-     *
-     *
-     * this function binds the data for header view-holder type
-     * it check if folder or note list is size is greater than 0
-     * if yes than shows the appropriate headers otherwise
-     * hides them
-     */
     private fun bindHeaderData(holder: RecyclerView.ViewHolder, position: Int) {
         val headerViewHolder = holder as HeaderViewHolder
         if (position == 0) {
-            if (mFolderList.isNotEmpty()) {
-                headerViewHolder.itemHeader.visibility = View.VISIBLE
-                headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingFolder)
-            } else {
-                headerViewHolder.itemHeader.visibility = View.GONE
-            }
+            headerViewHolder.itemHeader.visibility = if (mFolderList.isNotEmpty()) View.VISIBLE else View.GONE
+            if (headerViewHolder.itemHeader.isVisible) headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingFolder)
         } else {
-            if (mNotesList.isNotEmpty()) {
-                headerViewHolder.itemHeader.visibility = View.VISIBLE
-                headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingNotes)
-            } else {
-                headerViewHolder.itemHeader.visibility = View.GONE
-            }
+            headerViewHolder.itemHeader.visibility = if (mNotesList.isNotEmpty()) View.VISIBLE else View.GONE
+            if (headerViewHolder.itemHeader.isVisible) headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingNotes)
         }
     }
 
-    /**
-     * @param holder   FolderViewHolder object
-     * @param position Position of/in the list
-     *
-     *
-     * this function binds the data for FolderViewHolder type
-     * it takes data from folder list and sets them on textview of
-     * FolderViewHolder
-     */
     private fun bindFolderData(holder: RecyclerView.ViewHolder, position: Int) {
         val folderViewHolder = holder as FolderViewHolder
         val folderEntity: FolderEntity = mFolderList[position]
@@ -171,15 +142,6 @@ class NotesAdapter(private val mContext: Context,
         changeVisibility(folderViewHolder.isLocked, folderEntity.locked)
     }
 
-    /**
-     * @param holder   NoteViewHolder object
-     * @param position Position of/in the list
-     *
-     *
-     * this function binds the data for NoteViewHolder type
-     * it takes data from Notes list and sets title and
-     * note content on textviews and others values.
-     */
     private fun bindNotesData(holder: RecyclerView.ViewHolder, position: Int) {
         val noteViewHolder = holder as NoteViewHolder
         val noteEntity: NoteEntity
@@ -245,14 +207,10 @@ class NotesAdapter(private val mContext: Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (position == 0 || position == mFolderList.size + 1) {
-            return HEADER
-        } else if (position > 0 && position <= mFolderList.size) {
-            return FOLDER
-        } else if (position > mFolderList.size + 1 && position < mNotesList.size) {
-            return NOTES
-        }
-        return super.getItemViewType(position)
+        return if (position == 0 || position == mFolderList.size + 1) HEADER
+        else if (position > 0 && position <= mFolderList.size) FOLDER
+        else if (position > mFolderList.size + 1 && position < mNotesList.size) NOTES
+        else super.getItemViewType(position)
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) {

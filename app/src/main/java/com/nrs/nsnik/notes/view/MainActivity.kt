@@ -103,10 +103,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> {
-                if (isOnListFragment)
-                    mainDrawerLayout.openDrawer(GravityCompat.START)
-            }
+            android.R.id.home -> if (isOnListFragment) mainDrawerLayout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
     }

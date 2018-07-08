@@ -34,14 +34,12 @@ import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
 import android.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxPopupMenu
 import com.nrs.nsnik.notes.MyApplication
@@ -70,7 +68,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class ListFragment : Fragment(), NoteItemClickListener {
 
@@ -87,6 +84,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
     private var isRevealed: Boolean = false
 
     private lateinit var searchView: SearchView
+    private lateinit var searchItem: MenuItem
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_list, container, false)
@@ -102,6 +100,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.main_menu, menu)
         searchView = menu?.findItem(R.id.menuMainSearch)?.actionView as SearchView
+        searchItem = menu.findItem(R.id.menuMainSearch)
         searchView.setSearchableInfo((activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager).getSearchableInfo(activity!!.componentName))
         menuListener()
         super.onCreateOptionsMenu(menu, inflater)
@@ -109,17 +108,37 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
     @SuppressLint("CheckResult")
     private fun menuListener() {
-        RxSearchView.queryTextChanges(searchView)
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    Timber.d(it.toString())
-                }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query!!.isNotEmpty()) setSearchViewModel(query.toString())
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText!!.isNotEmpty()) setSearchViewModel(newText.toString())
+                return true
+            }
+
+        })
+
+        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(menuItem: MenuItem?): Boolean {
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(menuItem: MenuItem?): Boolean {
+                setViewModel(mFolderName)
+                return true
+            }
+
+        })
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menuMainSearch -> {
-
             }
         }
         return super.onOptionsItemSelected(item)
@@ -180,6 +199,10 @@ class ListFragment : Fragment(), NoteItemClickListener {
         mNoteViewModel.getNoteByFolderNameOrdered(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
     }
 
+    private fun setSearchViewModel(query: String) {
+        mFolderViewModel.searchFolder(query).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
+        mNoteViewModel.searchNote(query).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
+    }
 
     private fun swapFolder(folderEntityList: List<FolderEntity>?) {
         if (folderEntityList == null) return
@@ -440,7 +463,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
             override fun onAnimationStart(animation: Animation) {}
 
             override fun onAnimationEnd(animation: Animation) {
-                listBackground.visibility = if (listBackground.isVisible) View.GONE else View.VISIBLE
+                listBackground.visibility = if (isRevealed) View.GONE else View.VISIBLE
                 transitionAnimation.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationStart(animation: Animation) {}
 

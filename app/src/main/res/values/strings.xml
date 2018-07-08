@@ -49,7 +49,9 @@
     <string name="itemRemoved">Item Removed</string>
     <!-- -->
 
+    <string name="oldPassword">Old Password…</string>
     <string name="enterNewPassword">New Password…</string>
+    <string name="reEnterNewPassword">Re Enter Password…</string>
 
     <!-- headers-->
     <string name="headingNotes">Notes</string>
@@ -82,6 +84,7 @@
     <string name="errorRetry">Retry</string>
     <string name="errorNoFolderName">Enter the folder name</string>
     <string name="errorNopassword">Enter a valid password</string>
+    <string name="errorPasswordNoMatch">Please enter the same password again</string>
     <!-- -->
 
     <!-- emptyStateStrings-->
