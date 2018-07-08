@@ -6,7 +6,6 @@ Notes app is released as an alpha and is under heavy development.
 ### Introduction
 
 Notes for android is build using new Android Jetpack libraries, it uses MVVM pattern and also uses Dagger and RxJava.
-
 You can download the latest stable release from [Play Store](https://play.google.com/store/apps/details?id=com.nrs.nsnik.notes)
 
 ### Screenshots
