@@ -34,6 +34,7 @@
 
         <ProgressBar
             android:id="@+id/singleImageProgress"
+            android:elevation="4dp"
             style="@style/progressBar" />
 
         <ImageView

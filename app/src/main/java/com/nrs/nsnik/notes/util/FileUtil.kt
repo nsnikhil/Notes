@@ -28,10 +28,18 @@ import android.graphics.BitmapFactory
 import com.nrs.nsnik.notes.dagger.qualifiers.RootFolder
 import com.nrs.nsnik.notes.dagger.scopes.ApplicationScope
 import com.nrs.nsnik.notes.data.NoteEntity
+import io.reactivex.Completable
+import io.reactivex.CompletableObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.internal.operators.completable.CompletableFromCallable
+import io.reactivex.schedulers.Schedulers
 import okio.Buffer
 import okio.ByteString
 import okio.Okio
+import timber.log.Timber
 import java.io.*
+import java.util.concurrent.Callable
 import javax.inject.Inject
 
 @ApplicationScope
@@ -40,20 +48,50 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
 
     @Throws(IOException::class)
     internal fun saveNote(noteEntity: NoteEntity, fileName: String) {
-        val file = File(rootFolder, fileName)
-        val sink = Okio.buffer(Okio.sink(file))
-        sink.write(serialize(noteEntity))
-        sink.close()
+        val completable: Completable = CompletableFromCallable(Callable {
+            val file = File(rootFolder, fileName)
+            val sink = Okio.buffer(Okio.sink(file))
+            sink.write(serialize(noteEntity))
+            sink.close()
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        completable.subscribe(object : CompletableObserver {
+            override fun onComplete() {
+                Timber.d("Note Saved")
+            }
+
+            override fun onSubscribe(d: Disposable) {
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e)
+            }
+
+        })
     }
 
     @Throws(IOException::class)
     fun saveImage(image: Bitmap, fileName: String) {
-        val file = File(rootFolder, fileName)
-        val sink = Okio.buffer(Okio.sink(file))
-        val stream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        sink.write(stream.toByteArray())
-        sink.close()
+        val completable: Completable = CompletableFromCallable(Callable {
+            val file = File(rootFolder, fileName)
+            val sink = Okio.buffer(Okio.sink(file))
+            val stream = ByteArrayOutputStream()
+            image.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            sink.write(stream.toByteArray())
+            sink.close()
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        completable.subscribe(object : CompletableObserver {
+            override fun onComplete() {
+                Timber.d("Image Saved")
+            }
+
+            override fun onSubscribe(d: Disposable) {
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e)
+            }
+
+        })
     }
 
     @Throws(IOException::class)

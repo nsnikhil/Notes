@@ -68,6 +68,7 @@ import com.nrs.nsnik.notes.util.receiver.NotificationReceiver
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter
+import com.nrs.nsnik.notes.view.customViews.CirclePagerIndicatorDecoration
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ActionAlertDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment
 import com.nrs.nsnik.notes.view.listeners.AdapterType
@@ -126,7 +127,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     private lateinit var mRootFolder: File
 
     private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
-    private lateinit var pagerSnapHelper: PagerSnapHelper
 
     private var mNoteEntity: NoteEntity? = null
 
@@ -174,13 +174,14 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         }
 
         mImageAdapter = ImageAdapter(false, this)
-        pagerSnapHelper = PagerSnapHelper()
         newNoteImageList.apply {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
             adapter = mImageAdapter
         }
-        pagerSnapHelper.attachToRecyclerView(newNoteImageList)
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(newNoteImageList)
+        newNoteImageList.addItemDecoration(CirclePagerIndicatorDecoration())
 
         mAudioListAdapter = AudioListAdapter(this)
         newNoteAudioList.apply {
@@ -251,7 +252,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.newNoteMenuSave -> {
-                if (verifyAndSave()) if (mNoteEntity == null) noteAction(NoteEntity(), ACTIONTYPE.SAVE) else noteAction(mNoteEntity!!, ACTIONTYPE.UPDATE)
+                if (verifyAndSave()) if (mNoteEntity == null) noteAction(NoteEntity(), ActionType.SAVE) else noteAction(mNoteEntity!!, ActionType.UPDATE)
             }
             R.id.newNoteMenuDelete -> {
                 createDeleteDialog()
@@ -518,7 +519,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
     }
 
-    private fun noteAction(noteEntity: NoteEntity, action: ACTIONTYPE) {
+    private fun noteAction(noteEntity: NoteEntity, action: ActionType) {
         noteEntity.title = newNoteTitle.text.toString()
         noteEntity.noteContent = newNoteContent.text.toString()
         noteEntity.folderName = mFolderName
@@ -531,7 +532,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         noteEntity.pinned = mIsStarred
         noteEntity.locked = mIsLocked
         noteEntity.hasReminder = mHasReminder
-        if (action == ACTIONTYPE.SAVE) mNoteViewModel.insertNote(noteEntity) else mNoteViewModel.updateNote(noteEntity)
+        if (action == ActionType.SAVE) mNoteViewModel.insertNote(noteEntity) else mNoteViewModel.updateNote(noteEntity)
         activity?.findNavController(R.id.mainNavHost)?.navigateUp()
     }
 
@@ -659,7 +660,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         TEXT, IMAGE, AUDIO
     }
 
-    private enum class ACTIONTYPE {
+    private enum class ActionType {
         SAVE, UPDATE
     }
 }

@@ -28,6 +28,12 @@ import android.content.SharedPreferences
 import androidx.fragment.app.FragmentManager
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
+import java.nio.charset.Charset
+import java.security.KeyPair
+import java.security.KeyPairGenerator
+import java.security.PrivateKey
+import java.security.PublicKey
+import javax.crypto.Cipher
 
 class PasswordUtil {
 
@@ -35,7 +41,7 @@ class PasswordUtil {
 
         private const val default: String = "NA"
 
-        fun passwordExists(sharedPreferences: SharedPreferences, context: Context): Boolean {
+        private fun passwordExists(sharedPreferences: SharedPreferences, context: Context): Boolean {
             return sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePasswordKey), default) != default
         }
 
@@ -47,16 +53,47 @@ class PasswordUtil {
             return true
         }
 
-        fun showPasswordDialog(fragmentManager: FragmentManager, tag: String) {
+        private fun showPasswordDialog(fragmentManager: FragmentManager, tag: String) {
             PasswordDialogFragment().show(fragmentManager, tag)
         }
 
-        fun encrypt(plainText: String): String {
-            return plainText
+
+        fun encryptKey(key: String): String {
+            return String(encrypt(getPrivateKey(), key))
         }
 
-        fun decrypt(cypherText: String): String {
-            return cypherText
+        fun decryptKey(encryptedKey: ByteArray): String {
+            return String(decrypt(getPublicKey(), encryptedKey))
+        }
+
+        private fun getKeyPair(): KeyPair {
+            return buildKeyPair()
+        }
+
+        private fun getPublicKey(): PublicKey {
+            return getKeyPair().public
+        }
+
+        private fun getPrivateKey(): PrivateKey {
+            return getKeyPair().private
+        }
+
+        private fun buildKeyPair(): KeyPair {
+            val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
+            keyPairGenerator.initialize(4096)
+            return keyPairGenerator.genKeyPair()
+        }
+
+        private fun encrypt(privateKey: PrivateKey, plainText: String): ByteArray {
+            val cipher: Cipher = Cipher.getInstance("RSA")
+            cipher.init(Cipher.ENCRYPT_MODE, privateKey)
+            return cipher.doFinal(plainText.toByteArray(Charset.defaultCharset()))
+        }
+
+        private fun decrypt(publicKey: PublicKey, encrypted: ByteArray): ByteArray {
+            val cipher: Cipher = Cipher.getInstance("RSA")
+            cipher.init(Cipher.DECRYPT_MODE, publicKey)
+            return cipher.doFinal(encrypted)
         }
 
     }

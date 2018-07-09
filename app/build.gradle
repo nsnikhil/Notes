@@ -36,8 +36,8 @@ android {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 32
-        versionName "2.9.5"
+        versionCode 33
+        versionName "2.9.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         javaCompileOptions {
@@ -117,8 +117,8 @@ dependencies {
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    implementation 'androidx.preference:preference:1.0.0-alpha3'
-    implementation 'androidx.legacy:legacy-preference-v14:1.0.0-alpha3'
+    implementation 'androidx.preference:preference:1.0.0-beta01'
+    implementation 'androidx.legacy:legacy-preference-v14:1.0.0-beta01'
 
     implementation('com.google.android.gms:play-services-oss-licenses:15.0.1', {
         exclude group: 'com.google.android.gms'
