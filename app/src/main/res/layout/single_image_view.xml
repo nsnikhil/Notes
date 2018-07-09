@@ -22,31 +22,40 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     style="@style/matchParent"
+    android:padding="@dimen/eight"
     android:clipToPadding="false">
 
-    <ProgressBar
-        android:id="@+id/singleImageProgress"
-        style="@style/progressBar" />
-
-    <ImageView
-        android:id="@+id/singleImageCancel"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="end"
-        android:layout_margin="@dimen/eight"
-        android:background="@drawable/circle"
-        android:backgroundTint="@color/materialWhite"
-        android:contentDescription="@string/imageDescription"
-        android:elevation="@dimen/eight"
-        android:src="@drawable/ic_cancel_black_24px" />
-
-    <ImageView
-        android:id="@+id/singleImage"
+    <com.google.android.material.card.MaterialCardView
         style="@style/matchParent"
-        android:background="@color/cardview_dark_background"
-        android:contentDescription="@string/imageDescription"
-        android:scaleType="centerCrop"
-        android:transitionName="fullImage" />
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="4dp">
+
+        <ProgressBar
+            android:id="@+id/singleImageProgress"
+            style="@style/progressBar" />
+
+        <ImageView
+            android:id="@+id/singleImageCancel"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/eight"
+            android:background="@drawable/circle"
+            android:backgroundTint="@color/materialWhite"
+            android:contentDescription="@string/imageDescription"
+            android:elevation="@dimen/eight"
+            android:src="@drawable/ic_cancel_black_24px" />
+
+        <ImageView
+            android:id="@+id/singleImage"
+            style="@style/matchParent"
+            android:background="@color/cardview_dark_background"
+            android:contentDescription="@string/imageDescription"
+            android:scaleType="centerCrop"
+            android:transitionName="fullImage" />
+
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

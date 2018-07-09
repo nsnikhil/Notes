@@ -97,9 +97,9 @@ class MoveListDialogFragment : DialogFragment(), ItemPositionClickListener {
             folderList.addAll(it)
 
             folderList = folderList.stream().filter {
-                it.parentFolderName == parentFolder
-            }.filter {
                 it.folderName != currentFolder
+            }.filter {
+                it.parentFolderName == parentFolder
             }.toList().toMutableList()
 
             folderListAdapter.submitList(folderList)

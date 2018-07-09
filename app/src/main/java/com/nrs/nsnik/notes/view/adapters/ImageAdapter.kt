@@ -36,6 +36,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
@@ -57,7 +58,7 @@ import java.io.File
  * KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
  */
 
-class ImageAdapter(private val mFullScreen: Boolean,private val onItemRemoveListener: OnItemRemoveListener) : ListAdapter<String, ImageAdapter.MyViewHolder>(StringDiffUtil()) {
+class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveListener: OnItemRemoveListener) : ListAdapter<String, ImageAdapter.MyViewHolder>(StringDiffUtil()) {
 
     private lateinit var glideRequestManager: RequestManager
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -70,7 +71,9 @@ class ImageAdapter(private val mFullScreen: Boolean,private val onItemRemoveList
     }
 
     override fun onBindViewHolder(holder: ImageAdapter.MyViewHolder, position: Int) {
-        glideRequestManager.load(File((context.applicationContext as MyApplication).rootFolder, getItem(position)))
+        glideRequestManager
+                .load(File((context.applicationContext as MyApplication).rootFolder, getItem(position)))
+                .apply(RequestOptions().placeholder(R.color.grey).error(R.color.grey))
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
                         Timber.d(e?.message)
@@ -115,12 +118,12 @@ class ImageAdapter(private val mFullScreen: Boolean,private val onItemRemoveList
 
             if (mFullScreen) {
                 remove.visibility = View.GONE
-                image.scaleType = ImageView.ScaleType.CENTER
+                image.scaleType = ImageView.ScaleType.FIT_CENTER
             } else {
                 compositeDisposable.addAll(
                         RxView.clicks(remove).subscribe {
                             if (adapterPosition != RecyclerView.NO_POSITION) {
-                                onItemRemoveListener.onItemRemoved(adapterPosition,AdapterType.IMAGE_ADAPTER)
+                                onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.IMAGE_ADAPTER)
                             }
                         },
                         RxView.clicks(image).subscribe {

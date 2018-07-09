@@ -68,6 +68,8 @@ class ImageListFragment : Fragment(), OnItemRemoveListener {
             adapter = imageAdapter
             //scrollToPosition(position)
         }
+
+        imageAdapter.submitList(imageList)
     }
 
     override fun onItemRemoved(position: Int, adapterType: AdapterType) {

@@ -51,6 +51,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -125,6 +126,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     private lateinit var mRootFolder: File
 
     private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
+    private lateinit var pagerSnapHelper: PagerSnapHelper
 
     private var mNoteEntity: NoteEntity? = null
 
@@ -172,12 +174,13 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         }
 
         mImageAdapter = ImageAdapter(false, this)
+        pagerSnapHelper = PagerSnapHelper()
         newNoteImageList.apply {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
             adapter = mImageAdapter
         }
-
+        pagerSnapHelper.attachToRecyclerView(newNoteImageList)
 
         mAudioListAdapter = AudioListAdapter(this)
         newNoteAudioList.apply {
