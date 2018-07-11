@@ -48,18 +48,40 @@
 -keep class **Henson { *; }
 -keep class **$$IntentBuilder { *; }
 
--keep class * implements android.arch.lifecycle.GeneratedAdapter {<init>(...);}
+-keep class * implements androidx.lifecycle.GeneratedAdapter {<init>(...);}
 
--keepclasseswithmembers class * implements android.arch.lifecycle.GenericLifecycleObserver {
+-keepclasseswithmembers class * implements androidx.lifecycle.GenericLifecycleObserver {
 <init>(...);
 }
--keepclassmembers class android.arch.lifecycle.Lifecycle$* { *; }
+-keepclassmembers class * implements androidx.lifecycle.LifecycleObserver {
+    <init>(...);
+}
+
+-keepclassmembers class androidx.lifecycle.Lifecycle$* { *; }
 -keepclassmembers class * {
-    @android.arch.lifecycle.OnLifecycleEvent *;
+    @androidx.lifecycle.OnLifecycleEvent *;
 }
--keepclassmembers class * extends android.arch.lifecycle.ViewModel {
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
 <init>(...);
 }
+-keepclassmembers class androidx.lifecycle.Lifecycle$State { *; }
+-keepclassmembers class androidx.lifecycle.Lifecycle$Event { *; }
+-keepclassmembers class * {
+    @androidx.lifecycle.OnLifecycleEvent *;
+}
+-keepclassmembers class * implements androidx.lifecycle.LifecycleObserver {
+    <init>(...);
+}
+
+-keep class * implements androidx.lifecycle.LifecycleObserver {
+    <init>(...);
+}
+
+
+-dontnote retrofit2.Platform
+-dontwarn retrofit2.Platform$Java8
+-keepattributes Signature
+-keepattributes Exceptions
 
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public class * extends com.bumptech.glide.GeneratedAppGlideModule

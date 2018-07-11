@@ -44,7 +44,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -54,7 +53,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
@@ -579,19 +577,16 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     override fun onItemRemoved(position: Int, adapterType: AdapterType) {
         when (adapterType) {
             AdapterType.IMAGE_ADAPTER -> {
-                showUndoBar(position)
                 mImagesLocations.removeAt(position)
                 mImageAdapter.submitList(mImagesLocations)
                 mImageAdapter.notifyItemRemoved(position)
             }
             AdapterType.AUDIO_ADAPTER -> {
-                showUndoBar(position)
                 mAudioLocations.removeAt(position)
                 mAudioListAdapter.submitList(mAudioLocations)
                 mAudioListAdapter.notifyItemRemoved(position)
             }
             AdapterType.CHECKLIST_ADAPTER -> {
-                showUndoBar(position)
                 mCheckList.removeAt(position)
                 mCheckListAdapter.submitList(mCheckList)
                 mCheckListAdapter.notifyItemRemoved(position)
@@ -599,13 +594,13 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         }
     }
 
-    private fun showUndoBar(position: Int) {
-        val resources = activity?.resources
-        Snackbar.make(activity?.findViewById(R.id.mainDrawerLayout)!!, resources?.getString(R.string.itemRemoved)!!, Snackbar.LENGTH_LONG)
-                .setAction(resources.getString(R.string.undo)) { Timber.d(position.toString()) }
-                .setActionTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
-                .show()
-    }
+//    private fun showUndoBar(position: Int) {
+//        val resources = activity?.resources
+//        Snackbar.make(activity?.findViewById(R.id.mainDrawerLayout)!!, resources?.getString(R.string.itemRemoved)!!, Snackbar.LENGTH_LONG)
+//                .setAction(resources.getString(R.string.undo)) { Timber.d(position.toString()) }
+//                .setActionTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+//                .show()
+//    }
 
 
     private fun makeName(type: FILE_TYPES): String {

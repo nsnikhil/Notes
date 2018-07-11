@@ -197,6 +197,12 @@
     <string name="popUpMoveTo">Move To</string>
     <string name="popUpShare">Share</string>
     <string name="popUpDelete">Delete</string>
+
+
+    <string name="sortPopUpDate">Sort by date</string>
+    <string name="sortPopUpLock">Sort by lock</string>
+    <string name="sortPopUpPin">Sort by pin</string>
+
     <!-- -->
 
     <!-- databaseMessage-->

@@ -20,11 +20,39 @@
   ~ Public License instead of this License.  But first, please read
   ~ <http://www.gnu.org/philosophy/why-not-lgpl.html>.
   -->
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/itemHeader"
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/itemHeaderContainer"
     style="@style/stretchedHorizontally"
-    android:fontFamily="@font/roboto_mono_bold"
-    android:padding="@dimen/sixteen"
-    android:text="@string/app_name"
-    android:textSize="20sp"
-    android:textStyle="bold" />
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/itemHeader"
+        style="@style/wrapContent"
+        android:fontFamily="@font/roboto_mono_bold"
+        android:padding="@dimen/sixteen"
+        android:text="@string/app_name"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/itemHeaderMore"
+        style="@style/wrapContent"
+        android:layout_marginEnd="@dimen/sixteen"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/imageDescription"
+        android:focusable="true"
+        android:src="@drawable/ic_more_vert_black_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

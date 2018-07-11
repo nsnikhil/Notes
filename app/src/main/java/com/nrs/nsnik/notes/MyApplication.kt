@@ -37,6 +37,7 @@ import com.nrs.nsnik.notes.dagger.modules.ContextModule
 import com.nrs.nsnik.notes.util.AppBlockCanaryContext
 import com.nrs.nsnik.notes.util.DbUtil
 import com.nrs.nsnik.notes.util.FileUtil
+import com.nrs.nsnik.notes.util.NetworkUtil
 import com.rollbar.android.Rollbar
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
@@ -66,6 +67,7 @@ class MyApplication : Application() {
     lateinit var rootFolder: File
     lateinit var fileUtil: FileUtil
     lateinit var sharedPreferences: SharedPreferences
+    lateinit var networkUtil: NetworkUtil
 
     override fun onCreate() {
         super.onCreate()
@@ -99,6 +101,7 @@ class MyApplication : Application() {
         setGlideComponent()
         setFolderComponent()
         setSharedPrefComponent()
+        setNetworkModule()
     }
 
     private fun setDatabaseComponent() {
@@ -124,6 +127,11 @@ class MyApplication : Application() {
     private fun setSharedPrefComponent() {
         val sharedPrefComponent = DaggerSharedPrefComponent.builder().contextModule(contextModule).build()
         sharedPreferences = sharedPrefComponent.sharedPreferences
+    }
+
+    private fun setNetworkModule() {
+        val networkComponent = DaggerNetworkComponent.create()
+        networkUtil = networkComponent.getNetworkUtil()
     }
 
 }

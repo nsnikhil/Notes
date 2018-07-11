@@ -36,8 +36,8 @@ android {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 33
-        versionName "2.9.6"
+        versionCode 34
+        versionName "2.9.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         javaCompileOptions {
@@ -59,8 +59,8 @@ android {
             ext.alwaysUpdateBuildId = false
         }
         release {
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -207,6 +207,12 @@ dependencies {
     implementation 'com.squareup.okio:okio:1.14.1'
 
     implementation 'com.facebook.stetho:stetho:1.5.0'
+
+    implementation "com.squareup.retrofit2:retrofit:2.4.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
+    implementation "com.google.code.gson:gson:2.8.5"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
 }
 
 apply plugin: 'com.google.gms.google-services'

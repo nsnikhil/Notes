@@ -30,6 +30,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -44,6 +45,8 @@ import com.nrs.nsnik.notes.data.NoteEntity
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.view.MainActivity
+import com.nrs.nsnik.notes.view.fragments.ListFragment
+import com.nrs.nsnik.notes.view.listeners.ItemHeaderClicklistener
 import com.nrs.nsnik.notes.view.listeners.ItemTouchListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import io.reactivex.disposables.CompositeDisposable
@@ -66,7 +69,8 @@ import java.io.File
 class NotesAdapter(private val mContext: Context,
                    private var mNotesList: List<NoteEntity>,
                    private var mFolderList: List<FolderEntity>,
-                   private val mNoteItemClickListener: NoteItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchListener {
+                   private val mNoteItemClickListener: NoteItemClickListener,
+                   private val itemHeaderClicklistener: ItemHeaderClicklistener) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchListener {
 
     companion object {
         private const val NOTES = 0
@@ -127,10 +131,10 @@ class NotesAdapter(private val mContext: Context,
     private fun bindHeaderData(holder: RecyclerView.ViewHolder, position: Int) {
         val headerViewHolder = holder as HeaderViewHolder
         if (position == 0) {
-            headerViewHolder.itemHeader.visibility = if (mFolderList.isNotEmpty()) View.VISIBLE else View.GONE
+            headerViewHolder.itemHeaderContainer.visibility = if (mFolderList.isNotEmpty()) View.VISIBLE else View.GONE
             if (headerViewHolder.itemHeader.isVisible) headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingFolder)
         } else {
-            headerViewHolder.itemHeader.visibility = if (mNotesList.isNotEmpty()) View.VISIBLE else View.GONE
+            headerViewHolder.itemHeaderContainer.visibility = if (mNotesList.isNotEmpty()) View.VISIBLE else View.GONE
             if (headerViewHolder.itemHeader.isVisible) headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingNotes)
         }
     }
@@ -296,8 +300,21 @@ class NotesAdapter(private val mContext: Context,
     internal inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val itemHeader: TextView = itemView.itemHeader
+        val itemHeaderMore: ImageView = itemView.itemHeaderMore
+        val itemHeaderContainer: ConstraintLayout = itemView.itemHeaderContainer
+
 
         init {
+            mCompositeDisposable.addAll(
+                    RxView.clicks(itemHeaderMore).subscribe {
+                        if (adapterPosition != RecyclerView.NO_POSITION) {
+                            itemHeaderClicklistener.headerClick(
+                                    if (itemHeader.text.toString() == mContext.resources.getString(R.string.headingFolder)) ListFragment.ItemType.FOLDER
+                                    else ListFragment.ItemType.NOTES)
+                        }
+                    }
+
+            )
         }
     }
 }

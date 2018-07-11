@@ -56,6 +56,7 @@ import com.nrs.nsnik.notes.view.fragments.dialogFragments.ActionAlertDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.CreateFolderDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.MoveListDialogFragment
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
+import com.nrs.nsnik.notes.view.listeners.ItemHeaderClicklistener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
@@ -69,7 +70,7 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.util.*
 
-class ListFragment : Fragment(), NoteItemClickListener {
+class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener {
 
     private lateinit var mNoteViewModel: NoteViewModel
     private lateinit var mFolderViewModel: FolderViewModel
@@ -152,7 +153,7 @@ class ListFragment : Fragment(), NoteItemClickListener {
         mFolderViewModel = ViewModelProviders.of(this).get(FolderViewModel::class.java)
 
         //Setting up recycler view
-        mNotesAdapter = NotesAdapter(activity!!, mNotesList, mFolderList, this)
+        mNotesAdapter = NotesAdapter(activity!!, mNotesList, mFolderList, this, this)
 
         commonList.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -501,6 +502,45 @@ class ListFragment : Fragment(), NoteItemClickListener {
             fabAddFolderContainer.visibility = View.VISIBLE
             true
         }
+    }
+
+    override fun headerClick(itemType: ItemType) {
+        when (itemType) {
+            ItemType.NOTES -> inflateMorePopUpMenu(itemType)
+            ItemType.FOLDER -> inflateMorePopUpMenu(itemType)
+
+        }
+    }
+
+    private fun inflateMorePopUpMenu(itemType: ItemType) {
+        val popupMenu = PopupMenu(activity, view, Gravity.END)
+        popupMenu.inflate(R.menu.pop_up_menu)
+        RxPopupMenu.itemClicks(popupMenu).subscribe {
+            when (it.itemId) {
+                R.id.sortPopUpDate -> {
+                    if (itemType == ItemType.FOLDER) {
+
+                    } else {
+
+                    }
+                }
+                R.id.sortPopUpPin -> {
+                    if (itemType == ItemType.FOLDER) {
+
+                    } else {
+
+                    }
+                }
+                R.id.sortPopUpLock -> {
+                    if (itemType == ItemType.FOLDER) {
+
+                    } else {
+
+                    }
+                }
+            }
+        }
+        popupMenu.show()
     }
 
     override fun onStart() {
