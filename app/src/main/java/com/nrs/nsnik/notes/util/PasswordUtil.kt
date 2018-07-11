@@ -29,10 +29,7 @@ import androidx.fragment.app.FragmentManager
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import java.nio.charset.Charset
-import java.security.KeyPair
-import java.security.KeyPairGenerator
-import java.security.PrivateKey
-import java.security.PublicKey
+import java.security.*
 import javax.crypto.Cipher
 
 class PasswordUtil {
@@ -40,6 +37,8 @@ class PasswordUtil {
     companion object {
 
         private const val default: String = "NA"
+        private const val defaultPrivateKey = "NA"
+        private const val defaultPublicKey = "NA"
 
         private fun passwordExists(sharedPreferences: SharedPreferences, context: Context): Boolean {
             return sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePasswordKey), default) != default
@@ -57,41 +56,59 @@ class PasswordUtil {
             PasswordDialogFragment().show(fragmentManager, tag)
         }
 
-
-        fun encryptKey(key: String): String {
-            return String(encrypt(getPrivateKey(), key))
-        }
-
-        fun decryptKey(encryptedKey: ByteArray): String {
-            return String(decrypt(getPublicKey(), encryptedKey))
-        }
-
-        private fun getKeyPair(): KeyPair {
-            return buildKeyPair()
-        }
-
-        private fun getPublicKey(): PublicKey {
-            return getKeyPair().public
-        }
-
-        private fun getPrivateKey(): PrivateKey {
-            return getKeyPair().private
-        }
+//        fun encrypt(plainText: String): String {
+//            return getEncryptedString(getEncryptedKey(getCipher(), getPrivateKey(), plainText))
+//        }
+//
+//        fun decrypt(cipherText: String): String {
+//            return String(getDecryptedKey(getCipher(), getPublicKey(), Base64.decode(cipherText, Base64.DEFAULT)), Charset.forName("UTF-8"))
+//        }
+//
+//        private fun getEncryptedString(encrypted: ByteArray) = Base64.encodeToString(encrypted, Base64.DEFAULT)
+//
+//        private fun getKeyPair(): KeyPair {
+//            return buildKeyPair()
+//        }
+//
+//        private fun getPublicKey(): PublicKey {
+//
+//        }
+//
+//        private fun getExistingPublicKey(): PublicKey {
+//
+//        }
+//
+//        private fun getPrivateKey(): PrivateKey {
+//
+//        }
+//
+//        private fun getExistingPrivateKey(sharedPreferences: SharedPreferences, context: Context): PrivateKey {
+//            val privateKey = sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePrivateKey), defaultPrivateKey)
+//            if (privateKey != defaultPrivateKey){
+//
+//            }else{
+//
+//            }
+//        }
+//
+//        private fun checkPrivateKeyExists(sharedPreferences: SharedPreferences, context: Context): Boolean {
+//            return sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePrivateKey), defaultPrivateKey) != defaultPrivateKey
+//        }
 
         private fun buildKeyPair(): KeyPair {
             val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
-            keyPairGenerator.initialize(4096)
+            keyPairGenerator.initialize(4096, SecureRandom())
             return keyPairGenerator.genKeyPair()
         }
 
-        private fun encrypt(privateKey: PrivateKey, plainText: String): ByteArray {
-            val cipher: Cipher = Cipher.getInstance("RSA")
+        private fun getCipher() = Cipher.getInstance("RSA")
+
+        private fun getEncryptedKey(cipher: Cipher, privateKey: PrivateKey, plainText: String): ByteArray {
             cipher.init(Cipher.ENCRYPT_MODE, privateKey)
-            return cipher.doFinal(plainText.toByteArray(Charset.defaultCharset()))
+            return cipher.doFinal(plainText.toByteArray(Charset.forName("UTF-8")))
         }
 
-        private fun decrypt(publicKey: PublicKey, encrypted: ByteArray): ByteArray {
-            val cipher: Cipher = Cipher.getInstance("RSA")
+        private fun getDecryptedKey(cipher: Cipher, publicKey: PublicKey, encrypted: ByteArray): ByteArray {
             cipher.init(Cipher.DECRYPT_MODE, publicKey)
             return cipher.doFinal(encrypted)
         }

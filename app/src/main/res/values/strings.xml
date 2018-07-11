@@ -191,8 +191,8 @@
     <!-- -->
 
     <!-- popUps-->
-    <string name="popUpStar">Star</string>
-    <string name="popUpLock">Lock</string>
+    <string name="popUpStar">Change Star</string>
+    <string name="popUpLock">Change Lock</string>
     <string name="popUpEdit">Edit</string>
     <string name="popUpMoveTo">Move To</string>
     <string name="popUpShare">Share</string>
@@ -262,8 +262,9 @@
     <string name="dialogPasswordFieldHint">Password…</string>
     <string name="dialogPasswordShowPassword">Show Password</string>
 
-
     <string name="sharedPreferencePasswordKey">sharedPreferencePasswordKey</string>
+    <string name="sharedPreferencePublicKey">sharedPreferencePublicKey</string>
+    <string name="sharedPreferencePrivateKey">sharedPreferencePrivateKey</string>
 
     <string name="preferenceNoValidError">Please enter a password between 1 – 8 characters</string>
 

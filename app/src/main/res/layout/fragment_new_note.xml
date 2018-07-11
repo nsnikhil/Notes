@@ -25,6 +25,12 @@
     android:id="@+id/newNoteContainer"
     style="@style/matchParent">
 
+    <View
+        android:id="@+id/newNoteBackground"
+        style="@style/matchParent"
+        android:alpha="0"
+        android:background="@color/black" />
+
     <ScrollView
         style="@style/matchParent"
         android:clipToPadding="false"

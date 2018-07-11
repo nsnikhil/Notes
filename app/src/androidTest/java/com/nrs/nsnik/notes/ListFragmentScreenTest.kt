@@ -55,7 +55,6 @@ class ListFragmentScreenTest {
     }
 
     companion object {
-
         private val TEST_FOLDER_NAME = "testFolder"
         private val TEMP_NOTE_TITLE = "testNoteTitle"
     }

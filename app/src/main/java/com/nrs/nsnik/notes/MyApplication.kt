@@ -30,6 +30,7 @@ import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import com.bumptech.glide.RequestManager
 import com.crashlytics.android.Crashlytics
+import com.facebook.stetho.Stetho
 import com.github.moduth.blockcanary.BlockCanary
 import com.nrs.nsnik.notes.dagger.components.*
 import com.nrs.nsnik.notes.dagger.modules.ContextModule
@@ -44,6 +45,7 @@ import timber.log.Timber
 import java.io.File
 
 class MyApplication : Application() {
+
     companion object {
 
         init {
@@ -65,10 +67,10 @@ class MyApplication : Application() {
     lateinit var fileUtil: FileUtil
     lateinit var sharedPreferences: SharedPreferences
 
-
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this)
             Timber.plant(object : Timber.DebugTree() {
                 override fun createStackElementTag(element: StackTraceElement): String {
                     return super.createStackElementTag(element) + ":" + element.lineNumber
@@ -84,12 +86,10 @@ class MyApplication : Application() {
                     .penaltyLog()
                     .build())
             Fabric.with(this, Crashlytics())
+            BlockCanary.install(this, AppBlockCanaryContext()).start()
         }
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            return
-        }
-        BlockCanary.install(this, AppBlockCanaryContext()).start()
         Rollbar.init(this, "3b2ad6f009e643fdaf91228cdc54acab", "development")
+        if (LeakCanary.isInAnalyzerProcess(this)) return
         moduleSetter()
     }
 
@@ -121,8 +121,9 @@ class MyApplication : Application() {
         requestManager = glideComponent.requestManager
     }
 
-    private fun setSharedPrefComponent(){
+    private fun setSharedPrefComponent() {
         val sharedPrefComponent = DaggerSharedPrefComponent.builder().contextModule(contextModule).build()
         sharedPreferences = sharedPrefComponent.sharedPreferences
     }
+
 }

@@ -32,6 +32,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
@@ -42,6 +43,7 @@ import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.FileUtil
+import com.nrs.nsnik.notes.view.MainActivity
 import com.nrs.nsnik.notes.view.listeners.ItemTouchListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import io.reactivex.disposables.CompositeDisposable
@@ -144,23 +146,21 @@ class NotesAdapter(private val mContext: Context,
 
     private fun bindNotesData(holder: RecyclerView.ViewHolder, position: Int) {
         val noteViewHolder = holder as NoteViewHolder
-        val noteEntity: NoteEntity
-        try {
-            noteEntity = mFileUtil!!.getNote(mNotesList[position].fileName!!)
 
-            //TITLE
-            if (noteEntity.title != null && !noteEntity.title!!.isEmpty()) {
+        mFileUtil?.getLiveNote(mNotesList[position].fileName!!)?.observe(mContext as MainActivity, Observer {
+
+            if (it.title != null && !it.title!!.isEmpty()) {
                 noteViewHolder.noteTitle.visibility = View.VISIBLE
-                noteViewHolder.noteTitle.text = noteEntity.title
-                noteViewHolder.noteTitle.setTextColor(Color.parseColor(noteEntity.color))
+                noteViewHolder.noteTitle.text = it.title
+                noteViewHolder.noteTitle.setTextColor(Color.parseColor(it.color))
             } else {
                 noteViewHolder.noteTitle.visibility = View.GONE
             }
 
-            if (noteEntity.locked == 0) {
-                if (noteEntity.noteContent != null && !noteEntity.noteContent!!.isEmpty()) {
+            if (it.locked == 0) {
+                if (it.noteContent != null && !it.noteContent!!.isEmpty()) {
                     noteViewHolder.noteContent.visibility = View.VISIBLE
-                    noteViewHolder.noteContent.text = noteEntity.noteContent
+                    noteViewHolder.noteContent.text = it.noteContent
                     noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
                     noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                     noteViewHolder.noteContent.compoundDrawablePadding = 0
@@ -168,9 +168,9 @@ class NotesAdapter(private val mContext: Context,
                     noteViewHolder.noteContent.visibility = View.GONE
                 }
 
-                if (noteEntity.imageList != null && noteEntity.imageList!!.isNotEmpty()) {
+                if (it.imageList != null && it.imageList!!.isNotEmpty()) {
                     noteViewHolder.noteImage.visibility = View.VISIBLE
-                    mRequestManager?.load(File(mRootFolder, noteEntity.imageList!![0]))?.into(noteViewHolder.noteImage)
+                    mRequestManager?.load(File(mRootFolder, it.imageList!![0]))?.into(noteViewHolder.noteImage)
                 } else {
                     noteViewHolder.noteImage.visibility = View.GONE
                 }
@@ -183,11 +183,8 @@ class NotesAdapter(private val mContext: Context,
                 noteViewHolder.noteContent.compoundDrawablePadding = 4
             }
 
-            changeVisibility(noteViewHolder.isPinned, noteEntity.pinned)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+            changeVisibility(noteViewHolder.isPinned, it.pinned)
+        })
     }
 
     private fun changeVisibility(imageView: ImageView, value: Int) {

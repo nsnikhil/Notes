@@ -25,11 +25,14 @@ package com.nrs.nsnik.notes.util
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.lifecycle.MutableLiveData
 import com.nrs.nsnik.notes.dagger.qualifiers.RootFolder
 import com.nrs.nsnik.notes.dagger.scopes.ApplicationScope
 import com.nrs.nsnik.notes.data.NoteEntity
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
+import io.reactivex.Single
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.operators.completable.CompletableFromCallable
@@ -102,21 +105,107 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-    private fun deleteFiles(fileName: String) {
+    fun deleteNote(fileName: String) {
+        val single: Single<Boolean> = Single.fromCallable(Callable {
+            val file = File(rootFolder, fileName)
+            if (file.exists()) return@Callable file.delete()
+            return@Callable false
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Boolean> {
+            override fun onSuccess(t: Boolean) {
+                Timber.d(t.toString())
+            }
 
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e)
+            }
+        })
     }
 
-    fun deleteNote(fileName: List<String>) {
+    fun deleteNoteImages(fileName: List<String>) {
+        val single: Single<Boolean> = Single.fromCallable(Callable {
+            var allDeleted: Boolean = false
+            fileName.forEach {
+                val file = File(rootFolder, it)
+                if (file.exists()) allDeleted = file.delete()
+            }
+            return@Callable allDeleted
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Boolean> {
+            override fun onSuccess(t: Boolean) {
+                Timber.d(t.toString())
+            }
 
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e)
+            }
+        })
+    }
+
+    fun deleteNoteAudio(fileName: List<String>) {
+        val single: Single<Boolean> = Single.fromCallable(Callable {
+            var allDeleted: Boolean = false
+            fileName.forEach {
+                val file = File(rootFolder, it)
+                if (file.exists()) allDeleted = file.delete()
+            }
+            return@Callable allDeleted
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<Boolean> {
+            override fun onSuccess(t: Boolean) {
+                Timber.d(t.toString())
+            }
+
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e)
+            }
+        })
+    }
+
+    fun deleteNoteResources(noteEntity: NoteEntity) {
+        if (noteEntity.imageList != null) deleteNoteImages(noteEntity.imageList!!)
+        if (noteEntity.audioList != null) deleteNoteAudio(noteEntity.audioList!!)
+        if (noteEntity.fileName != null) deleteNote(noteEntity.fileName!!)
     }
 
     @Throws(Exception::class)
-    fun getNote(fileName: String): NoteEntity {
-        val file = File(rootFolder, fileName)
-        val source = Okio.buffer(Okio.source(file))
-        val entity = deSerialize(source.readByteString())
-        source.close()
-        return entity
+    fun getLiveNote(fileName: String): MutableLiveData<NoteEntity> {
+        val liveNote = MutableLiveData<NoteEntity>()
+
+        val single: Single<NoteEntity> = Single.fromCallable(Callable {
+            val file = File(rootFolder, fileName)
+            val source = Okio.buffer(Okio.source(file))
+            val entity = deSerialize(source.readByteString())
+            source.close()
+            return@Callable entity
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        single.subscribe(object : SingleObserver<NoteEntity> {
+            override fun onSuccess(t: NoteEntity) {
+                liveNote.value = t
+            }
+
+            override fun onSubscribe(d: Disposable) {
+
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.d(e)
+            }
+
+        })
+        return liveNote
     }
 
     @Throws(IOException::class)

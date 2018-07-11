@@ -35,7 +35,6 @@ import com.nrs.nsnik.notes.util.DbUtil
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mDbUtil: DbUtil = (application as MyApplication).dbUtil
-    private val noteList: LiveData<List<NoteEntity>> = mDbUtil.noteList
 
     fun insertNote(vararg noteEntities: NoteEntity) {
         mDbUtil.insertNote(*noteEntities)

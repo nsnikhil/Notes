@@ -29,6 +29,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
@@ -49,6 +50,7 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.single_check_list_item.view.*
 import java.util.concurrent.TimeUnit
 
+
 class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, private val onItemRemoveListener: OnItemRemoveListener) : ListAdapter<CheckListObject, CheckListAdapter.MyViewHolder>(CheckListDiffUtil()) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -64,6 +66,15 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, priv
         holder.text.setText(checkList.text)
         holder.checkBox.isChecked = checkList.done
         if (holder.text.text.toString().isNotEmpty()) modifyText(holder.text, checkList.done)
+        if (position == itemCount - 1) setFocus(holder.text)
+    }
+
+    private fun setFocus(editText: EditText) {
+        editText.isFocusable = true
+        editText.isFocusableInTouchMode = true
+        editText.requestFocus()
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm!!.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun modifyText(textView: TextView, done: Boolean) {

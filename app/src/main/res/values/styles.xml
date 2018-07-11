@@ -133,12 +133,12 @@
         <item name="android:layout_margin">@dimen/sixteen</item>
     </style>
 
-    <style name="bottomToolText" parent="stretchedHorizontally">
-        <item name="android:background">?android:selectableItemBackground</item>
+    <style name="bottomToolText" parent="wrapContent">
+        <item name="android:background">?android:selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:fontFamily">@font/roboto_mono_medium</item>
         <item name="android:focusable">true</item>
-        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_height">?listPreferredItemHeightLarge</item>
         <item name="android:drawablePadding">@dimen/eight</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:padding">@dimen/eight</item>

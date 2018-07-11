@@ -34,7 +34,6 @@ import com.nrs.nsnik.notes.util.DbUtil
 class FolderViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mDbUtil: DbUtil = (application as MyApplication).dbUtil
-    val folderList: LiveData<List<FolderEntity>> = mDbUtil.folderList
 
     fun insertFolder(vararg folderEntities: FolderEntity) {
         mDbUtil.insertFolder(*folderEntities)

@@ -24,10 +24,20 @@
 package com.nrs.nsnik.notes
 
 
+import androidx.test.espresso.IdlingResource
 import androidx.test.filters.LargeTest
+import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
+import com.nrs.nsnik.notes.view.MainActivity
+import org.junit.Rule
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class NewNoteFragmentScreenTest
+class NewNoteFragmentScreenTest {
+
+    @Rule
+    var mActivityTestRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
+    private var mIdlingResource: IdlingResource? = null
+
+}

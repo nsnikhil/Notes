@@ -363,21 +363,22 @@ class ListFragment : Fragment(), NoteItemClickListener {
 
 
     private fun updateNote(fileUtil: FileUtil, noteEntity: NoteEntity, pinned: Int, locked: Int, folderName: String) {
-        val deSerialized = fileUtil.getNote(noteEntity.fileName!!)
-        deSerialized.uid = noteEntity.uid
-        deSerialized.title = deSerialized.title
-        deSerialized.noteContent = deSerialized.noteContent
-        deSerialized.folderName = folderName
-        deSerialized.fileName = deSerialized.fileName
-        deSerialized.color = deSerialized.color
-        deSerialized.dateModified = Calendar.getInstance().time
-        deSerialized.imageList = deSerialized.imageList
-        deSerialized.audioList = deSerialized.audioList
-        deSerialized.checkList = deSerialized.checkList
-        deSerialized.pinned = pinned
-        deSerialized.locked = locked
-        deSerialized.hasReminder = deSerialized.hasReminder
-        mNoteViewModel.updateNote(deSerialized)
+        fileUtil.getLiveNote(noteEntity.fileName!!).observe(this, androidx.lifecycle.Observer {
+            it.uid = noteEntity.uid
+            it.title = it.title
+            it.noteContent = it.noteContent
+            it.folderName = folderName
+            it.fileName = it.fileName
+            it.color = it.color
+            it.dateModified = Calendar.getInstance().time
+            it.imageList = it.imageList
+            it.audioList = it.audioList
+            it.checkList = it.checkList
+            it.pinned = pinned
+            it.locked = locked
+            it.hasReminder = it.hasReminder
+            mNoteViewModel.updateNote(it)
+        })
     }
 
     private fun setLock(itemType: ItemType, position: Int) {
@@ -415,7 +416,9 @@ class ListFragment : Fragment(), NoteItemClickListener {
         createDeleteDialog(
                 activity?.resources?.getString(R.string.deleteSingleNoteWarning)!!,
                 DialogInterface.OnClickListener { dialogInterface, i ->
-                    mNoteViewModel.deleteNote(mNotesList[position])
+                    val noteEntity = mNotesList[position]
+                    mNoteViewModel.deleteNote(noteEntity)
+                    (activity?.application as MyApplication).fileUtil.deleteNoteResources(noteEntity)
                 }
         )
     }
@@ -424,7 +427,13 @@ class ListFragment : Fragment(), NoteItemClickListener {
         createDeleteDialog(
                 activity?.resources?.getString(R.string.deleteSingleFolderWarning)!!,
                 DialogInterface.OnClickListener { dialogInterface, i ->
-                    mNoteViewModel.deleteNoteByFolderName(mFolderName[position].toString())
+                    val fileUtil = (activity?.application as MyApplication).fileUtil
+                    mNoteViewModel.getNoteByFolderName(mFolderList[position].folderName!!).observe(this, androidx.lifecycle.Observer {
+                        it.forEach {
+                            fileUtil.deleteNoteResources(it)
+                            mNoteViewModel.deleteNote(it)
+                        }
+                    })
                     mFolderViewModel.deleteFolder(mFolderList[position])
                 }
         )

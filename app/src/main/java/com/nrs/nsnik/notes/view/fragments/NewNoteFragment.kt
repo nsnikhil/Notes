@@ -152,7 +152,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         toolsBottomSheet.apply {
             mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onSlide(bottomSheet: View, newState: Float) {
-
+                    newNoteBackground.alpha = (newState / 2)
                 }
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -290,46 +290,53 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
         if (mNoteEntity == null) return
 
-        val noteEntity: NoteEntity = mFileUtil.getNote(mNoteEntity?.fileName!!)
+        val id: Int = mNoteEntity?.uid!!
 
-        newNoteTitle.setText(noteEntity.title)
-        newNoteContent.setText(noteEntity.noteContent)
+        mFileUtil.getLiveNote(mNoteEntity?.fileName!!).observe(this, androidx.lifecycle.Observer {
 
-        mFolderName = noteEntity.folderName!!
+            mNoteEntity = it
 
-        mColorCode = noteEntity.color!!
+            mNoteEntity?.uid = id
 
-        newNoteTitle.setTextColor(Color.parseColor(mColorCode))
+            newNoteTitle.setText(mNoteEntity?.title)
+            newNoteContent.setText(mNoteEntity?.noteContent)
 
-        mIsStarred = noteEntity.pinned
+            mFolderName = mNoteEntity?.folderName!!
 
-        mIsLocked = noteEntity.locked
+            mColorCode = mNoteEntity?.color!!
 
-        toolsDate.text = getTimeDifference(Calendar.getInstance().timeInMillis - noteEntity.dateModified?.time!!)
+            newNoteTitle.setTextColor(Color.parseColor(mColorCode))
 
-        if (noteEntity.imageList != null && noteEntity.imageList?.isNotEmpty()!!) {
-            newNoteImageList.visibility = View.VISIBLE
-            mImagesLocations.addAll(noteEntity.imageList!!)
-            mImageAdapter.submitList(mImagesLocations)
-        }
+            mIsStarred = mNoteEntity?.pinned!!
 
-        if (noteEntity.audioList != null && noteEntity.audioList?.isNotEmpty()!!) {
-            newNoteAudioList!!.visibility = View.VISIBLE
-            mAudioLocations.addAll(noteEntity.audioList!!)
-            mAudioListAdapter.submitList(mAudioLocations)
-        }
+            mIsLocked = mNoteEntity?.locked!!
 
-        if (noteEntity.checkList != null && noteEntity.checkList?.isNotEmpty()!!) {
-            newNoteCheckList!!.visibility = View.VISIBLE
-            mCheckList.addAll(noteEntity.checkList!!)
-            mCheckListAdapter.submitList(mCheckList)
-        }
+            toolsDate.text = getTimeDifference(Calendar.getInstance().timeInMillis - mNoteEntity?.dateModified?.time!!)
 
-        if (noteEntity.hasReminder != 0) {
-            mHasReminder = 1
-        }
+            if (mNoteEntity?.imageList != null && mNoteEntity?.imageList?.isNotEmpty()!!) {
+                newNoteImageList.visibility = View.VISIBLE
+                mImagesLocations.addAll(mNoteEntity?.imageList!!)
+                mImageAdapter.submitList(mImagesLocations)
+            }
 
-        setMenuIconState()
+            if (mNoteEntity?.audioList != null && mNoteEntity?.audioList?.isNotEmpty()!!) {
+                newNoteAudioList!!.visibility = View.VISIBLE
+                mAudioLocations.addAll(mNoteEntity?.audioList!!)
+                mAudioListAdapter.submitList(mAudioLocations)
+            }
+
+            if (mNoteEntity?.checkList != null && mNoteEntity?.checkList?.isNotEmpty()!!) {
+                newNoteCheckList!!.visibility = View.VISIBLE
+                mCheckList.addAll(mNoteEntity?.checkList!!)
+                mCheckListAdapter.submitList(mCheckList)
+            }
+
+            if (mNoteEntity?.hasReminder != 0) {
+                mHasReminder = 1
+            }
+
+            setMenuIconState()
+        })
     }
 
     private fun setMenuIconState() {
@@ -408,7 +415,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
             } catch (ex: IOException) {
                 ex.printStackTrace()
             }
-
             if (photoFile != null) {
                 val photoURI = FileProvider.getUriForFile(activity!!, "com.nrs.nsnik.notes.fileprovider", photoFile)
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
@@ -431,11 +437,10 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     private fun startGalleryIntent() {
         val chosePicture = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         chosePicture.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (chosePicture.resolveActivity(activity?.packageManager) != null) {
+        if (chosePicture.resolveActivity(activity?.packageManager) != null)
             startActivityForResult(chosePicture, ATTACH_PICTURE_REQUEST_CODE)
-        } else {
-            Toast.makeText(activity!!, "getResources().getString(R.string.noGallery)", Toast.LENGTH_LONG).show()
-        }
+        else
+            Toast.makeText(activity!!, activity?.resources?.getString(R.string.noGallery), Toast.LENGTH_LONG).show()
     }
 
     private fun addGalleryPhotoToList(data: Intent) {
@@ -623,6 +628,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
                 DialogInterface.OnClickListener { dialogInterface, i ->
                     activity?.findNavController(R.id.mainNavHost)?.navigateUp()
                     mNoteViewModel.deleteNote(mNoteEntity!!)
+                    mFileUtil.deleteNoteResources(mNoteEntity!!)
                 },
                 DialogInterface.OnClickListener { dialogInterface, i ->
 
