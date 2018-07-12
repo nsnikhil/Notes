@@ -23,7 +23,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/stretchedHorizontally"
+    style="@style/horizontal"
     android:clipToPadding="false"
     android:padding="@dimen/eight"
     android:orientation="vertical">
@@ -32,6 +32,7 @@
         android:id="@+id/fabAddNoteContainer"
         style="@style/wrapContent"
         android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView

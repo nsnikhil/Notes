@@ -28,7 +28,7 @@ import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
@@ -61,7 +61,7 @@ class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) :
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {}
 
-    private fun playAudio(position: Int, play: ImageButton) {
+    private fun playAudio(position: Int, play: ImageView) {
         mMediaPlayer = DaggerMediaComponent.builder().build().mediaPlayer
         try {
             mMediaPlayer.setDataSource(File((context.applicationContext as MyApplication).rootFolder, getItem(position)).toString())
@@ -124,8 +124,8 @@ class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) :
     inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val seekBar: SeekBar = itemView.audioProgressBar
-        private val play: ImageButton = itemView.audioPlay
-        private val remove: ImageButton = itemView.audioRemove
+        private val play: ImageView = itemView.audioPlay
+        private val remove: ImageView = itemView.audioRemove
 
         init {
 

@@ -23,15 +23,17 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/stretchedHorizontally"
+    style="@style/horizontal"
     android:padding="@dimen/eight">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/audioPlay"
-        style="@style/twentyFour"
+        style="@style/wrapContent"
         android:layout_width="0dp"
-        android:background="@null"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:contentDescription="@string/imageDescription"
+        android:focusable="true"
         android:src="@drawable/ic_play_arrow_black_24px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/audioProgressBar"
@@ -54,12 +56,14 @@
         app:layout_constraintStart_toEndOf="@id/audioPlay"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/audioRemove"
-        style="@style/twentyFour"
+        style="@style/wrapContent"
         android:layout_width="0dp"
-        android:background="@null"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:contentDescription="@string/imageDescription"
+        android:focusable="true"
         android:src="@drawable/ic_cancel_black_24px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

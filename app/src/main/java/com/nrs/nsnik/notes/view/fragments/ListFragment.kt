@@ -27,12 +27,14 @@ import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -56,7 +58,7 @@ import com.nrs.nsnik.notes.view.fragments.dialogFragments.ActionAlertDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.CreateFolderDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.MoveListDialogFragment
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
-import com.nrs.nsnik.notes.view.listeners.ItemHeaderClicklistener
+import com.nrs.nsnik.notes.view.listeners.ListHeaderClickListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
@@ -70,7 +72,7 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.util.*
 
-class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener {
+class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener {
 
     private lateinit var mNoteViewModel: NoteViewModel
     private lateinit var mFolderViewModel: FolderViewModel
@@ -86,6 +88,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
 
     private lateinit var searchView: SearchView
     private lateinit var searchItem: MenuItem
+    private var sortType: SortType = SortType.PIN
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_list, container, false)
@@ -129,7 +132,8 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
             }
 
             override fun onMenuItemActionCollapse(menuItem: MenuItem?): Boolean {
-                setViewModel(mFolderName)
+                setFolderViewModel(mFolderName, sortType)
+                setNoteViewModel(mFolderName, sortType)
                 return true
             }
 
@@ -165,7 +169,8 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
         val touchHelper = ItemTouchHelper(RvItemTouchHelper(mNotesAdapter))
         touchHelper.attachToRecyclerView(commonList)
 
-        setViewModel(mFolderName)
+        setFolderViewModel(mFolderName, sortType)
+        setNoteViewModel(mFolderName, sortType)
     }
 
     private fun listeners() {
@@ -195,9 +200,20 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
         dialog.show(fragmentManager, "createFolderDialog")
     }
 
-    private fun setViewModel(folderName: String) {
-        mFolderViewModel.getFolderByParentOrdered(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
-        mNoteViewModel.getNoteByFolderNameOrdered(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
+    private fun setNoteViewModel(folderName: String, sortType: SortType) {
+        when (sortType) {
+            SortType.DATE -> mNoteViewModel.getNoteByFolderName(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
+            SortType.PIN -> mNoteViewModel.getNoteByFolderNameOrdered(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
+            SortType.LOCK -> mNoteViewModel.getNoteByFolderNameOrderedLock(folderName).observe(this, androidx.lifecycle.Observer { swapNotes(it) })
+        }
+    }
+
+    private fun setFolderViewModel(folderName: String, sortType: SortType) {
+        when (sortType) {
+            SortType.DATE -> mFolderViewModel.getFolderByParent(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
+            SortType.PIN -> mFolderViewModel.getFolderByParentOrdered(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
+            SortType.LOCK -> mFolderViewModel.getFolderByParentOrderedLock(folderName).observe(this, androidx.lifecycle.Observer { swapFolder(it) })
+        }
     }
 
     private fun setSearchViewModel(query: String) {
@@ -307,61 +323,64 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
                     }
                 }
                 R.id.popUpLock -> {
-                    if (itemViewType == 0) {
+                    if (itemViewType == 0)
                         if (mNotesList[notePosition].locked == 0) setLock(ItemType.NOTES, notePosition)
                         else showPassWordDialog(ItemType.NOTES, notePosition, EventType.LOCK)
-                    } else {
+                    else
                         if (mFolderList[folderPosition].locked == 0) setLock(ItemType.FOLDER, folderPosition)
                         else showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.LOCK)
-                    }
                 }
                 R.id.popUpEdit -> {
-                    if (itemViewType == 0) {
-                        openNote(position)
-                    } else {
-                        if (mFolderList[folderPosition].locked == 0) editFolder(folderPosition)
-                        else showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.EDIT)
+                    when {
+                        itemViewType == 0 -> openNote(position)
+                        mFolderList[folderPosition].locked == 0 -> editFolder(folderPosition)
+                        else -> showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.EDIT)
                     }
                 }
                 R.id.popUpMove -> {
-                    if (itemViewType == 0) {
+                    if (itemViewType == 0)
                         if (mNotesList[notePosition].locked == 0) openMoveListDialog(
                                 ItemType.NOTES,
                                 mNotesList[notePosition].folderName!!,
                                 mNotesList[notePosition].folderName!!,
                                 notePosition)
                         else showPassWordDialog(ItemType.NOTES, notePosition, EventType.MOVE)
-                    } else {
+                    else
                         if (mFolderList[folderPosition].locked == 0) openMoveListDialog(
                                 ItemType.FOLDER,
                                 mFolderList[folderPosition].folderName!!,
                                 mFolderList[folderPosition].parentFolderName!!,
                                 folderPosition)
                         else showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.MOVE)
-                    }
                 }
                 R.id.popUpShare -> {
-                    if (itemViewType == 0) {
-
-                    } else {
-
-                    }
+                    if (itemViewType == 0)
+                        if (mNotesList[notePosition].locked == 0) shareNote(mNotesList[notePosition])
+                        else showPassWordDialog(ItemType.NOTES, notePosition, EventType.SHARE)
+                    else Toast.makeText(activity, "Folder sharing not supported as of now :(", Toast.LENGTH_LONG).show()
                 }
                 R.id.popUpDelete -> {
-                    if (itemViewType == 0) {
+                    if (itemViewType == 0)
                         if (mNotesList[notePosition].locked == 0) deleteNote(notePosition)
                         else showPassWordDialog(ItemType.NOTES, notePosition, EventType.DELETE)
-
-                    } else {
+                    else
                         if (mFolderList[folderPosition].locked == 0) deleteFolder(folderPosition)
                         else showPassWordDialog(ItemType.NOTES, notePosition, EventType.DELETE)
-                    }
                 }
             }
         }
         popupMenu.show()
     }
 
+    private fun shareNote(noteEntity: NoteEntity) {
+        (activity?.application as MyApplication).fileUtil.getLiveNote(noteEntity.fileName!!).observe(this, androidx.lifecycle.Observer {
+            val sendIntent = Intent()
+            sendIntent.action = Intent.ACTION_SEND
+            sendIntent.putExtra(Intent.EXTRA_TEXT, it.noteContent)
+            sendIntent.type = "text/plain"
+            startActivity(sendIntent)
+        })
+    }
 
     private fun updateNote(fileUtil: FileUtil, noteEntity: NoteEntity, pinned: Int, locked: Int, folderName: String) {
         fileUtil.getLiveNote(noteEntity.fileName!!).observe(this, androidx.lifecycle.Observer {
@@ -420,8 +439,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
                     val noteEntity = mNotesList[position]
                     mNoteViewModel.deleteNote(noteEntity)
                     (activity?.application as MyApplication).fileUtil.deleteNoteResources(noteEntity)
-                }
-        )
+                })
     }
 
     private fun deleteFolder(position: Int) {
@@ -504,40 +522,21 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
         }
     }
 
-    override fun headerClick(itemType: ItemType) {
+    override fun headerClick(itemType: ItemType, view: View) {
         when (itemType) {
-            ItemType.NOTES -> inflateMorePopUpMenu(itemType)
-            ItemType.FOLDER -> inflateMorePopUpMenu(itemType)
-
+            ItemType.NOTES -> inflateMorePopUpMenu(itemType, view)
+            ItemType.FOLDER -> inflateMorePopUpMenu(itemType, view)
         }
     }
 
-    private fun inflateMorePopUpMenu(itemType: ItemType) {
-        val popupMenu = PopupMenu(activity, view, Gravity.END)
-        popupMenu.inflate(R.menu.pop_up_menu)
+    private fun inflateMorePopUpMenu(itemType: ItemType, view: View) {
+        val popupMenu = PopupMenu(activity, view, Gravity.START)
+        popupMenu.inflate(R.menu.sort_list)
         RxPopupMenu.itemClicks(popupMenu).subscribe {
             when (it.itemId) {
-                R.id.sortPopUpDate -> {
-                    if (itemType == ItemType.FOLDER) {
-
-                    } else {
-
-                    }
-                }
-                R.id.sortPopUpPin -> {
-                    if (itemType == ItemType.FOLDER) {
-
-                    } else {
-
-                    }
-                }
-                R.id.sortPopUpLock -> {
-                    if (itemType == ItemType.FOLDER) {
-
-                    } else {
-
-                    }
-                }
+                R.id.sortPopUpDate -> if (itemType == ItemType.FOLDER) setFolderViewModel(mFolderName, SortType.DATE) else setNoteViewModel(mFolderName, SortType.DATE)
+                R.id.sortPopUpPin -> if (itemType == ItemType.FOLDER) setFolderViewModel(mFolderName, SortType.PIN) else setNoteViewModel(mFolderName, SortType.PIN)
+                R.id.sortPopUpLock -> if (itemType == ItemType.FOLDER) setFolderViewModel(mFolderName, SortType.LOCK) else setNoteViewModel(mFolderName, SortType.LOCK)
             }
         }
         popupMenu.show()
@@ -556,7 +555,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
     @Subscribe
     fun onPasswordEvent(passwordEvent: PasswordEvent) {
         when (passwordEvent.itemType) {
-            ItemType.NOTES -> {
+            ItemType.NOTES ->
                 when (passwordEvent.eventType) {
                     EventType.OPEN -> openNoteEditor(null, mNotesList[passwordEvent.position])
                     EventType.EDIT -> openNoteEditor(null, mNotesList[passwordEvent.position])
@@ -567,9 +566,9 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
                             mNotesList[passwordEvent.position].folderName!!,
                             passwordEvent.position)
                     EventType.LOCK -> setLock(ItemType.NOTES, passwordEvent.position)
+                    EventType.SHARE -> shareNote(mNotesList[passwordEvent.position])
                 }
-            }
-            ItemType.FOLDER -> {
+            ItemType.FOLDER ->
                 when (passwordEvent.eventType) {
                     EventType.OPEN -> openFolderWithBundle(passwordEvent.position)
                     EventType.EDIT -> editFolder(passwordEvent.position)
@@ -580,8 +579,10 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
                             mFolderList[passwordEvent.position].parentFolderName!!,
                             passwordEvent.position)
                     EventType.LOCK -> setLock(ItemType.FOLDER, passwordEvent.position)
+                    EventType.SHARE -> {
+
+                    }
                 }
-            }
         }
     }
 
@@ -611,6 +612,10 @@ class ListFragment : Fragment(), NoteItemClickListener, ItemHeaderClicklistener 
     }
 
     enum class EventType {
-        OPEN, EDIT, DELETE, LOCK, MOVE
+        OPEN, EDIT, DELETE, LOCK, MOVE, SHARE
+    }
+
+    enum class SortType {
+        DATE, PIN, LOCK
     }
 }

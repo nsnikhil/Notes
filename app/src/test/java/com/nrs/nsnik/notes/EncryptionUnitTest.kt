@@ -26,8 +26,6 @@ package com.nrs.nsnik.notes
 import org.junit.Test
 import java.nio.charset.Charset
 import java.security.*
-import java.security.interfaces.RSAPrivateKey
-import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
@@ -47,27 +45,19 @@ class EncryptionUnitTest {
         val plainText: String = "19541826"
         val publicKey: PublicKey = keyPair.public
 
-
-        val encodedPrivateKey: ByteArray = Base64.getEncoder().encode(privateKey.encoded)
-        val encodedPublicKey: ByteArray = Base64.getEncoder().encode(publicKey.encoded)
-
-        val encodedPrivateKeyFormat = privateKey.format
-        val encodedPublicKeyFormat = publicKey.format
-
-        val privateKeyString = Base64.getEncoder().encodeToString(encodedPrivateKey)
-        val publicKeyString = Base64.getEncoder().encodeToString(encodedPublicKey)
-
+        val privateKeyBytes = privateKey.encoded
+        val publicKeyBytes = publicKey.encoded
 
         val keyFactory = KeyFactory.getInstance("RSA")
+        val privateKeySpec = PKCS8EncodedKeySpec(privateKeyBytes)
+        val privateKey2 = keyFactory.generatePrivate(privateKeySpec)
 
-        val privateKeySpec: PKCS8EncodedKeySpec = PKCS8EncodedKeySpec(encodedPrivateKey)
-        val privateKey2: RSAPrivateKey = keyFactory.generatePrivate(privateKeySpec) as RSAPrivateKey
-
-        val publicKeySpec: X509EncodedKeySpec = X509EncodedKeySpec(encodedPublicKey)
-        val publicKey2: RSAPublicKey = keyFactory.generatePublic(publicKeySpec) as RSAPublicKey
+        val publicKeySpec = X509EncodedKeySpec(publicKeyBytes)
+        val publicKey2 = keyFactory.generatePublic(publicKeySpec)
 
         assert(privateKey == privateKey2)
         assert(publicKey == publicKey2)
+
 
         val cipher: Cipher = Cipher.getInstance("RSA")
 

@@ -30,15 +30,21 @@
         android:id="@+id/itemIndicatorLock"
         style="@style/itemIndicatorIcon"
         android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_lock_black_48px" />
+        android:src="@drawable/ic_lock_black_48px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/itemIndicatorPin"
         style="@style/itemIndicatorIcon"
         android:contentDescription="@string/imageDescription"
         android:paddingStart="0dp"
+        android:paddingEnd="0dp"
         android:src="@drawable/ic_star_black_48px"
-        app:layout_constraintStart_toEndOf="@id/itemIndicatorLock" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/itemIndicatorLock"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

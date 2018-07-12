@@ -95,6 +95,10 @@ class FolderViewModel(application: Application) : AndroidViewModel(application) 
         return mDbUtil.getFolderByParentOrdered(parentFolderName)
     }
 
+    fun getFolderByParentOrderedLock(parentFolder: String): LiveData<List<FolderEntity>> {
+        return mDbUtil.getFolderByParentOrderedLock(parentFolder)
+    }
+
     fun getFolderByPin(isPinned: Int): LiveData<List<FolderEntity>> {
         return mDbUtil.getFolderByPin(isPinned)
 

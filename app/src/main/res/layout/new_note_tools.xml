@@ -24,7 +24,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolsBottomSheet"
-    style="@style/stretchedHorizontally"
+    style="@style/horizontal"
     android:background="@color/colorBackground"
     android:clickable="true"
     android:duplicateParentState="true"
@@ -40,9 +40,11 @@
         style="@style/bottomToolText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:drawableEnd="@drawable/ic_add_box_black_24px"
         android:background="?selectableItemBackground"
-        android:text="@string/noteToolsDate" />
+        android:drawableEnd="@drawable/ic_add_box_black_24px"
+        android:text="@string/noteToolsDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/toolsCheckList"

@@ -10,9 +10,10 @@ You can download the latest stable release from [Play Store](https://play.google
 
 ### Screenshots
 
-<img src="Screenshots/Screenshot_20180708-011647.png" width="30%" />
-<img src="Screenshots/Screenshot_20180708-011654.png" width="30%" />
-<img src="Screenshots/Screenshot_20180708-011738.png" width="30%" />
+<img src="Screenshots/home_screen.png" width="30%" />
+<img src="Screenshots/new_item.png" width="30%" />
+<img src="Screenshots/new_note.png" width="30%" />
+<img src="Screenshots/new_folder.png" width="30%" />
 
 ### Getting Started
 

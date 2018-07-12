@@ -27,6 +27,8 @@
 
     <TextView
         android:id="@+id/prefHeadingSecurity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         style="@style/prefHeading"
         android:text="@string/preferenceCategorySecurity" />
 
@@ -34,12 +36,14 @@
         android:id="@+id/prefItemChangePassword"
         style="@style/prefItem"
         android:text="@string/preferenceChangeCodeSummary"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/prefHeadingSecurity" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/line"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/prefItemChangePassword" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -46,8 +46,8 @@ import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.view.MainActivity
 import com.nrs.nsnik.notes.view.fragments.ListFragment
-import com.nrs.nsnik.notes.view.listeners.ItemHeaderClicklistener
 import com.nrs.nsnik.notes.view.listeners.ItemTouchListener
+import com.nrs.nsnik.notes.view.listeners.ListHeaderClickListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.item_indicator.view.*
@@ -70,7 +70,7 @@ class NotesAdapter(private val mContext: Context,
                    private var mNotesList: List<NoteEntity>,
                    private var mFolderList: List<FolderEntity>,
                    private val mNoteItemClickListener: NoteItemClickListener,
-                   private val itemHeaderClicklistener: ItemHeaderClicklistener) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchListener {
+                   private val listHeaderClickListener: ListHeaderClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchListener {
 
     companion object {
         private const val NOTES = 0
@@ -308,9 +308,9 @@ class NotesAdapter(private val mContext: Context,
             mCompositeDisposable.addAll(
                     RxView.clicks(itemHeaderMore).subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
-                            itemHeaderClicklistener.headerClick(
+                            listHeaderClickListener.headerClick(
                                     if (itemHeader.text.toString() == mContext.resources.getString(R.string.headingFolder)) ListFragment.ItemType.FOLDER
-                                    else ListFragment.ItemType.NOTES)
+                                    else ListFragment.ItemType.NOTES, itemHeaderMore)
                         }
                     }
 

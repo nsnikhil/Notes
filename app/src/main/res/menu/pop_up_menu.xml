@@ -52,7 +52,6 @@
         android:id="@+id/popUpShare"
         android:icon="@drawable/ic_share_black_48px"
         android:title="@string/popUpShare"
-        android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item

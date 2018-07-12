@@ -23,3 +23,17 @@
 
 package com.nrs.nsnik.notes.view.adapters.diffUtil
 
+import androidx.recyclerview.widget.DiffUtil
+import com.nrs.nsnik.notes.data.NoteEntity
+
+class NotesDiffUtil : DiffUtil.ItemCallback<NoteEntity>() {
+
+    override fun areItemsTheSame(oldItem: NoteEntity, newItem: NoteEntity): Boolean {
+        return newItem.uid == oldItem.uid
+    }
+
+    override fun areContentsTheSame(oldItem: NoteEntity, newItem: NoteEntity): Boolean {
+        return newItem == oldItem
+    }
+
+}

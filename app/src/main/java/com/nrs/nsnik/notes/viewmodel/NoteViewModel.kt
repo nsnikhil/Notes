@@ -80,6 +80,10 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         return mDbUtil.getNoteByFolderNameOrdered(folderName)
     }
 
+    fun getNoteByFolderNameOrderedLock(folderName: String): LiveData<List<NoteEntity>> {
+        return mDbUtil.getNoteByFolderNameOrderedLock(folderName)
+    }
+
     fun searchNote(query: String): LiveData<List<NoteEntity>> {
         return mDbUtil.searchNote(query)
     }

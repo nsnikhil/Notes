@@ -62,6 +62,9 @@ interface FolderDao {
     @Query(" SELECT * FROM FolderEntity WHERE parentFolderName = :parentFolder ORDER BY pinned DESC")
     fun getFolderByParentOrdered(parentFolder: String): LiveData<List<FolderEntity>>
 
+    @Query(" SELECT * FROM FolderEntity WHERE parentFolderName = :parentFolder ORDER BY locked DESC")
+    fun getFolderByParentOrderedLock(parentFolder: String): LiveData<List<FolderEntity>>
+
     @Query("SELECT * FROM FolderEntity WHERE pinned = :isPinned")
     fun getFolderByPin(isPinned: Int): LiveData<List<FolderEntity>>
 

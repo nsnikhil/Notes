@@ -170,6 +170,10 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
         return mNotesDatabase.noteDao.getNoteByFolderNameOrdered(folderName)
     }
 
+    fun getNoteByFolderNameOrderedLock(folderName: String): LiveData<List<NoteEntity>> {
+        return mNotesDatabase.noteDao.getNoteByFolderNameOrderedLock(folderName)
+    }
+
     fun searchNote(query: String): LiveData<List<NoteEntity>> {
         return mNotesDatabase.noteDao.getNoteByQuery(query)
     }
@@ -385,6 +389,10 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
 
     fun getFolderByParentOrdered(parentFolder: String): LiveData<List<FolderEntity>> {
         return mNotesDatabase.folderDao.getFolderByParentOrdered(parentFolder)
+    }
+
+    fun getFolderByParentOrderedLock(parentFolder: String): LiveData<List<FolderEntity>> {
+        return mNotesDatabase.folderDao.getFolderByParentOrderedLock(parentFolder)
     }
 
     fun getFolderByPin(isPinned: Int): LiveData<List<FolderEntity>> {

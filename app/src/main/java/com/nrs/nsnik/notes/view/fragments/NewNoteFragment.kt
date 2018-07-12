@@ -29,6 +29,7 @@ import android.app.Activity.RESULT_OK
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.ComponentName
 import android.content.Context.ALARM_SERVICE
 import android.content.DialogInterface
 import android.content.Intent
@@ -167,7 +168,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
                         }
                     }
                 }
-
             })
         }
 
@@ -509,17 +509,31 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     }
 
     private fun setNotification(calendar: Calendar, hour: Int, minutes: Int) {
+
         val myIntent = Intent(activity!!, NotificationReceiver::class.java)
-
         myIntent.putExtra(resources.getString(R.string.notificationTitle), newNoteTitle.text.toString())
-
         myIntent.putExtra(resources.getString(R.string.notificationContent), newNoteContent.text.toString())
 
+        val receiver = ComponentName(context, NotificationReceiver::class.java)
+        val pm: PackageManager = activity?.packageManager!!
+        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+
         val alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-        val pendingIntent = PendingIntent.getBroadcast(activity!!, 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+        val pendingIntent = PendingIntent.getBroadcast(activity!!, 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         calendar.set(Calendar.HOUR_OF_DAY, hour)
         calendar.set(Calendar.MINUTE, minutes)
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
+    }
+
+    private fun cancelReminder() {
+        val receiver = ComponentName(activity, NotificationReceiver::class.java)
+        val packageManager: PackageManager = activity!!.packageManager
+        packageManager.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        val intent = Intent(context, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
     }
 
     private fun noteAction(noteEntity: NoteEntity, action: ActionType) {

@@ -36,5 +36,4 @@ class CheckListDiffUtil : DiffUtil.ItemCallback<CheckListObject>() {
         return false
     }
 
-
 }

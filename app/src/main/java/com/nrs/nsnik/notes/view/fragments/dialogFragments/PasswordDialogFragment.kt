@@ -30,16 +30,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import com.google.android.material.textfield.TextInputEditText
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.events.PasswordEvent
 import com.nrs.nsnik.notes.view.fragments.ListFragment
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_password_dialog.*
 import org.greenrobot.eventbus.EventBus
-import timber.log.Timber
 
 
 class PasswordDialogFragment : DialogFragment() {
@@ -72,11 +73,10 @@ class PasswordDialogFragment : DialogFragment() {
         }
 
         sharedPreferences = (activity?.applicationContext as MyApplication).sharedPreferences
-        value = sharedPreferences.getString(resources?.getString(R.string.sharedPreferencePasswordKey), default)
-
-        Timber.d(targetRequestCode.toString())
-
-        setValues(value != default)
+        PasswordUtil.decryptAndGet(sharedPreferences, activity!!).observe(this, Observer {
+            value = it
+            setValues(value != default)
+        })
     }
 
     private fun setValues(hasPassword: Boolean) {
@@ -140,22 +140,25 @@ class PasswordDialogFragment : DialogFragment() {
     }
 
     private fun addNewPassWord() {
-        if (passwordDialogText.text.toString() == passwordDialogTextOld.text.toString()) {
-            sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), passwordDialogText.text.toString()).apply()
-            dismiss()
-        } else
-            passwordDialogText.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
+        if (passwordDialogText.text.toString() == passwordDialogTextOld.text.toString()) savePassword()
+        else passwordDialogText.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
     }
 
     private fun changePassword() {
-        if (value == passwordDialogTextOld.text.toString()) {
-            sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), passwordDialogText.text.toString()).apply()
-            dismiss()
-        } else {
+        if (value == passwordDialogTextOld.text.toString()) savePassword()
+        else {
             passwordDialogTextOld.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
             passwordDialogText.setText("")
         }
-
     }
 
+    private fun savePassword() {
+        PasswordUtil.encryptAndGet(passwordDialogText.text.toString(), sharedPreferences, activity!!)
+                .observe(this, Observer {
+                    if (it.isNotEmpty() && it != default) {
+                        sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), it).apply()
+                        dismiss()
+                    }
+                })
+    }
 }

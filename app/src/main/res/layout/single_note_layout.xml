@@ -35,22 +35,24 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/singleNoteContentContainer"
-        style="@style/verticalLinearLayout">
+        style="@style/matchParent">
 
         <ImageView
             android:id="@+id/singleNoteImage"
-            style="@style/stretchedHorizontally"
+            style="@style/horizontal"
             android:layout_height="100dp"
             android:contentDescription="@string/imageDescription"
             android:scaleType="centerCrop"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/singleNoteTitle"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/singleNoteTitle"
             style="@style/newNoteHeading"
             app:layout_constraintBottom_toTopOf="@+id/singleNoteContent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/singleNoteImage" />
 
 
@@ -59,6 +61,7 @@
             style="@style/newNoteContent"
             android:drawableTint="@color/grey"
             app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/singleNoteTitle" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,18 +37,19 @@
         android:paddingBottom="48dp">
 
         <LinearLayout
-            style="@style/verticalLinearLayout"
+            style="@style/matchParent"
+            android:orientation="vertical"
             android:transitionName="noteContainer">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/newNoteImageList"
-                style="@style/stretchedHorizontally"
+                style="@style/horizontal"
                 android:layout_height="@dimen/newNoteImage"
                 android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/newNoteAudioList"
-                style="@style/stretchedHorizontally"
+                style="@style/horizontal"
                 android:visibility="gone" />
 
             <EditText
@@ -56,7 +57,7 @@
                 style="@style/newNoteHeading"
                 android:autofillHints=""
                 android:background="@null"
-                android:fontFamily="@font/roboto_mono_bold"
+                android:fontFamily="@font/arvenirltstd_book"
                 android:inputType="text"
                 android:labelFor="@+id/newNoteTitle"
                 android:maxLines="1"
@@ -65,14 +66,14 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/newNoteCheckList"
-                style="@style/stretchedHorizontally"
+                style="@style/horizontal"
                 android:visibility="gone" />
 
             <EditText
                 android:id="@+id/newNoteContent"
                 style="@style/newNoteContent"
                 android:autofillHints=""
-                android:fontFamily="@font/roboto_mono_medium"
+                android:fontFamily="@font/arvenirltstd_medium"
                 android:inputType="textMultiLine"
                 android:labelFor="@+id/newNoteContent"
                 android:lineSpacingMultiplier="1.22" />

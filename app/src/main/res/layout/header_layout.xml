@@ -22,13 +22,13 @@
   -->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/stretchedHorizontally"
+    style="@style/horizontal"
     android:layout_marginTop="@dimen/twentyFour"
     android:fontFamily="@font/roboto_mono_bold"
     android:gravity="center_vertical"
     android:padding="@dimen/sixteen"
     android:text="@string/app_name"
-    android:textColor="@color/cardview_dark_background"
+    android:textColor="@color/colorAccent"
     android:textSize="36sp"
     android:textStyle="bold" />
 

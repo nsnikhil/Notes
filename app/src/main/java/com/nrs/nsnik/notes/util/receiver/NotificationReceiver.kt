@@ -24,30 +24,47 @@
 package com.nrs.nsnik.notes.util.receiver
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
-
+import androidx.core.app.TaskStackBuilder
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.view.SplashActivity
+
 
 class NotificationReceiver : BroadcastReceiver() {
 
-    private var mContext: Context? = null
+    private lateinit var context: Context
 
     override fun onReceive(context: Context, intent: Intent) {
-        mContext = context
+        this.context = context
         buildNotification(intent)
     }
 
     private fun buildNotification(i: Intent) {
-        val notificationBuilder = NotificationCompat.Builder(mContext!!, mContext!!.resources.getString(R.string.notificationChannelReminder))
-        notificationBuilder.setSmallIcon(R.drawable.ic_alarm_add_white_48px)
-        if (i.extras != null) {
-            notificationBuilder.setContentTitle(i.extras!!.getString(mContext!!.resources.getString(R.string.notificationTitle)))
-        }
-        val notificationManager = mContext!!.getSystemService(NotificationManager::class.java)
 
+        val notificationIntent = Intent(context, SplashActivity::class.java)
+        notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+        val stackBuilder = TaskStackBuilder.create(context)
+        stackBuilder.addParentStack(SplashActivity::class.java)
+        stackBuilder.addNextIntent(notificationIntent)
+
+        val pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val notificationBuilder = NotificationCompat.Builder(context, context.resources.getString(R.string.notificationChannelReminder))
+                .setSmallIcon(R.drawable.ic_alarm_add_white_48px)
+                .setContentTitle(i.extras?.getString(context.resources.getString(R.string.notificationTitle)))
+                .setContentText(i.extras?.getString(context.resources.getString(R.string.notificationContent)))
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setContentIntent(pendingIntent)
+
+
+        val notificationManager = context.getSystemService(NotificationManager::class.java)
         notificationManager?.notify(1, notificationBuilder.build())
+
     }
 }

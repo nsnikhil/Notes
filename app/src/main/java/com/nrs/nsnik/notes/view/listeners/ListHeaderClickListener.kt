@@ -23,8 +23,9 @@
 
 package com.nrs.nsnik.notes.view.listeners
 
+import android.view.View
 import com.nrs.nsnik.notes.view.fragments.ListFragment
 
-interface ItemHeaderClicklistener {
-    fun headerClick(itemType: ListFragment.ItemType)
+interface ListHeaderClickListener {
+    fun headerClick(itemType: ListFragment.ItemType, view: View)
 }

@@ -37,7 +37,7 @@
         style="@style/newNoteHeading"
         android:drawableStart="@drawable/folder_icon"
         android:drawablePadding="@dimen/eight"
-        android:fontFamily="@font/roboto_mono_bold"
+        android:fontFamily="@font/arvenirltstd_book"
         android:maxLines="1"
         android:textSize="18sp"
         android:textStyle="bold" />

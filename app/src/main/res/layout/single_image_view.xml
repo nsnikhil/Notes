@@ -52,7 +52,7 @@
         <ImageView
             android:id="@+id/singleImage"
             style="@style/matchParent"
-            android:background="@color/cardview_dark_background"
+            android:background="@color/colorAccent"
             android:contentDescription="@string/imageDescription"
             android:scaleType="centerCrop"
             android:transitionName="fullImage" />

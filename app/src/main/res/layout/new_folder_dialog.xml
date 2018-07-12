@@ -23,25 +23,26 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/stretchedHorizontally">
+    style="@style/horizontal">
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/dialogFolderName"
         style="@style/wrapContent"
-        android:background="@null"
-        android:fontFamily="@font/roboto_mono_bold"
         android:autofillHints=""
-        android:inputType="text"
+        android:background="@null"
+        android:fontFamily="@font/arvenirltstd_book"
         android:hint="@string/newfoldername"
+        android:inputType="text"
         android:maxLines="1"
         android:minWidth="300dp"
         android:padding="@dimen/twentyFour"
         app:layout_constraintEnd_toStartOf="@+id/dialogFolderColor"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/dialogFolderLock"
-        style="@style/twentyFour"
+        style="@style/wrapContent"
         android:layout_marginStart="@dimen/eight"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
@@ -55,7 +56,7 @@
 
     <ImageView
         android:id="@+id/dialogFolderStar"
-        style="@style/twentyFour"
+        style="@style/wrapContent"
         android:layout_marginStart="@dimen/eight"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
@@ -68,7 +69,8 @@
 
     <ImageView
         android:id="@+id/dialogFolderColor"
-        style="@style/twentyFour"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginEnd="@dimen/sixteen"
         android:background="@drawable/circle"
         android:backgroundTint="@color/colorAccent"

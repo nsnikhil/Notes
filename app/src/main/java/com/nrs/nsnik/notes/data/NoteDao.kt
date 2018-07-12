@@ -41,6 +41,9 @@ interface NoteDao {
     @Query("SELECT * FROM NoteEntity WHERE folderName = :folderName ORDER BY pinned DESC")
     fun getNoteByFolderNameOrdered(folderName: String): LiveData<List<NoteEntity>>
 
+    @Query("SELECT * FROM NoteEntity WHERE folderName = :folderName ORDER BY locked DESC")
+    fun getNoteByFolderNameOrderedLock(folderName: String): LiveData<List<NoteEntity>>
+
     @Query("SELECT * FROM NoteEntity WHERE folderName = :folderName AND locked = 0 And pinned = 0")
     fun getNotesByFolderNameNotPinnedNotLocked(folderName: String): LiveData<List<NoteEntity>>
 
