@@ -46,6 +46,11 @@ class MainActivity : AppCompatActivity() {
     private var mIdlingResource: SimpleIdlingResource? = null
     private var isOnListFragment: Boolean = true
 
+    companion object {
+        private const val SearchIntentAction: String = "com.nrs.nsnik.notes.StartSearch"
+        private const val NewNoteIntentAction: String = "com.nrs.nsnik.notes.OpenNewNotesFragment"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -96,6 +101,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> return@setNavigationItemSelectedListener false
             }
+        }
+        setUpAppShortcuts()
+    }
+
+    private fun setUpAppShortcuts() {
+        when (intent.action) {
+            NewNoteIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment)
         }
     }
 

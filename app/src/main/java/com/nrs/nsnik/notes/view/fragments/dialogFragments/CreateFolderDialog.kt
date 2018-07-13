@@ -29,6 +29,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -93,7 +95,19 @@ class CreateFolderDialog : DialogFragment() {
                 dialogFolderCreate.text = activity?.resources?.getString(R.string.update)
             }
         }
+
+        setFocus(dialogFolderName)
     }
+
+
+    private fun setFocus(editText: EditText) {
+        editText.isFocusable = true
+        editText.isFocusableInTouchMode = true
+        editText.requestFocus()
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm!!.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+    }
+
 
     private fun listeners() {
         compositeDisposable.addAll(

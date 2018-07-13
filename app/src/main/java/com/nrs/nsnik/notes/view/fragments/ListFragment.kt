@@ -365,7 +365,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
                         else showPassWordDialog(ItemType.NOTES, notePosition, EventType.DELETE)
                     else
                         if (mFolderList[folderPosition].locked == 0) deleteFolder(folderPosition)
-                        else showPassWordDialog(ItemType.NOTES, notePosition, EventType.DELETE)
+                        else showPassWordDialog(ItemType.FOLDER, folderPosition, EventType.DELETE)
                 }
             }
         }

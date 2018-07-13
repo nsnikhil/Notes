@@ -30,24 +30,27 @@
         android:shortcutId="addNote"
         android:shortcutLongLabel="@string/shortcutAddNoteLongMsg"
         android:shortcutShortLabel="@string/shortcutAddNoteShortMsg">
+
         <intent
-            android:action="android.intent.action.VIEW"
-            android:targetClass="com.nrs.nsnik.notes.view.fragments.NewNoteFragment"
+            android:action="com.nrs.nsnik.notes.OpenNewNotesFragment"
+            android:targetClass="com.nrs.nsnik.notes.view.MainActivity"
             android:targetPackage="com.nrs.nsnik.notes" />
     </shortcut>
 
-    <shortcut
-        android:enabled="true"
-        android:icon="@drawable/launcher_search"
-        android:shortcutDisabledMessage="@string/shortcutSearchDisabledMsg"
-        android:shortcutId="searchNote"
-        android:shortcutLongLabel="@string/shortcutSearchLongMsg"
-        android:shortcutShortLabel="@string/shortcutSearchShortMsg">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetClass="com.nrs.nsnik.notes.view.fragments.SearchFragment"
-            android:targetPackage="com.nrs.nsnik.notes" />
-    </shortcut>
+    <!--<shortcut-->
+    <!--android:enabled="true"-->
+    <!--android:icon="@drawable/launcher_search"-->
+    <!--android:shortcutDisabledMessage="@string/shortcutSearchDisabledMsg"-->
+    <!--android:shortcutId="searchNote"-->
+    <!--android:shortcutLongLabel="@string/shortcutSearchLongMsg"-->
+    <!--android:shortcutShortLabel="@string/shortcutSearchShortMsg">-->
+
+    <!--<intent-->
+    <!--android:action="com.nrs.nsnik.notes.StartSearch"-->
+    <!--android:targetClass="com.nrs.nsnik.notes.view.MainActivity"-->
+    <!--android:targetPackage="com.nrs.nsnik.notes.debug" />-->
+
+    <!--</shortcut>-->
 
 </shortcuts>
 

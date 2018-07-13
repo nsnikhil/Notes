@@ -45,6 +45,7 @@
     <string name="undo">Undo</string>
     <!-- -->
 
+
     <!-- actions-->
     <string name="itemRemoved">Item Removed</string>
     <!-- -->
@@ -97,7 +98,7 @@
     <!-- launcherShortcuts-->
     <string name="shortcutAddNoteShortMsg">Add Note</string>
     <string name="shortcutAddNoteLongMsg">Add Note</string>
-    <string name="shortcutAddNoteDisabledMsg">Error</string>
+    <string name="shortcutAddNoteDisabledMsg" translatable="false">Error</string>
 
     <string name="shortcutSearchShortMsg">Search</string>
     <string name="shortcutSearchLongMsg">Search</string>
