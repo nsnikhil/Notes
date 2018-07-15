@@ -24,7 +24,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/horizontal"
     android:layout_marginTop="@dimen/twentyFour"
-    android:fontFamily="@font/roboto_mono_bold"
+    android:fontFamily="@font/arvenirltstd_book"
     android:gravity="center_vertical"
     android:padding="@dimen/sixteen"
     android:text="@string/app_name"

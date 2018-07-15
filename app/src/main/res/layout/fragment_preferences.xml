@@ -21,29 +21,123 @@
   ~ <http://www.gnu.org/philosophy/why-not-lgpl.html>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- TODO FIX THIS MESS-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/matchParent">
 
-    <TextView
-        android:id="@+id/prefHeadingSecurity"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/prefHeading"
-        android:text="@string/preferenceCategorySecurity" />
+    <androidx.constraintlayout.widget.ConstraintLayout style="@style/matchParent">
 
-    <TextView
-        android:id="@+id/prefItemChangePassword"
-        style="@style/prefItem"
-        android:text="@string/preferenceChangeCodeSummary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/prefHeadingSecurity" />
+        <TextView
+            android:id="@+id/prefHeadingInterface"
+            style="@style/prefHeading"
+            android:text="@string/preferenceCategoryInterface"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/line"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/prefItemChangePassword" />
+        <Switch
+            android:id="@+id/prefItemDarkMode"
+            style="@style/prefItem"
+            android:checked="false"
+            android:enabled="false"
+            android:text="@string/preferenceDarkMode"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefHeadingInterface" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/prefInterfaceDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefItemDarkMode" />
+
+        <TextView
+            android:id="@+id/prefHeadingData"
+            style="@style/prefHeading"
+            android:text="@string/preferenceCategoryData"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefInterfaceDivider" />
+
+        <TextView
+            android:id="@+id/prefItemBackupData"
+            style="@style/prefItem"
+            android:text="@string/preferenceBackup"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefHeadingData" />
+
+        <TextView
+            android:id="@+id/prefItemBackupRestore"
+            style="@style/prefItem"
+            android:text="@string/preferenceRestore"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefItemBackupData" />
+
+        <View
+            android:id="@+id/prefSecurityData"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefItemBackupRestore" />
+
+        <TextView
+            android:id="@+id/prefHeadingSecurity"
+            style="@style/prefHeading"
+            android:text="@string/preferenceCategorySecurity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefSecurityData" />
+
+        <TextView
+            android:id="@+id/prefItemChangePassword"
+            style="@style/prefItem"
+            android:text="@string/preferenceChangeCodeSummary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefHeadingSecurity" />
+
+        <View
+            android:id="@+id/prefSecurityDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefItemChangePassword" />
+
+        <TextView
+            android:id="@+id/prefHeadingPrivacy"
+            style="@style/prefHeading"
+            android:text="@string/preferenceCategoryPrivacy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefSecurityDivider" />
+
+        <Switch
+            android:id="@+id/prefItemPrivacyErrorReport"
+            style="@style/prefItem"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:enabled="false"
+            android:text="@string/preferenceChangeCodeSummary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefHeadingPrivacy" />
+
+        <Switch
+            android:id="@+id/prefItemPrivacySendData"
+            style="@style/prefItem"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:enabled="false"
+            android:text="@string/preferenceChangeCodeSummary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefItemPrivacyErrorReport" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/eight"
+            android:background="@color/line"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/prefItemPrivacySendData" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

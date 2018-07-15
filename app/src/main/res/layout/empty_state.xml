@@ -25,7 +25,7 @@
     android:id="@+id/emptyState"
     style="@style/wrapContent"
     android:layout_gravity="center"
-    android:fontFamily="@font/roboto_mono_bold"
+    android:fontFamily="@font/arvenirltstd_book"
     android:gravity="center"
     android:text="@string/emptyStateEmpty"
     android:textSize="20sp"

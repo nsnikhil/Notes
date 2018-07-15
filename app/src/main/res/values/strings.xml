@@ -255,12 +255,27 @@
 
     <!-- PREFERENCE -->
     <string name="preferenceCategoryGeneral">General</string>
+    <string name="preferenceCategoryData">Data</string>
+    <string name="preferenceCategoryInterface">Interface</string>
     <string name="preferenceCategorySecurity">Security</string>
+    <string name="preferenceCategoryPrivacy">Privacy</string>
 
 
     <string name="preferenceDarkMode">Dark Mode</string>
+    <string name="preferenceBackup">Backup Data</string>
+    <string name="preferenceRestore">Restore Data</string>
     <string name="preferenceChangeCode">Change Code</string>
     <string name="preferenceChangeCodeSummary">Change Security Code</string>
+
+    <string name="preferenceErrorReporting">Error Reporting</string>
+    <string name="preferenceErrorReportingSummary">Send crash reports to the developer to help him improve the application.</string>
+
+    <string name="preferenceSendData">Share anonymous data</string>
+    <string name="preferenceSendDataSummary">Share non-sensitive data with the developer to help improve the app.</string>
+
+
+    <string name="preferenceBackupSummary">Backup data to local storage or cloud</string>
+    <string name="preferenceRestoreSummary">Restore data from local storage or cloud</string>
 
     <string name="preferenceDarkModeKey">darkModeKey</string>
     <string name="preferenceChangeCodeKey">changeCodeKey</string>

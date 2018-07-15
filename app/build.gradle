@@ -28,6 +28,7 @@ apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.jakewharton.hugo'
 
 android {
     compileSdkVersion 28
@@ -36,8 +37,8 @@ android {
         applicationId "com.nrs.nsnik.notes"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 36
-        versionName "2.9.9"
+        versionCode 38
+        versionName "3.0.0 aplha-1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         javaCompileOptions {

@@ -35,6 +35,7 @@ import androidx.fragment.app.Fragment
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
+import hugo.weaving.DebugLog
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_preferences.*
 
@@ -53,10 +54,27 @@ class PrefFragment : Fragment() {
         initialize()
     }
 
+    @DebugLog
     private fun initializeItems() {
         prefItemChangePassword.text = getString(
                 activity?.resources?.getString(R.string.preferenceChangeCode)!!,
                 activity?.resources?.getString(R.string.preferenceChangeCodeSummary)!!
+        )
+        prefItemPrivacySendData.text = getString(
+                activity?.resources?.getString(R.string.preferenceSendData)!!,
+                activity?.resources?.getString(R.string.preferenceSendDataSummary)!!
+        )
+        prefItemPrivacyErrorReport.text = getString(
+                activity?.resources?.getString(R.string.preferenceErrorReporting)!!,
+                activity?.resources?.getString(R.string.preferenceErrorReportingSummary)!!
+        )
+        prefItemBackupRestore.text = getString(
+                activity?.resources?.getString(R.string.preferenceRestore)!!,
+                activity?.resources?.getString(R.string.preferenceRestoreSummary)!!
+        )
+        prefItemBackupData.text = getString(
+                activity?.resources?.getString(R.string.preferenceBackup)!!,
+                activity?.resources?.getString(R.string.preferenceBackupSummary)!!
         )
     }
 
