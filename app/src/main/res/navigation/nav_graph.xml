@@ -36,6 +36,10 @@
             android:id="@+id/listToAddNewNote"
             app:destination="@id/newNoteFragment" />
 
+        <action
+            android:id="@+id/listToSearch"
+            app:destination="@id/searchFragment" />
+
     </fragment>
 
     <fragment
@@ -67,5 +71,23 @@
         android:name="com.nrs.nsnik.notes.view.fragments.ImageListFragment"
         android:label="image"
         tools:layout="@layout/recycler_view" />
+
+    <fragment
+        android:id="@+id/introFragment"
+        android:name="com.nrs.nsnik.notes.view.fragments.IntroFragment"
+        android:label="Intro"
+        tools:layout="@layout/fragment_intro">
+
+        <action
+            android:id="@+id/introToNoteList"
+            app:destination="@id/navItemNotes" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.nrs.nsnik.notes.view.fragments.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search" />
 
 </navigation>

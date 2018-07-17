@@ -168,6 +168,7 @@ class NotesAdapter(private val mContext: Context,
                     noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
                     noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                     noteViewHolder.noteContent.compoundDrawablePadding = 0
+                    noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.contentColor))
                 } else {
                     noteViewHolder.noteContent.visibility = View.GONE
                 }

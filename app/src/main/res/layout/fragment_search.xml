@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~     Notes  Copyright (C) 2018  Nikhil Soni
   ~     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
   ~     This is free software, and you are welcome to redistribute it
@@ -21,29 +21,16 @@
   ~ <http://www.gnu.org/philosophy/why-not-lgpl.html>.
   -->
 
-<resources>
-    <color name="colorPrimary">#F8F8FF</color>
-    <color name="colorPrimaryDark">#F8F8FF</color>
-    <color name="colorAccent">#212121</color>
-    <color name="colorBackground">#F8F8FF</color>
-    <color name="materialWhite">#FAFAFA</color>
-    <color name="launcherShortcutBackground">#F5F5F5</color>
-    <color name="grey">#C2C2C2</color>
-    <color name="selector">#80C2C2C2</color>
-    <color name="transparent">#00000000</color>
-    <color name="black">#000000</color>
-    <color name="line">#809E9E9E</color>
-    <color name="contentColor">#616161</color>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.nrs.nsnik.notes.view.fragments.SearchFragment">
 
-    <string-array name="backgroundColors">
-        <item>#D32F2F</item>
-        <item>#F57C00</item>
-        <item>#FBC02D</item>
-        <item>#388E3C</item>
-        <item>#0097A7</item>
-        <item>#00796B</item>
-        <item>#1976D2</item>
-        <item>#303F9F</item>
-    </string-array>
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment" />
 
-</resources>
+</FrameLayout>

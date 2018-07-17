@@ -21,29 +21,33 @@
   ~ <http://www.gnu.org/philosophy/why-not-lgpl.html>.
   -->
 
-<resources>
-    <color name="colorPrimary">#F8F8FF</color>
-    <color name="colorPrimaryDark">#F8F8FF</color>
-    <color name="colorAccent">#212121</color>
-    <color name="colorBackground">#F8F8FF</color>
-    <color name="materialWhite">#FAFAFA</color>
-    <color name="launcherShortcutBackground">#F5F5F5</color>
-    <color name="grey">#C2C2C2</color>
-    <color name="selector">#80C2C2C2</color>
-    <color name="transparent">#00000000</color>
-    <color name="black">#000000</color>
-    <color name="line">#809E9E9E</color>
-    <color name="contentColor">#616161</color>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/matchParent">
 
-    <string-array name="backgroundColors">
-        <item>#D32F2F</item>
-        <item>#F57C00</item>
-        <item>#FBC02D</item>
-        <item>#388E3C</item>
-        <item>#0097A7</item>
-        <item>#00796B</item>
-        <item>#1976D2</item>
-        <item>#303F9F</item>
-    </string-array>
+    <include
+        layout="@layout/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</resources>
+    <ImageView
+        android:id="@+id/introBack"
+        style="@style/introButton"
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/ic_baseline_arrow_back_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/introNext"
+        style="@style/introButton"
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/ic_baseline_arrow_forward_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
