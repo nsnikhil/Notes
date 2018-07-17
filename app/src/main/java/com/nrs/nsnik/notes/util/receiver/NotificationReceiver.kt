@@ -23,14 +23,18 @@
 
 package com.nrs.nsnik.notes.util.receiver
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
 import android.media.RingtoneManager
+import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.SplashActivity
 
@@ -42,6 +46,13 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         this.context = context
         buildNotification(intent)
+        if (intent.action == "android.intent.action.BOOT_COMPLETED") scheduleRepeatingElapsedNotification()
+    }
+
+    private fun scheduleRepeatingElapsedNotification() {
+        val receiver = ComponentName(context, NotificationReceiver::class.java)
+        val pm = context.packageManager
+        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
     }
 
     private fun buildNotification(i: Intent) {
@@ -49,22 +60,36 @@ class NotificationReceiver : BroadcastReceiver() {
         val notificationIntent = Intent(context, SplashActivity::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
 
-        val stackBuilder = TaskStackBuilder.create(context)
-        stackBuilder.addParentStack(SplashActivity::class.java)
-        stackBuilder.addNextIntent(notificationIntent)
-
-        val pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notificationBuilder = NotificationCompat.Builder(context, context.resources.getString(R.string.notificationChannelReminder))
                 .setSmallIcon(R.drawable.ic_alarm_add_white_48px)
                 .setContentTitle(i.extras?.getString(context.resources.getString(R.string.notificationTitle)))
                 .setContentText(i.extras?.getString(context.resources.getString(R.string.notificationContent)))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentIntent(pendingIntent)
 
-
         val notificationManager = context.getSystemService(NotificationManager::class.java)
-        notificationManager?.notify(1, notificationBuilder.build())
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val channelId: String = context.resources.getString(R.string.notificationChannelReminderId)
+
+            val notificationChannel = NotificationChannel(channelId, context.resources.getString(R.string.notificationChannelReminder), NotificationManager.IMPORTANCE_DEFAULT)
+            notificationChannel.description = context.resources.getString(R.string.notificationChannelReminderDescription)
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+
+            notificationBuilder.setChannelId(channelId)
+
+            notificationManager?.createNotificationChannel(notificationChannel)
+            notificationManager?.notify(1, notificationBuilder.build())
+
+        } else
+            notificationManager?.notify(1, notificationBuilder.build())
 
     }
 }

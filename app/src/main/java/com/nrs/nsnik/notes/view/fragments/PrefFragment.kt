@@ -33,6 +33,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxCompoundButton
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import hugo.weaving.DebugLog
@@ -68,7 +69,7 @@ class PrefFragment : Fragment() {
                 activity?.resources?.getString(R.string.preferenceErrorReporting)!!,
                 activity?.resources?.getString(R.string.preferenceErrorReportingSummary)!!
         )
-        prefItemBackupRestore.text = getString(
+        prefItemRestoreData.text = getString(
                 activity?.resources?.getString(R.string.preferenceRestore)!!,
                 activity?.resources?.getString(R.string.preferenceRestoreSummary)!!
         )
@@ -81,7 +82,12 @@ class PrefFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun initialize() {
         compositeDisposable.addAll(
-                RxView.clicks(prefItemChangePassword).subscribe { openPasswordDialog() }
+                RxView.clicks(prefItemChangePassword).subscribe { openPasswordDialog() },
+                RxView.clicks(prefItemBackupData).subscribe { exportDatabase() },
+                RxView.clicks(prefItemRestoreData).subscribe { importDatabase() },
+                RxCompoundButton.checkedChanges(prefItemDarkMode).subscribe { switchTheme(it) },
+                RxCompoundButton.checkedChanges(prefItemPrivacyErrorReport).subscribe { enableErrorReporting(it) },
+                RxCompoundButton.checkedChanges(prefItemPrivacySendData).subscribe { enableSendData(it) }
         )
     }
 
@@ -93,6 +99,26 @@ class PrefFragment : Fragment() {
         val dialog = PasswordDialogFragment()
         dialog.setTargetFragment(this, 1954)
         dialog.show(fragmentManager, "changePassword")
+    }
+
+    private fun exportDatabase() {
+
+    }
+
+    private fun importDatabase() {
+
+    }
+
+    private fun switchTheme(darkMode: Boolean) {
+
+    }
+
+    private fun enableErrorReporting(enabled: Boolean) {
+
+    }
+
+    private fun enableSendData(enabled: Boolean) {
+
     }
 
     private fun cleanUp() {

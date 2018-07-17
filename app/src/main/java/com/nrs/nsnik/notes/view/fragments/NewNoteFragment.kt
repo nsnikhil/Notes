@@ -37,6 +37,7 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -284,6 +285,16 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
         mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
 
+        newNoteContent.setText(arguments?.getString(activity?.resources?.getString(R.string.bundleReceiveIntentText), ""))
+
+        val imageUri: Uri? = arguments?.getParcelable(activity?.resources?.getString(R.string.bundleReceiveIntentImage))
+        val imageUris: List<Uri?>? = arguments?.getParcelableArrayList(activity?.resources?.getString(R.string.bundleReceiveIntentImageList))
+
+        if (imageUri != null) addGalleryPhotoToList(imageUri)
+        else imageUris?.forEach {
+            addGalleryPhotoToList(it!!)
+        }
+
         mNoteEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteEntity)), NoteEntity.SERIALIZER)
 
         if (mNoteEntity == null) return
@@ -441,8 +452,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
             Toast.makeText(activity!!, activity?.resources?.getString(R.string.noGallery), Toast.LENGTH_LONG).show()
     }
 
-    private fun addGalleryPhotoToList(data: Intent) {
-        val imageUri = data.data
+    private fun addGalleryPhotoToList(imageUri: Uri) {
         try {
             val image = MediaStore.Images.Media.getBitmap(activity?.contentResolver, imageUri)
             val imageFileName = makeName(FILE_TYPES.IMAGE)
@@ -509,19 +519,16 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     }
 
     private fun setNotification(calendar: Calendar, hour: Int, minutes: Int) {
-
         val myIntent = Intent(activity!!, NotificationReceiver::class.java)
         myIntent.putExtra(resources.getString(R.string.notificationTitle), newNoteTitle.text.toString())
         myIntent.putExtra(resources.getString(R.string.notificationContent), newNoteContent.text.toString())
 
-        val receiver = ComponentName(context, NotificationReceiver::class.java)
-        val pm: PackageManager = activity?.packageManager!!
-        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
-
         val alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-        val pendingIntent = PendingIntent.getBroadcast(activity!!, 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+
+        val pendingIntent = PendingIntent.getBroadcast(activity!!, 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         calendar.set(Calendar.HOUR_OF_DAY, hour)
         calendar.set(Calendar.MINUTE, minutes)
+
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
     }
 
@@ -566,7 +573,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             ATTACH_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
-                if (data != null) addGalleryPhotoToList(data)
+                if (data != null) addGalleryPhotoToList(data.data)
             }
             TAKE_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
                 addCameraPhotoToList()

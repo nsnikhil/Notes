@@ -131,6 +131,10 @@
     <string name="bundleNoteEntity">bundleNoteEntity</string>
     <string name="bundleFolderEntity">bundleFolderEntity</string>
 
+    <string name="bundleReceiveIntentText">bundleReceiveIntentText</string>
+    <string name="bundleReceiveIntentImage">bundleReceiveIntentImage</string>
+    <string name="bundleReceiveIntentImageList">bundleReceiveIntentImageList</string>
+
     <string name="bundleEntityCurrentFolder">bundleEntityFolder</string>
     <string name="bundleEntityParentFolder">bundleEntityParentFolder</string>
     <string name="bundleItemToMovePosition">bundleItemToMovePosition</string>
@@ -234,7 +238,9 @@
     <!-- -->
 
     <!-- notificationChannels-->
-    <string name="notificationChannelReminder">notiChnRmder</string>
+    <string name="notificationChannelReminderId">notificationChannelReminderId</string>
+    <string name="notificationChannelReminder">notificationChannelReminder</string>
+    <string name="notificationChannelReminderDescription">Enable reminder notifications</string>
     <!-- -->
 
     <!-- aboutStrings-->

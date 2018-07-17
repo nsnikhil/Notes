@@ -23,7 +23,10 @@
 
 package com.nrs.nsnik.notes.view
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.Gravity
 import android.view.MenuItem
 import androidx.annotation.NonNull
@@ -55,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initialize()
+        handleIntent()
     }
 
     override fun onSupportNavigateUp() = findNavController(R.id.mainNavHost).navigateUp()
@@ -102,12 +106,53 @@ class MainActivity : AppCompatActivity() {
                 else -> return@setNavigationItemSelectedListener false
             }
         }
-        setUpAppShortcuts()
     }
 
-    private fun setUpAppShortcuts() {
-        when (intent.action) {
+    private fun handleIntent() {
+        val intent = intent
+        val action = intent.action
+        val type = intent.type
+
+        when (action) {
+            Intent.ACTION_SEND -> {
+                if (type != null)
+                    if ("text/plain" == type) handleSendText(intent) else if (type.startsWith("image/")) handleSendImage(intent)
+            }
+            Intent.ACTION_SEND_MULTIPLE -> {
+                if (type != null)
+                    if (type.startsWith("image/")) handleSendMultipleImages(intent)
+            }
             NewNoteIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment)
+            else -> {
+                // Handle other intents, such as being started from the home screen
+            }
+        }
+    }
+
+    private fun handleSendText(intent: Intent) {
+        val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+        if (sharedText != null) {
+            val bundle = Bundle()
+            bundle.putString(resources.getString(R.string.bundleReceiveIntentText), sharedText)
+            findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
+        }
+    }
+
+    private fun handleSendImage(intent: Intent) {
+        val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri
+        if (imageUri != null) {
+            val bundle = Bundle()
+            bundle.putParcelable(resources.getString(R.string.bundleReceiveIntentImage), imageUri)
+            findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
+        }
+    }
+
+    private fun handleSendMultipleImages(intent: Intent) {
+        val imageUris = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
+        if (imageUris != null) {
+            val bundle = Bundle()
+            bundle.putParcelableArrayList(resources.getString(R.string.bundleReceiveIntentImageList), imageUris)
+            findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
         }
     }
 

@@ -67,7 +67,7 @@
             app:layout_constraintTop_toBottomOf="@id/prefHeadingData" />
 
         <TextView
-            android:id="@+id/prefItemBackupRestore"
+            android:id="@+id/prefItemRestoreData"
             style="@style/prefItem"
             android:text="@string/preferenceRestore"
             app:layout_constraintStart_toStartOf="parent"
@@ -79,7 +79,7 @@
             android:layout_height="1dp"
             android:background="@color/line"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/prefItemBackupRestore" />
+            app:layout_constraintTop_toBottomOf="@id/prefItemRestoreData" />
 
         <TextView
             android:id="@+id/prefHeadingSecurity"

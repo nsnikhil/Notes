@@ -84,6 +84,9 @@ android {
         correctErrorTypes = true
         useBuildCache = true
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
