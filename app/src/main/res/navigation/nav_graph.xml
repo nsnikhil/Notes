@@ -45,7 +45,7 @@
     <fragment
         android:id="@+id/newNoteFragment"
         android:name="com.nrs.nsnik.notes.view.fragments.NewNoteFragment"
-        android:label="New Note"
+        android:label="Edit Note"
         tools:layout="@layout/fragment_new_note">
 
         <action

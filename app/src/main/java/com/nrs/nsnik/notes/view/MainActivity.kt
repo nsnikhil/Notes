@@ -123,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                     if (type.startsWith("image/")) handleSendMultipleImages(intent)
             }
             NewNoteIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment)
+            SearchIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.searchFragment)
             else -> {
                 // Handle other intents, such as being started from the home screen
             }
