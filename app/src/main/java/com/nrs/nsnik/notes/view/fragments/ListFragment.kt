@@ -48,6 +48,7 @@ import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
+import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.RvItemTouchHelper
@@ -96,6 +97,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AppUtil.goToIntro(activity)
         initialize()
         listeners()
         setHasOptionsMenu(true)

@@ -29,6 +29,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.Gravity
 import android.view.MenuItem
+import android.view.View
 import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         controller.addOnNavigatedListener { navController, destination ->
             isOnListFragment = destination.id == R.id.navItemNotes
+            mainToolbar.visibility = if (destination.id == R.id.introFragment) View.GONE else View.VISIBLE
             mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             mainNavigationView.setCheckedItem(
                     when (destination.id) {

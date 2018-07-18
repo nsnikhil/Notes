@@ -31,6 +31,7 @@ import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxCompoundButton
@@ -102,11 +103,11 @@ class PrefFragment : Fragment() {
     }
 
     private fun exportDatabase() {
-
+        Toast.makeText(activity!!, "Sorry the feature is currently under development", Toast.LENGTH_LONG).show()
     }
 
     private fun importDatabase() {
-
+        Toast.makeText(activity!!, "Sorry the feature is currently under development", Toast.LENGTH_LONG).show()
     }
 
     private fun switchTheme(darkMode: Boolean) {

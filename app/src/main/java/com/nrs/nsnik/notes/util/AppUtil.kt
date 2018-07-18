@@ -23,8 +23,12 @@
 
 package com.nrs.nsnik.notes.util
 
+import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.Color
+import androidx.navigation.findNavController
+import com.nrs.nsnik.notes.MyApplication
+import com.nrs.nsnik.notes.R
 
 class AppUtil {
 
@@ -35,6 +39,17 @@ class AppUtil {
             val color = Color.parseColor(colorString)
             val colors = intArrayOf(color, color, color, color)
             return ColorStateList(states, colors)
+        }
+
+        fun goToIntro(activity: Activity?) {
+            val sharedPreferences = (activity?.applicationContext as MyApplication).sharedPreferences
+            val isWatched = sharedPreferences.getBoolean(activity.resources.getString(R.string.bundleIntroWatched), false)
+            if (!isWatched) activity.findNavController(R.id.mainNavHost).navigate(R.id.introFragment)
+        }
+
+        fun saveIsVisitedIntro(activity: Activity?) {
+            val sharedPreferences = (activity?.applicationContext as MyApplication).sharedPreferences
+            sharedPreferences.edit().putBoolean(activity.resources.getString(R.string.bundleIntroWatched), true).apply()
         }
 
     }

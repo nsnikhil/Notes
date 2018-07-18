@@ -24,12 +24,10 @@
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/introText"
-    style="@style/wrapContent"
+    style="@style/matchParent"
     android:layout_gravity="center"
-    android:drawableTop="@mipmap/ic_launcher"
-    android:drawablePadding="@dimen/sixteen"
     android:fontFamily="@font/arvenirltstd_book"
     android:gravity="center"
     android:text="@string/app_name"
-    android:textSize="48sp" />
+    android:textSize="18sp" />
 

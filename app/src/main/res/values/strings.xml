@@ -149,6 +149,8 @@
     <string name="bundleItemType">bundleItemType</string>
     <string name="bundleItemPosition">bundleItemPosition</string>
     <string name="bundleItemEvent">bundleItemEvent</string>
+
+    <string name="bundleIntroWatched">bundleIntroWatched</string>
     <!-- -->
 
     <!-- menuStrings-->

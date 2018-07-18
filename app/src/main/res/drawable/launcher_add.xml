@@ -26,8 +26,8 @@
     <item android:drawable="@drawable/circle" />
 
     <item
-        android:width="@dimen/twentyFour"
-        android:height="@dimen/twentyFour"
+        android:width="36dp"
+        android:height="36dp"
         android:drawable="@drawable/ic_add_black_48px"
         android:gravity="center" />
 

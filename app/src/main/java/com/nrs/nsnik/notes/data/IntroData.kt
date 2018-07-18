@@ -27,7 +27,13 @@ class IntroData {
 
     companion object {
 
-        val introDataList: List<String> = listOf()
+        private const val pageOneText: String = "Notes"
+        private const val pageTwoText: String = "Notes help you stay better organised by using folders"
+        private const val pageThreeText: String = "Add images, audio, checklist and reminder to notes"
+        private const val pageFourText: String = "Lock and pin your notes"
+        private const val pageFiveText: String = "Start..."
+
+        val introDataList: List<String> = listOf(pageOneText, pageTwoText, pageThreeText, pageFourText, pageFiveText)
 
     }
 

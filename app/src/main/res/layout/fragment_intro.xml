@@ -28,23 +28,17 @@
     <include
         layout="@layout/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="34dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/introBack"
-        style="@style/introButton"
-        android:contentDescription="@string/imageDescription"
-        android:src="@drawable/ic_baseline_arrow_back_24px"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
         android:id="@+id/introNext"
         style="@style/introButton"
+        android:visibility="gone"
         android:contentDescription="@string/imageDescription"
         android:src="@drawable/ic_baseline_arrow_forward_24px"
         app:layout_constraintBottom_toBottomOf="parent"

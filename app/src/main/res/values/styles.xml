@@ -197,6 +197,7 @@
     <style name="introButton" parent="wrapContent">
         <item name="android:clickable">true</item>
         <item name="android:padding">@dimen/sixteen</item>
+        <item name="android:layout_margin">@dimen/sixteen</item>
         <item name="android:focusable">true</item>
         <item name="android:background">?android:selectableItemBackgroundBorderless</item>
     </style>

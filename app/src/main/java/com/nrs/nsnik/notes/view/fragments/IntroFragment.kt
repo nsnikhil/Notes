@@ -29,14 +29,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.IntroData
+import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.view.adapters.IntroAdapter
 import com.nrs.nsnik.notes.view.customViews.CirclePagerIndicatorDecoration
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.fragment_intro.*
 import kotlinx.android.synthetic.main.recycler_view.*
 
 
@@ -53,6 +58,7 @@ class IntroFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialize()
+        listeners()
     }
 
     private fun initialize() {
@@ -70,6 +76,28 @@ class IntroFragment : Fragment() {
         recyclerView.addItemDecoration(CirclePagerIndicatorDecoration())
 
         introAdapter.submitList(imageList)
+    }
+
+    private fun listeners() {
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                introNext.visibility = if (endReached()) View.VISIBLE else View.GONE
+            }
+        })
+        compositeDisposable.addAll(
+                RxView.clicks(introNext).subscribe {
+                    AppUtil.saveIsVisitedIntro(activity)
+                    activity?.findNavController(R.id.mainNavHost)?.popBackStack()
+                }
+        )
+    }
+
+    private fun endReached(): Boolean {
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val pos = layoutManager.findLastCompletelyVisibleItemPosition()
+        val numItems = recyclerView.adapter?.itemCount
+        return pos >= numItems?.minus(1)!!
     }
 
     private fun cleanUp() {
