@@ -26,25 +26,20 @@ package com.nrs.nsnik.notes.view.fragments
 import android.Manifest
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.app.TimePickerDialog
-import android.content.ComponentName
-import android.content.Context.ALARM_SERVICE
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
+import android.os.Debug
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.*
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -60,11 +55,9 @@ import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.NoteEntity
 import com.nrs.nsnik.notes.model.CheckListObject
-import com.nrs.nsnik.notes.util.FileUtil
-import com.nrs.nsnik.notes.util.PasswordUtil
+import com.nrs.nsnik.notes.util.*
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
 import com.nrs.nsnik.notes.util.events.FullScreenEvent
-import com.nrs.nsnik.notes.util.receiver.NotificationReceiver
 import com.nrs.nsnik.notes.view.adapters.AudioListAdapter
 import com.nrs.nsnik.notes.view.adapters.CheckListAdapter
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter
@@ -72,12 +65,14 @@ import com.nrs.nsnik.notes.view.customViews.CirclePagerIndicatorDecoration
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ActionAlertDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment
 import com.nrs.nsnik.notes.view.listeners.AdapterType
+import com.nrs.nsnik.notes.view.listeners.AudioRecordListener
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
 import com.twitter.serial.serializer.CollectionSerializers
 import com.twitter.serial.serializer.CoreSerializers
 import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
+import hugo.weaving.DebugLog
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_new_note.*
 import kotlinx.android.synthetic.main.new_note_tools.*
@@ -89,7 +84,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
+class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, AudioRecordListener {
 
     companion object {
         private const val ATTACH_PICTURE_REQUEST_CODE = 205
@@ -140,8 +135,10 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Debug.startMethodTracing()
         initialize()
         listeners()
+        Debug.stopMethodTracing()
     }
 
     private fun initialize() {
@@ -213,22 +210,22 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
                 RxView.clicks(toolsCamera).subscribe({
                     changeState()
-                    checkWriteExternalStoragePermission()
+                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, EXTERNAL_STORAGE_PERMISSION_CODE, ::startCameraIntent)
                 }, { throwable -> Timber.d(throwable.message) }),
 
                 RxView.clicks(toolsAttachment).subscribe({
                     changeState()
-                    checkReadExternalStoragePermission()
+                    checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE_PERMISSION, ::startGalleryIntent)
                 }, { throwable -> Timber.d(throwable.message) }),
 
                 RxView.clicks(toolsAudio).subscribe({
                     changeState()
-                    checkAudioRecordPermission()
+                    checkPermission(Manifest.permission.RECORD_AUDIO, RECORD_AUDIO_PERMISSION_CODE, ::recordAudio)
                 }, { throwable -> Timber.d(throwable.message) }),
 
                 RxView.clicks(toolsReminder).subscribe({
                     changeState()
-                    setReminder()
+                    ReminderUtil.setReminder(activity!!, newNoteTitle.text.toString(), newNoteContent.text.toString())
                 }, { throwable -> Timber.d(throwable.message) }),
 
                 RxView.clicks(toolsColor).subscribe({
@@ -250,12 +247,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.newNoteMenuSave -> {
-                if (verifyAndSave()) if (mNoteEntity == null) noteAction(NoteEntity(), ActionType.SAVE) else noteAction(mNoteEntity!!, ActionType.UPDATE)
-            }
-            R.id.newNoteMenuDelete -> {
-                createDeleteDialog()
-            }
+            R.id.newNoteMenuSave -> if (verifyAndSave()) if (mNoteEntity == null) noteAction(NoteEntity(), ActionType.SAVE) else noteAction(mNoteEntity!!, ActionType.UPDATE)
+            R.id.newNoteMenuDelete -> createDeleteDialog()
             R.id.newNoteMenuStar -> mIsStarred = setMenuState(mIsStarred, item, R.drawable.ic_star_black_48px, R.drawable.ic_star_border_black_48px, "Starred")
             R.id.newNoteMenuLock -> setLock(item)
             android.R.id.home -> activity?.findNavController(R.id.mainNavHost)?.navigateUp()
@@ -264,9 +257,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     }
 
     private fun setLock(item: MenuItem) {
-        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password")) {
+        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password"))
             mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_black_48px, R.drawable.ic_lock_open_black_48px, "Locked")
-        }
     }
 
     private fun setMenuState(state: Int, item: MenuItem, drawable: Int = 0, drawableAlt: Int = 0, message: String): Int {
@@ -281,6 +273,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         }
     }
 
+    @DebugLog
     private fun setNote() {
 
         mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
@@ -290,9 +283,9 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         val imageUri: Uri? = arguments?.getParcelable(activity?.resources?.getString(R.string.bundleReceiveIntentImage))
         val imageUris: List<Uri?>? = arguments?.getParcelableArrayList(activity?.resources?.getString(R.string.bundleReceiveIntentImageList))
 
-        if (imageUri != null) addGalleryPhotoToList(imageUri)
+        if (imageUri != null) saveImage(MediaStore.Images.Media.getBitmap(activity?.contentResolver, imageUri))
         else imageUris?.forEach {
-            addGalleryPhotoToList(it!!)
+            saveImage(MediaStore.Images.Media.getBitmap(activity?.contentResolver, it))
         }
 
         mNoteEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteEntity)), NoteEntity.SERIALIZER)
@@ -320,7 +313,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 
             mIsLocked = mNoteEntity?.locked!!
 
-            toolsDate.text = getTimeDifference(Calendar.getInstance().timeInMillis - mNoteEntity?.dateModified?.time!!)
+            toolsDate.text = AppUtil.getTimeDifference(Calendar.getInstance().timeInMillis - mNoteEntity?.dateModified?.time!!)
 
             if (mNoteEntity?.imageList != null && mNoteEntity?.imageList?.isNotEmpty()!!) {
                 newNoteImageList.visibility = View.VISIBLE
@@ -353,15 +346,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         mLockMenu?.setIcon(if (mIsLocked == 1) R.drawable.ic_lock_black_48px else R.drawable.ic_lock_open_black_48px)
     }
 
-    private fun getTimeDifference(diff: Long): String {
-        val seconds = (diff / 1000).toInt()
-        if (seconds < 60) return "$seconds sec ago"
-        val minutes = (seconds / 60)
-        if (minutes < 60) return "$minutes min ago"
-        val hours = (minutes / 60)
-        return "$hours hrs ago"
-    }
-
     private fun addCheckListItem() {
         val list = CheckListObject()
         list.text = ""
@@ -390,28 +374,12 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         recyclerView.visibility = if (list.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun checkWriteExternalStoragePermission() {
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), EXTERNAL_STORAGE_PERMISSION_CODE)
+    private fun checkPermission(permission: String, requestCode: Int, action: () -> Unit) {
+        if (ActivityCompat.checkSelfPermission(activity!!, permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity!!, arrayOf(permission), requestCode)
             return
         }
-        startCameraIntent()
-    }
-
-    private fun checkReadExternalStoragePermission() {
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_EXTERNAL_STORAGE_PERMISSION)
-            return
-        }
-        startGalleryIntent()
-    }
-
-    private fun checkAudioRecordPermission() {
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_AUDIO_PERMISSION_CODE)
-            return
-        }
-        recordAudio()
+        action()
     }
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -452,102 +420,26 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
             Toast.makeText(activity!!, activity?.resources?.getString(R.string.noGallery), Toast.LENGTH_LONG).show()
     }
 
-    private fun addGalleryPhotoToList(imageUri: Uri) {
-        try {
-            val image = MediaStore.Images.Media.getBitmap(activity?.contentResolver, imageUri)
-            val imageFileName = makeName(FILE_TYPES.IMAGE)
-            mFileUtil.saveImage(image, imageFileName)
-            addImageToList(imageFileName)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun addCameraPhotoToList() {
-        val image = BitmapFactory.decodeFile(mCurrentPhotoPath)
-        val imageFileName = makeName(FILE_TYPES.IMAGE)
-        try {
-            mFileUtil.saveImage(image, imageFileName)
-            addImageToList(imageFileName)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
+    private fun saveImage(image: Bitmap) {
+        val imageFileName = AppUtil.makeName(FILE_TYPES.IMAGE)
+        mFileUtil.saveImage(image, imageFileName)
+        addImageToList(imageFileName)
     }
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     private fun recordAudio() {
-        //Creating new file for audio
-        val audioFileName = makeName(FILE_TYPES.AUDIO)
-        val audioFileAbsolutePath = File(mRootFolder, audioFileName)
-
-        //Initializing the media recorder
-        val recorder = MediaRecorder()
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-        recorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB)
-        recorder.setOutputFile(audioFileAbsolutePath.absolutePath)
-
-        //Creating the audio recorder dialog
-        val record = AlertDialog.Builder(activity!!)
-        record.setMessage(resources.getString(R.string.audioRecording))
-        record.setNeutralButton(resources.getString(R.string.audioStopRecording)) { dialogInterface, i ->
-            recorder.stop()
-            recorder.reset()
-            recorder.release()
-            addAudioToList(audioFileName)
-        }
-        record.setCancelable(false)
-        record.create().show()
-
-        try {
-            recorder.prepare()
-            recorder.start()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
+        AudioUtil.recordAudio(activity!!, mRootFolder, this)
     }
 
-    private fun setReminder() {
-        val calendar = Calendar.getInstance()
-        val time = TimePickerDialog(activity!!, { timePicker, hour, minutes ->
-            mHasReminder = 1
-            setNotification(calendar, hour, minutes)
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false)
-        time.show()
-    }
-
-    private fun setNotification(calendar: Calendar, hour: Int, minutes: Int) {
-        val myIntent = Intent(activity!!, NotificationReceiver::class.java)
-        myIntent.putExtra(resources.getString(R.string.notificationTitle), newNoteTitle.text.toString())
-        myIntent.putExtra(resources.getString(R.string.notificationContent), newNoteContent.text.toString())
-
-        val alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-
-        val pendingIntent = PendingIntent.getBroadcast(activity!!, 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        calendar.set(Calendar.HOUR_OF_DAY, hour)
-        calendar.set(Calendar.MINUTE, minutes)
-
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
-    }
-
-    private fun cancelReminder() {
-        val receiver = ComponentName(activity, NotificationReceiver::class.java)
-        val packageManager: PackageManager = activity!!.packageManager
-        packageManager.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
-        val intent = Intent(context, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.cancel(pendingIntent)
-        pendingIntent.cancel()
+    override fun audioRecorded(fileName: String) {
+        addAudioToList(fileName)
     }
 
     private fun noteAction(noteEntity: NoteEntity, action: ActionType) {
         noteEntity.title = newNoteTitle.text.toString()
         noteEntity.noteContent = newNoteContent.text.toString()
         noteEntity.folderName = mFolderName
-        noteEntity.fileName = makeName(FILE_TYPES.TEXT)
+        noteEntity.fileName = AppUtil.makeName(FILE_TYPES.TEXT)
         noteEntity.color = mColorCode
         noteEntity.dateModified = Calendar.getInstance().time
         noteEntity.imageList = mImagesLocations
@@ -573,11 +465,9 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             ATTACH_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
-                if (data != null) addGalleryPhotoToList(data.data)
+                if (data != null) saveImage(MediaStore.Images.Media.getBitmap(activity?.contentResolver, data.data))
             }
-            TAKE_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
-                addCameraPhotoToList()
-            }
+            TAKE_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) saveImage(BitmapFactory.decodeFile(mCurrentPhotoPath))
         }
     }
 
@@ -622,16 +512,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
 //                .setActionTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
 //                .show()
 //    }
-
-
-    private fun makeName(type: FILE_TYPES): String {
-        val c = Calendar.getInstance()
-        return when (type) {
-            FILE_TYPES.TEXT -> c.timeInMillis.toString() + ".txt"
-            FILE_TYPES.IMAGE -> c.timeInMillis.toString() + ".jpg"
-            FILE_TYPES.AUDIO -> c.timeInMillis.toString() + ".3gp"
-        }
-    }
 
     private fun createDeleteDialog() {
         val resources = activity?.resources
@@ -678,7 +558,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener {
         newNoteImageList.findNavController().navigate(R.id.noteToImageList, bundle)
     }
 
-    private enum class FILE_TYPES {
+    enum class FILE_TYPES {
         TEXT, IMAGE, AUDIO
     }
 

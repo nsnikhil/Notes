@@ -29,6 +29,8 @@ import android.graphics.Color
 import androidx.navigation.findNavController
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.view.fragments.NewNoteFragment
+import java.util.*
 
 class AppUtil {
 
@@ -50,6 +52,23 @@ class AppUtil {
         fun saveIsVisitedIntro(activity: Activity?) {
             val sharedPreferences = (activity?.applicationContext as MyApplication).sharedPreferences
             sharedPreferences.edit().putBoolean(activity.resources.getString(R.string.bundleIntroWatched), true).apply()
+        }
+
+        fun getTimeDifference(diff: Long): String {
+            val seconds = diff / 1000
+            if (seconds < 60) return "$seconds sec ago"
+            val minutes = seconds / 60
+            if (minutes < 60) return "$minutes min ago"
+            val hours = minutes / 60
+            return "$hours hrs ago"
+        }
+
+        fun makeName(type: NewNoteFragment.FILE_TYPES): String {
+            return when (type) {
+                NewNoteFragment.FILE_TYPES.TEXT -> Calendar.getInstance().timeInMillis.toString() + ".txt"
+                NewNoteFragment.FILE_TYPES.IMAGE -> Calendar.getInstance().timeInMillis.toString() + ".jpg"
+                NewNoteFragment.FILE_TYPES.AUDIO -> Calendar.getInstance().timeInMillis.toString() + ".3gp"
+            }
         }
 
     }

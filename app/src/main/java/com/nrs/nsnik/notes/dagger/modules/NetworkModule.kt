@@ -37,7 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 @Module(includes = [(ContextModule::class)])
 class NetworkModule {
 
-    private val baseUrl: String = "http://159.89.165.119"
+    private val baseUrl: String = "http://138.68.74.29"
 
     @Provides
     @BaseUrl
