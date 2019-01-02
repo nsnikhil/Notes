@@ -35,93 +35,48 @@ class FolderViewModel(application: Application) : AndroidViewModel(application) 
 
     private val mDbUtil: DbUtil = (application as MyApplication).dbUtil
 
-    fun insertFolder(vararg folderEntities: FolderEntity) {
-        mDbUtil.insertFolder(*folderEntities)
-    }
+    fun insertFolder(vararg folderEntities: FolderEntity) = mDbUtil.insertFolder(*folderEntities)
 
-    fun updateFolder(vararg folderEntities: FolderEntity) {
-        mDbUtil.updateFolder(*folderEntities)
-    }
+    fun updateFolder(vararg folderEntities: FolderEntity) = mDbUtil.updateFolder(*folderEntities)
 
-    fun deleteFolder(vararg folderEntities: FolderEntity) {
-        mDbUtil.deleteFolder(*folderEntities)
-    }
+    fun deleteFolder(vararg folderEntities: FolderEntity) = mDbUtil.deleteFolder(*folderEntities)
 
-    fun deleteFolderByName(name: String) {
-        mDbUtil.deleteFolderByName(name)
-    }
+    fun deleteFolderByName(name: String) = mDbUtil.deleteFolderByName(name)
 
-    fun deleteFolderByParent(parentFolderName: String) {
-        mDbUtil.deleteFolderByParent(parentFolderName)
-    }
+    fun deleteFolderByParent(parentFolderName: String) = mDbUtil.deleteFolderByParent(parentFolderName)
 
-    fun getFolders(): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolders()
-    }
+    fun getFolders(): LiveData<List<FolderEntity>> = mDbUtil.getFolders()
 
-    fun getFolderById(id: Int): LiveData<FolderEntity> {
-        return mDbUtil.getFolderById(id)
-    }
+    fun getFolderById(id: Int): LiveData<FolderEntity> = mDbUtil.getFolderById(id)
 
-    fun getFolderByName(name: String): LiveData<FolderEntity> {
-        return mDbUtil.getFolderByName(name)
-    }
+    fun getFolderByName(name: String): LiveData<FolderEntity> = mDbUtil.getFolderByName(name)
 
-    fun searchFolder(query: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.searchFolder(query)
-    }
+    fun searchFolder(query: String): LiveData<List<FolderEntity>> = mDbUtil.searchFolder(query)
 
-    fun getFolderByParent(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByParent(parentFolderName)
-    }
+    fun getFolderByParent(parentFolderName: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByParent(parentFolderName)
 
-    fun getFolderByParentNoPinNoLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByParentNoPinNoLock(parentFolderName)
-    }
+    fun getFolderByParentNoPinNoLock(parentFolderName: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByParentNoPinNoLock(parentFolderName)
 
-    fun getFolderByParentPinNoLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByParentPinNoLock(parentFolderName)
-    }
+    fun getFolderByParentPinNoLock(parentFolderName: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByParentPinNoLock(parentFolderName)
 
-    fun getFolderByParentNoPinLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByParentNoPinLock(parentFolderName)
-    }
+    fun getFolderByParentNoPinLock(parentFolderName: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByParentNoPinLock(parentFolderName)
 
-    fun getFolderByParentPinLock(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByParentPinLock(parentFolderName)
-    }
+    fun getFolderByParentPinLock(parentFolderName: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByParentPinLock(parentFolderName)
 
-    fun getFolderByParentOrdered(parentFolderName: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByParentOrdered(parentFolderName)
-    }
+    fun getFolderByParentOrdered(parentFolderName: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByParentOrdered(parentFolderName)
 
-    fun getFolderByParentOrderedLock(parentFolder: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByParentOrderedLock(parentFolder)
-    }
+    fun getFolderByParentOrderedLock(parentFolder: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByParentOrderedLock(parentFolder)
 
-    fun getFolderByPin(isPinned: Int): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByPin(isPinned)
+    fun getFolderByPin(isPinned: Int): LiveData<List<FolderEntity>> = mDbUtil.getFolderByPin(isPinned)
 
-    }
+    fun getFolderByLock(isLocked: Int): LiveData<List<FolderEntity>> = mDbUtil.getFolderByLock(isLocked)
 
-    fun getFolderByLock(isLocked: Int): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByLock(isLocked)
+    fun getFolderByColor(color: String): LiveData<List<FolderEntity>> = mDbUtil.getFolderByColor(color)
 
-    }
+    fun changeFolderPinStatus(id: Int, pin: Int) = mDbUtil.changeFolderPinStatus(id, pin)
 
-    fun getFolderByColor(color: String): LiveData<List<FolderEntity>> {
-        return mDbUtil.getFolderByColor(color)
-    }
+    fun changeFolderLockStatus(id: Int, lock: Int) = mDbUtil.changeFolderLockStatus(id, lock)
 
-    fun changeFolderPinStatus(id: Int, pin: Int) {
-        return mDbUtil.changeFolderPinStatus(id, pin)
-    }
+    fun changeFolderParent(id: Int, parentFolderName: String) = mDbUtil.changeFolderParent(id, parentFolderName)
 
-    fun changeFolderLockStatus(id: Int, lock: Int) {
-        return mDbUtil.changeFolderLockStatus(id, lock)
-    }
-
-    fun changeFolderParent(id: Int, parentFolderName: String) {
-        return mDbUtil.changeFolderParent(id, parentFolderName)
-    }
 }

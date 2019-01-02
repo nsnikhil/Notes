@@ -168,7 +168,7 @@ class NotesAdapter(private val mContext: Context,
                     noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
                     noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                     noteViewHolder.noteContent.compoundDrawablePadding = 0
-                    noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.contentColor))
+                    //noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.contentColor))
                 } else {
                     noteViewHolder.noteContent.visibility = View.GONE
                 }
@@ -184,7 +184,7 @@ class NotesAdapter(private val mContext: Context,
                 noteViewHolder.noteContent.text = mContext.resources?.getString(R.string.hidden)
                 noteViewHolder.noteImage.visibility = View.GONE
                 noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.grey))
-                noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_lock_black_48px, 0, 0, 0)
+                noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_lock_48px, 0, 0, 0)
                 noteViewHolder.noteContent.compoundDrawablePadding = 4
             }
 
@@ -301,7 +301,7 @@ class NotesAdapter(private val mContext: Context,
     internal inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val itemHeader: TextView = itemView.itemHeader
-        val itemHeaderMore: ImageView = itemView.itemHeaderMore
+        private val itemHeaderMore: ImageView = itemView.itemHeaderMore
         val itemHeaderContainer: ConstraintLayout = itemView.itemHeaderContainer
 
 

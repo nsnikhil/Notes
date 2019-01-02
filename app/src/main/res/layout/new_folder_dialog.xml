@@ -48,7 +48,7 @@
         android:clickable="true"
         android:contentDescription="@string/imageDescription"
         android:focusable="true"
-        android:src="@drawable/ic_lock_open_black_48px"
+        android:src="@drawable/ic_lock_open_48px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/dialogFolderName"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
         android:clickable="true"
         android:contentDescription="@string/imageDescription"
         android:focusable="true"
-        android:src="@drawable/ic_star_border_black_48px"
+        android:src="@drawable/ic_star_border_48px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/dialogFolderLock"
         app:layout_constraintTop_toBottomOf="@id/dialogFolderName" />

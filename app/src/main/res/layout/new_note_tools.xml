@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="?selectableItemBackground"
-        android:drawableEnd="@drawable/ic_add_box_black_24px"
+        android:drawableEnd="@drawable/ic_add_box_24px"
         android:text="@string/noteToolsDate"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +49,7 @@
     <TextView
         android:id="@+id/toolsCheckList"
         style="@style/bottomToolText"
-        android:drawableTop="@drawable/ic_list_black_24px"
+        android:drawableTop="@drawable/ic_list_24px"
         android:text="@string/noteToolCheckList"
         app:layout_constraintEnd_toStartOf="@id/toolsCamera"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,7 @@
     <TextView
         android:id="@+id/toolsCamera"
         style="@style/bottomToolText"
-        android:drawableTop="@drawable/ic_camera_alt_black_24px"
+        android:drawableTop="@drawable/ic_camera_alt_24px"
         android:text="@string/noteToolCamera"
         app:layout_constraintEnd_toStartOf="@id/toolsAttachment"
         app:layout_constraintStart_toEndOf="@id/toolsCheckList"
@@ -67,7 +67,7 @@
     <TextView
         android:id="@+id/toolsAttachment"
         style="@style/bottomToolText"
-        android:drawableTop="@drawable/ic_attach_file_black_24px"
+        android:drawableTop="@drawable/ic_attach_file_24px"
         android:text="@string/noteToolAttachment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/toolsCamera"
@@ -76,7 +76,7 @@
     <TextView
         android:id="@+id/toolsReminder"
         style="@style/bottomToolText"
-        android:drawableTop="@drawable/ic_alarm_add_black_24px"
+        android:drawableTop="@drawable/ic_alarm_add_24px"
         android:text="@string/noteToolReminder"
         app:layout_constraintEnd_toEndOf="@id/toolsCheckList"
         app:layout_constraintStart_toStartOf="@id/toolsCheckList"
@@ -85,7 +85,7 @@
     <TextView
         android:id="@+id/toolsAudio"
         style="@style/bottomToolText"
-        android:drawableTop="@drawable/ic_music_note_black_24px"
+        android:drawableTop="@drawable/ic_music_note_24px"
         android:text="@string/noteToolAudio"
         app:layout_constraintEnd_toEndOf="@id/toolsCamera"
         app:layout_constraintStart_toStartOf="@id/toolsCamera"
@@ -94,7 +94,7 @@
     <TextView
         android:id="@+id/toolsColor"
         style="@style/bottomToolText"
-        android:drawableTop="@drawable/ic_color_lens_black_24px"
+        android:drawableTop="@drawable/ic_color_lens_24px"
         android:text="@string/noteToolColor"
         app:layout_constraintEnd_toEndOf="@id/toolsAttachment"
         app:layout_constraintStart_toStartOf="@id/toolsAttachment"

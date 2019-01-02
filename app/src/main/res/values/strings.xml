@@ -66,7 +66,7 @@
     <string name="newNote">Note</string>
     <string name="addNote">Add Note</string>
     <string name="editNote">Edit Note</string>
-    <string name="createNote">New Note</string>
+    <string name="createNote">Add Note</string>
     <!-- -->
 
     <!-- search-->
@@ -171,7 +171,7 @@
     <!-- -->
 
     <!-- folderModifications-->
-    <string name="createFolder">New Folder</string>
+    <string name="createFolder">Add Folder</string>
     <string name="newfoldername">Folder Name</string>
     <string name="newfoldercreated"> New Folder Created</string>
     <string name="newfoldernotcreated">Error while creating new folder</string>

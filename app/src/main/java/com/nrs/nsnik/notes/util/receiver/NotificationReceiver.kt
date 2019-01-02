@@ -33,7 +33,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.RingtoneManager
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.SplashActivity
@@ -72,24 +71,21 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val notificationManager = context.getSystemService(NotificationManager::class.java)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            val channelId: String = context.resources.getString(R.string.notificationChannelReminderId)
+        val channelId: String = context.resources.getString(R.string.notificationChannelReminderId)
 
-            val notificationChannel = NotificationChannel(channelId, context.resources.getString(R.string.notificationChannelReminder), NotificationManager.IMPORTANCE_DEFAULT)
-            notificationChannel.description = context.resources.getString(R.string.notificationChannelReminderDescription)
-            notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.RED
-            notificationChannel.enableVibration(true)
-            notificationChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+        val notificationChannel = NotificationChannel(channelId, context.resources.getString(R.string.notificationChannelReminder), NotificationManager.IMPORTANCE_DEFAULT)
+        notificationChannel.description = context.resources.getString(R.string.notificationChannelReminderDescription)
+        notificationChannel.enableLights(true)
+        notificationChannel.lightColor = Color.RED
+        notificationChannel.enableVibration(true)
+        notificationChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
 
-            notificationBuilder.setChannelId(channelId)
+        notificationBuilder.setChannelId(channelId)
 
-            notificationManager?.createNotificationChannel(notificationChannel)
-            notificationManager?.notify(1, notificationBuilder.build())
+        notificationManager?.createNotificationChannel(notificationChannel)
+        notificationManager?.notify(1, notificationBuilder.build())
 
-        } else
-            notificationManager?.notify(1, notificationBuilder.build())
 
     }
 }

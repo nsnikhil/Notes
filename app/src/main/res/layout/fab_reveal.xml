@@ -38,6 +38,7 @@
         <TextView
             style="@style/revealFabText"
             android:text="@string/createFolder"
+            android:background="@drawable/rounded_corner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/fabAddFolder"
             app:layout_constraintTop_toTopOf="parent" />
@@ -47,7 +48,7 @@
             style="@style/wrapContent"
             android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/eight"
-            android:src="@drawable/ic_create_new_folder_white_48px"
+            android:src="@drawable/ic_create_new_folder_48px"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -66,6 +67,7 @@
         <TextView
             style="@style/revealFabText"
             android:text="@string/createNote"
+            android:background="@drawable/rounded_corner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/fabAddNote"
             app:layout_constraintTop_toTopOf="parent" />
@@ -75,7 +77,7 @@
             style="@style/wrapContent"
             android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/eight"
-            android:src="@drawable/ic_note_add_white_48px"
+            android:src="@drawable/ic_note_add_48px"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +89,7 @@
         android:id="@+id/fabAdd"
         style="@style/wrapContent"
         android:layout_margin="@dimen/eight"
-        android:src="@drawable/ic_add_white_48px"
+        android:src="@drawable/ic_add_black_48px"
         android:clipChildren="false"
         app:fabSize="normal"
         app:layout_constraintEnd_toEndOf="parent"

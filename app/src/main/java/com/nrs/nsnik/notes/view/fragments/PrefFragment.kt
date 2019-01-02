@@ -56,27 +56,29 @@ class PrefFragment : Fragment() {
         initialize()
     }
 
+    private fun getResourceString(id: Int): String? = activity?.resources?.getString(id)
+
     @DebugLog
     private fun initializeItems() {
         prefItemChangePassword.text = getString(
-                activity?.resources?.getString(R.string.preferenceChangeCode)!!,
-                activity?.resources?.getString(R.string.preferenceChangeCodeSummary)!!
+                getResourceString(R.string.preferenceChangeCode)!!,
+                getResourceString(R.string.preferenceChangeCodeSummary)!!
         )
         prefItemPrivacySendData.text = getString(
-                activity?.resources?.getString(R.string.preferenceSendData)!!,
-                activity?.resources?.getString(R.string.preferenceSendDataSummary)!!
+                getResourceString(R.string.preferenceSendData)!!,
+                getResourceString(R.string.preferenceSendDataSummary)!!
         )
         prefItemPrivacyErrorReport.text = getString(
-                activity?.resources?.getString(R.string.preferenceErrorReporting)!!,
-                activity?.resources?.getString(R.string.preferenceErrorReportingSummary)!!
+                getResourceString(R.string.preferenceErrorReporting)!!,
+                getResourceString(R.string.preferenceErrorReportingSummary)!!
         )
         prefItemRestoreData.text = getString(
-                activity?.resources?.getString(R.string.preferenceRestore)!!,
-                activity?.resources?.getString(R.string.preferenceRestoreSummary)!!
+                getResourceString(R.string.preferenceRestore)!!,
+                getResourceString(R.string.preferenceRestoreSummary)!!
         )
         prefItemBackupData.text = getString(
-                activity?.resources?.getString(R.string.preferenceBackup)!!,
-                activity?.resources?.getString(R.string.preferenceBackupSummary)!!
+                getResourceString(R.string.preferenceBackup)!!,
+                getResourceString(R.string.preferenceBackupSummary)!!
         )
     }
 
@@ -93,7 +95,7 @@ class PrefFragment : Fragment() {
     }
 
     private fun getString(title: String, summary: String): Spanned {
-        return Html.fromHtml("<font color='#000000'>$title</font> <br> <font color='#9E9E9E'>$summary</font>", Html.FROM_HTML_MODE_LEGACY)
+        return Html.fromHtml("<font color='#FFFFFF'>$title</font> <br> <font color='#9E9E9E'>$summary</font>", Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun openPasswordDialog() {

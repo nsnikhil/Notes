@@ -101,7 +101,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     private var mIsStarred: Int = 0
     private var mHasReminder: Int = 0
 
-    private var mColorCode: String = "#333333"
+    private var mColorCode: String = "#F8F8FF"
 
     private var mStarMenu: MenuItem? = null
     private var mLockMenu: MenuItem? = null
@@ -163,6 +163,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
                         BottomSheetBehavior.STATE_DRAGGING -> {
                         }
                         BottomSheetBehavior.STATE_SETTLING -> {
+                        }
+                        BottomSheetBehavior.STATE_HALF_EXPANDED -> {
                         }
                     }
                 }
@@ -249,7 +251,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         when (item.itemId) {
             R.id.newNoteMenuSave -> if (verifyAndSave()) if (mNoteEntity == null) noteAction(NoteEntity(), ActionType.SAVE) else noteAction(mNoteEntity!!, ActionType.UPDATE)
             R.id.newNoteMenuDelete -> createDeleteDialog()
-            R.id.newNoteMenuStar -> mIsStarred = setMenuState(mIsStarred, item, R.drawable.ic_star_black_48px, R.drawable.ic_star_border_black_48px, "Starred")
+            R.id.newNoteMenuStar -> mIsStarred = setMenuState(mIsStarred, item, R.drawable.ic_star_48px, R.drawable.ic_star_border_48px, "Starred")
             R.id.newNoteMenuLock -> setLock(item)
             android.R.id.home -> activity?.findNavController(R.id.mainNavHost)?.navigateUp()
         }
@@ -258,7 +260,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
 
     private fun setLock(item: MenuItem) {
         if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password"))
-            mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_black_48px, R.drawable.ic_lock_open_black_48px, "Locked")
+            mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_48px, R.drawable.ic_lock_open_48px, "Locked")
     }
 
     private fun setMenuState(state: Int, item: MenuItem, drawable: Int = 0, drawableAlt: Int = 0, message: String): Int {
@@ -342,8 +344,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     }
 
     private fun setMenuIconState() {
-        mStarMenu?.setIcon(if (mIsStarred == 1) R.drawable.ic_star_black_48px else R.drawable.ic_star_border_black_48px)
-        mLockMenu?.setIcon(if (mIsLocked == 1) R.drawable.ic_lock_black_48px else R.drawable.ic_lock_open_black_48px)
+        mStarMenu?.setIcon(if (mIsStarred == 1) R.drawable.ic_star_48px else R.drawable.ic_star_border_48px)
+        mLockMenu?.setIcon(if (mIsLocked == 1) R.drawable.ic_lock_48px else R.drawable.ic_lock_open_48px)
     }
 
     private fun addCheckListItem() {
@@ -518,9 +520,9 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         ActionAlertDialog.showDialog(
                 activity!!,
                 resources?.getString(R.string.warning)!!,
-                resources.getString(R.string.deleteSingleNoteWarning)!!,
-                resources.getString(R.string.yes)!!,
-                resources.getString(R.string.no)!!,
+                resources.getString(R.string.deleteSingleNoteWarning),
+                resources.getString(R.string.yes),
+                resources.getString(R.string.no),
                 DialogInterface.OnClickListener { dialogInterface, i ->
                     activity?.findNavController(R.id.mainNavHost)?.navigateUp()
                     mNoteViewModel.deleteNote(mNoteEntity!!)

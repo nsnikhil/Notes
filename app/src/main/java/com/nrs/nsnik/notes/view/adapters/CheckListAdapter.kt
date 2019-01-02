@@ -80,7 +80,7 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, priv
     private fun modifyText(textView: TextView, done: Boolean) {
         textView.apply {
             paintFlags = if (done) textView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            if (done) textView.setTextColor(ContextCompat.getColor(context, R.color.grey)) else textView.setTextColor(ContextCompat.getColor(context, android.R.color.background_dark))
+            if (done) textView.setTextColor(ContextCompat.getColor(context, R.color.grey)) else textView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent))
         }
     }
 

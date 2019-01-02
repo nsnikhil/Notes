@@ -28,7 +28,7 @@
     <item
         android:width="36dp"
         android:height="36dp"
-        android:drawable="@drawable/ic_search_black_48px"
+        android:drawable="@drawable/ic_search_48px"
         android:gravity="center" />
 
 </layer-list>

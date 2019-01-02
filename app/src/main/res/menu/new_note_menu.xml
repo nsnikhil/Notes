@@ -26,19 +26,19 @@
 
     <item
         android:id="@+id/newNoteMenuSave"
-        android:icon="@drawable/ic_done_black_48px"
+        android:icon="@drawable/ic_done_48px"
         android:title="@string/menuNoteSave"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/newNoteMenuStar"
-        android:icon="@drawable/ic_star_border_black_48px"
+        android:icon="@drawable/ic_star_border_48px"
         android:title="@string/menuNoteStar"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/newNoteMenuLock"
-        android:icon="@drawable/ic_lock_open_black_48px"
+        android:icon="@drawable/ic_lock_open_48px"
         android:title="@string/menuNoteLock"
         app:showAsAction="ifRoom" />
 

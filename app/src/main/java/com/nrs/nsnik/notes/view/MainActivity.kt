@@ -27,7 +27,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.NonNull
@@ -36,13 +35,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.test.espresso.IdlingResource
 import com.nrs.nsnik.notes.BuildConfig
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.util.idlingResource.SimpleIdlingResource
+import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONException
+import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
@@ -62,18 +66,34 @@ class MainActivity : AppCompatActivity() {
         handleIntent()
     }
 
-    override fun onSupportNavigateUp() = findNavController(R.id.mainNavHost).navigateUp()
+    //override fun onSupportNavigateUp() = findNavController(R.id.mainNavHost).navigateUp()
+
+    override fun onResume() {
+        super.onResume()
+        if (Branch.isAutoDeepLinkLaunch(this)) {
+            try {
+                val autoDeeplinkedValue = Branch.getInstance().latestReferringParams.getString("noteTitle")
+                Timber.d("Launched by Branch on auto deep linking!\n\n$autoDeeplinkedValue")
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+
+        } else {
+            Timber.d("Launched by normal application flow")
+        }
+    }
 
     private fun initialize() {
         setSupportActionBar(mainToolbar)
         supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px)
+            //            setDisplayHomeAsUpEnabled(true)
+//            setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px)
         }
 
         val controller = findNavController(R.id.mainNavHost)
 
-        controller.addOnNavigatedListener { navController, destination ->
+
+        controller.addOnDestinationChangedListener { navController, destination, arguments ->
             isOnListFragment = destination.id == R.id.navItemNotes
             mainToolbar.visibility = if (destination.id == R.id.introFragment) View.GONE else View.VISIBLE
             mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -89,19 +109,25 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(this, controller, mainDrawerLayout)
 
+        AppBarConfiguration(controller.graph, mainDrawerLayout)
+
+        mainNavigationView.setupWithNavController(controller)
+
+        mainToolbar.setupWithNavController(controller)
+
         mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navItemNotes -> {
-                    mainDrawerLayout.closeDrawer(Gravity.START)
+                    mainDrawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemSettings -> {
-                    mainDrawerLayout.closeDrawer(Gravity.START)
+                    mainDrawerLayout.closeDrawer(GravityCompat.START)
                     findNavController(R.id.mainNavHost).navigate(R.id.navItemSettings)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemAbout -> {
-                    mainDrawerLayout.closeDrawer(Gravity.START)
+                    mainDrawerLayout.closeDrawer(GravityCompat.START)
                     findNavController(R.id.mainNavHost).navigate(R.id.navItemAbout)
                     return@setNavigationItemSelectedListener true
                 }
@@ -143,11 +169,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleSendImage(intent: Intent) {
         val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri
-        if (imageUri != null) {
-            val bundle = Bundle()
-            bundle.putParcelable(resources.getString(R.string.bundleReceiveIntentImage), imageUri)
-            findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
-        }
+        val bundle = Bundle()
+        bundle.putParcelable(resources.getString(R.string.bundleReceiveIntentImage), imageUri)
+        findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
     }
 
     private fun handleSendMultipleImages(intent: Intent) {
@@ -180,9 +204,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (BuildConfig.DEBUG) {
-            val refWatcher = MyApplication.getRefWatcher(this)
-            refWatcher!!.watch(this)
-        }
+        if (BuildConfig.DEBUG) MyApplication.getRefWatcher(this)?.watch(this)
     }
 }

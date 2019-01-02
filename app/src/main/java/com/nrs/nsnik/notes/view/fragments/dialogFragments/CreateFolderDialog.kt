@@ -53,7 +53,7 @@ import org.greenrobot.eventbus.Subscribe
 class CreateFolderDialog : DialogFragment() {
 
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private var mColor = "#212121"
+    private var mColor = "#F8F8FF"
     private var isLocked = 0
     private var isStarred = 0
     private lateinit var mFolderViewModel: FolderViewModel
@@ -85,10 +85,10 @@ class CreateFolderDialog : DialogFragment() {
                 dialogFolderColor!!.backgroundTintList = AppUtil.stateList(mColor)
 
                 isLocked = folderEntity?.locked!!
-                dialogFolderLock.setImageDrawable(if (isLocked == 1) getDrawable(R.drawable.ic_lock_black_48px) else getDrawable(R.drawable.ic_lock_open_black_48px))
+                dialogFolderLock.setImageDrawable(if (isLocked == 1) getDrawable(R.drawable.ic_lock_48px) else getDrawable(R.drawable.ic_lock_open_48px))
 
                 isStarred = folderEntity?.pinned!!
-                dialogFolderStar.setImageDrawable(if (isStarred == 1) getDrawable(R.drawable.ic_star_black_48px) else getDrawable(R.drawable.ic_star_border_black_48px))
+                dialogFolderStar.setImageDrawable(if (isStarred == 1) getDrawable(R.drawable.ic_star_48px) else getDrawable(R.drawable.ic_star_border_48px))
 
                 mParentFolderName = folderEntity?.parentFolderName!!
 
@@ -119,15 +119,15 @@ class CreateFolderDialog : DialogFragment() {
                 RxView.clicks(dialogFolderCancel).subscribe { dismiss() },
                 RxView.clicks(dialogFolderLock).subscribe { setLock() },
                 RxView.clicks(dialogFolderStar).subscribe {
-                    isStarred = changeValue(dialogFolderStar, isStarred, getDrawable(R.drawable.ic_star_black_48px),
-                            getDrawable(R.drawable.ic_star_border_black_48px))
+                    isStarred = changeValue(dialogFolderStar, isStarred, getDrawable(R.drawable.ic_star_48px),
+                            getDrawable(R.drawable.ic_star_border_48px))
                 }
         )
     }
 
     private fun setLock() {
         if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password"))
-            isLocked = changeValue(dialogFolderLock, isLocked, getDrawable(R.drawable.ic_lock_black_48px), getDrawable(R.drawable.ic_lock_open_black_48px))
+            isLocked = changeValue(dialogFolderLock, isLocked, getDrawable(R.drawable.ic_lock_48px), getDrawable(R.drawable.ic_lock_open_48px))
     }
 
     private fun getDrawable(drawableId: Int): Drawable {

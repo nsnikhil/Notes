@@ -44,10 +44,10 @@
             android:layout_gravity="end"
             android:layout_margin="@dimen/eight"
             android:background="@drawable/circle"
-            android:backgroundTint="@color/materialWhite"
+            android:backgroundTint="@color/colorPrimary"
             android:contentDescription="@string/imageDescription"
             android:elevation="@dimen/eight"
-            android:src="@drawable/ic_cancel_black_24px" />
+            android:src="@drawable/ic_cancel_24px" />
 
         <ImageView
             android:id="@+id/singleImage"

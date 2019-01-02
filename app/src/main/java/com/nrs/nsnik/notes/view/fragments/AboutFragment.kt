@@ -75,14 +75,12 @@ class AboutFragment : Fragment() {
     /**
      * @param url display the url supplied im a chrome custom tab
      */
-    private fun chromeCustomTab(url: String) {
-        val builder = CustomTabsIntent.Builder()
-        builder.setToolbarColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
-        builder.setSecondaryToolbarColor(ContextCompat.getColor(activity!!, R.color.colorPrimaryDark))
-        builder.setExitAnimations(activity!!, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-        val customTabsIntent = builder.build()
-        customTabsIntent.launchUrl(activity!!, Uri.parse(url))
-    }
+    private fun chromeCustomTab(url: String) = CustomTabsIntent.Builder()
+            .setToolbarColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            .setSecondaryToolbarColor(ContextCompat.getColor(activity!!, R.color.colorPrimaryDark))
+            .setExitAnimations(activity!!, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+            .build()
+            .launchUrl(activity!!, Uri.parse(url))
 
 
     private fun cleanUp() {

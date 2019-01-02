@@ -41,6 +41,7 @@ import com.nrs.nsnik.notes.util.NetworkUtil
 import com.rollbar.android.Rollbar
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
+import io.branch.referral.Branch
 import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 import java.io.File
@@ -57,6 +58,7 @@ class MyApplication : Application() {
             val application = context.applicationContext as MyApplication
             return application.refWatcher
         }
+
     }
 
     private var contextModule: ContextModule = ContextModule(this)
@@ -67,10 +69,11 @@ class MyApplication : Application() {
     lateinit var rootFolder: File
     lateinit var fileUtil: FileUtil
     lateinit var sharedPreferences: SharedPreferences
-    lateinit var networkUtil: NetworkUtil
+    private lateinit var networkUtil: NetworkUtil
 
     override fun onCreate() {
         super.onCreate()
+        Branch.getAutoInstance(this)
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this)
             Timber.plant(object : Timber.DebugTree() {
@@ -105,33 +108,27 @@ class MyApplication : Application() {
     }
 
     private fun setDatabaseComponent() {
-        val databaseComponent = DaggerDatabaseComponent.builder().contextModule(contextModule).build()
-        dbUtil = databaseComponent.dbUtil
+        dbUtil = DaggerDatabaseComponent.builder().contextModule(contextModule).build().dbUtil
     }
 
     private fun setFolderComponent() {
-        val folderComponent = DaggerFolderComponent.builder().contextModule(contextModule).build()
-        rootFolder = folderComponent.rootFolder
+        rootFolder = DaggerFolderComponent.builder().contextModule(contextModule).build().rootFolder
     }
 
     private fun setFileComponent() {
-        val fileComponent = DaggerFileComponent.builder().contextModule(contextModule).build()
-        fileUtil = fileComponent.fileUtil
+        fileUtil = DaggerFileComponent.builder().contextModule(contextModule).build().fileUtil
     }
 
     private fun setGlideComponent() {
-        val glideComponent = DaggerGlideComponent.builder().contextModule(contextModule).build()
-        requestManager = glideComponent.requestManager
+        requestManager = DaggerGlideComponent.builder().contextModule(contextModule).build().requestManager
     }
 
     private fun setSharedPrefComponent() {
-        val sharedPrefComponent = DaggerSharedPrefComponent.builder().contextModule(contextModule).build()
-        sharedPreferences = sharedPrefComponent.sharedPreferences
+        sharedPreferences = DaggerSharedPrefComponent.builder().contextModule(contextModule).build().sharedPreferences
     }
 
     private fun setNetworkModule() {
-        val networkComponent = DaggerNetworkComponent.create()
-        networkUtil = networkComponent.getNetworkUtil()
+        networkUtil = DaggerNetworkComponent.create().getNetworkUtil()
     }
 
 }

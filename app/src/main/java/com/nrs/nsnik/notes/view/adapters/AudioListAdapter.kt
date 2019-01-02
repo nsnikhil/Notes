@@ -85,7 +85,7 @@ class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) :
             if (mAdapterSeekBar != null) {
                 mAdapterSeekBar!!.setProgress(0, true)
             }
-            play.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_arrow_black_24px))
+            play.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_arrow_24px))
         }
 
     }

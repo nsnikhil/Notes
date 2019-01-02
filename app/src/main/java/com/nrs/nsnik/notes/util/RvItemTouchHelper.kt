@@ -35,14 +35,9 @@ class RvItemTouchHelper(private val mListener: ItemTouchListener) : ItemTouchHel
     private var mDragFromPosition = -1
     private var mDragToPosition = -1
 
+    override fun isLongPressDragEnabled(): Boolean = false
 
-    override fun isLongPressDragEnabled(): Boolean {
-        return false
-    }
-
-    override fun isItemViewSwipeEnabled(): Boolean {
-        return false
-    }
+    override fun isItemViewSwipeEnabled(): Boolean = false
 
     /*
     returns the maximum value from starting index
@@ -139,8 +134,6 @@ class RvItemTouchHelper(private val mListener: ItemTouchListener) : ItemTouchHel
     }
 
     companion object {
-
-
         private val NOTES = 0
         private val FOLDER = 1
         private val HEADER = 2

@@ -24,8 +24,8 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval">
-            <solid android:color="@color/launcherShortcutBackground" />
-            <stroke android:color="@color/launcherShortcutBackground" />
+            <solid android:color="@color/colorPrimary" />
+            <stroke android:color="@color/colorPrimary" />
             <size android:width="48dp" android:height="48dp" />
         </shape>
     </item>

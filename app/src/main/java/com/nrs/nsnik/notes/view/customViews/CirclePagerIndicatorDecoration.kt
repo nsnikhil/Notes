@@ -25,6 +25,7 @@ package com.nrs.nsnik.notes.view.customViews
 
 import android.content.res.Resources
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
@@ -35,8 +36,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class CirclePagerIndicatorDecoration : RecyclerView.ItemDecoration() {
 
-    private val colorActive = -0x1000000
-    private val colorInactive = 0x66000000
+    private val colorActive = Color.WHITE
+    private val colorInactive = 0x66FFFFFF
 
     private val density = Resources.getSystem().displayMetrics.density
     private val indicatorHeight = (density * 16).toInt()

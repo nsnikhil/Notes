@@ -66,6 +66,7 @@
             android:layout_marginTop="@dimen/sixteen"
             android:fontFamily="@font/arvenirltstd_medium"
             android:text="@string/aboutLibraries"
+            app:backgroundTint="@color/colorPrimaryLight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/aboutSourceCode" />
@@ -78,6 +79,7 @@
             android:layout_marginTop="@dimen/sixteen"
             android:fontFamily="@font/arvenirltstd_medium"
             android:text="@string/aboutLicense"
+            app:backgroundTint="@color/colorPrimaryLight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/aboutLibraries" />

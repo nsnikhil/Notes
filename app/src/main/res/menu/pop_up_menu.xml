@@ -26,13 +26,13 @@
 
     <item
         android:id="@+id/popUpStar"
-        android:icon="@drawable/ic_star_black_48px"
+        android:icon="@drawable/ic_star_48px"
         android:title="@string/popUpStar"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/popUpLock"
-        android:icon="@drawable/ic_lock_black_48px"
+        android:icon="@drawable/ic_lock_48px"
         android:title="@string/popUpLock"
         app:showAsAction="ifRoom" />
 

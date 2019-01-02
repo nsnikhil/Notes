@@ -36,79 +36,41 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mDbUtil: DbUtil = (application as MyApplication).dbUtil
 
-    fun insertNote(vararg noteEntities: NoteEntity) {
-        mDbUtil.insertNote(*noteEntities)
-    }
+    fun insertNote(vararg noteEntities: NoteEntity) = mDbUtil.insertNote(*noteEntities)
 
-    fun updateNote(vararg noteEntities: NoteEntity) {
-        mDbUtil.updateNote(*noteEntities)
-    }
+    fun updateNote(vararg noteEntities: NoteEntity) = mDbUtil.updateNote(*noteEntities)
 
-    fun deleteNote(vararg noteEntities: NoteEntity) {
-        mDbUtil.deleteNote(*noteEntities)
-    }
+    fun deleteNote(vararg noteEntities: NoteEntity) = mDbUtil.deleteNote(*noteEntities)
 
-    fun deleteNoteByFolderName(folderName: String) {
-        mDbUtil.deleteNoteByFolderName(folderName)
-    }
+    fun deleteNoteByFolderName(folderName: String) = mDbUtil.deleteNoteByFolderName(folderName)
 
-    fun getNoteById(id: Int): LiveData<NoteEntity> {
-        return mDbUtil.getNoteById(id)
-    }
+    fun getNoteById(id: Int): LiveData<NoteEntity> = mDbUtil.getNoteById(id)
 
-    fun getNoteByFolderName(folderName: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNoteByFolderName(folderName)
-    }
+    fun getNoteByFolderName(folderName: String): LiveData<List<NoteEntity>> = mDbUtil.getNoteByFolderName(folderName)
 
-    fun getNoteByFolderNameNoPinNoLock(folderName: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNoteByFolderNameNoPinNoLock(folderName)
-    }
+    fun getNoteByFolderNameNoPinNoLock(folderName: String): LiveData<List<NoteEntity>> = mDbUtil.getNoteByFolderNameNoPinNoLock(folderName)
 
-    fun getNoteByFolderNamePinNoLock(folderName: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNoteByFolderNamePinNoLock(folderName)
-    }
+    fun getNoteByFolderNamePinNoLock(folderName: String): LiveData<List<NoteEntity>> = mDbUtil.getNoteByFolderNamePinNoLock(folderName)
 
-    fun getNoteByFolderNameNoPinLock(folderName: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNoteByFolderNameNoPinLock(folderName)
-    }
+    fun getNoteByFolderNameNoPinLock(folderName: String): LiveData<List<NoteEntity>> = mDbUtil.getNoteByFolderNameNoPinLock(folderName)
 
-    fun getNoteByFolderNamePinLock(folderName: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNoteByFolderNamePinLock(folderName)
-    }
+    fun getNoteByFolderNamePinLock(folderName: String): LiveData<List<NoteEntity>> = mDbUtil.getNoteByFolderNamePinLock(folderName)
 
-    fun getNoteByFolderNameOrdered(folderName: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNoteByFolderNameOrdered(folderName)
-    }
+    fun getNoteByFolderNameOrdered(folderName: String): LiveData<List<NoteEntity>> = mDbUtil.getNoteByFolderNameOrdered(folderName)
 
-    fun getNoteByFolderNameOrderedLock(folderName: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNoteByFolderNameOrderedLock(folderName)
-    }
+    fun getNoteByFolderNameOrderedLock(folderName: String): LiveData<List<NoteEntity>> = mDbUtil.getNoteByFolderNameOrderedLock(folderName)
 
-    fun searchNote(query: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.searchNote(query)
-    }
+    fun searchNote(query: String): LiveData<List<NoteEntity>> = mDbUtil.searchNote(query)
 
-    fun getNoteByPin(isPinned: Int): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNotesByPin(isPinned)
-    }
+    fun getNoteByPin(isPinned: Int): LiveData<List<NoteEntity>> = mDbUtil.getNotesByPin(isPinned)
 
-    fun getNoteByLock(isLocked: Int): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNotesByLock(isLocked)
-    }
+    fun getNoteByLock(isLocked: Int): LiveData<List<NoteEntity>> = mDbUtil.getNotesByLock(isLocked)
 
-    fun getNoteByColor(color: String): LiveData<List<NoteEntity>> {
-        return mDbUtil.getNotesByColor(color)
-    }
+    fun getNoteByColor(color: String): LiveData<List<NoteEntity>> = mDbUtil.getNotesByColor(color)
 
-    fun changeNotePinStatus(id: Int, pin: Int) {
-        return mDbUtil.changeNotePinStatus(id, pin)
-    }
+    fun changeNotePinStatus(id: Int, pin: Int) = mDbUtil.changeNotePinStatus(id, pin)
 
-    fun changeNoteLockStatus(id: Int, lock: Int) {
-        return mDbUtil.changeNoteLockStatus(id, lock)
-    }
+    fun changeNoteLockStatus(id: Int, lock: Int) = mDbUtil.changeNoteLockStatus(id, lock)
 
-    fun changeNoteFolder(id: Int, folderName: String) {
-        return mDbUtil.changeNoteFolder(id, folderName)
-    }
+    fun changeNoteFolder(id: Int, folderName: String) = mDbUtil.changeNoteFolder(id, folderName)
 }

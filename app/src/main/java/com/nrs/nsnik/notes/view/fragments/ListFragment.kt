@@ -109,7 +109,6 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         searchItem = menu.findItem(R.id.menuMainSearch)
         searchView.setSearchableInfo((activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager).getSearchableInfo(activity!!.componentName))
         menuListener()
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     @SuppressLint("CheckResult")
@@ -153,7 +152,8 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
     private fun initialize() {
 
-        mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
+        if (arguments != null)
+            mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
 
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
         mFolderViewModel = ViewModelProviders.of(this).get(FolderViewModel::class.java)
@@ -473,8 +473,8 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
                 activity!!,
                 resources?.getString(R.string.warning)!!,
                 message,
-                resources.getString(R.string.yes)!!,
-                resources.getString(R.string.no)!!,
+                resources.getString(R.string.yes),
+                resources.getString(R.string.no),
                 positiveClick,
                 DialogInterface.OnClickListener { dialogInterface, i ->
 
