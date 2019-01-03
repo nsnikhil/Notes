@@ -48,6 +48,10 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+        resValue "string", "BRANCH_IO_API_KEY", BRANCH_IO_API_KEY
+        resValue "string", "BRANCH_IO_TEST_API_KEY", BRANCH_IO_TEST_API_KEY
+        resValue "string", "IO_FABRICS_API_KEY", IO_FABRICS_API_KEY
+        resValue "string", "GOOGLE_GMS_AD_APPLICATION_ID", GOOGLE_GMS_AD_APPLICATION_ID
     }
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())

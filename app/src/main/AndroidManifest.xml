@@ -62,6 +62,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -78,7 +79,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="e3979606d7bddaddef52cc923bf7cc5cc18c38dd" />
+            android:value="@string/IO_FABRICS_API_KEY" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -127,10 +128,10 @@
 
         <meta-data
             android:name="io.branch.sdk.BranchKey"
-            android:value="key_live_lgGfF4e2BFVgn5Ldom8mObdaqCcH43xi" />
+            android:value="@string/BRANCH_IO_API_KEY" />
         <meta-data
             android:name="io.branch.sdk.BranchKey.test"
-            android:value="key_test_lgTfr2h4AwPga3Rcdi8VYghdrsgG13yF" />
+            android:value="@string/BRANCH_IO_TEST_API_KEY" />
 
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
         <meta-data
@@ -155,7 +156,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7505114900190126~7627553023" />
+            android:value="@string/GOOGLE_GMS_AD_APPLICATION_ID" />
 
     </application>
 

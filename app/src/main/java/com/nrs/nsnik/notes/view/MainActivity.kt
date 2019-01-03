@@ -59,6 +59,14 @@ class MainActivity : AppCompatActivity() {
         private const val NewNoteIntentAction: String = "com.nrs.nsnik.notes.OpenNewNotesFragment"
     }
 
+    override fun onStart() {
+        super.onStart()
+        Branch.getInstance().initSession({ referringParams, error ->
+            Timber.d(if (error == null) referringParams.toString() else error.message)
+        }, this.intent.data, this)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -66,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         handleIntent()
     }
 
-    //override fun onSupportNavigateUp() = findNavController(R.id.mainNavHost).navigateUp()
+//override fun onSupportNavigateUp() = findNavController(R.id.mainNavHost).navigateUp()
 
     override fun onResume() {
         super.onResume()
