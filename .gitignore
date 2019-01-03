@@ -66,5 +66,8 @@ output.json
 obj/
 .externalNativeBuild
 
+#Fabrics
+fabric.properties
 
+#Others
 ajcore.*

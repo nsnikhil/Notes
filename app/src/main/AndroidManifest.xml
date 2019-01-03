@@ -77,10 +77,6 @@
             </intent-filter>
         </receiver>
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="@string/IO_FABRICS_API_KEY" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.nrs.nsnik.notes.fileprovider"
