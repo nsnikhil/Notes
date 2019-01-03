@@ -34,11 +34,11 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.test.espresso.IdlingResource
+import com.google.android.material.navigation.NavigationView
 import com.nrs.nsnik.notes.BuildConfig
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     private var mIdlingResource: SimpleIdlingResource? = null
     private var isOnListFragment: Boolean = true
+    private lateinit var controller: NavController
 
     companion object {
         private const val SearchIntentAction: String = "com.nrs.nsnik.notes.StartSearch"
@@ -74,14 +75,14 @@ class MainActivity : AppCompatActivity() {
         handleIntent()
     }
 
-//override fun onSupportNavigateUp() = findNavController(R.id.mainNavHost).navigateUp()
+    override fun onSupportNavigateUp(): Boolean = controller.navigateUp() || super.onSupportNavigateUp()
 
     override fun onResume() {
         super.onResume()
         if (Branch.isAutoDeepLinkLaunch(this)) {
             try {
-                val autoDeeplinkedValue = Branch.getInstance().latestReferringParams.getString("noteTitle")
-                Timber.d("Launched by Branch on auto deep linking!\n\n$autoDeeplinkedValue")
+                val autoDeepLinkedValue = Branch.getInstance().latestReferringParams.getString("noteTitle")
+                Timber.d("Launched by Branch on auto deep linking!\n\n$autoDeepLinkedValue")
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
@@ -93,15 +94,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun initialize() {
         setSupportActionBar(mainToolbar)
-        supportActionBar?.apply {
-            //            setDisplayHomeAsUpEnabled(true)
-//            setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px)
-        }
 
-        val controller = findNavController(R.id.mainNavHost)
+        controller = findNavController(R.id.mainNavHost)
 
 
-        controller.addOnDestinationChangedListener { navController, destination, arguments ->
+        controller.addOnDestinationChangedListener { _, destination, _ ->
             isOnListFragment = destination.id == R.id.navItemNotes
             mainToolbar.visibility = if (destination.id == R.id.introFragment) View.GONE else View.VISIBLE
             mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -115,13 +112,12 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        setupActionBarWithNavController(this, controller, mainDrawerLayout)
 
-        AppBarConfiguration(controller.graph, mainDrawerLayout)
-
-        mainNavigationView.setupWithNavController(controller)
+        findViewById<NavigationView>(R.id.mainNavigationView).setupWithNavController(controller)
 
         mainToolbar.setupWithNavController(controller)
+        mainNavigationView.setupWithNavController(controller)
+
 
         mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -155,8 +151,7 @@ class MainActivity : AppCompatActivity() {
                     if ("text/plain" == type) handleSendText(intent) else if (type.startsWith("image/")) handleSendImage(intent)
             }
             Intent.ACTION_SEND_MULTIPLE -> {
-                if (type != null)
-                    if (type.startsWith("image/")) handleSendMultipleImages(intent)
+                if (type != null && type.startsWith("image/")) handleSendMultipleImages(intent)
             }
             NewNoteIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment)
             SearchIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.searchFragment)

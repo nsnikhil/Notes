@@ -1,0 +1,5 @@
+gradle.properties filter=git-crypt diff=git-crypt
+
+local.properties filter=git-crypt diff=git-crypt
+
+.gitattributes !filter !diff
