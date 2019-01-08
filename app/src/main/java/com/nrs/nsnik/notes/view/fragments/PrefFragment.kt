@@ -95,7 +95,7 @@ class PrefFragment : Fragment() {
     }
 
     private fun getString(title: String, summary: String): Spanned {
-        return Html.fromHtml("<font color='#FFFFFF'>$title</font> <br> <font color='#9E9E9E'>$summary</font>", Html.FROM_HTML_MODE_LEGACY)
+        return Html.fromHtml("<font color='#FFFFFF'>$title</font> <br> <font color='#9E9E9E'>$summary</font>")
     }
 
     private fun openPasswordDialog() {

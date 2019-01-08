@@ -48,22 +48,67 @@
         "ads_service": {
           "status": 2
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-7505114900190126~7627553023"
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:818230447867:android:8011d87936c505a5",
+        "mobilesdk_app_id": "1:818230447867:android:e6d0a8c2eb9fe712",
         "android_client_info": {
-          "package_name": "com.nrs.nsnik.notes.debug"
+          "package_name": "com.nrs.nsnik.notes.demo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "818230447867-1ibvhh7irh0209o61fei2q4vvmu9jelp.apps.googleusercontent.com",
+          "client_id": "818230447867-fkt8a0n7uo8ird612b3cv8cupid0jk9a.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.nrs.nsnik.notes.debug",
-            "certificate_hash": "370390c61bf0ca25b007d2e1645e7c2c6bb5511c"
+            "package_name": "com.nrs.nsnik.notes.demo",
+            "certificate_hash": "dd350f0e463d7a96bdb4eb5fc41cce8653c7102b"
+          }
+        },
+        {
+          "client_id": "818230447867-hv7ppmr55rh5n85ank70s7fgfu44dgv1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPvp6hzH8TFkClSiFivj0yNERbuKo0cpE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "818230447867-hv7ppmr55rh5n85ank70s7fgfu44dgv1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818230447867:android:56f1b9641fee8964",
+        "android_client_info": {
+          "package_name": "com.nrs.nsnik.notes.full"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "818230447867-r07ncc35ta02ja5ur87c9a5190p915hu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nrs.nsnik.notes.full",
+            "certificate_hash": "dd350f0e463d7a96bdb4eb5fc41cce8653c7102b"
           }
         },
         {

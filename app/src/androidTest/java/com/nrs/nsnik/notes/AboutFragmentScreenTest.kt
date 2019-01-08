@@ -33,8 +33,8 @@ import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.AndroidJUnit4
 import com.nrs.nsnik.notes.view.MainActivity
 import org.junit.After
 import org.junit.Before
@@ -57,7 +57,7 @@ class AboutFragmentScreenTest {
     }
 
 
-    fun openAboutFragment() {
+    private fun openAboutFragment() {
         onView(withId(R.id.mainDrawerLayout))
                 .check(matches(isClosed(Gravity.START)))
                 .perform(DrawerActions.open())

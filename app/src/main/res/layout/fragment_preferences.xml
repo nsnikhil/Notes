@@ -32,6 +32,7 @@
             android:id="@+id/prefHeadingInterface"
             style="@style/prefHeading"
             android:text="@string/preferenceCategoryInterface"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,6 +42,7 @@
             android:checked="false"
             android:enabled="false"
             android:text="@string/preferenceDarkMode"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefHeadingInterface" />
 
@@ -49,6 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefItemDarkMode" />
 
@@ -56,6 +59,7 @@
             android:id="@+id/prefHeadingData"
             style="@style/prefHeading"
             android:text="@string/preferenceCategoryData"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefInterfaceDivider" />
 
@@ -63,6 +67,7 @@
             android:id="@+id/prefItemBackupData"
             style="@style/prefItem"
             android:text="@string/preferenceBackup"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefHeadingData" />
 
@@ -70,6 +75,7 @@
             android:id="@+id/prefItemRestoreData"
             style="@style/prefItem"
             android:text="@string/preferenceRestore"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefItemBackupData" />
 
@@ -78,6 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefItemRestoreData" />
 
@@ -107,6 +114,7 @@
             android:id="@+id/prefHeadingPrivacy"
             style="@style/prefHeading"
             android:text="@string/preferenceCategoryPrivacy"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefSecurityDivider" />
 
@@ -117,6 +125,7 @@
             android:checked="true"
             android:enabled="false"
             android:text="@string/preferenceChangeCodeSummary"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefHeadingPrivacy" />
 
@@ -127,6 +136,7 @@
             android:checked="true"
             android:enabled="false"
             android:text="@string/preferenceChangeCodeSummary"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefItemPrivacyErrorReport" />
 
@@ -135,6 +145,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/eight"
             android:background="@color/line"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prefItemPrivacySendData" />
 

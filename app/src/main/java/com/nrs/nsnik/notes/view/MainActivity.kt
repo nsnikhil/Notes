@@ -94,9 +94,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initialize() {
         setSupportActionBar(mainToolbar)
+        actionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px)
+        }
 
         controller = findNavController(R.id.mainNavHost)
-
 
         controller.addOnDestinationChangedListener { _, destination, _ ->
             isOnListFragment = destination.id == R.id.navItemNotes
@@ -113,11 +116,8 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        findViewById<NavigationView>(R.id.mainNavigationView).setupWithNavController(controller)
-
         mainToolbar.setupWithNavController(controller)
         mainNavigationView.setupWithNavController(controller)
-
 
         mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

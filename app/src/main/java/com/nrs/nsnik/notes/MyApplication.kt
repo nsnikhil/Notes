@@ -32,6 +32,7 @@ import com.bumptech.glide.RequestManager
 import com.crashlytics.android.Crashlytics
 import com.facebook.stetho.Stetho
 import com.github.moduth.blockcanary.BlockCanary
+import com.google.firebase.FirebaseApp
 import com.nrs.nsnik.notes.dagger.components.*
 import com.nrs.nsnik.notes.dagger.modules.ContextModule
 import com.nrs.nsnik.notes.util.AppBlockCanaryContext
@@ -73,7 +74,11 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
         Branch.getAutoInstance(this)
+        FirebaseApp.initializeApp(this)
+        Fabric.with(this, Crashlytics())
+
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this)
             Timber.plant(object : Timber.DebugTree() {
@@ -90,10 +95,9 @@ class MyApplication : Application() {
                     .detectAll()
                     .penaltyLog()
                     .build())
-            Fabric.with(this, Crashlytics())
             BlockCanary.install(this, AppBlockCanaryContext()).start()
+            Rollbar.init(this, "3b2ad6f009e643fdaf91228cdc54acab", "development")
         }
-        Rollbar.init(this, "3b2ad6f009e643fdaf91228cdc54acab", "development")
         if (LeakCanary.isInAnalyzerProcess(this)) return
         moduleSetter()
     }
