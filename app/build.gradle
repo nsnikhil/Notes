@@ -40,7 +40,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 42
-        versionName "3.0.0 aplha-1.5"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         javaCompileOptions {
