@@ -36,18 +36,23 @@ import androidx.fragment.app.Fragment
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxCompoundButton
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.FragmentPreferencesBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import hugo.weaving.DebugLog
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_preferences.*
+// import kotlinx.android.synthetic.main.fragment_preferences.* // Removed synthetic import
 
 
 class PrefFragment : Fragment() {
 
+    private var _binding: FragmentPreferencesBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
+
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_preferences, container, false)
+        _binding = FragmentPreferencesBinding.inflate(inflater, container, false) // Inflate binding
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,23 +65,23 @@ class PrefFragment : Fragment() {
 
     @DebugLog
     private fun initializeItems() {
-        prefItemChangePassword.text = getString(
+        binding.prefItemChangePassword.text = getString( // Use binding
                 getResourceString(R.string.preferenceChangeCode)!!,
                 getResourceString(R.string.preferenceChangeCodeSummary)!!
         )
-        prefItemPrivacySendData.text = getString(
+        binding.prefItemPrivacySendData.text = getString( // Use binding
                 getResourceString(R.string.preferenceSendData)!!,
                 getResourceString(R.string.preferenceSendDataSummary)!!
         )
-        prefItemPrivacyErrorReport.text = getString(
+        binding.prefItemPrivacyErrorReport.text = getString( // Use binding
                 getResourceString(R.string.preferenceErrorReporting)!!,
                 getResourceString(R.string.preferenceErrorReportingSummary)!!
         )
-        prefItemRestoreData.text = getString(
+        binding.prefItemRestoreData.text = getString( // Use binding
                 getResourceString(R.string.preferenceRestore)!!,
                 getResourceString(R.string.preferenceRestoreSummary)!!
         )
-        prefItemBackupData.text = getString(
+        binding.prefItemBackupData.text = getString( // Use binding
                 getResourceString(R.string.preferenceBackup)!!,
                 getResourceString(R.string.preferenceBackupSummary)!!
         )
@@ -85,12 +90,12 @@ class PrefFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun initialize() {
         compositeDisposable.addAll(
-                RxView.clicks(prefItemChangePassword).subscribe { openPasswordDialog() },
-                RxView.clicks(prefItemBackupData).subscribe { exportDatabase() },
-                RxView.clicks(prefItemRestoreData).subscribe { importDatabase() },
-                RxCompoundButton.checkedChanges(prefItemDarkMode).subscribe { switchTheme(it) },
-                RxCompoundButton.checkedChanges(prefItemPrivacyErrorReport).subscribe { enableErrorReporting(it) },
-                RxCompoundButton.checkedChanges(prefItemPrivacySendData).subscribe { enableSendData(it) }
+                RxView.clicks(binding.prefItemChangePassword).subscribe { openPasswordDialog() }, // Use binding
+                RxView.clicks(binding.prefItemBackupData).subscribe { exportDatabase() }, // Use binding
+                RxView.clicks(binding.prefItemRestoreData).subscribe { importDatabase() }, // Use binding
+                RxCompoundButton.checkedChanges(binding.prefItemDarkMode).subscribe { switchTheme(it) }, // Use binding
+                RxCompoundButton.checkedChanges(binding.prefItemPrivacyErrorReport).subscribe { enableErrorReporting(it) }, // Use binding
+                RxCompoundButton.checkedChanges(binding.prefItemPrivacySendData).subscribe { enableSendData(it) } // Use binding
         )
     }
 
@@ -129,8 +134,14 @@ class PrefFragment : Fragment() {
         compositeDisposable.dispose()
     }
 
+    override fun onDestroyView() { // Changed to onDestroyView
+        super.onDestroyView()
+        _binding = null // Set binding to null
+        cleanUp() // Assuming cleanUp is for view-related disposables
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        cleanUp()
+        // If cleanUp has non-view related disposables, it might still be needed here.
     }
 }

@@ -34,10 +34,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.ColorPickerImageBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.color_picker_image.view.*
+// import kotlinx.android.synthetic.main.color_picker_image.view.* // Removed synthetic import
 import org.greenrobot.eventbus.EventBus
 
 
@@ -47,11 +48,12 @@ class ColorPickerAdapter : ListAdapter<String, ColorPickerAdapter.MyViewHolder>(
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.color_picker_image, parent, false))
+        val binding = ColorPickerImageBinding.inflate(LayoutInflater.from(parent.context), parent, false) // Inflate with ViewBinding
+        return MyViewHolder(binding) // Pass binding to ViewHolder
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.color.setImageDrawable(ColorDrawable(Color.parseColor(getItem(position))))
+        holder.binding.singleColor.setImageDrawable(ColorDrawable(Color.parseColor(getItem(position)))) // Use binding
     }
 
     private fun cleanUp() {
@@ -64,11 +66,11 @@ class ColorPickerAdapter : ListAdapter<String, ColorPickerAdapter.MyViewHolder>(
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val color: ImageView = itemView.singleColor
+    inner class MyViewHolder internal constructor(val binding: ColorPickerImageBinding) : RecyclerView.ViewHolder(binding.root) { // ViewHolder accepts binding
+        // Direct view reference removed, will use binding.singleColor
 
         init {
-            compositeDisposable.add(RxView.clicks(color).subscribe {
+            compositeDisposable.add(RxView.clicks(binding.singleColor).subscribe { // Use binding
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     EventBus.getDefault().post(ColorPickerEvent(getItem(adapterPosition)))
                 }

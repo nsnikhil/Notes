@@ -42,10 +42,11 @@ import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
+import com.nrs.nsnik.notes.databinding.NewFolderDialogBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.new_folder_dialog.*
+// import kotlinx.android.synthetic.main.new_folder_dialog.* // Removed synthetic import
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -60,8 +61,12 @@ class CreateFolderDialog : DialogFragment() {
     private var mParentFolderName: String? = null
     private var folderEntity: FolderEntity? = null
 
+    private var _binding: NewFolderDialogBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.new_folder_dialog, container, false)
+        _binding = NewFolderDialogBinding.inflate(inflater, container, false) // Inflate binding
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,24 +84,24 @@ class CreateFolderDialog : DialogFragment() {
 
             if (folderEntity != null) {
 
-                dialogFolderName.setText(folderEntity?.folderName)
+                binding.dialogFolderName.setText(folderEntity?.folderName) // Use binding
 
                 mColor = folderEntity?.color!!
-                dialogFolderColor!!.backgroundTintList = AppUtil.stateList(mColor)
+                binding.dialogFolderColor.backgroundTintList = AppUtil.stateList(mColor) // Use binding
 
                 isLocked = folderEntity?.locked!!
-                dialogFolderLock.setImageDrawable(if (isLocked == 1) getDrawable(R.drawable.ic_lock_48px) else getDrawable(R.drawable.ic_lock_open_48px))
+                binding.dialogFolderLock.setImageDrawable(if (isLocked == 1) getDrawable(R.drawable.ic_lock_48px) else getDrawable(R.drawable.ic_lock_open_48px)) // Use binding
 
                 isStarred = folderEntity?.pinned!!
-                dialogFolderStar.setImageDrawable(if (isStarred == 1) getDrawable(R.drawable.ic_star_48px) else getDrawable(R.drawable.ic_star_border_48px))
+                binding.dialogFolderStar.setImageDrawable(if (isStarred == 1) getDrawable(R.drawable.ic_star_48px) else getDrawable(R.drawable.ic_star_border_48px)) // Use binding
 
                 mParentFolderName = folderEntity?.parentFolderName!!
 
-                dialogFolderCreate.text = activity?.resources?.getString(R.string.update)
+                binding.dialogFolderCreate.text = activity?.resources?.getString(R.string.update) // Use binding
             }
         }
 
-        setFocus(dialogFolderName)
+        setFocus(binding.dialogFolderName) // Use binding
     }
 
 
@@ -111,15 +116,15 @@ class CreateFolderDialog : DialogFragment() {
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(dialogFolderColor).subscribe {
+                RxView.clicks(binding.dialogFolderColor).subscribe { // Use binding
                     val dialog = ColorPickerDialogFragment()
                     dialog.show(fragmentManager, "color")
                 },
-                RxView.clicks(dialogFolderCreate).subscribe { if (folderEntity == null) updateFolder(FolderEntity()) else updateFolder(folderEntity!!) },
-                RxView.clicks(dialogFolderCancel).subscribe { dismiss() },
-                RxView.clicks(dialogFolderLock).subscribe { setLock() },
-                RxView.clicks(dialogFolderStar).subscribe {
-                    isStarred = changeValue(dialogFolderStar, isStarred, getDrawable(R.drawable.ic_star_48px),
+                RxView.clicks(binding.dialogFolderCreate).subscribe { if (folderEntity == null) updateFolder(FolderEntity()) else updateFolder(folderEntity!!) }, // Use binding
+                RxView.clicks(binding.dialogFolderCancel).subscribe { dismiss() }, // Use binding
+                RxView.clicks(binding.dialogFolderLock).subscribe { setLock() }, // Use binding
+                RxView.clicks(binding.dialogFolderStar).subscribe { // Use binding
+                    isStarred = changeValue(binding.dialogFolderStar, isStarred, getDrawable(R.drawable.ic_star_48px), // Use binding
                             getDrawable(R.drawable.ic_star_border_48px))
                 }
         )
@@ -127,7 +132,7 @@ class CreateFolderDialog : DialogFragment() {
 
     private fun setLock() {
         if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password"))
-            isLocked = changeValue(dialogFolderLock, isLocked, getDrawable(R.drawable.ic_lock_48px), getDrawable(R.drawable.ic_lock_open_48px))
+            isLocked = changeValue(binding.dialogFolderLock, isLocked, getDrawable(R.drawable.ic_lock_48px), getDrawable(R.drawable.ic_lock_open_48px)) // Use binding
     }
 
     private fun getDrawable(drawableId: Int): Drawable {
@@ -140,8 +145,8 @@ class CreateFolderDialog : DialogFragment() {
     }
 
     private fun updateFolder(folderEntity: FolderEntity) {
-        if (dialogFolderName.text.toString().isNotEmpty()) {
-            folderEntity.folderName = dialogFolderName.text.toString()
+        if (binding.dialogFolderName.text.toString().isNotEmpty()) { // Use binding
+            folderEntity.folderName = binding.dialogFolderName.text.toString() // Use binding
             folderEntity.color = mColor
             folderEntity.locked = isLocked
             folderEntity.pinned = isStarred
@@ -149,7 +154,7 @@ class CreateFolderDialog : DialogFragment() {
             if (this.folderEntity == null) mFolderViewModel.insertFolder(folderEntity) else mFolderViewModel.updateFolder(folderEntity)
             dismiss()
         } else {
-            dialogFolderName.error = activity?.resources?.getString(R.string.errorNoFolderName)
+            binding.dialogFolderName.error = activity?.resources?.getString(R.string.errorNoFolderName) // Use binding
         }
     }
 
@@ -171,12 +176,17 @@ class CreateFolderDialog : DialogFragment() {
     @Subscribe
     fun onColorPickerEvent(colorPickerEvent: ColorPickerEvent) {
         mColor = colorPickerEvent.color
-        dialogFolderColor!!.backgroundTintList = AppUtil.stateList(mColor)
+        binding.dialogFolderColor.backgroundTintList = AppUtil.stateList(mColor) // Use binding
+    }
+
+    override fun onDestroyView() { // Changed to onDestroyView
+        super.onDestroyView()
+        _binding = null // Set binding to null
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        cleanUp()
+        cleanUp() // Assuming cleanUp is for non-view related disposables or EventBus
     }
 
 }

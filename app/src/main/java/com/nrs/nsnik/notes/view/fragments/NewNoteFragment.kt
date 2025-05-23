@@ -71,11 +71,12 @@ import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
 import com.twitter.serial.serializer.CollectionSerializers
 import com.twitter.serial.serializer.CoreSerializers
+import com.nrs.nsnik.notes.databinding.FragmentNewNoteBinding // Added ViewBinding import
 import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import hugo.weaving.DebugLog
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_new_note.*
-import kotlinx.android.synthetic.main.new_note_tools.*
+// import kotlinx.android.synthetic.main.fragment_new_note.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.new_note_tools.* // Removed synthetic import
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -125,12 +126,15 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
 
     private var mNoteEntity: NoteEntity? = null
 
+    private var _binding: FragmentNewNoteBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.fragment_new_note, container, false)
+        _binding = FragmentNewNoteBinding.inflate(inflater, container, false) // Inflate binding
         mFileUtil = (activity?.application as MyApplication).fileUtil
         mRootFolder = mFileUtil.rootFolder
         setHasOptionsMenu(true)
-        return view
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -144,12 +148,15 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     private fun initialize() {
         mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(toolsBottomSheet)
+        // Assuming toolsBottomSheet is the ID of the CoordinatorLayout/View that is the bottom sheet.
+        // And newNoteBackground is an ID within fragment_new_note.xml
+        // And toolsLayout is the ID of the <include> tag for new_note_tools.xml
+        mBottomSheetBehavior = BottomSheetBehavior.from(binding.toolsBottomSheet) // Use binding
 
-        toolsBottomSheet.apply {
+        binding.toolsBottomSheet.apply { // Use binding
             mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onSlide(bottomSheet: View, newState: Float) {
-                    newNoteBackground.alpha = (newState / 2)
+                    binding.newNoteBackground.alpha = (newState / 2) // Use binding
                 }
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -172,17 +179,17 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         }
 
         mImageAdapter = ImageAdapter(false, this)
-        newNoteImageList.apply {
+        binding.newNoteImageList.apply { // Use binding
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
             adapter = mImageAdapter
         }
         val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(newNoteImageList)
-        newNoteImageList.addItemDecoration(CirclePagerIndicatorDecoration())
+        snapHelper.attachToRecyclerView(binding.newNoteImageList) // Use binding
+        binding.newNoteImageList.addItemDecoration(CirclePagerIndicatorDecoration()) // Use binding
 
         mAudioListAdapter = AudioListAdapter(this)
-        newNoteAudioList.apply {
+        binding.newNoteAudioList.apply { // Use binding
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
             adapter = mAudioListAdapter
@@ -190,7 +197,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
 
 
         mCheckListAdapter = CheckListAdapter(this, this)
-        newNoteCheckList.apply {
+        binding.newNoteCheckList.apply { // Use binding
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
             adapter = mCheckListAdapter
@@ -201,36 +208,37 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     }
 
     private fun listeners() {
+        // Assuming toolsLayout is the ID of the <include> tag for new_note_tools.xml
         compositeDisposable.addAll(
 
-                RxView.clicks(toolsDate).subscribe { changeState() },
+                RxView.clicks(binding.toolsLayout.toolsDate).subscribe { changeState() }, // Use binding
 
-                RxView.clicks(toolsCheckList).subscribe({
+                RxView.clicks(binding.toolsLayout.toolsCheckList).subscribe({ // Use binding
                     changeState()
                     addCheckListItem()
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsCamera).subscribe({
+                RxView.clicks(binding.toolsLayout.toolsCamera).subscribe({ // Use binding
                     changeState()
                     checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, EXTERNAL_STORAGE_PERMISSION_CODE, ::startCameraIntent)
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsAttachment).subscribe({
+                RxView.clicks(binding.toolsLayout.toolsAttachment).subscribe({ // Use binding
                     changeState()
                     checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE_PERMISSION, ::startGalleryIntent)
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsAudio).subscribe({
+                RxView.clicks(binding.toolsLayout.toolsAudio).subscribe({ // Use binding
                     changeState()
                     checkPermission(Manifest.permission.RECORD_AUDIO, RECORD_AUDIO_PERMISSION_CODE, ::recordAudio)
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsReminder).subscribe({
+                RxView.clicks(binding.toolsLayout.toolsReminder).subscribe({ // Use binding
                     changeState()
-                    ReminderUtil.setReminder(activity!!, newNoteTitle.text.toString(), newNoteContent.text.toString())
+                    ReminderUtil.setReminder(activity!!, binding.newNoteTitle.text.toString(), binding.newNoteContent.text.toString()) // Use binding
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsColor).subscribe({
+                RxView.clicks(binding.toolsLayout.toolsColor).subscribe({ // Use binding
                     changeState()
                     ColorPickerDialogFragment().show(fragmentManager, "color")
                 }, { throwable -> Timber.d(throwable.message) })
@@ -280,7 +288,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
 
         mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
 
-        newNoteContent.setText(arguments?.getString(activity?.resources?.getString(R.string.bundleReceiveIntentText), ""))
+        binding.newNoteContent.setText(arguments?.getString(activity?.resources?.getString(R.string.bundleReceiveIntentText), "")) // Use binding
 
         val imageUri: Uri? = arguments?.getParcelable(activity?.resources?.getString(R.string.bundleReceiveIntentImage))
         val imageUris: List<Uri?>? = arguments?.getParcelableArrayList(activity?.resources?.getString(R.string.bundleReceiveIntentImageList))
@@ -302,35 +310,35 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
 
             mNoteEntity?.uid = id
 
-            newNoteTitle.setText(mNoteEntity?.title)
-            newNoteContent.setText(mNoteEntity?.noteContent)
+            binding.newNoteTitle.setText(mNoteEntity?.title) // Use binding
+            binding.newNoteContent.setText(mNoteEntity?.noteContent) // Use binding
 
             mFolderName = mNoteEntity?.folderName!!
 
             mColorCode = mNoteEntity?.color!!
 
-            newNoteTitle.setTextColor(Color.parseColor(mColorCode))
+            binding.newNoteTitle.setTextColor(Color.parseColor(mColorCode)) // Use binding
 
             mIsStarred = mNoteEntity?.pinned!!
 
             mIsLocked = mNoteEntity?.locked!!
 
-            toolsDate.text = AppUtil.getTimeDifference(Calendar.getInstance().timeInMillis - mNoteEntity?.dateModified?.time!!)
+            binding.toolsLayout.toolsDate.text = AppUtil.getTimeDifference(Calendar.getInstance().timeInMillis - mNoteEntity?.dateModified?.time!!) // Use binding
 
             if (mNoteEntity?.imageList != null && mNoteEntity?.imageList?.isNotEmpty()!!) {
-                newNoteImageList.visibility = View.VISIBLE
+                binding.newNoteImageList.visibility = View.VISIBLE // Use binding
                 mImagesLocations.addAll(mNoteEntity?.imageList!!)
                 mImageAdapter.submitList(mImagesLocations)
             }
 
             if (mNoteEntity?.audioList != null && mNoteEntity?.audioList?.isNotEmpty()!!) {
-                newNoteAudioList!!.visibility = View.VISIBLE
+                binding.newNoteAudioList.visibility = View.VISIBLE // Use binding
                 mAudioLocations.addAll(mNoteEntity?.audioList!!)
                 mAudioListAdapter.submitList(mAudioLocations)
             }
 
             if (mNoteEntity?.checkList != null && mNoteEntity?.checkList?.isNotEmpty()!!) {
-                newNoteCheckList!!.visibility = View.VISIBLE
+                binding.newNoteCheckList.visibility = View.VISIBLE // Use binding
                 mCheckList.addAll(mNoteEntity?.checkList!!)
                 mCheckListAdapter.submitList(mCheckList)
             }
@@ -355,21 +363,21 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         mCheckList.add(list)
         mCheckListAdapter.submitList(mCheckList)
         mCheckListAdapter.notifyItemInserted(mCheckList.size - 1)
-        changeVisibility(mCheckList, newNoteCheckList)
+        changeVisibility(mCheckList, binding.newNoteCheckList) // Use binding
     }
 
     private fun addAudioToList(audioFileLocation: String) {
         mAudioLocations.add(audioFileLocation)
         mAudioListAdapter.submitList(mAudioLocations)
         mAudioListAdapter.notifyItemInserted(mAudioLocations.size - 1)
-        changeVisibility(mAudioLocations, newNoteAudioList)
+        changeVisibility(mAudioLocations, binding.newNoteAudioList) // Use binding
     }
 
     private fun addImageToList(imageLocation: String) {
         mImagesLocations.add(imageLocation)
         mImageAdapter.submitList(mImagesLocations)
         mImageAdapter.notifyItemInserted(mImagesLocations.size - 1)
-        changeVisibility(mImagesLocations, newNoteImageList)
+        changeVisibility(mImagesLocations, binding.newNoteImageList) // Use binding
     }
 
     private fun changeVisibility(list: List<Any>, recyclerView: RecyclerView) {
@@ -438,8 +446,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     }
 
     private fun noteAction(noteEntity: NoteEntity, action: ActionType) {
-        noteEntity.title = newNoteTitle.text.toString()
-        noteEntity.noteContent = newNoteContent.text.toString()
+        noteEntity.title = binding.newNoteTitle.text.toString() // Use binding
+        noteEntity.noteContent = binding.newNoteContent.text.toString() // Use binding
         noteEntity.folderName = mFolderName
         noteEntity.fileName = AppUtil.makeName(FILE_TYPES.TEXT)
         noteEntity.color = mColorCode
@@ -455,7 +463,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     }
 
     private fun verifyAndSave(): Boolean {
-        if (newNoteTitle.text.toString().isEmpty() && newNoteContent.text.toString().isEmpty())
+        if (binding.newNoteTitle.text.toString().isEmpty() && binding.newNoteContent.text.toString().isEmpty()) // Use binding
             Toast.makeText(activity!!, resources.getString(R.string.noNote), Toast.LENGTH_LONG).show()
         return true
     }
@@ -478,9 +486,15 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         compositeDisposable.dispose()
     }
 
+    override fun onDestroyView() { // Changed to onDestroyView
+        super.onDestroyView()
+        _binding = null // Set binding to null
+        cleanUp() // Assuming cleanUp is for view-related disposables
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        cleanUp()
+        // If cleanUp has non-view related disposables, it might still be needed here.
     }
 
     override fun addClickListener() {
@@ -547,7 +561,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     @Subscribe
     fun onColorPickerEvent(colorPickerEvent: ColorPickerEvent) {
         mColorCode = colorPickerEvent.color
-        newNoteTitle.setTextColor(Color.parseColor(mColorCode))
+        binding.newNoteTitle.setTextColor(Color.parseColor(mColorCode)) // Use binding
     }
 
     @Subscribe
@@ -557,7 +571,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         val byteArray: ByteArray = ByteBufferSerial().toByteArray(mImagesLocations, CollectionSerializers.getListSerializer(CoreSerializers.STRING))
         bundle.putByteArray(resources?.getString(R.string.bundleImageList), byteArray)
         bundle.putInt(resources?.getString(R.string.bundleImageListPosition), fullScreenEvent.position)
-        newNoteImageList.findNavController().navigate(R.id.noteToImageList, bundle)
+        binding.newNoteImageList.findNavController().navigate(R.id.noteToImageList, bundle) // Use binding
     }
 
     enum class FILE_TYPES {

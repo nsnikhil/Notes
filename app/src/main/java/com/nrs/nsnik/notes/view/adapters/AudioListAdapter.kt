@@ -37,11 +37,12 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.dagger.components.DaggerMediaComponent
+import com.nrs.nsnik.notes.databinding.SingleAudioItemBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.single_audio_item.view.*
+// import kotlinx.android.synthetic.main.single_audio_item.view.* // Removed synthetic import
 import java.io.File
 import java.io.IOException
 
@@ -56,10 +57,13 @@ class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         context = parent.context
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.single_audio_item, parent, false))
+        val binding = SingleAudioItemBinding.inflate(LayoutInflater.from(parent.context), parent, false) // Inflate with ViewBinding
+        return MyViewHolder(binding) // Pass binding to ViewHolder
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {}
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        // holder.bind(getItem(position)) // Example of how you might bind data
+    }
 
     private fun playAudio(position: Int, play: ImageView) {
         mMediaPlayer = DaggerMediaComponent.builder().build().mediaPlayer
@@ -121,23 +125,20 @@ class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) :
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder internal constructor(private val binding: SingleAudioItemBinding) : RecyclerView.ViewHolder(binding.root) { // ViewHolder accepts binding
 
-        private val seekBar: SeekBar = itemView.audioProgressBar
-        private val play: ImageView = itemView.audioPlay
-        private val remove: ImageView = itemView.audioRemove
+        // Removed direct view references, will use binding.seekBar, binding.play, binding.remove
 
         init {
-
             compositeDisposable.addAll(
-                    RxView.clicks(play).subscribe {
+                    RxView.clicks(binding.audioPlay).subscribe { // Use binding.audioPlay
                         if (adapterPosition != RecyclerView.NO_POSITION) {
-                            mAdapterSeekBar = seekBar
-                            play.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stop_black_24px))
-                            playAudio(adapterPosition, play)
+                            mAdapterSeekBar = binding.audioProgressBar // Use binding.audioProgressBar
+                            binding.audioPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stop_black_24px)) // Use binding.audioPlay
+                            playAudio(adapterPosition, binding.audioPlay) // Use binding.audioPlay
                         }
                     },
-                    RxView.clicks(remove).subscribe {
+                    RxView.clicks(binding.audioRemove).subscribe { // Use binding.audioRemove
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.AUDIO_ADAPTER)
                         }
