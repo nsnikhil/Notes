@@ -47,13 +47,16 @@ import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.view.MainActivity
 import com.nrs.nsnik.notes.view.fragments.ListFragment
 import com.nrs.nsnik.notes.view.listeners.ItemTouchListener
+import com.nrs.nsnik.notes.databinding.SingleFolderLayoutBinding // Added ViewBinding import
+import com.nrs.nsnik.notes.databinding.SingleListHeaderBinding // Added ViewBinding import
+import com.nrs.nsnik.notes.databinding.SingleNoteLayoutBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.view.listeners.ListHeaderClickListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.item_indicator.view.*
-import kotlinx.android.synthetic.main.single_folder_layout.view.*
-import kotlinx.android.synthetic.main.single_list_header.view.*
-import kotlinx.android.synthetic.main.single_note_layout.view.*
+// import kotlinx.android.synthetic.main.item_indicator.view.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.single_folder_layout.view.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.single_list_header.view.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.single_note_layout.view.* // Removed synthetic import
 import timber.log.Timber
 import java.io.File
 
@@ -96,10 +99,22 @@ class NotesAdapter(private val mContext: Context,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            FOLDER -> FolderViewHolder(mLayoutInflater.inflate(R.layout.single_folder_layout, parent, false))
-            NOTES -> NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
-            HEADER -> HeaderViewHolder(mLayoutInflater.inflate(R.layout.single_list_header, parent, false))
-            else -> NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
+            FOLDER -> {
+                val binding = SingleFolderLayoutBinding.inflate(mLayoutInflater, parent, false)
+                FolderViewHolder(binding)
+            }
+            NOTES -> {
+                val binding = SingleNoteLayoutBinding.inflate(mLayoutInflater, parent, false)
+                NoteViewHolder(binding)
+            }
+            HEADER -> {
+                val binding = SingleListHeaderBinding.inflate(mLayoutInflater, parent, false)
+                HeaderViewHolder(binding)
+            }
+            else -> { // Should ideally not happen if getItemViewType is correct
+                val binding = SingleNoteLayoutBinding.inflate(mLayoutInflater, parent, false)
+                NoteViewHolder(binding)
+            }
         }
     }
 
@@ -131,21 +146,24 @@ class NotesAdapter(private val mContext: Context,
     private fun bindHeaderData(holder: RecyclerView.ViewHolder, position: Int) {
         val headerViewHolder = holder as HeaderViewHolder
         if (position == 0) {
-            headerViewHolder.itemHeaderContainer.visibility = if (mFolderList.isNotEmpty()) View.VISIBLE else View.GONE
-            if (headerViewHolder.itemHeader.isVisible) headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingFolder)
+            headerViewHolder.binding.itemHeaderContainer.visibility = if (mFolderList.isNotEmpty()) View.VISIBLE else View.GONE
+            if (headerViewHolder.binding.itemHeader.isVisible) headerViewHolder.binding.itemHeader.text = mContext.resources.getString(R.string.headingFolder)
         } else {
-            headerViewHolder.itemHeaderContainer.visibility = if (mNotesList.isNotEmpty()) View.VISIBLE else View.GONE
-            if (headerViewHolder.itemHeader.isVisible) headerViewHolder.itemHeader.text = mContext.resources.getString(R.string.headingNotes)
+            headerViewHolder.binding.itemHeaderContainer.visibility = if (mNotesList.isNotEmpty()) View.VISIBLE else View.GONE
+            if (headerViewHolder.binding.itemHeader.isVisible) headerViewHolder.binding.itemHeader.text = mContext.resources.getString(R.string.headingNotes)
         }
     }
 
     private fun bindFolderData(holder: RecyclerView.ViewHolder, position: Int) {
         val folderViewHolder = holder as FolderViewHolder
         val folderEntity: FolderEntity = mFolderList[position]
-        folderViewHolder.folderName.text = folderEntity.folderName
-        folderViewHolder.folderName.compoundDrawableTintList = AppUtil.stateList(folderEntity.color)
-        changeVisibility(folderViewHolder.isPinned, folderEntity.pinned)
-        changeVisibility(folderViewHolder.isLocked, folderEntity.locked)
+        folderViewHolder.binding.singleFolderName.text = folderEntity.folderName
+        folderViewHolder.binding.singleFolderName.compoundDrawableTintList = AppUtil.stateList(folderEntity.color)
+        // Assuming itemIndicatorPin and itemIndicatorLock are part of SingleFolderLayoutBinding
+        // If the include tag for item_indicator.xml has an ID, e.g., android:id="@+id/indicator",
+        // then it would be folderViewHolder.binding.indicator.itemIndicatorPin
+        changeVisibility(folderViewHolder.binding.itemIndicatorPin, folderEntity.pinned)
+        changeVisibility(folderViewHolder.binding.itemIndicatorLock, folderEntity.locked)
     }
 
     private fun bindNotesData(holder: RecyclerView.ViewHolder, position: Int) {
@@ -154,41 +172,41 @@ class NotesAdapter(private val mContext: Context,
         mFileUtil?.getLiveNote(mNotesList[position].fileName!!)?.observe(mContext as MainActivity, Observer {
 
             if (it.title != null && !it.title!!.isEmpty()) {
-                noteViewHolder.noteTitle.visibility = View.VISIBLE
-                noteViewHolder.noteTitle.text = it.title
-                noteViewHolder.noteTitle.setTextColor(Color.parseColor(it.color))
+                noteViewHolder.binding.singleNoteTitle.visibility = View.VISIBLE
+                noteViewHolder.binding.singleNoteTitle.text = it.title
+                noteViewHolder.binding.singleNoteTitle.setTextColor(Color.parseColor(it.color))
             } else {
-                noteViewHolder.noteTitle.visibility = View.GONE
+                noteViewHolder.binding.singleNoteTitle.visibility = View.GONE
             }
 
             if (it.locked == 0) {
                 if (it.noteContent != null && !it.noteContent!!.isEmpty()) {
-                    noteViewHolder.noteContent.visibility = View.VISIBLE
-                    noteViewHolder.noteContent.text = it.noteContent
-                    noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
-                    noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
-                    noteViewHolder.noteContent.compoundDrawablePadding = 0
-                    //noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.contentColor))
+                    noteViewHolder.binding.singleNoteContent.visibility = View.VISIBLE
+                    noteViewHolder.binding.singleNoteContent.text = it.noteContent
+                    noteViewHolder.binding.singleNoteContent.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
+                    noteViewHolder.binding.singleNoteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
+                    noteViewHolder.binding.singleNoteContent.compoundDrawablePadding = 0
+                    //noteViewHolder.binding.singleNoteContent.setTextColor(ContextCompat.getColor(mContext, R.color.contentColor))
                 } else {
-                    noteViewHolder.noteContent.visibility = View.GONE
+                    noteViewHolder.binding.singleNoteContent.visibility = View.GONE
                 }
 
                 if (it.imageList != null && it.imageList!!.isNotEmpty()) {
-                    noteViewHolder.noteImage.visibility = View.VISIBLE
-                    mRequestManager?.load(File(mRootFolder, it.imageList!![0]))?.into(noteViewHolder.noteImage)
+                    noteViewHolder.binding.singleNoteImage.visibility = View.VISIBLE
+                    mRequestManager?.load(File(mRootFolder, it.imageList!![0]))?.into(noteViewHolder.binding.singleNoteImage)
                 } else {
-                    noteViewHolder.noteImage.visibility = View.GONE
+                    noteViewHolder.binding.singleNoteImage.visibility = View.GONE
                 }
 
             } else {
-                noteViewHolder.noteContent.text = mContext.resources?.getString(R.string.hidden)
-                noteViewHolder.noteImage.visibility = View.GONE
-                noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.grey))
-                noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_lock_48px, 0, 0, 0)
-                noteViewHolder.noteContent.compoundDrawablePadding = 4
+                noteViewHolder.binding.singleNoteContent.text = mContext.resources?.getString(R.string.hidden)
+                noteViewHolder.binding.singleNoteImage.visibility = View.GONE
+                noteViewHolder.binding.singleNoteContent.setTextColor(ContextCompat.getColor(mContext, R.color.grey))
+                noteViewHolder.binding.singleNoteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_lock_48px, 0, 0, 0)
+                noteViewHolder.binding.singleNoteContent.compoundDrawablePadding = 4
             }
-
-            changeVisibility(noteViewHolder.isPinned, it.pinned)
+            // Assuming itemIndicatorPin and itemIndicatorLock are part of SingleNoteLayoutBinding
+            changeVisibility(noteViewHolder.binding.itemIndicatorPin, it.pinned)
         })
     }
 
@@ -248,26 +266,20 @@ class NotesAdapter(private val mContext: Context,
         super.onDetachedFromRecyclerView(recyclerView)
     }
 
-    internal inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        val noteTitle: TextView = itemView.singleNoteTitle
-        val noteContent: TextView = itemView.singleNoteContent
-        val noteImage: ImageView = itemView.singleNoteImage
-        val isPinned: ImageView = itemView.itemIndicatorPin
-        val isLocked: ImageView = itemView.itemIndicatorLock
-
+    internal inner class NoteViewHolder(val binding: SingleNoteLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+        // Views accessed via binding.singleNoteTitle, binding.singleNoteContent, etc.
+        // Assuming itemIndicatorPin and itemIndicatorLock are part of SingleNoteLayoutBinding
         init {
-
             mCompositeDisposable.addAll(
-                    RxView.clicks(itemView).subscribe({
+                    RxView.clicks(binding.root).subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mNoteItemClickListener.onClick(adapterPosition, itemViewType)
                         }
                     }, { throwable -> Timber.d(throwable.message) }),
 
-                    RxView.longClicks(itemView).subscribe({
+                    RxView.longClicks(binding.root).subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
-                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, itemView)
+                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, binding.root)
                         }
                     }, { throwable -> Timber.d(throwable.message) })
             )
@@ -275,46 +287,36 @@ class NotesAdapter(private val mContext: Context,
     }
 
 
-    internal inner class FolderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        val folderName: TextView = itemView.singleFolderName
-        val isPinned: ImageView = itemView.itemIndicatorPin
-        val isLocked: ImageView = itemView.itemIndicatorLock
-
+    internal inner class FolderViewHolder(val binding: SingleFolderLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+        // Views accessed via binding.singleFolderName, etc.
+        // Assuming itemIndicatorPin and itemIndicatorLock are part of SingleFolderLayoutBinding
         init {
             mCompositeDisposable.addAll(
-                    RxView.clicks(itemView).subscribe {
+                    RxView.clicks(binding.root).subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mNoteItemClickListener.onClick(adapterPosition, itemViewType)
                         }
                     },
-                    RxView.longClicks(itemView).subscribe({
+                    RxView.longClicks(binding.root).subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
-                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, itemView)
+                            mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, binding.root)
                         }
                     }, { throwable -> Timber.d(throwable.message) })
-
             )
         }
     }
 
-    internal inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        val itemHeader: TextView = itemView.itemHeader
-        private val itemHeaderMore: ImageView = itemView.itemHeaderMore
-        val itemHeaderContainer: ConstraintLayout = itemView.itemHeaderContainer
-
-
+    internal inner class HeaderViewHolder(val binding: SingleListHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
+        // Views accessed via binding.itemHeader, binding.itemHeaderMore, etc.
         init {
             mCompositeDisposable.addAll(
-                    RxView.clicks(itemHeaderMore).subscribe {
+                    RxView.clicks(binding.itemHeaderMore).subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             listHeaderClickListener.headerClick(
-                                    if (itemHeader.text.toString() == mContext.resources.getString(R.string.headingFolder)) ListFragment.ItemType.FOLDER
-                                    else ListFragment.ItemType.NOTES, itemHeaderMore)
+                                    if (binding.itemHeader.text.toString() == mContext.resources.getString(R.string.headingFolder)) ListFragment.ItemType.FOLDER
+                                    else ListFragment.ItemType.NOTES, binding.itemHeaderMore)
                         }
                     }
-
             )
         }
     }

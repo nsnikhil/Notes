@@ -41,13 +41,14 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxCompoundButton
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.SingleCheckListItemBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.view.adapters.diffUtil.CheckListDiffUtil
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.single_check_list_item.view.*
+// import kotlinx.android.synthetic.main.single_check_list_item.view.* // Removed synthetic import
 import java.util.concurrent.TimeUnit
 
 
@@ -58,15 +59,16 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, priv
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         context = parent.context
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.single_check_list_item, parent, false))
+        val binding = SingleCheckListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false) // Inflate with ViewBinding
+        return MyViewHolder(binding) // Pass binding to ViewHolder
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val checkList = getItem(position)
-        holder.text.setText(checkList.text)
-        holder.checkBox.isChecked = checkList.done
-        if (holder.text.text.toString().isNotEmpty()) modifyText(holder.text, checkList.done)
-        if (position == itemCount - 1) setFocus(holder.text)
+        holder.binding.checkListItem.setText(checkList.text) // Use binding
+        holder.binding.checkListTicker.isChecked = checkList.done // Use binding
+        if (holder.binding.checkListItem.text.toString().isNotEmpty()) modifyText(holder.binding.checkListItem, checkList.done) // Use binding
+        if (position == itemCount - 1) setFocus(holder.binding.checkListItem) // Use binding
     }
 
     private fun setFocus(editText: EditText) {
@@ -94,34 +96,32 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, priv
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val checkBox: CheckBox = itemView.checkListTicker
-        val text: EditText = itemView.checkListItem
-        private val remove: ImageView = itemView.checkListRemove
+    inner class MyViewHolder internal constructor(val binding: SingleCheckListItemBinding) : RecyclerView.ViewHolder(binding.root) { // ViewHolder accepts binding
+        // Direct view references removed, will use binding.checkListTicker, binding.checkListItem, binding.checkListRemove
 
         init {
             compositeDisposable.addAll(
 
-                    RxTextView.textChanges(text).debounce(500, TimeUnit.MILLISECONDS).subscribe {
+                    RxTextView.textChanges(binding.checkListItem).debounce(500, TimeUnit.MILLISECONDS).subscribe { // Use binding
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             val newContent: String = it.toString()
                             getItem(adapterPosition).text = newContent
                         }
                     },
 
-                    RxTextView.editorActions(text).subscribe {
+                    RxTextView.editorActions(binding.checkListItem).subscribe { // Use binding
                         if (it == EditorInfo.IME_ACTION_NEXT) mOnAddClickListener.addClickListener()
                     },
 
-                    RxCompoundButton.checkedChanges(checkBox).subscribe {
+                    RxCompoundButton.checkedChanges(binding.checkListTicker).subscribe { // Use binding
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             val value: Boolean = it
                             getItem(adapterPosition).done = value
-                            modifyText(text, value)
+                            modifyText(binding.checkListItem, value) // Use binding
                         }
                     },
 
-                    RxView.clicks(remove).subscribe {
+                    RxView.clicks(binding.checkListRemove).subscribe { // Use binding
                         if (adapterPosition != RecyclerView.NO_POSITION)
                             onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.CHECKLIST_ADAPTER)
                     }

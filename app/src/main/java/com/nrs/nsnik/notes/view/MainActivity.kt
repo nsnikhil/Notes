@@ -42,15 +42,17 @@ import com.google.android.material.navigation.NavigationView
 import com.nrs.nsnik.notes.BuildConfig
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.ActivityMainBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.util.idlingResource.SimpleIdlingResource
 import io.branch.referral.Branch
-import kotlinx.android.synthetic.main.activity_main.*
+// import kotlinx.android.synthetic.main.activity_main.* // Removed synthetic import
 import org.json.JSONException
 import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding // Added binding variable
     private var mIdlingResource: SimpleIdlingResource? = null
     private var isOnListFragment: Boolean = true
     private lateinit var controller: NavController
@@ -70,7 +72,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater) // Inflate binding
+        setContentView(binding.root) // Set content view with binding root
         initialize()
         handleIntent()
     }
@@ -93,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initialize() {
-        setSupportActionBar(mainToolbar)
+        setSupportActionBar(binding.mainToolbar) // Replaced with binding
         actionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px)
@@ -103,9 +106,9 @@ class MainActivity : AppCompatActivity() {
 
         controller.addOnDestinationChangedListener { _, destination, _ ->
             isOnListFragment = destination.id == R.id.navItemNotes
-            mainToolbar.visibility = if (destination.id == R.id.introFragment) View.GONE else View.VISIBLE
-            mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            mainNavigationView.setCheckedItem(
+            binding.mainToolbar.visibility = if (destination.id == R.id.introFragment) View.GONE else View.VISIBLE // Replaced with binding
+            binding.mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED) // Replaced with binding
+            binding.mainNavigationView.setCheckedItem( // Replaced with binding
                     when (destination.id) {
                         R.id.navItemNotes -> R.id.navItemNotes
                         R.id.navItemSettings -> R.id.navItemSettings
@@ -116,22 +119,22 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        mainToolbar.setupWithNavController(controller)
-        mainNavigationView.setupWithNavController(controller)
+        binding.mainToolbar.setupWithNavController(controller) // Replaced with binding
+        binding.mainNavigationView.setupWithNavController(controller) // Replaced with binding
 
-        mainNavigationView.setNavigationItemSelectedListener { menuItem ->
+        binding.mainNavigationView.setNavigationItemSelectedListener { menuItem -> // Replaced with binding
             when (menuItem.itemId) {
                 R.id.navItemNotes -> {
-                    mainDrawerLayout.closeDrawer(GravityCompat.START)
+                    binding.mainDrawerLayout.closeDrawer(GravityCompat.START) // Replaced with binding
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemSettings -> {
-                    mainDrawerLayout.closeDrawer(GravityCompat.START)
+                    binding.mainDrawerLayout.closeDrawer(GravityCompat.START) // Replaced with binding
                     findNavController(R.id.mainNavHost).navigate(R.id.navItemSettings)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemAbout -> {
-                    mainDrawerLayout.closeDrawer(GravityCompat.START)
+                    binding.mainDrawerLayout.closeDrawer(GravityCompat.START) // Replaced with binding
                     findNavController(R.id.mainNavHost).navigate(R.id.navItemAbout)
                     return@setNavigationItemSelectedListener true
                 }
@@ -187,13 +190,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (mainDrawerLayout.isDrawerOpen(GravityCompat.START)) mainDrawerLayout.closeDrawer(GravityCompat.START)
+        if (binding.mainDrawerLayout.isDrawerOpen(GravityCompat.START)) binding.mainDrawerLayout.closeDrawer(GravityCompat.START) // Replaced with binding
         else super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> if (isOnListFragment) mainDrawerLayout.openDrawer(GravityCompat.START)
+            android.R.id.home -> if (isOnListFragment) binding.mainDrawerLayout.openDrawer(GravityCompat.START) // Replaced with binding
         }
         return super.onOptionsItemSelected(item)
     }

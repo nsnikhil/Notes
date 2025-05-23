@@ -36,8 +36,9 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.FragmentAboutBinding // Added ViewBinding import
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_about.*
+// import kotlinx.android.synthetic.main.fragment_about.* // Removed synthetic import
 
 /**
  * this fragments shows
@@ -48,10 +49,14 @@ import kotlinx.android.synthetic.main.fragment_about.*
 
 class AboutFragment : Fragment() {
 
+    private var _binding: FragmentAboutBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
+
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_about, container, false)
+        _binding = FragmentAboutBinding.inflate(inflater, container, false) // Inflate binding
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,14 +66,14 @@ class AboutFragment : Fragment() {
     }
 
     private fun initialize() {
-        aboutSourceCode.movementMethod = LinkMovementMethod.getInstance()
-        aboutNikhil.movementMethod = LinkMovementMethod.getInstance()
+        binding.aboutSourceCode.movementMethod = LinkMovementMethod.getInstance() // Use binding
+        binding.aboutNikhil.movementMethod = LinkMovementMethod.getInstance() // Use binding
     }
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(aboutLibraries).subscribe { startActivity(Intent(activity, OssLicensesMenuActivity::class.java)) },
-                RxView.clicks(aboutLicense).subscribe { chromeCustomTab(activity?.resources?.getString(R.string.aboutLicenseUrl)!!) }
+                RxView.clicks(binding.aboutLibraries).subscribe { startActivity(Intent(activity, OssLicensesMenuActivity::class.java)) }, // Use binding
+                RxView.clicks(binding.aboutLicense).subscribe { chromeCustomTab(activity?.resources?.getString(R.string.aboutLicenseUrl)!!) } // Use binding
         )
     }
 
@@ -88,8 +93,16 @@ class AboutFragment : Fragment() {
         compositeDisposable.dispose()
     }
 
+    override fun onDestroyView() { // Changed from onDestroy to onDestroyView
+        super.onDestroyView()
+        _binding = null // Set binding to null
+        cleanUp() // cleanUp can still be called, or its contents moved here if only related to views
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        cleanUp()
+        // If cleanUp has non-view related disposables, it might still be needed here
+        // or split into view-specific cleanup and general cleanup.
+        // For now, assuming cleanUp is mostly for RxView subscriptions tied to views.
     }
 }

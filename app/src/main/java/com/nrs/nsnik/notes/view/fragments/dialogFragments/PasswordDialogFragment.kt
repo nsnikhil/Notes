@@ -34,12 +34,14 @@ import androidx.lifecycle.Observer
 import com.google.android.material.textfield.TextInputEditText
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
+import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.FragmentPasswordDialogBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.events.PasswordEvent
 import com.nrs.nsnik.notes.view.fragments.ListFragment
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_password_dialog.*
+// import kotlinx.android.synthetic.main.fragment_password_dialog.* // Removed synthetic import
 import org.greenrobot.eventbus.EventBus
 
 
@@ -53,8 +55,12 @@ class PasswordDialogFragment : DialogFragment() {
     private var itemPosition: Int = -1
     private lateinit var eventType: ListFragment.EventType
 
+    private var _binding: FragmentPasswordDialogBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_password_dialog, container, false)
+        _binding = FragmentPasswordDialogBinding.inflate(inflater, container, false) // Inflate binding
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,38 +89,38 @@ class PasswordDialogFragment : DialogFragment() {
         val resources = activity?.resources
 
         if (!hasPassword) {
-            passwordDialogTextContainerOld.visibility = View.VISIBLE
-            passwordDialogCreate.text = resources?.getString(R.string.save)
+            binding.passwordDialogTextContainerOld.visibility = View.VISIBLE // Use binding
+            binding.passwordDialogCreate.text = resources?.getString(R.string.save) // Use binding
             setFields(resources?.getString(R.string.reEnterNewPassword), resources?.getString(R.string.enterNewPassword))
         } else {
             if (targetRequestCode == 1954) {
-                passwordDialogTextContainerOld.visibility = View.VISIBLE
-                passwordDialogCreate.text = resources?.getString(R.string.save)
+                binding.passwordDialogTextContainerOld.visibility = View.VISIBLE // Use binding
+                binding.passwordDialogCreate.text = resources?.getString(R.string.save) // Use binding
                 setFields(resources?.getString(R.string.enterNewPassword), resources?.getString(R.string.oldPassword))
             } else {
-                passwordDialogTextContainerOld.visibility = View.GONE
-                passwordDialogCreate.text = resources?.getString(R.string.enter)
-                passwordDialogText.hint = resources?.getString(R.string.password)
+                binding.passwordDialogTextContainerOld.visibility = View.GONE // Use binding
+                binding.passwordDialogCreate.text = resources?.getString(R.string.enter) // Use binding
+                binding.passwordDialogText.hint = resources?.getString(R.string.password) // Use binding
             }
         }
     }
 
     private fun setFields(newHint: String?, oldHint: String?) {
-        passwordDialogText.hint = newHint
-        passwordDialogTextOld.hint = oldHint
+        binding.passwordDialogText.hint = newHint // Use binding
+        binding.passwordDialogTextOld.hint = oldHint // Use binding
     }
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(passwordDialogCreate).subscribe {
-                    if (isNotEmpty(passwordDialogText))
+                RxView.clicks(binding.passwordDialogCreate).subscribe { // Use binding
+                    if (isNotEmpty(binding.passwordDialogText)) // Use binding
                         when {
                             value == default -> addNewPassWord()
                             targetRequestCode == 1954 -> changePassword()
-                            else -> isPasswordCorrect(passwordDialogText)
+                            else -> isPasswordCorrect(binding.passwordDialogText) // Use binding
                         }
                 },
-                RxView.clicks(passwordDialogCancel).subscribe {
+                RxView.clicks(binding.passwordDialogCancel).subscribe { // Use binding
                     dismiss()
                 }
         )
@@ -140,25 +146,30 @@ class PasswordDialogFragment : DialogFragment() {
     }
 
     private fun addNewPassWord() {
-        if (passwordDialogText.text.toString() == passwordDialogTextOld.text.toString()) savePassword()
-        else passwordDialogText.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
+        if (binding.passwordDialogText.text.toString() == binding.passwordDialogTextOld.text.toString()) savePassword() // Use binding
+        else binding.passwordDialogText.error = activity?.resources?.getString(R.string.errorPasswordNoMatch) // Use binding
     }
 
     private fun changePassword() {
-        if (value == passwordDialogTextOld.text.toString()) savePassword()
+        if (value == binding.passwordDialogTextOld.text.toString()) savePassword() // Use binding
         else {
-            passwordDialogTextOld.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
-            passwordDialogText.setText("")
+            binding.passwordDialogTextOld.error = activity?.resources?.getString(R.string.errorPasswordNoMatch) // Use binding
+            binding.passwordDialogText.setText("") // Use binding
         }
     }
 
     private fun savePassword() {
-        PasswordUtil.encryptAndGet(passwordDialogText.text.toString(), sharedPreferences, activity!!)
+        PasswordUtil.encryptAndGet(binding.passwordDialogText.text.toString(), sharedPreferences, activity!!) // Use binding
                 .observe(this, Observer {
                     if (it.isNotEmpty() && it != default) {
                         sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), it).apply()
                         dismiss()
                     }
                 })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Set binding to null
     }
 }

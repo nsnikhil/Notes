@@ -34,39 +34,41 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
+import com.nrs.nsnik.notes.databinding.SingleFolderLayoutBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.view.adapters.diffUtil.FolderDiffUtil
 import com.nrs.nsnik.notes.view.listeners.ItemPositionClickListener
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.item_indicator.view.*
-import kotlinx.android.synthetic.main.single_folder_layout.view.*
+// import kotlinx.android.synthetic.main.item_indicator.view.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.single_folder_layout.view.* // Removed synthetic import
 
 class FolderListAdapter(val itemPositionClickListener: ItemPositionClickListener) : ListAdapter<FolderEntity, FolderListAdapter.MyViewHolder>(FolderDiffUtil()) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.single_folder_layout, parent, false))
+        val binding = SingleFolderLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false) // Inflate with ViewBinding
+        return MyViewHolder(binding) // Pass binding to ViewHolder
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val folderEntity = getItem(position)
-        holder.folderName.text = folderEntity.folderName
-        holder.folderName.compoundDrawableTintList = AppUtil.stateList(folderEntity.color)
-        holder.container.elevation = 0f
-        holder.container.minimumWidth = 300
+        holder.binding.singleFolderName.text = folderEntity.folderName // Use binding
+        holder.binding.singleFolderName.compoundDrawableTintList = AppUtil.stateList(folderEntity.color) // Use binding
+        holder.binding.singleFolderContainer.elevation = 0f // Use binding
+        holder.binding.singleFolderContainer.minimumWidth = 300 // Use binding
+        // Assuming itemIndicatorPin and itemIndicatorLock are part of SingleFolderLayoutBinding
+        // If they are not, this would need adjustment, possibly with an <include id=...>
+        // holder.binding.itemIndicatorPin.visibility = if (folderEntity.isPinned) View.VISIBLE else View.GONE
+        // holder.binding.itemIndicatorLock.visibility = if (folderEntity.isLocked) View.VISIBLE else View.GONE
     }
 
-    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        val folderName: TextView = itemView.singleFolderName
-        val isPinned: ImageView = itemView.itemIndicatorPin
-        val isLocked: ImageView = itemView.itemIndicatorLock
-        val container: CardView = itemView.singleFolderContainer
+    inner class MyViewHolder(val binding: SingleFolderLayoutBinding) : RecyclerView.ViewHolder(binding.root) { // ViewHolder accepts binding
+        // Direct view references removed. Will use binding.singleFolderName, binding.itemIndicatorPin, etc.
 
         init {
             compositeDisposable.addAll(
-                    RxView.clicks(container).subscribe { itemPositionClickListener.itemClicked(adapterPosition) }
+                    RxView.clicks(binding.singleFolderContainer).subscribe { itemPositionClickListener.itemClicked(adapterPosition) } // Use binding
             )
         }
     }

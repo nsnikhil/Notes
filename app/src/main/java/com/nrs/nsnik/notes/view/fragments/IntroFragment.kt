@@ -38,21 +38,28 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.IntroData
 import com.nrs.nsnik.notes.util.AppUtil
+import com.nrs.nsnik.notes.data.IntroData
+import com.nrs.nsnik.notes.databinding.FragmentIntroBinding // Added ViewBinding import
+import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.view.adapters.IntroAdapter
 import com.nrs.nsnik.notes.view.customViews.CirclePagerIndicatorDecoration
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_intro.*
-import kotlinx.android.synthetic.main.recycler_view.*
+// import kotlinx.android.synthetic.main.fragment_intro.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.recycler_view.* // Removed synthetic import
 
 
 class IntroFragment : Fragment() {
+
+    private var _binding: FragmentIntroBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
 
     private lateinit var introAdapter: IntroAdapter
     private lateinit var imageList: List<String>
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro, container, false)
+        _binding = FragmentIntroBinding.inflate(inflater, container, false) // Inflate binding
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,27 +73,27 @@ class IntroFragment : Fragment() {
         introAdapter = IntroAdapter()
         imageList = IntroData.introDataList
 
-        recyclerView.apply {
+        binding.recyclerView.apply { // Use binding
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
             adapter = introAdapter
         }
         val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(recyclerView)
-        recyclerView.addItemDecoration(CirclePagerIndicatorDecoration())
+        snapHelper.attachToRecyclerView(binding.recyclerView) // Use binding
+        binding.recyclerView.addItemDecoration(CirclePagerIndicatorDecoration()) // Use binding
 
         introAdapter.submitList(imageList)
     }
 
     private fun listeners() {
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() { // Use binding
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                introNext.visibility = if (endReached()) View.VISIBLE else View.GONE
+                binding.introNext.visibility = if (endReached()) View.VISIBLE else View.GONE // Use binding
             }
         })
         compositeDisposable.addAll(
-                RxView.clicks(introNext).subscribe {
+                RxView.clicks(binding.introNext).subscribe { // Use binding
                     AppUtil.saveIsVisitedIntro(activity)
                     activity?.findNavController(R.id.mainNavHost)?.popBackStack()
                 }
@@ -94,9 +101,9 @@ class IntroFragment : Fragment() {
     }
 
     private fun endReached(): Boolean {
-        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val layoutManager = binding.recyclerView.layoutManager as LinearLayoutManager // Use binding
         val pos = layoutManager.findLastCompletelyVisibleItemPosition()
-        val numItems = recyclerView.adapter?.itemCount
+        val numItems = binding.recyclerView.adapter?.itemCount // Use binding
         return pos >= numItems?.minus(1)!!
     }
 
@@ -105,8 +112,15 @@ class IntroFragment : Fragment() {
         compositeDisposable.dispose()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Set binding to null
+        cleanUp()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        cleanUp()
+        // If cleanUp has non-view related disposables, it might still be needed here.
+        // For now, assuming cleanUp is mostly for RxView subscriptions tied to views.
     }
 }

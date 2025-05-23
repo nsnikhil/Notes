@@ -63,17 +63,21 @@ import com.nrs.nsnik.notes.view.listeners.ListHeaderClickListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
+import com.nrs.nsnik.notes.databinding.FragmentListBinding // Added ViewBinding import
 import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.empty_state.*
-import kotlinx.android.synthetic.main.fab_reveal.*
-import kotlinx.android.synthetic.main.fragment_list.*
+// import kotlinx.android.synthetic.main.empty_state.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.fab_reveal.* // Removed synthetic import
+// import kotlinx.android.synthetic.main.fragment_list.* // Removed synthetic import
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.util.*
 
 class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener {
+
+    private var _binding: FragmentListBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
 
     private lateinit var mNoteViewModel: NoteViewModel
     private lateinit var mFolderViewModel: FolderViewModel
@@ -92,7 +96,8 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
     private var sortType: SortType = SortType.PIN
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_list, container, false)
+        _binding = FragmentListBinding.inflate(inflater, container, false) // Inflate binding
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -161,7 +166,13 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         //Setting up recycler view
         mNotesAdapter = NotesAdapter(activity!!, mNotesList, mFolderList, this, this)
 
-        commonList.apply {
+        // Assuming commonList is part of FragmentListBinding, possibly as binding.commonList or binding.listLayout.commonList
+        // For fab_reveal.xml views like fabAdd, fabAddNote, fabAddFolder, listBackground, fabAddFolderContainer, fabAddNoteContainer
+        // And for empty_state.xml view like emptyState
+        // These will be accessed as binding.fabAdd, binding.emptyState etc. if directly part of FragmentListBinding,
+        // or binding.fabRevealLayout.fabAdd, binding.emptyStateLayout.emptyState if included with IDs.
+
+        binding.commonList.apply { // Use binding
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             hasFixedSize()
             itemAnimator = DefaultItemAnimator()
@@ -169,7 +180,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         }
 
         val touchHelper = ItemTouchHelper(RvItemTouchHelper(mNotesAdapter))
-        touchHelper.attachToRecyclerView(commonList)
+        touchHelper.attachToRecyclerView(binding.commonList) // Use binding
 
         setFolderViewModel(mFolderName, sortType)
         setNoteViewModel(mFolderName, sortType)
@@ -177,17 +188,17 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(fabAdd).subscribe({
+                RxView.clicks(binding.fabRevealLayout.fabAdd).subscribe({ // Use binding from included layout or direct if IDs are merged
                     if (isRevealed) animate(135f, 0f, R.anim.jump_to_down)
                     else animate(0f, 135f, R.anim.jump_from_down)
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(fabAddNote).subscribe {
+                RxView.clicks(binding.fabRevealLayout.fabAddNote).subscribe { // Use binding
                     animate(135f, 0f, R.anim.jump_to_down)
                     openNoteEditor(mFolderName, null)
                 },
 
-                RxView.clicks(fabAddFolder).subscribe {
+                RxView.clicks(binding.fabRevealLayout.fabAddFolder).subscribe { // Use binding
                     animate(135f, 0f, R.anim.jump_to_down)
                     val bundle = Bundle()
                     bundle.putString(activity?.resources?.getString(R.string.bundleCreateFolderParentFolder), mFolderName)
@@ -238,7 +249,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
     }
 
     private fun setEmpty() {
-        emptyState.visibility = if (mNotesList.isEmpty() && mFolderList.isEmpty()) View.VISIBLE else View.GONE
+        binding.emptyStateLayout.emptyState.visibility = if (mNotesList.isEmpty() && mFolderList.isEmpty()) View.VISIBLE else View.GONE // Use binding
     }
 
     private fun openFolder(position: Int) {
@@ -284,7 +295,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
             bundle.putByteArray(activity?.resources?.getString(R.string.bundleNoteEntity), byteArray)
         }
 
-        fabAddNote.findNavController().navigate(R.id.listToAddNewNote, bundle)
+        binding.fabRevealLayout.fabAddNote.findNavController().navigate(R.id.listToAddNewNote, bundle) // Use binding
     }
 
 
@@ -493,7 +504,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
             override fun onAnimationStart(animation: Animation) {}
 
             override fun onAnimationEnd(animation: Animation) {
-                listBackground?.visibility = if (isRevealed) View.GONE else View.VISIBLE
+                binding.fabRevealLayout.listBackground.visibility = if (isRevealed) View.GONE else View.VISIBLE // Use binding
                 transitionAnimation.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationStart(animation: Animation) {}
 
@@ -503,23 +514,23 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
                     override fun onAnimationRepeat(animation: Animation) {}
                 })
-                fabAddFolderContainer?.startAnimation(transitionAnimation)
-                fabAddNoteContainer?.startAnimation(transitionAnimation)
+                binding.fabRevealLayout.fabAddFolderContainer.startAnimation(transitionAnimation) // Use binding
+                binding.fabRevealLayout.fabAddNoteContainer.startAnimation(transitionAnimation) // Use binding
             }
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
-        fabAdd?.startAnimation(rotateAnimation)
+        binding.fabRevealLayout.fabAdd.startAnimation(rotateAnimation) // Use binding
     }
 
     private fun changeFabVisibility(): Boolean {
         return if (isRevealed) {
-            fabAddNoteContainer.visibility = View.INVISIBLE
-            fabAddFolderContainer.visibility = View.INVISIBLE
+            binding.fabRevealLayout.fabAddNoteContainer.visibility = View.INVISIBLE // Use binding
+            binding.fabRevealLayout.fabAddFolderContainer.visibility = View.INVISIBLE // Use binding
             false
         } else {
-            fabAddNoteContainer.visibility = View.VISIBLE
-            fabAddFolderContainer.visibility = View.VISIBLE
+            binding.fabRevealLayout.fabAddNoteContainer.visibility = View.VISIBLE // Use binding
+            binding.fabRevealLayout.fabAddFolderContainer.visibility = View.VISIBLE // Use binding
             true
         }
     }

@@ -42,10 +42,11 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
+import com.nrs.nsnik.notes.databinding.SingleImageViewBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.single_image_view.view.*
+// import kotlinx.android.synthetic.main.single_image_view.view.* // Removed synthetic import
 import timber.log.Timber
 import java.io.File
 
@@ -67,7 +68,8 @@ class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveLis
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         context = parent.context
         glideRequestManager = (context.applicationContext as MyApplication).requestManager
-        return MyViewHolder(LayoutInflater.from(context).inflate(R.layout.single_image_view, parent, false))
+        val binding = SingleImageViewBinding.inflate(LayoutInflater.from(context), parent, false) // Inflate with ViewBinding
+        return MyViewHolder(binding) // Pass binding to ViewHolder
     }
 
     override fun onBindViewHolder(holder: ImageAdapter.MyViewHolder, position: Int) {
@@ -81,12 +83,12 @@ class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveLis
                     }
 
                     override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                        holder.image.visibility = View.VISIBLE
-                        holder.progress.visibility = View.GONE
+                        holder.binding.singleImage.visibility = View.VISIBLE // Use binding
+                        holder.binding.singleImageProgress.visibility = View.GONE // Use binding
                         return false
                     }
                 })
-                .into(holder.image)
+                .into(holder.binding.singleImage) // Use binding
 
     }
 
@@ -100,13 +102,8 @@ class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveLis
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        val image: ImageView = itemView.singleImage
-
-        private val remove: ImageView = itemView.singleImageCancel
-
-        val progress: ProgressBar = itemView.singleImageProgress
+    inner class MyViewHolder internal constructor(val binding: SingleImageViewBinding) : RecyclerView.ViewHolder(binding.root) { // ViewHolder accepts binding
+        // Direct view references removed, will use binding.singleImage, binding.singleImageCancel, binding.singleImageProgress
 
         init {
 
@@ -117,16 +114,16 @@ class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveLis
              */
 
             if (mFullScreen) {
-                remove.visibility = View.GONE
-                image.scaleType = ImageView.ScaleType.FIT_CENTER
+                binding.singleImageCancel.visibility = View.GONE // Use binding
+                binding.singleImage.scaleType = ImageView.ScaleType.FIT_CENTER // Use binding
             } else {
                 compositeDisposable.addAll(
-                        RxView.clicks(remove).subscribe {
+                        RxView.clicks(binding.singleImageCancel).subscribe { // Use binding
                             if (adapterPosition != RecyclerView.NO_POSITION) {
                                 onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.IMAGE_ADAPTER)
                             }
                         },
-                        RxView.clicks(image).subscribe {
+                        RxView.clicks(binding.singleImage).subscribe { // Use binding
                             if (adapterPosition != RecyclerView.NO_POSITION) {
                                 //EventBus.getDefault().post(FullScreenEvent(adapterPosition))
                             }

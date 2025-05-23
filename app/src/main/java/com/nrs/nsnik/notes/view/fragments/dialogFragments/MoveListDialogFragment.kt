@@ -38,10 +38,11 @@ import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.util.events.FolderClickEvent
 import com.nrs.nsnik.notes.view.adapters.FolderListAdapter
 import com.nrs.nsnik.notes.view.fragments.ListFragment
+import com.nrs.nsnik.notes.databinding.FragmentMoveListBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.view.listeners.ItemPositionClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
-import kotlinx.android.synthetic.main.recycler_view.*
+// import kotlinx.android.synthetic.main.recycler_view.* // Removed synthetic import, assuming fragment_move_list is correct
 import org.greenrobot.eventbus.EventBus
 import kotlin.streams.toList
 
@@ -56,8 +57,12 @@ class MoveListDialogFragment : DialogFragment(), ItemPositionClickListener {
     private lateinit var itemType: ListFragment.ItemType
     private var folderList = mutableListOf<FolderEntity>()
 
+    private var _binding: FragmentMoveListBinding? = null // Added nullable binding variable
+    private val binding get() = _binding!! // Non-null accessor
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_move_list, container, false)
+        _binding = FragmentMoveListBinding.inflate(inflater, container, false) // Inflate binding
+        return binding.root // Return binding root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,7 +83,7 @@ class MoveListDialogFragment : DialogFragment(), ItemPositionClickListener {
 
         folderListAdapter = FolderListAdapter(this)
 
-        recyclerView.apply {
+        binding.recyclerView.apply { // Use binding
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
             adapter = folderListAdapter
@@ -111,4 +116,8 @@ class MoveListDialogFragment : DialogFragment(), ItemPositionClickListener {
         dismiss()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Set binding to null
+    }
 }

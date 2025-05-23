@@ -30,21 +30,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.SingleIntroItemBinding // Added ViewBinding import
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
-import kotlinx.android.synthetic.main.single_intro_item.view.*
+// import kotlinx.android.synthetic.main.single_intro_item.view.* // Removed synthetic import
 
 class IntroAdapter : ListAdapter<String, IntroAdapter.MyViewHolder>(StringDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.single_intro_item, parent, false))
+        val binding = SingleIntroItemBinding.inflate(LayoutInflater.from(parent.context), parent, false) // Inflate with ViewBinding
+        return MyViewHolder(binding) // Pass binding to ViewHolder
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.text.text = getItem(position)
+        holder.binding.introText.text = getItem(position) // Use binding
     }
 
-    class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val text: TextView = itemView.introText
+    class MyViewHolder internal constructor(val binding: SingleIntroItemBinding) : RecyclerView.ViewHolder(binding.root) { // ViewHolder accepts binding
+        // Direct view reference removed, will use binding.introText
     }
 
 }
