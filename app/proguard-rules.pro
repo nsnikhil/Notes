@@ -26,27 +26,7 @@
  public static *** v(...);
 }
 
--keep class butterknife.** { *; }
--dontwarn butterknife.internal.**
--keep class **$$ViewBinder { *; }
-
--keepclasseswithmembernames class * {
-    @butterknife.* <fields>;
-}
-
--keepclasseswithmembernames class * {
-    @butterknife.* <methods>;
-}
-
 -dontwarn com.google.errorprone.annotations.*
-
--dontwarn com.f2prateek.dart.internal.**
--keep class **$$ExtraInjector { *; }
--keepclasseswithmembernames class * {
-    @com.f2prateek.dart.* <fields>;
-}
--keep class **Henson { *; }
--keep class **$$IntentBuilder { *; }
 
 -keep class * implements androidx.lifecycle.GeneratedAdapter {<init>(...);}
 
@@ -99,3 +79,22 @@
 -dontwarn javax.annotation.**
 
 -dontwarn org.mockito.**
+
+# kotlinx.serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+
+-keepclassmembers class kotlinx.serialization.json.** {
+    *** Companion;
+}
+-keepclasseswithmembers class kotlinx.serialization.json.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+-keep,includedescriptorclasses class com.nrs.nsnik.notes.**$$serializer { *; }
+-keepclassmembers class com.nrs.nsnik.notes.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.nrs.nsnik.notes.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}

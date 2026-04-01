@@ -33,21 +33,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxCompoundButton
+import com.jakewharton.rxbinding4.view.clicks
+import com.jakewharton.rxbinding4.widget.checkedChanges
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.FragmentPreferencesBinding
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
-import hugo.weaving.DebugLog
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_preferences.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 
 class PrefFragment : Fragment() {
 
+    private var _binding: FragmentPreferencesBinding? = null
+    private val binding get() = _binding!!
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_preferences, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentPreferencesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,27 +58,31 @@ class PrefFragment : Fragment() {
         initialize()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun getResourceString(id: Int): String? = activity?.resources?.getString(id)
 
-    @DebugLog
     private fun initializeItems() {
-        prefItemChangePassword.text = getString(
+        binding.prefItemChangePassword.text = getString(
                 getResourceString(R.string.preferenceChangeCode)!!,
                 getResourceString(R.string.preferenceChangeCodeSummary)!!
         )
-        prefItemPrivacySendData.text = getString(
+        binding.prefItemPrivacySendData.text = getString(
                 getResourceString(R.string.preferenceSendData)!!,
                 getResourceString(R.string.preferenceSendDataSummary)!!
         )
-        prefItemPrivacyErrorReport.text = getString(
+        binding.prefItemPrivacyErrorReport.text = getString(
                 getResourceString(R.string.preferenceErrorReporting)!!,
                 getResourceString(R.string.preferenceErrorReportingSummary)!!
         )
-        prefItemRestoreData.text = getString(
+        binding.prefItemRestoreData.text = getString(
                 getResourceString(R.string.preferenceRestore)!!,
                 getResourceString(R.string.preferenceRestoreSummary)!!
         )
-        prefItemBackupData.text = getString(
+        binding.prefItemBackupData.text = getString(
                 getResourceString(R.string.preferenceBackup)!!,
                 getResourceString(R.string.preferenceBackupSummary)!!
         )
@@ -85,12 +91,12 @@ class PrefFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun initialize() {
         compositeDisposable.addAll(
-                RxView.clicks(prefItemChangePassword).subscribe { openPasswordDialog() },
-                RxView.clicks(prefItemBackupData).subscribe { exportDatabase() },
-                RxView.clicks(prefItemRestoreData).subscribe { importDatabase() },
-                RxCompoundButton.checkedChanges(prefItemDarkMode).subscribe { switchTheme(it) },
-                RxCompoundButton.checkedChanges(prefItemPrivacyErrorReport).subscribe { enableErrorReporting(it) },
-                RxCompoundButton.checkedChanges(prefItemPrivacySendData).subscribe { enableSendData(it) }
+                binding.prefItemChangePassword.clicks().subscribe { openPasswordDialog() },
+                binding.prefItemBackupData.clicks().subscribe { exportDatabase() },
+                binding.prefItemRestoreData.clicks().subscribe { importDatabase() },
+                binding.prefItemDarkMode.checkedChanges().skipInitialValue().subscribe { switchTheme(it) },
+                binding.prefItemPrivacyErrorReport.checkedChanges().skipInitialValue().subscribe { enableErrorReporting(it) },
+                binding.prefItemPrivacySendData.checkedChanges().skipInitialValue().subscribe { enableSendData(it) }
         )
     }
 
@@ -100,8 +106,10 @@ class PrefFragment : Fragment() {
 
     private fun openPasswordDialog() {
         val dialog = PasswordDialogFragment()
-        dialog.setTargetFragment(this, 1954)
-        dialog.show(fragmentManager, "changePassword")
+        dialog.arguments = Bundle().apply {
+            putBoolean("is_change_password", true)
+        }
+        dialog.show(parentFragmentManager, "changePassword")
     }
 
     private fun exportDatabase() {

@@ -39,6 +39,5 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (BuildConfig.DEBUG) MyApplication.getRefWatcher(this)?.watch(this)
     }
 }

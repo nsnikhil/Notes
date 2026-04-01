@@ -29,20 +29,21 @@ import androidx.lifecycle.MutableLiveData
 import com.nrs.nsnik.notes.dagger.qualifiers.RootFolder
 import com.nrs.nsnik.notes.dagger.scopes.ApplicationScope
 import com.nrs.nsnik.notes.data.NoteEntity
-import io.reactivex.Completable
-import io.reactivex.CompletableObserver
-import io.reactivex.Single
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.internal.operators.completable.CompletableFromCallable
-import io.reactivex.schedulers.Schedulers
-import okio.Buffer
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.CompletableObserver
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.serialization.json.Json
 import okio.ByteString
-import okio.Okio
+import okio.ByteString.Companion.toByteString
+import okio.buffer
+import okio.sink
+import okio.source
 import timber.log.Timber
 import java.io.*
-import java.util.concurrent.Callable
 import javax.inject.Inject
 
 @ApplicationScope
@@ -51,12 +52,12 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
 
     @Throws(IOException::class)
     internal fun saveNote(noteEntity: NoteEntity, fileName: String) {
-        val completable: Completable = CompletableFromCallable(Callable {
+        val completable: Completable = Completable.fromCallable {
             val file = File(rootFolder, fileName)
-            val sink = Okio.buffer(Okio.sink(file))
+            val sink = file.sink().buffer()
             sink.write(serialize(noteEntity))
             sink.close()
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         completable.subscribe(object : CompletableObserver {
             override fun onComplete() {
                 Timber.d("Note Saved")
@@ -74,14 +75,14 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
 
     @Throws(IOException::class)
     fun saveImage(image: Bitmap, fileName: String) {
-        val completable: Completable = CompletableFromCallable(Callable {
+        val completable: Completable = Completable.fromCallable {
             val file = File(rootFolder, fileName)
-            val sink = Okio.buffer(Okio.sink(file))
+            val sink = file.sink().buffer()
             val stream = ByteArrayOutputStream()
             image.compress(Bitmap.CompressFormat.PNG, 100, stream)
             sink.write(stream.toByteArray())
             sink.close()
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         completable.subscribe(object : CompletableObserver {
             override fun onComplete() {
                 Timber.d("Image Saved")
@@ -100,17 +101,16 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
     @Throws(IOException::class)
     fun getImage(fileName: String): Bitmap {
         val file = File(rootFolder, fileName)
-        val source = Okio.buffer(Okio.source(file))
+        val source = file.source().buffer()
         val byteArray = source.readByteArray()
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
     fun deleteNote(fileName: String) {
-        val single: Single<Boolean> = Single.fromCallable(Callable {
+        val single: Single<Boolean> = Single.fromCallable {
             val file = File(rootFolder, fileName)
-            if (file.exists()) return@Callable file.delete()
-            return@Callable false
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            if (file.exists()) file.delete() else false
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         single.subscribe(object : SingleObserver<Boolean> {
             override fun onSuccess(t: Boolean) {
                 Timber.d(t.toString())
@@ -127,14 +127,14 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
     }
 
     fun deleteNoteImages(fileName: List<String>) {
-        val single: Single<Boolean> = Single.fromCallable(Callable {
-            var allDeleted: Boolean = false
+        val single: Single<Boolean> = Single.fromCallable {
+            var allDeleted = false
             fileName.forEach {
                 val file = File(rootFolder, it)
                 if (file.exists()) allDeleted = file.delete()
             }
-            return@Callable allDeleted
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            allDeleted
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         single.subscribe(object : SingleObserver<Boolean> {
             override fun onSuccess(t: Boolean) {
                 Timber.d(t.toString())
@@ -151,14 +151,14 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
     }
 
     fun deleteNoteAudio(fileName: List<String>) {
-        val single: Single<Boolean> = Single.fromCallable(Callable {
-            var allDeleted: Boolean = false
+        val single: Single<Boolean> = Single.fromCallable {
+            var allDeleted = false
             fileName.forEach {
                 val file = File(rootFolder, it)
                 if (file.exists()) allDeleted = file.delete()
             }
-            return@Callable allDeleted
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            allDeleted
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         single.subscribe(object : SingleObserver<Boolean> {
             override fun onSuccess(t: Boolean) {
                 Timber.d(t.toString())
@@ -184,13 +184,13 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
     fun getLiveNote(fileName: String): MutableLiveData<NoteEntity> {
         val liveNote = MutableLiveData<NoteEntity>()
 
-        val single: Single<NoteEntity> = Single.fromCallable(Callable {
+        val single: Single<NoteEntity> = Single.fromCallable {
             val file = File(rootFolder, fileName)
-            val source = Okio.buffer(Okio.source(file))
+            val source = file.source().buffer()
             val entity = deSerialize(source.readByteString())
             source.close()
-            return@Callable entity
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            entity
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         single.subscribe(object : SingleObserver<NoteEntity> {
             override fun onSuccess(t: NoteEntity) {
                 liveNote.value = t
@@ -210,17 +210,13 @@ internal constructor(@param:ApplicationScope @param:RootFolder val rootFolder: F
 
     @Throws(IOException::class)
     private fun serialize(noteEntity: NoteEntity): ByteString {
-        val buffer = Buffer()
-        val stream = ObjectOutputStream(buffer.outputStream())
-        stream.writeObject(noteEntity)
-        stream.flush()
-        return buffer.readByteString()
+        val jsonString = Json.encodeToString(NoteEntity.serializer(), noteEntity)
+        return jsonString.encodeToByteArray().toByteString()
     }
 
     @Throws(Exception::class)
     private fun deSerialize(data: ByteString): NoteEntity {
-        val buffer = Buffer().write(data)
-        val stream = ObjectInputStream(buffer.inputStream())
-        return stream.readObject() as NoteEntity
+        val jsonString = data.utf8()
+        return Json.decodeFromString(NoteEntity.serializer(), jsonString)
     }
 }

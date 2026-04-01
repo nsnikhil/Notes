@@ -24,13 +24,10 @@
 package com.nrs.nsnik.notes.data
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.twitter.serial.serializer.ObjectSerializer
-import com.twitter.serial.serializer.SerializationContext
-import com.twitter.serial.stream.SerializerInput
-import com.twitter.serial.stream.SerializerOutput
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity
 class FolderEntity {
 
@@ -41,35 +38,4 @@ class FolderEntity {
     var pinned: Int = 0
     var locked: Int = 0
     var color: String? = null
-
-    companion object {
-
-        @Ignore
-        val SERIALIZER: ObjectSerializer<FolderEntity> = FolderEntitySerializer()
-
-        class FolderEntitySerializer : ObjectSerializer<FolderEntity>() {
-
-            override fun serializeObject(context: SerializationContext, output: SerializerOutput<out SerializerOutput<*>>, folderEntity: FolderEntity) {
-                output.writeInt(folderEntity.uid)
-                output.writeString(folderEntity.folderName)
-                output.writeString(folderEntity.parentFolderName)
-                output.writeInt(folderEntity.pinned)
-                output.writeInt(folderEntity.locked)
-                output.writeString(folderEntity.color)
-            }
-
-            override fun deserializeObject(context: SerializationContext, input: SerializerInput, versionNumber: Int): FolderEntity? {
-                val folderEntity = FolderEntity()
-                folderEntity.uid = input.readInt()
-                folderEntity.folderName = input.readString()
-                folderEntity.parentFolderName = input.readString()
-                folderEntity.pinned = input.readInt()
-                folderEntity.locked = input.readInt()
-                folderEntity.color = input.readString()
-                return folderEntity
-            }
-
-        }
-
-    }
 }

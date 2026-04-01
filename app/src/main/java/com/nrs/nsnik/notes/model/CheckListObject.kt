@@ -23,36 +23,18 @@
 
 package com.nrs.nsnik.notes.model
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import java.util.UUID
 
-import com.twitter.serial.serializer.ObjectSerializer
-import com.twitter.serial.serializer.SerializationContext
-import com.twitter.serial.stream.SerializerInput
-import com.twitter.serial.stream.SerializerOutput
-import java.io.Serializable
+@Serializable
+class CheckListObject { // BUG-003 fix: removed Java Serializable, using kotlinx.serialization only
 
-
-class CheckListObject : Serializable {
+    // Stable unique ID for DiffUtil identity comparison.
+    // @Transient excludes it from serialization so existing persisted JSON is unaffected.
+    @Transient
+    val id: String = UUID.randomUUID().toString()
 
     var text: String = ""
     var done: Boolean = false
-
-    companion object {
-
-        val SERIALIZER: ObjectSerializer<CheckListObject> = CheckListObjectSerializer()
-
-        class CheckListObjectSerializer : ObjectSerializer<CheckListObject>() {
-
-            override fun serializeObject(context: SerializationContext, output: SerializerOutput<out SerializerOutput<*>>, checkListObject: CheckListObject) {
-                output.writeString(checkListObject.text)
-                output.writeBoolean(checkListObject.done)
-            }
-
-            override fun deserializeObject(context: SerializationContext, input: SerializerInput, versionNumber: Int): CheckListObject? {
-                val checkListObject = CheckListObject()
-                checkListObject.text = input.readString()!!
-                checkListObject.done = input.readBoolean()
-                return checkListObject
-            }
-        }
-    }
 }

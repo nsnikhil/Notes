@@ -26,22 +26,21 @@ package com.nrs.nsnik.notes.view.adapters
 import android.content.Context
 import android.media.MediaPlayer
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.dagger.components.DaggerMediaComponent
+import com.nrs.nsnik.notes.databinding.SingleAudioItemBinding
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.single_audio_item.view.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 import java.io.IOException
 
@@ -56,7 +55,8 @@ class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         context = parent.context
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.single_audio_item, parent, false))
+        val binding = SingleAudioItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {}
@@ -121,23 +121,22 @@ class AudioListAdapter(private val onItemRemoveListener: OnItemRemoveListener) :
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder internal constructor(binding: SingleAudioItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private val seekBar: SeekBar = itemView.audioProgressBar
-        private val play: ImageView = itemView.audioPlay
-        private val remove: ImageView = itemView.audioRemove
+        private val seekBar: SeekBar = binding.audioProgressBar
+        private val play: ImageView = binding.audioPlay
+        private val remove: ImageView = binding.audioRemove
 
         init {
-
             compositeDisposable.addAll(
-                    RxView.clicks(play).subscribe {
+                    play.clicks().subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mAdapterSeekBar = seekBar
                             play.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stop_black_24px))
                             playAudio(adapterPosition, play)
                         }
                     },
-                    RxView.clicks(remove).subscribe {
+                    remove.clicks().subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.AUDIO_ADAPTER)
                         }

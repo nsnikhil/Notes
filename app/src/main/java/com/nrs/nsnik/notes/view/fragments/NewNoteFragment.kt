@@ -24,10 +24,7 @@
 package com.nrs.nsnik.notes.view.fragments
 
 import android.Manifest
-import android.app.Activity.RESULT_CANCELED
-import android.app.Activity.RESULT_OK
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -38,22 +35,28 @@ import android.os.Debug
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.*
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
+import com.nrs.nsnik.notes.BuildConfig
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.NoteEntity
+import com.nrs.nsnik.notes.databinding.FragmentNewNoteBinding
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.util.*
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
@@ -64,18 +67,15 @@ import com.nrs.nsnik.notes.view.adapters.ImageAdapter
 import com.nrs.nsnik.notes.view.customViews.CirclePagerIndicatorDecoration
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ActionAlertDialog
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.ColorPickerDialogFragment
+import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.AudioRecordListener
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
-import com.twitter.serial.serializer.CollectionSerializers
-import com.twitter.serial.serializer.CoreSerializers
-import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
-import hugo.weaving.DebugLog
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_new_note.*
-import kotlinx.android.synthetic.main.new_note_tools.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -87,162 +87,203 @@ import java.util.*
 class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, AudioRecordListener {
 
     companion object {
-        private const val ATTACH_PICTURE_REQUEST_CODE = 205
-        private const val TAKE_PICTURE_REQUEST_CODE = 206
         private const val RECORD_AUDIO_PERMISSION_CODE = 512
         private const val EXTERNAL_STORAGE_PERMISSION_CODE = 513
-        private const val READ_EXTERNAL_STORAGE_PERMISSION = 514
     }
 
-    //Variables used in saving or updating note
-    private var mFolderName: String = "noFolder"
+    private var _binding: FragmentNewNoteBinding? = null
+    private val binding get() = _binding!!
 
+    // Activity Result API launchers — registered at class init time (before STARTED)
+    private val cameraLauncher: ActivityResultLauncher<Uri> =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                mCurrentPhotoPath?.let { path -> saveImage(BitmapFactory.decodeFile(path)) }
+            }
+        }
+
+    private val galleryLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            if (uri != null) {
+                saveImage(MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri))
+            }
+        }
+
+    // Views from included new_note_tools layout (no android:id on <include>)
+    private lateinit var toolsBottomSheet: ConstraintLayout
+    private lateinit var toolsDate: TextView
+    private lateinit var toolsCheckList: TextView
+    private lateinit var toolsCamera: TextView
+    private lateinit var toolsAttachment: TextView
+    private lateinit var toolsAudio: TextView
+    private lateinit var toolsReminder: TextView
+    private lateinit var toolsColor: TextView
+
+    private var mFolderName: String = "noFolder"
     private var mIsLocked: Int = 0
     private var mIsStarred: Int = 0
     private var mHasReminder: Int = 0
-
     private var mColorCode: String = "#F8F8FF"
-
     private var mStarMenu: MenuItem? = null
     private var mLockMenu: MenuItem? = null
-
     private var mCurrentPhotoPath: String? = null
-
     private var mImagesLocations: MutableList<String> = mutableListOf()
     private var mAudioLocations: MutableList<String> = mutableListOf()
     private var mCheckList: MutableList<CheckListObject> = mutableListOf()
-
     private lateinit var mImageAdapter: ImageAdapter
     private lateinit var mAudioListAdapter: AudioListAdapter
     private lateinit var mCheckListAdapter: CheckListAdapter
-
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var mNoteViewModel: NoteViewModel
     private lateinit var mFileUtil: FileUtil
     private lateinit var mRootFolder: File
-
     private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
-
     private var mNoteEntity: NoteEntity? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.fragment_new_note, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentNewNoteBinding.inflate(inflater, container, false)
         mFileUtil = (activity?.application as MyApplication).fileUtil
         mRootFolder = mFileUtil.rootFolder
         setHasOptionsMenu(true)
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Resolve views from included new_note_tools layout
+        toolsBottomSheet = binding.root.findViewById(R.id.toolsBottomSheet)
+        toolsDate = binding.root.findViewById(R.id.toolsDate)
+        toolsCheckList = binding.root.findViewById(R.id.toolsCheckList)
+        toolsCamera = binding.root.findViewById(R.id.toolsCamera)
+        toolsAttachment = binding.root.findViewById(R.id.toolsAttachment)
+        toolsAudio = binding.root.findViewById(R.id.toolsAudio)
+        toolsReminder = binding.root.findViewById(R.id.toolsReminder)
+        toolsColor = binding.root.findViewById(R.id.toolsColor)
+
+        childFragmentManager.setFragmentResultListener(
+            PasswordDialogFragment.REQUEST_KEY, viewLifecycleOwner
+        ) { _, bundle ->
+            if (bundle.getBoolean(PasswordDialogFragment.RESULT_PASSWORD_CREATED, false)) {
+                mLockMenu?.let { item ->
+                    mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_48px, R.drawable.ic_lock_open_48px, "Locked")
+                }
+            }
+        }
+
         Debug.startMethodTracing()
         initialize()
         listeners()
         Debug.stopMethodTracing()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initialize() {
-        mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
+        mNoteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
         mBottomSheetBehavior = BottomSheetBehavior.from(toolsBottomSheet)
 
         toolsBottomSheet.apply {
             mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onSlide(bottomSheet: View, newState: Float) {
-                    newNoteBackground.alpha = (newState / 2)
+                    binding.newNoteBackground.alpha = (newState / 2)
                 }
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
                     when (newState) {
-                        BottomSheetBehavior.STATE_HIDDEN -> {
-                        }
-                        BottomSheetBehavior.STATE_EXPANDED -> {
-                        }
-                        BottomSheetBehavior.STATE_COLLAPSED -> {
-                        }
-                        BottomSheetBehavior.STATE_DRAGGING -> {
-                        }
-                        BottomSheetBehavior.STATE_SETTLING -> {
-                        }
-                        BottomSheetBehavior.STATE_HALF_EXPANDED -> {
-                        }
+                        BottomSheetBehavior.STATE_HIDDEN -> {}
+                        BottomSheetBehavior.STATE_EXPANDED -> {}
+                        BottomSheetBehavior.STATE_COLLAPSED -> {}
+                        BottomSheetBehavior.STATE_DRAGGING -> {}
+                        BottomSheetBehavior.STATE_SETTLING -> {}
+                        BottomSheetBehavior.STATE_HALF_EXPANDED -> {}
                     }
                 }
             })
         }
 
         mImageAdapter = ImageAdapter(false, this)
-        newNoteImageList.apply {
+        binding.newNoteImageList.apply {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
             adapter = mImageAdapter
         }
         val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(newNoteImageList)
-        newNoteImageList.addItemDecoration(CirclePagerIndicatorDecoration())
+        snapHelper.attachToRecyclerView(binding.newNoteImageList)
+        binding.newNoteImageList.addItemDecoration(CirclePagerIndicatorDecoration())
 
         mAudioListAdapter = AudioListAdapter(this)
-        newNoteAudioList.apply {
+        binding.newNoteAudioList.apply {
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
             adapter = mAudioListAdapter
         }
 
-
         mCheckListAdapter = CheckListAdapter(this, this)
-        newNoteCheckList.apply {
+        binding.newNoteCheckList.apply {
             layoutManager = LinearLayoutManager(activity)
             itemAnimator = DefaultItemAnimator()
             adapter = mCheckListAdapter
         }
 
         if (arguments != null) setNote()
-
     }
 
     private fun listeners() {
         compositeDisposable.addAll(
 
-                RxView.clicks(toolsDate).subscribe { changeState() },
+                toolsDate.clicks().subscribe { changeState() },
 
-                RxView.clicks(toolsCheckList).subscribe({
+                toolsCheckList.clicks().subscribe({
                     changeState()
                     addCheckListItem()
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsCamera).subscribe({
+                toolsCamera.clicks().subscribe({
                     changeState()
-                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, EXTERNAL_STORAGE_PERMISSION_CODE, ::startCameraIntent)
+                    // BUG FIX: Removed WRITE_EXTERNAL_STORAGE permission check.
+                    // On API 29+ that permission is auto-denied and the callback never fires.
+                    // Camera permission is the correct one to request for TakePicture.
+                    checkPermission(Manifest.permission.CAMERA, EXTERNAL_STORAGE_PERMISSION_CODE, ::startCameraIntent)
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsAttachment).subscribe({
+                toolsAttachment.clicks().subscribe({
                     changeState()
-                    checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE_PERMISSION, ::startGalleryIntent)
+                    // ST-002 FIX: Removed checkPermission(READ_EXTERNAL_STORAGE) wrapper.
+                    // ActivityResultContracts.GetContent() uses the system document picker,
+                    // which grants temporary read access via content URI — no storage
+                    // permission needed. READ_EXTERNAL_STORAGE is also broken on API 33+
+                    // (replaced by granular READ_MEDIA_IMAGES).
+                    galleryLauncher.launch("image/*")
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsAudio).subscribe({
+                toolsAudio.clicks().subscribe({
                     changeState()
                     checkPermission(Manifest.permission.RECORD_AUDIO, RECORD_AUDIO_PERMISSION_CODE, ::recordAudio)
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsReminder).subscribe({
+                toolsReminder.clicks().subscribe({
                     changeState()
-                    ReminderUtil.setReminder(activity!!, newNoteTitle.text.toString(), newNoteContent.text.toString())
+                    ReminderUtil.setReminder(activity!!, binding.newNoteTitle.text.toString(), binding.newNoteContent.text.toString())
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(toolsColor).subscribe({
+                toolsColor.clicks().subscribe({
                     changeState()
-                    ColorPickerDialogFragment().show(fragmentManager, "color")
+                    ColorPickerDialogFragment().show(parentFragmentManager, "color")
                 }, { throwable -> Timber.d(throwable.message) })
 
         )
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.new_note_menu, menu)
-        if (menu?.getItem(1) != null) mStarMenu = menu.getItem(1)
-        if (menu?.getItem(2) != null) mLockMenu = menu.getItem(2)
-        if (mNoteEntity == null) menu?.getItem(3)?.isVisible = false
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.new_note_menu, menu)
+        if (menu.getItem(1) != null) mStarMenu = menu.getItem(1)
+        if (menu.getItem(2) != null) mLockMenu = menu.getItem(2)
+        if (mNoteEntity == null) menu.getItem(3)?.isVisible = false
         setMenuIconState()
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -259,7 +300,7 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     }
 
     private fun setLock(item: MenuItem) {
-        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password"))
+        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, childFragmentManager, "password"))
             mIsLocked = setMenuState(mIsLocked, item, R.drawable.ic_lock_48px, R.drawable.ic_lock_open_48px, "Locked")
     }
 
@@ -275,12 +316,11 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         }
     }
 
-    @DebugLog
     private fun setNote() {
 
         mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
 
-        newNoteContent.setText(arguments?.getString(activity?.resources?.getString(R.string.bundleReceiveIntentText), ""))
+        binding.newNoteContent.setText(arguments?.getString(activity?.resources?.getString(R.string.bundleReceiveIntentText), ""))
 
         val imageUri: Uri? = arguments?.getParcelable(activity?.resources?.getString(R.string.bundleReceiveIntentImage))
         val imageUris: List<Uri?>? = arguments?.getParcelableArrayList(activity?.resources?.getString(R.string.bundleReceiveIntentImageList))
@@ -290,7 +330,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
             saveImage(MediaStore.Images.Media.getBitmap(activity?.contentResolver, it))
         }
 
-        mNoteEntity = ByteBufferSerial().fromByteArray(arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteEntity)), NoteEntity.SERIALIZER)
+        val noteBytes = arguments?.getByteArray(activity?.resources?.getString(R.string.bundleNoteEntity))
+        mNoteEntity = if (noteBytes != null) Json.decodeFromString<NoteEntity>(String(noteBytes, Charsets.UTF_8)) else null
 
         if (mNoteEntity == null) return
 
@@ -302,14 +343,14 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
 
             mNoteEntity?.uid = id
 
-            newNoteTitle.setText(mNoteEntity?.title)
-            newNoteContent.setText(mNoteEntity?.noteContent)
+            binding.newNoteTitle.setText(mNoteEntity?.title)
+            binding.newNoteContent.setText(mNoteEntity?.noteContent)
 
             mFolderName = mNoteEntity?.folderName!!
 
             mColorCode = mNoteEntity?.color!!
 
-            newNoteTitle.setTextColor(Color.parseColor(mColorCode))
+            binding.newNoteTitle.setTextColor(Color.parseColor(mColorCode))
 
             mIsStarred = mNoteEntity?.pinned!!
 
@@ -318,21 +359,24 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
             toolsDate.text = AppUtil.getTimeDifference(Calendar.getInstance().timeInMillis - mNoteEntity?.dateModified?.time!!)
 
             if (mNoteEntity?.imageList != null && mNoteEntity?.imageList?.isNotEmpty()!!) {
-                newNoteImageList.visibility = View.VISIBLE
+                binding.newNoteImageList.visibility = View.VISIBLE
                 mImagesLocations.addAll(mNoteEntity?.imageList!!)
-                mImageAdapter.submitList(mImagesLocations)
+                // Pass a new list copy so AsyncListDiffer detects the change
+                mImageAdapter.submitList(mImagesLocations.toList())
             }
 
             if (mNoteEntity?.audioList != null && mNoteEntity?.audioList?.isNotEmpty()!!) {
-                newNoteAudioList!!.visibility = View.VISIBLE
+                binding.newNoteAudioList.visibility = View.VISIBLE
                 mAudioLocations.addAll(mNoteEntity?.audioList!!)
-                mAudioListAdapter.submitList(mAudioLocations)
+                // Pass a new list copy so AsyncListDiffer detects the change
+                mAudioListAdapter.submitList(mAudioLocations.toList())
             }
 
             if (mNoteEntity?.checkList != null && mNoteEntity?.checkList?.isNotEmpty()!!) {
-                newNoteCheckList!!.visibility = View.VISIBLE
+                binding.newNoteCheckList.visibility = View.VISIBLE
                 mCheckList.addAll(mNoteEntity?.checkList!!)
-                mCheckListAdapter.submitList(mCheckList)
+                // Pass a new list copy so AsyncListDiffer detects the change
+                mCheckListAdapter.submitList(mCheckList.toList())
             }
 
             if (mNoteEntity?.hasReminder != 0) {
@@ -353,23 +397,26 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         list.text = ""
         list.done = false
         mCheckList.add(list)
-        mCheckListAdapter.submitList(mCheckList)
-        mCheckListAdapter.notifyItemInserted(mCheckList.size - 1)
-        changeVisibility(mCheckList, newNoteCheckList)
+        // Pass a new list copy so AsyncListDiffer detects the change
+        mCheckListAdapter.submitList(mCheckList.toList())
+        // BUG FIX: removed redundant notifyItemInserted — submitList() handles adapter notification via DiffUtil
+        changeVisibility(mCheckList, binding.newNoteCheckList)
     }
 
     private fun addAudioToList(audioFileLocation: String) {
         mAudioLocations.add(audioFileLocation)
-        mAudioListAdapter.submitList(mAudioLocations)
-        mAudioListAdapter.notifyItemInserted(mAudioLocations.size - 1)
-        changeVisibility(mAudioLocations, newNoteAudioList)
+        // Pass a new list copy so AsyncListDiffer detects the change
+        mAudioListAdapter.submitList(mAudioLocations.toList())
+        // BUG FIX: removed redundant notifyItemInserted — submitList() handles adapter notification via DiffUtil
+        changeVisibility(mAudioLocations, binding.newNoteAudioList)
     }
 
     private fun addImageToList(imageLocation: String) {
         mImagesLocations.add(imageLocation)
-        mImageAdapter.submitList(mImagesLocations)
-        mImageAdapter.notifyItemInserted(mImagesLocations.size - 1)
-        changeVisibility(mImagesLocations, newNoteImageList)
+        // Pass a new list copy so AsyncListDiffer detects the change
+        mImageAdapter.submitList(mImagesLocations.toList())
+        // BUG FIX: removed redundant notifyItemInserted — submitList() handles adapter notification via DiffUtil
+        changeVisibility(mImagesLocations, binding.newNoteImageList)
     }
 
     private fun changeVisibility(list: List<Any>, recyclerView: RecyclerView) {
@@ -384,21 +431,18 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         action()
     }
 
-    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private fun startCameraIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePictureIntent.resolveActivity(activity?.packageManager) != null) {
-            var photoFile: File? = null
-            try {
-                photoFile = createImageFile()
-            } catch (ex: IOException) {
-                ex.printStackTrace()
-            }
-            if (photoFile != null) {
-                val photoURI = FileProvider.getUriForFile(activity!!, "com.nrs.nsnik.notes.fileprovider", photoFile)
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                startActivityForResult(takePictureIntent, TAKE_PICTURE_REQUEST_CODE)
-            }
+        var photoFile: File? = null
+        try {
+            photoFile = createImageFile()
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        }
+        if (photoFile != null) {
+            // ST-002 FIX: Use BuildConfig.APPLICATION_ID so the authority matches the
+            // flavor-specific ${applicationId}.fileprovider declared in AndroidManifest.xml
+            val photoURI = FileProvider.getUriForFile(activity!!, "${BuildConfig.APPLICATION_ID}.fileprovider", photoFile)
+            cameraLauncher.launch(photoURI)
         }
     }
 
@@ -410,16 +454,6 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         val image = File.createTempFile(imageFileName, ".jpg", storageDir)
         mCurrentPhotoPath = image.absolutePath
         return image
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    private fun startGalleryIntent() {
-        val chosePicture = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        chosePicture.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (chosePicture.resolveActivity(activity?.packageManager) != null)
-            startActivityForResult(chosePicture, ATTACH_PICTURE_REQUEST_CODE)
-        else
-            Toast.makeText(activity!!, activity?.resources?.getString(R.string.noGallery), Toast.LENGTH_LONG).show()
     }
 
     private fun saveImage(image: Bitmap) {
@@ -438,8 +472,8 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     }
 
     private fun noteAction(noteEntity: NoteEntity, action: ActionType) {
-        noteEntity.title = newNoteTitle.text.toString()
-        noteEntity.noteContent = newNoteContent.text.toString()
+        noteEntity.title = binding.newNoteTitle.text.toString()
+        noteEntity.noteContent = binding.newNoteContent.text.toString()
         noteEntity.folderName = mFolderName
         noteEntity.fileName = AppUtil.makeName(FILE_TYPES.TEXT)
         noteEntity.color = mColorCode
@@ -455,22 +489,13 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     }
 
     private fun verifyAndSave(): Boolean {
-        if (newNoteTitle.text.toString().isEmpty() && newNoteContent.text.toString().isEmpty())
+        if (binding.newNoteTitle.text.toString().isEmpty() && binding.newNoteContent.text.toString().isEmpty())
             Toast.makeText(activity!!, resources.getString(R.string.noNote), Toast.LENGTH_LONG).show()
         return true
     }
 
     private fun changeState() {
         mBottomSheetBehavior.state = if (mBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) BottomSheetBehavior.STATE_COLLAPSED else BottomSheetBehavior.STATE_EXPANDED
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            ATTACH_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) {
-                if (data != null) saveImage(MediaStore.Images.Media.getBitmap(activity?.contentResolver, data.data))
-            }
-            TAKE_PICTURE_REQUEST_CODE -> if (resultCode == RESULT_OK && resultCode != RESULT_CANCELED) saveImage(BitmapFactory.decodeFile(mCurrentPhotoPath))
-        }
     }
 
     private fun cleanUp() {
@@ -491,29 +516,24 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
         when (adapterType) {
             AdapterType.IMAGE_ADAPTER -> {
                 mImagesLocations.removeAt(position)
-                mImageAdapter.submitList(mImagesLocations)
-                mImageAdapter.notifyItemRemoved(position)
+                // Pass a new list copy so AsyncListDiffer detects the change
+                mImageAdapter.submitList(mImagesLocations.toList())
+                // BUG FIX: removed redundant notifyItemRemoved — submitList() handles adapter notification via DiffUtil
             }
             AdapterType.AUDIO_ADAPTER -> {
                 mAudioLocations.removeAt(position)
-                mAudioListAdapter.submitList(mAudioLocations)
-                mAudioListAdapter.notifyItemRemoved(position)
+                // Pass a new list copy so AsyncListDiffer detects the change
+                mAudioListAdapter.submitList(mAudioLocations.toList())
+                // BUG FIX: removed redundant notifyItemRemoved — submitList() handles adapter notification via DiffUtil
             }
             AdapterType.CHECKLIST_ADAPTER -> {
                 mCheckList.removeAt(position)
-                mCheckListAdapter.submitList(mCheckList)
-                mCheckListAdapter.notifyItemRemoved(position)
+                // Pass a new list copy so AsyncListDiffer detects the change
+                mCheckListAdapter.submitList(mCheckList.toList())
+                // BUG FIX: removed redundant notifyItemRemoved — submitList() handles adapter notification via DiffUtil
             }
         }
     }
-
-//    private fun showUndoBar(position: Int) {
-//        val resources = activity?.resources
-//        Snackbar.make(activity?.findViewById(R.id.mainDrawerLayout)!!, resources?.getString(R.string.itemRemoved)!!, Snackbar.LENGTH_LONG)
-//                .setAction(resources.getString(R.string.undo)) { Timber.d(position.toString()) }
-//                .setActionTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
-//                .show()
-//    }
 
     private fun createDeleteDialog() {
         val resources = activity?.resources
@@ -547,17 +567,17 @@ class NewNoteFragment : Fragment(), OnAddClickListener, OnItemRemoveListener, Au
     @Subscribe
     fun onColorPickerEvent(colorPickerEvent: ColorPickerEvent) {
         mColorCode = colorPickerEvent.color
-        newNoteTitle.setTextColor(Color.parseColor(mColorCode))
+        binding.newNoteTitle.setTextColor(Color.parseColor(mColorCode))
     }
 
     @Subscribe
     fun onFullScreenEvent(fullScreenEvent: FullScreenEvent) {
         val resources = activity?.resources
         val bundle = Bundle()
-        val byteArray: ByteArray = ByteBufferSerial().toByteArray(mImagesLocations, CollectionSerializers.getListSerializer(CoreSerializers.STRING))
+        val byteArray: ByteArray = Json.encodeToString(mImagesLocations.toList()).toByteArray(Charsets.UTF_8)
         bundle.putByteArray(resources?.getString(R.string.bundleImageList), byteArray)
         bundle.putInt(resources?.getString(R.string.bundleImageListPosition), fullScreenEvent.position)
-        newNoteImageList.findNavController().navigate(R.id.noteToImageList, bundle)
+        binding.newNoteImageList.findNavController().navigate(R.id.noteToImageList, bundle)
     }
 
     enum class FILE_TYPES {

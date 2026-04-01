@@ -35,22 +35,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.test.espresso.IdlingResource
-import com.google.android.material.navigation.NavigationView
-import com.nrs.nsnik.notes.BuildConfig
-import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.ActivityMainBinding
 import com.nrs.nsnik.notes.util.idlingResource.SimpleIdlingResource
-import io.branch.referral.Branch
-import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONException
-import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
     private var mIdlingResource: SimpleIdlingResource? = null
     private var isOnListFragment: Boolean = true
     private lateinit var controller: NavController
@@ -60,52 +56,30 @@ class MainActivity : AppCompatActivity() {
         private const val NewNoteIntentAction: String = "com.nrs.nsnik.notes.OpenNewNotesFragment"
     }
 
-    override fun onStart() {
-        super.onStart()
-        Branch.getInstance().initSession({ referringParams, error ->
-            Timber.d(if (error == null) referringParams.toString() else error.message)
-        }, this.intent.data, this)
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initialize()
         handleIntent()
     }
 
     override fun onSupportNavigateUp(): Boolean = controller.navigateUp() || super.onSupportNavigateUp()
 
-    override fun onResume() {
-        super.onResume()
-        if (Branch.isAutoDeepLinkLaunch(this)) {
-            try {
-                val autoDeepLinkedValue = Branch.getInstance().latestReferringParams.getString("noteTitle")
-                Timber.d("Launched by Branch on auto deep linking!\n\n$autoDeepLinkedValue")
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-
-        } else {
-            Timber.d("Launched by normal application flow")
-        }
-    }
-
     private fun initialize() {
-        setSupportActionBar(mainToolbar)
+        setSupportActionBar(binding.mainToolbar)
         actionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px)
         }
 
-        controller = findNavController(R.id.mainNavHost)
+        controller = (supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment).navController
 
         controller.addOnDestinationChangedListener { _, destination, _ ->
             isOnListFragment = destination.id == R.id.navItemNotes
-            mainToolbar.visibility = if (destination.id == R.id.introFragment) View.GONE else View.VISIBLE
-            mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            mainNavigationView.setCheckedItem(
+            binding.mainToolbar.visibility = if (destination.id == R.id.introFragment) View.GONE else View.VISIBLE
+            binding.mainDrawerLayout.setDrawerLockMode(if (destination.id == R.id.navItemNotes) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            binding.mainNavigationView.setCheckedItem(
                     when (destination.id) {
                         R.id.navItemNotes -> R.id.navItemNotes
                         R.id.navItemSettings -> R.id.navItemSettings
@@ -116,23 +90,26 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        mainToolbar.setupWithNavController(controller)
-        mainNavigationView.setupWithNavController(controller)
+        binding.mainToolbar.setupWithNavController(controller)
+        binding.mainNavigationView.setupWithNavController(controller)
 
-        mainNavigationView.setNavigationItemSelectedListener { menuItem ->
+        binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
+            binding.mainDrawerLayout.closeDrawer(GravityCompat.START)
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.navItemNotes, false)
+                .setLaunchSingleTop(true)
+                .build()
             when (menuItem.itemId) {
                 R.id.navItemNotes -> {
-                    mainDrawerLayout.closeDrawer(GravityCompat.START)
+                    controller.popBackStack(R.id.navItemNotes, false)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemSettings -> {
-                    mainDrawerLayout.closeDrawer(GravityCompat.START)
-                    findNavController(R.id.mainNavHost).navigate(R.id.navItemSettings)
+                    controller.navigate(R.id.navItemSettings, null, navOptions)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.navItemAbout -> {
-                    mainDrawerLayout.closeDrawer(GravityCompat.START)
-                    findNavController(R.id.mainNavHost).navigate(R.id.navItemAbout)
+                    controller.navigate(R.id.navItemAbout, null, navOptions)
                     return@setNavigationItemSelectedListener true
                 }
                 else -> return@setNavigationItemSelectedListener false
@@ -153,8 +130,8 @@ class MainActivity : AppCompatActivity() {
             Intent.ACTION_SEND_MULTIPLE -> {
                 if (type != null && type.startsWith("image/")) handleSendMultipleImages(intent)
             }
-            NewNoteIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment)
-            SearchIntentAction -> findNavController(R.id.mainNavHost).navigate(R.id.searchFragment)
+            NewNoteIntentAction -> (supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment).navController.navigate(R.id.newNoteFragment)
+            SearchIntentAction -> (supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment).navController.navigate(R.id.searchFragment)
             else -> {
                 // Handle other intents, such as being started from the home screen
             }
@@ -166,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         if (sharedText != null) {
             val bundle = Bundle()
             bundle.putString(resources.getString(R.string.bundleReceiveIntentText), sharedText)
-            findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
+            (supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment).navController.navigate(R.id.newNoteFragment, bundle)
         }
     }
 
@@ -174,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri
         val bundle = Bundle()
         bundle.putParcelable(resources.getString(R.string.bundleReceiveIntentImage), imageUri)
-        findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
+        (supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment).navController.navigate(R.id.newNoteFragment, bundle)
     }
 
     private fun handleSendMultipleImages(intent: Intent) {
@@ -182,18 +159,18 @@ class MainActivity : AppCompatActivity() {
         if (imageUris != null) {
             val bundle = Bundle()
             bundle.putParcelableArrayList(resources.getString(R.string.bundleReceiveIntentImageList), imageUris)
-            findNavController(R.id.mainNavHost).navigate(R.id.newNoteFragment, bundle)
+            (supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment).navController.navigate(R.id.newNoteFragment, bundle)
         }
     }
 
     override fun onBackPressed() {
-        if (mainDrawerLayout.isDrawerOpen(GravityCompat.START)) mainDrawerLayout.closeDrawer(GravityCompat.START)
+        if (binding.mainDrawerLayout.isDrawerOpen(GravityCompat.START)) binding.mainDrawerLayout.closeDrawer(GravityCompat.START)
         else super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> if (isOnListFragment) mainDrawerLayout.openDrawer(GravityCompat.START)
+            android.R.id.home -> if (isOnListFragment) binding.mainDrawerLayout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -207,6 +184,5 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (BuildConfig.DEBUG) MyApplication.getRefWatcher(this)?.watch(this)
     }
 }

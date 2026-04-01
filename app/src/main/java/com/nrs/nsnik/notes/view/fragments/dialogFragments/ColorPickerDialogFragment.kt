@@ -32,17 +32,21 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.RecyclerViewBinding
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
 import com.nrs.nsnik.notes.view.adapters.ColorPickerAdapter
-import kotlinx.android.synthetic.main.recycler_view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 
 class ColorPickerDialogFragment : DialogFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.recycler_view, container, false)
+    private var _binding: RecyclerViewBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = RecyclerViewBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,9 +54,14 @@ class ColorPickerDialogFragment : DialogFragment() {
         initialize()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initialize() {
         val colorAdapter = ColorPickerAdapter()
-        recyclerView.apply {
+        binding.recyclerView.apply {
             layoutManager = GridLayoutManager(activity, 4)
             adapter = colorAdapter
         }

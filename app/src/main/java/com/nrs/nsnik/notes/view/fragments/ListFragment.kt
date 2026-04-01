@@ -33,21 +33,26 @@ import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
+import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxPopupMenu
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.jakewharton.rxbinding4.view.clicks
+import com.jakewharton.rxbinding4.widget.itemClicks
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
+import com.nrs.nsnik.notes.databinding.FragmentListBinding
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.util.PasswordUtil
@@ -63,17 +68,18 @@ import com.nrs.nsnik.notes.view.listeners.ListHeaderClickListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
-import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.empty_state.*
-import kotlinx.android.synthetic.main.fab_reveal.*
-import kotlinx.android.synthetic.main.fragment_list.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.util.*
 
 class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener {
+
+    private var _binding: FragmentListBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var mNoteViewModel: NoteViewModel
     private lateinit var mFolderViewModel: FolderViewModel
@@ -91,21 +97,46 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
     private lateinit var searchItem: MenuItem
     private var sortType: SortType = SortType.PIN
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_list, container, false)
+    // Views from included layouts (no android:id on <include> tags)
+    private lateinit var emptyState: TextView
+    private lateinit var listBackground: ImageView
+    private lateinit var fabAdd: FloatingActionButton
+    private lateinit var fabAddNote: FloatingActionButton
+    private lateinit var fabAddFolder: FloatingActionButton
+    private lateinit var fabAddNoteContainer: ConstraintLayout
+    private lateinit var fabAddFolderContainer: ConstraintLayout
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Resolve views from included layouts
+        emptyState = binding.root.findViewById(R.id.emptyState)
+        listBackground = binding.listBackground
+        fabAdd = binding.root.findViewById(R.id.fabAdd)
+        fabAddNote = binding.root.findViewById(R.id.fabAddNote)
+        fabAddFolder = binding.root.findViewById(R.id.fabAddFolder)
+        fabAddNoteContainer = binding.root.findViewById(R.id.fabAddNoteContainer)
+        fabAddFolderContainer = binding.root.findViewById(R.id.fabAddFolderContainer)
+
         AppUtil.goToIntro(activity)
         initialize()
         listeners()
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.main_menu, menu)
-        searchView = menu?.findItem(R.id.menuMainSearch)?.actionView as SearchView
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+        searchView = menu.findItem(R.id.menuMainSearch)?.actionView as SearchView
         searchItem = menu.findItem(R.id.menuMainSearch)
         searchView.setSearchableInfo((activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager).getSearchableInfo(activity!!.componentName))
         menuListener()
@@ -128,11 +159,11 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         })
 
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(menuItem: MenuItem?): Boolean {
+            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
                 return true
             }
 
-            override fun onMenuItemActionCollapse(menuItem: MenuItem?): Boolean {
+            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
                 setFolderViewModel(mFolderName, sortType)
                 setNoteViewModel(mFolderName, sortType)
                 return true
@@ -142,8 +173,8 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menuMainSearch -> {
             }
         }
@@ -155,13 +186,12 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         if (arguments != null)
             mFolderName = arguments?.getString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), "noFolder")!!
 
-        mNoteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
-        mFolderViewModel = ViewModelProviders.of(this).get(FolderViewModel::class.java)
+        mNoteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
+        mFolderViewModel = ViewModelProvider(this)[FolderViewModel::class.java]
 
-        //Setting up recycler view
         mNotesAdapter = NotesAdapter(activity!!, mNotesList, mFolderList, this, this)
 
-        commonList.apply {
+        binding.commonList.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             hasFixedSize()
             itemAnimator = DefaultItemAnimator()
@@ -169,7 +199,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         }
 
         val touchHelper = ItemTouchHelper(RvItemTouchHelper(mNotesAdapter))
-        touchHelper.attachToRecyclerView(commonList)
+        touchHelper.attachToRecyclerView(binding.commonList)
 
         setFolderViewModel(mFolderName, sortType)
         setNoteViewModel(mFolderName, sortType)
@@ -177,17 +207,17 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(fabAdd).subscribe({
+                fabAdd.clicks().subscribe({
                     if (isRevealed) animate(135f, 0f, R.anim.jump_to_down)
                     else animate(0f, 135f, R.anim.jump_from_down)
                 }, { throwable -> Timber.d(throwable.message) }),
 
-                RxView.clicks(fabAddNote).subscribe {
+                fabAddNote.clicks().subscribe {
                     animate(135f, 0f, R.anim.jump_to_down)
                     openNoteEditor(mFolderName, null)
                 },
 
-                RxView.clicks(fabAddFolder).subscribe {
+                fabAddFolder.clicks().subscribe {
                     animate(135f, 0f, R.anim.jump_to_down)
                     val bundle = Bundle()
                     bundle.putString(activity?.resources?.getString(R.string.bundleCreateFolderParentFolder), mFolderName)
@@ -199,7 +229,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
     private fun showCreateFolderDialog(bundle: Bundle) {
         val dialog = CreateFolderDialog()
         dialog.arguments = bundle
-        dialog.show(fragmentManager, "createFolderDialog")
+        dialog.show(parentFragmentManager, "createFolderDialog")
     }
 
     private fun setNoteViewModel(folderName: String, sortType: SortType) {
@@ -269,7 +299,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         bundle.putInt(activity?.resources?.getString(R.string.bundleItemPosition), position)
         val dialog = PasswordDialogFragment()
         dialog.arguments = bundle
-        dialog.show(fragmentManager, "password")
+        dialog.show(parentFragmentManager, "password")
     }
 
     private fun openNoteEditor(folderName: String?, noteEntity: NoteEntity?) {
@@ -280,7 +310,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
             bundle.putString(activity?.resources?.getString(R.string.bundleListFragmentFolderName), mFolderName)
 
         if (noteEntity != null) {
-            val byteArray: ByteArray = ByteBufferSerial().toByteArray(noteEntity, NoteEntity.SERIALIZER)
+            val byteArray: ByteArray = Json.encodeToString(noteEntity).toByteArray(Charsets.UTF_8)
             bundle.putByteArray(activity?.resources?.getString(R.string.bundleNoteEntity), byteArray)
         }
 
@@ -308,7 +338,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
         val popupMenu = PopupMenu(activity, view, Gravity.END)
         popupMenu.inflate(R.menu.pop_up_menu)
-        RxPopupMenu.itemClicks(popupMenu).subscribe {
+        popupMenu.itemClicks().subscribe {
             when (it.itemId) {
                 R.id.popUpStar -> {
                     if (itemViewType == 0) {
@@ -404,7 +434,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
     }
 
     private fun setLock(itemType: ItemType, position: Int) {
-        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, fragmentManager!!, "password")) {
+        if (PasswordUtil.checkLock((activity?.applicationContext as MyApplication).sharedPreferences, activity!!, parentFragmentManager, "password")) {
             when (itemType) {
                 ListFragment.ItemType.NOTES -> {
                     val noteEntity = mNotesList[position]
@@ -431,7 +461,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
         bundle.putInt(activity?.resources?.getString(R.string.bundleItemToMovePosition), clickPosition)
         val dialog = MoveListDialogFragment()
         dialog.arguments = bundle
-        dialog.show(fragmentManager, "move")
+        dialog.show(parentFragmentManager, "move")
     }
 
     private fun deleteNote(position: Int) {
@@ -462,7 +492,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
     private fun editFolder(position: Int) {
         val bundle = Bundle()
-        val byteArray: ByteArray = ByteBufferSerial().toByteArray(mFolderList[position], FolderEntity.SERIALIZER)
+        val byteArray: ByteArray = Json.encodeToString(mFolderList[position]).toByteArray(Charsets.UTF_8)
         bundle.putByteArray(activity?.resources?.getString(R.string.bundleFolderEntity), byteArray)
         showCreateFolderDialog(bundle)
     }
@@ -493,7 +523,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
             override fun onAnimationStart(animation: Animation) {}
 
             override fun onAnimationEnd(animation: Animation) {
-                listBackground?.visibility = if (isRevealed) View.GONE else View.VISIBLE
+                listBackground.visibility = if (isRevealed) View.GONE else View.VISIBLE
                 transitionAnimation.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationStart(animation: Animation) {}
 
@@ -503,13 +533,13 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
 
                     override fun onAnimationRepeat(animation: Animation) {}
                 })
-                fabAddFolderContainer?.startAnimation(transitionAnimation)
-                fabAddNoteContainer?.startAnimation(transitionAnimation)
+                fabAddFolderContainer.startAnimation(transitionAnimation)
+                fabAddNoteContainer.startAnimation(transitionAnimation)
             }
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
-        fabAdd?.startAnimation(rotateAnimation)
+        fabAdd.startAnimation(rotateAnimation)
     }
 
     private fun changeFabVisibility(): Boolean {
@@ -534,7 +564,7 @@ class ListFragment : Fragment(), NoteItemClickListener, ListHeaderClickListener 
     private fun inflateMorePopUpMenu(itemType: ItemType, view: View) {
         val popupMenu = PopupMenu(activity, view, Gravity.START)
         popupMenu.inflate(R.menu.sort_list)
-        RxPopupMenu.itemClicks(popupMenu).subscribe {
+        popupMenu.itemClicks().subscribe {
             when (it.itemId) {
                 R.id.sortPopUpDate -> if (itemType == ItemType.FOLDER) setFolderViewModel(mFolderName, SortType.DATE) else setNoteViewModel(mFolderName, SortType.DATE)
                 R.id.sortPopUpPin -> if (itemType == ItemType.FOLDER) setFolderViewModel(mFolderName, SortType.PIN) else setNoteViewModel(mFolderName, SortType.PIN)

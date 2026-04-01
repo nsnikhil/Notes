@@ -1,44 +1,60 @@
-/*
- *     Notes  Copyright (C) 2018  Nikhil Soni
- *     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
- *     This is free software, and you are welcome to redistribute it
- *     under certain conditions; type `show c' for details.
- *
- * The hypothetical commands `show w' and `show c' should show the appropriate
- * parts of the General Public License.  Of course, your program's commands
- * might be different; for a GUI interface, you would use an "about box".
- *
- *   You should also get your employer (if you work as a programmer) or school,
- * if any, to sign a "copyright disclaimer" for the program, if necessary.
- * For more information on this, and how to apply and follow the GNU GPL, see
- * <http://www.gnu.org/licenses/>.
- *
- *   The GNU General Public License does not permit incorporating your program
- * into proprietary programs.  If your program is a subroutine library, you
- * may consider it more useful to permit linking proprietary applications with
- * the library.  If this is what you want to do, use the GNU Lesser General
- * Public License instead of this License.  But first, please read
- * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
- */
-
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-apply plugin: 'com.google.gms.oss.licenses.plugin'
+apply plugin: 'jacoco'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.jakewharton.hugo'
-apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'kotlinx-serialization'
 
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDemoDebugUnitTest']) {
+    group = "Reporting"
+    description = "Generate JaCoCo coverage report for demoDebug unit tests."
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    def fileFilter = [
+            '**/R.class', '**/R$*.class', '**/BuildConfig.*',
+            '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*',
+            '**/*_MembersInjector.class', '**/Dagger*Component*.class',
+            '**/Dagger*Builder.class', '**/*Module_*Factory.class',
+            '**/*_Factory.class', '**/*_Provide*Factory*.*',
+            '**/*_ViewBinding*.*', '**/databinding/*.*'
+    ]
+
+    def debugTree = fileTree(
+            dir: "${buildDir}/intermediates/javac/demoDebug/classes",
+            excludes: fileFilter
+    ) + fileTree(
+            dir: "${buildDir}/tmp/kotlin-classes/demoDebug",
+            excludes: fileFilter
+    )
+
+    def mainSrc = "${project.projectDir}/src/main/kotlin"
+
+    sourceDirectories.setFrom(files([mainSrc, "${project.projectDir}/src/main/java"]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: buildDir, includes: [
+            'jacoco/testDemoDebugUnitTest.exec'
+    ]))
+}
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    namespace "com.nrs.nsnik.notes"
+    compileSdk 35
+    buildToolsVersion '34.0.0'
+
     defaultConfig {
         applicationId "com.nrs.nsnik.notes"
-        minSdkVersion 23
-        targetSdkVersion 28
+        minSdk 23
+        targetSdk 34
         versionCode 42
         versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -48,19 +64,21 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
-        resValue "string", "BRANCH_IO_API_KEY", BRANCH_IO_API_KEY
-        resValue "string", "BRANCH_IO_TEST_API_KEY", BRANCH_IO_TEST_API_KEY
         resValue "string", "GOOGLE_GMS_AD_APPLICATION_ID", GOOGLE_GMS_AD_APPLICATION_ID
     }
+
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
-    }
-    sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+
     buildTypes {
         debug {
-            ext.alwaysUpdateBuildId = false
         }
         release {
             shrinkResources false
@@ -68,6 +86,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     flavorDimensions "version"
     productFlavors {
         demo {
@@ -81,61 +100,60 @@ android {
             versionNameSuffix "-full"
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    allprojects {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xlint:cast" << "-Xlint:empty" << "-Xmaxerrs"
-        }
+
+    kotlinOptions {
+        jvmTarget = '17'
     }
+
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        unitTests.includeAndroidResources = true
     }
-    androidExtensions {
-        experimental = true
-    }
+
     kapt {
         correctErrorTypes = true
         useBuildCache = true
     }
-    lintOptions {
+
+    lint {
         abortOnError false
     }
-    packagingOptions {
-        exclude 'META-INF/proguard/androidx-annotations.pro'
-    }
-    ext {
-        enableCrashlytics = true
+
+    packaging {
+        resources {
+            excludes += 'META-INF/proguard/androidx-annotations.pro'
+        }
     }
 }
 
-dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xlint:cast" << "-Xlint:empty" << "-Xmaxerrs" << "500"
+}
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
-        transitive = true
-    }
+dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "androidx.core:core-ktx:1.0.1"
-    implementation 'androidx.fragment:fragment-ktx:1.0.0'
-    implementation 'androidx.collection:collection-ktx:1.0.0'
+    implementation "androidx.core:core-ktx:1.15.0"
+    implementation 'androidx.fragment:fragment-ktx:1.8.5'
 
-    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "androidx.appcompat:appcompat:1.7.0"
 
-    implementation "androidx.recyclerview:recyclerview:1.0.0"
-    implementation 'androidx.recyclerview:recyclerview-selection:1.0.0'
+    implementation "androidx.recyclerview:recyclerview:1.3.2"
+    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
 
-    implementation "androidx.annotation:annotation:1.0.1"
+    implementation "androidx.annotation:annotation:1.9.1"
 
-    implementation 'androidx.webkit:webkit:1.0.0'
+    implementation 'androidx.webkit:webkit:1.12.1'
 
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.12.0'
 
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
 
     implementation 'androidx.palette:palette:1.0.0'
 
@@ -143,112 +161,85 @@ dependencies {
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    implementation 'androidx.preference:preference:1.0.0'
-    implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
+    implementation 'androidx.preference:preference:1.2.1'
 
-    implementation('com.google.android.gms:play-services-oss-licenses:15.0.1', {
-        exclude group: 'com.google.android.gms'
-    })
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.3.0'
 
-    implementation 'androidx.browser:browser:1.0.0'
+    implementation 'androidx.browser:browser:1.8.0'
 
-    implementation "io.reactivex.rxjava2:rxandroid:2.1.0"
-    implementation "io.reactivex.rxjava2:rxjava:2.2.5"
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.2"
+    implementation "io.reactivex.rxjava3:rxjava:3.1.10"
+    implementation 'io.reactivex.rxjava3:rxkotlin:3.0.1'
 
-    implementation "com.jakewharton.rxbinding2:rxbinding-kotlin:2.2.0"
-    implementation "com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:2.2.0"
-    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:2.2.0"
-    implementation "com.jakewharton.rxbinding2:rxbinding-design-kotlin:2.2.0"
-    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:2.2.0"
+    implementation "com.jakewharton.rxbinding4:rxbinding:4.0.0"
+    implementation "com.jakewharton.rxbinding4:rxbinding-appcompat:4.0.0"
+    implementation "com.jakewharton.rxbinding4:rxbinding-material:4.0.0"
+    implementation "com.jakewharton.rxbinding4:rxbinding-recyclerview:4.0.0"
 
-    implementation "com.jakewharton.timber:timber:4.7.1"
+    implementation "com.jakewharton.timber:timber:5.0.1"
 
-    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'org.greenrobot:eventbus:3.3.1'
 
-    implementation 'com.google.dagger:dagger:2.16'
-    kapt 'com.google.dagger:dagger-compiler:2.16'
-    implementation 'com.google.dagger:dagger-android:2.16'
-    implementation 'com.google.dagger:dagger-android-support:2.16'
-    kapt 'com.google.dagger:dagger-android-processor:2.16'
+    implementation 'com.google.dagger:dagger:2.53.1'
+    kapt 'com.google.dagger:dagger-compiler:2.53.1'
+    implementation 'com.google.dagger:dagger-android:2.53.1'
+    implementation 'com.google.dagger:dagger-android-support:2.53.1'
+    kapt 'com.google.dagger:dagger-android-processor:2.53.1'
 
-    implementation "org.greenrobot:eventbus:3.1.1"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.14"
 
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.6.2"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:1.6.2"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-common:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams-ktx:2.8.7'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
 
-    implementation "com.github.markzhai:blockcanary-android:1.5.0"
+    implementation 'androidx.room:room-runtime:2.6.1'
+    kapt 'androidx.room:room-compiler:2.6.1'
+    implementation 'androidx.room:room-rxjava3:2.6.1'
+    implementation 'androidx.room:room-guava:2.6.1'
+    testImplementation 'androidx.room:room-testing:2.6.1'
 
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-    implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0'
-    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.0.0'
-    testImplementation 'androidx.arch.core:core-testing:2.0.0'
+    implementation 'androidx.paging:paging-runtime:3.3.5'
+    implementation 'androidx.paging:paging-rxjava3:3.3.5'
 
-    implementation 'androidx.room:room-runtime:2.0.0'
-    kapt 'androidx.room:room-compiler:2.0.0'
-    implementation 'androidx.room:room-rxjava2:2.0.0'
-    implementation 'androidx.room:room-guava:2.0.0'
-    testImplementation 'androidx.room:room-testing:2.0.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.8.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.8.5'
+    androidTestImplementation 'androidx.navigation:navigation-testing:2.8.5'
 
-    implementation 'androidx.paging:paging-runtime:2.0.0'
-    implementation 'androidx.paging:paging-rxjava2:2.0.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+    testImplementation "org.mockito:mockito-core:5.14.2"
 
-    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha09'
-    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0-alpha09'
-    androidTestImplementation 'android.arch.navigation:navigation-testing-ktx:1.0.0-alpha06'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
 
-//    implementation 'android.arch.work:work-runtime-ktx:1.0.0-alpha11'
-//    implementation "android.arch.work:work-firebase:1.0.0-alpha11"
-    implementation("android.arch.work:work-runtime-ktx:1.0.0-alpha11") {
-        exclude group: 'com.google.guava', module: 'listenablefuture'
-    }
-    implementation("android.arch.work:work-firebase:1.0.0-alpha11") {
-        exclude group: 'com.google.guava', module: 'listenablefuture'
-    }
-//    androidTestImplementation "android.arch.work:work-testing:1.0.0-beta01"
+    testImplementation "junit:junit:4.13.2"
 
-    implementation "com.twitter.serial:serial:0.1.6"
-    testImplementation "org.mockito:mockito-core:2.23.0"
-    implementation "org.jetbrains:annotations:16.0.1"
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test:rules:1.7.0'
+    androidTestUtil 'androidx.test:orchestrator:1.6.1'
 
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
-    kapt 'com.github.bumptech.glide:compiler:4.7.1'
+    // Espresso 3.7.0 fixes InputManager.getInstance NoSuchMethodException on API 35
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.7.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    implementation 'androidx.test.espresso.idling:idling-concurrent:3.7.0'
 
-    testImplementation "junit:junit:4.12"
+    testImplementation "org.robolectric:robolectric:4.14.1"
+    testImplementation "androidx.test:core:1.7.0"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestUtil 'androidx.test:orchestrator:1.1.1'
+    implementation 'com.google.firebase:firebase-analytics:22.4.0'
+    implementation 'com.google.android.gms:play-services-ads:23.6.0'
 
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.1'
-    implementation 'androidx.test.espresso.idling:idling-concurrent:3.1.1'
-
-    testImplementation "org.robolectric:robolectric:3.8"
-
-    implementation 'com.google.firebase:firebase-core:16.0.6'
-    implementation 'com.google.firebase:firebase-ads:17.1.2'
-    implementation 'com.google.android.gms:play-services-ads:17.1.2'
-//    implementation 'com.google.firebase:firebase-perf:16.2.0'
-
-
-    implementation 'com.rollbar:rollbar-java:1.2.0'
-    implementation 'com.rollbar:rollbar-android:1.2.0@aar'
-
-    implementation 'com.squareup.okio:okio:1.15.0'
-
-    implementation 'com.facebook.stetho:stetho:1.5.0'
-
-    implementation "com.squareup.retrofit2:retrofit:2.4.0"
-    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
-    implementation "com.google.code.gson:gson:2.8.5"
-    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
-
-    implementation 'io.branch.sdk.android:library:3.0.3'
+    implementation "com.squareup.retrofit2:retrofit:2.11.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
+    implementation "com.google.code.gson:gson:2.11.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.11.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava3:2.11.0"
 
 }
 

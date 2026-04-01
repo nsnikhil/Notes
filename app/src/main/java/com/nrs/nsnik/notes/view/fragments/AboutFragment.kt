@@ -34,10 +34,10 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
 import com.nrs.nsnik.notes.R
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_about.*
+import com.nrs.nsnik.notes.databinding.FragmentAboutBinding
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 /**
  * this fragments shows
@@ -48,10 +48,13 @@ import kotlinx.android.synthetic.main.fragment_about.*
 
 class AboutFragment : Fragment() {
 
+    private var _binding: FragmentAboutBinding? = null
+    private val binding get() = _binding!!
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_about, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentAboutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,15 +63,20 @@ class AboutFragment : Fragment() {
         listeners()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initialize() {
-        aboutSourceCode.movementMethod = LinkMovementMethod.getInstance()
-        aboutNikhil.movementMethod = LinkMovementMethod.getInstance()
+        binding.aboutSourceCode.movementMethod = LinkMovementMethod.getInstance()
+        binding.aboutNikhil.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(aboutLibraries).subscribe { startActivity(Intent(activity, OssLicensesMenuActivity::class.java)) },
-                RxView.clicks(aboutLicense).subscribe { chromeCustomTab(activity?.resources?.getString(R.string.aboutLicenseUrl)!!) }
+                binding.aboutLibraries.clicks().subscribe { startActivity(Intent(activity, OssLicensesMenuActivity::class.java)) },
+                binding.aboutLicense.clicks().subscribe { chromeCustomTab(activity?.resources?.getString(R.string.aboutLicenseUrl)!!) }
         )
     }
 

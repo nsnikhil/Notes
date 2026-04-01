@@ -30,22 +30,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
+import com.nrs.nsnik.notes.databinding.FragmentMoveListBinding
 import com.nrs.nsnik.notes.util.events.FolderClickEvent
 import com.nrs.nsnik.notes.view.adapters.FolderListAdapter
 import com.nrs.nsnik.notes.view.fragments.ListFragment
 import com.nrs.nsnik.notes.view.listeners.ItemPositionClickListener
 import com.nrs.nsnik.notes.viewmodel.FolderViewModel
 import com.nrs.nsnik.notes.viewmodel.NoteViewModel
-import kotlinx.android.synthetic.main.recycler_view.*
 import org.greenrobot.eventbus.EventBus
 import kotlin.streams.toList
 
 class MoveListDialogFragment : DialogFragment(), ItemPositionClickListener {
+
+    private var _binding: FragmentMoveListBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var folderListAdapter: FolderListAdapter
     private lateinit var noteViewModel: NoteViewModel
@@ -56,13 +60,23 @@ class MoveListDialogFragment : DialogFragment(), ItemPositionClickListener {
     private lateinit var itemType: ListFragment.ItemType
     private var folderList = mutableListOf<FolderEntity>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_move_list, container, false)
+    // View from included recycler_view layout (no android:id on <include>)
+    private lateinit var recyclerView: RecyclerView
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentMoveListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerView = binding.root.findViewById(R.id.recyclerView)
         initialize()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun initialize() {
@@ -73,8 +87,8 @@ class MoveListDialogFragment : DialogFragment(), ItemPositionClickListener {
         itemType = ListFragment.ItemType.values()[arguments?.getInt(resources?.getString(R.string.bundleItemType), 0)!!]
         itemClickPosition = arguments?.getInt(resources?.getString(R.string.bundleItemToMovePosition), -1)!!
 
-        folderViewModel = ViewModelProviders.of(this).get(FolderViewModel::class.java)
-        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
+        folderViewModel = ViewModelProvider(this)[FolderViewModel::class.java]
+        noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
         folderListAdapter = FolderListAdapter(this)
 

@@ -1,0 +1,36 @@
+{
+  "feature_id": "feat-20260401-065840",
+  "requirements_file": "/Users/eniksoni/workspace/agentTest/testingScenarios/android_fix_runtime_crashes_notes_app.txt",
+  "repo_path": "/Users/eniksoni/AndroidStudioProjects/Notes",
+  "output_dir": "/Users/eniksoni/AndroidStudioProjects/Notes/.kiro/agent-runs/feat-20260401-065840",
+  "status": "complete",
+  "phase": "complete",
+  "project_context": {
+    "source": "previous_run",
+    "language": "Kotlin",
+    "framework": "Android (MVVM, Dagger 2, Room, RxJava 3, Navigation Component)",
+    "build_tool": "Gradle 8.9 with AGP 8.7.3",
+    "build_command": "./gradlew assembleDebug",
+    "test_command": "./gradlew testDebugUnitTest",
+    "project_structure_notes": "Two product flavors (demo/full), compileSdk 35, targetSdk 35, Kotlin 2.1.10. Fully modernized and runtime crashes fixed."
+  },
+  "phases_completed": ["requirement_gathering", "requirement_validation", "planning", "execution", "integration_testing"],
+  "subtasks": [
+    {"id": "ST-001", "name": "Fix Critical Launch-Blocking Crashes", "status": "pass", "attempts": 1},
+    {"id": "ST-002", "name": "Fix Remaining Runtime Issues", "status": "pass", "attempts": 1},
+    {"id": "ST-003", "name": "Write Robolectric Launch Verification Tests", "status": "pass", "attempts": 1},
+    {"id": "ST-004", "name": "Comprehensive Build Verification", "status": "pass", "attempts": 1}
+  ],
+  "max_attempts_per_subtask": 3,
+  "agent_history": [
+    {"agent": "RequirementGatherer", "timestamp": "2026-04-01T12:30:00Z", "result": "success"},
+    {"agent": "RequirementValidator", "timestamp": "2026-04-01T12:32:00Z", "result": "success"},
+    {"agent": "RequirementFinalizer", "timestamp": "2026-04-01T12:34:00Z", "result": "success"},
+    {"agent": "FeaturePlanner", "timestamp": "2026-04-01T12:38:00Z", "result": "success"},
+    {"agent": "FeatureExecutor", "timestamp": "2026-04-01T12:42:00Z", "result": "success", "output_file": "output/06_ST-001_execution.md"},
+    {"agent": "CodeReviewer", "timestamp": "2026-04-01T12:44:00Z", "result": "pass", "output_file": "output/07_ST-001_review.md"},
+    {"agent": "FeatureExecutor", "timestamp": "2026-04-01T12:46:00Z", "result": "success", "output_file": "output/08_ST-002_execution.md"},
+    {"agent": "CodeReviewer", "timestamp": "2026-04-01T12:48:00Z", "result": "pass", "output_file": "output/09_ST-002_review.md"},
+    {"agent": "FeatureExecutor", "timestamp": "2026-04-01T12:50:00Z", "result": "success", "output_file": "output/10_ST-003_execution.md"}
+  ]
+}

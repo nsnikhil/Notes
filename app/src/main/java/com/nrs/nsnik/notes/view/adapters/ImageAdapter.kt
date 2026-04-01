@@ -38,25 +38,16 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.SingleImageViewBinding
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.single_image_view.view.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import timber.log.Timber
 import java.io.File
-
-/**
- * IMAGE ADAPTER TAKES IN LIST OF STRING WHERE EACH
- * STRING REPRESENTS A FILE NAME, IT USES THIS FILENAME TO
- * CREATE A NEW BITMAP FILE AND DISPLAY EACH IMAGE IN ITS
- * RECYCLER VIEW, IT ALSO TAKES A onItemRemoveListener INTERFACE WHICH
- * IS RESPONSIBLE FOR LETTING THE RECYCLER VIEWS ACTIVITY/FRAGMENT
- * KNOW ABOUT THE CHANGE IN SIZE OF THE ADAPTER
- */
 
 class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveListener: OnItemRemoveListener) : ListAdapter<String, ImageAdapter.MyViewHolder>(StringDiffUtil()) {
 
@@ -67,7 +58,8 @@ class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveLis
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         context = parent.context
         glideRequestManager = (context.applicationContext as MyApplication).requestManager
-        return MyViewHolder(LayoutInflater.from(context).inflate(R.layout.single_image_view, parent, false))
+        val binding = SingleImageViewBinding.inflate(LayoutInflater.from(context), parent, false)
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ImageAdapter.MyViewHolder, position: Int) {
@@ -75,7 +67,7 @@ class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveLis
                 .load(File((context.applicationContext as MyApplication).rootFolder, getItem(position)))
                 .apply(RequestOptions().placeholder(R.color.grey).error(R.color.grey))
                 .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
                         Timber.d(e?.message)
                         return false
                     }
@@ -100,40 +92,30 @@ class ImageAdapter(private val mFullScreen: Boolean, private val onItemRemoveLis
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder internal constructor(binding: SingleImageViewBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val image: ImageView = itemView.singleImage
-
-        private val remove: ImageView = itemView.singleImageCancel
-
-        val progress: ProgressBar = itemView.singleImageProgress
+        val image: ImageView = binding.singleImage
+        private val remove: ImageView = binding.singleImageCancel
+        val progress: ProgressBar = binding.singleImageProgress
 
         init {
-
-            /*
-            if the adapter is set for a full screen
-            activity/fragment then remove the option
-            remove the image or click on image
-             */
-
             if (mFullScreen) {
                 remove.visibility = View.GONE
                 image.scaleType = ImageView.ScaleType.FIT_CENTER
             } else {
                 compositeDisposable.addAll(
-                        RxView.clicks(remove).subscribe {
+                        remove.clicks().subscribe {
                             if (adapterPosition != RecyclerView.NO_POSITION) {
                                 onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.IMAGE_ADAPTER)
                             }
                         },
-                        RxView.clicks(image).subscribe {
+                        image.clicks().subscribe {
                             if (adapterPosition != RecyclerView.NO_POSITION) {
                                 //EventBus.getDefault().post(FullScreenEvent(adapterPosition))
                             }
                         }
                 )
             }
-
         }
     }
 }

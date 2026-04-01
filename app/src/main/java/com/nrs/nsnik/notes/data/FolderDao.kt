@@ -47,6 +47,9 @@ interface FolderDao {
     @Query("SELECT * FROM FolderEntity WHERE parentFolderName = :parentFolder")
     fun getFolderByParent(parentFolder: String): LiveData<List<FolderEntity>>
 
+    @Query("SELECT * FROM FolderEntity WHERE parentFolderName = :parentFolder")
+    fun getChildFoldersByParentSync(parentFolder: String): List<FolderEntity>
+
     @Query("SELECT * FROM FolderEntity WHERE parentFolderName = :parentFolder AND pinned = 0 AND locked = 0")
     fun getFolderByParentNoPinNoLock(parentFolder: String): LiveData<List<FolderEntity>>
 

@@ -34,31 +34,43 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.IntroData
+import com.nrs.nsnik.notes.databinding.FragmentIntroBinding
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.view.adapters.IntroAdapter
 import com.nrs.nsnik.notes.view.customViews.CirclePagerIndicatorDecoration
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_intro.*
-import kotlinx.android.synthetic.main.recycler_view.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 
 class IntroFragment : Fragment() {
+
+    private var _binding: FragmentIntroBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var introAdapter: IntroAdapter
     private lateinit var imageList: List<String>
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro, container, false)
+    // View from included recycler_view layout (no android:id on <include>)
+    private lateinit var recyclerView: RecyclerView
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentIntroBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerView = binding.root.findViewById(R.id.recyclerView)
         initialize()
         listeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun initialize() {
@@ -82,11 +94,11 @@ class IntroFragment : Fragment() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                introNext.visibility = if (endReached()) View.VISIBLE else View.GONE
+                binding.introNext.visibility = if (endReached()) View.VISIBLE else View.GONE
             }
         })
         compositeDisposable.addAll(
-                RxView.clicks(introNext).subscribe {
+                binding.introNext.clicks().subscribe {
                     AppUtil.saveIsVisitedIntro(activity)
                     activity?.findNavController(R.id.mainNavHost)?.popBackStack()
                 }

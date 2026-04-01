@@ -37,11 +37,15 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
+import com.jakewharton.rxbinding4.view.longClicks
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
+import com.nrs.nsnik.notes.databinding.SingleFolderLayoutBinding
+import com.nrs.nsnik.notes.databinding.SingleListHeaderBinding
+import com.nrs.nsnik.notes.databinding.SingleNoteLayoutBinding
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.view.MainActivity
@@ -49,22 +53,10 @@ import com.nrs.nsnik.notes.view.fragments.ListFragment
 import com.nrs.nsnik.notes.view.listeners.ItemTouchListener
 import com.nrs.nsnik.notes.view.listeners.ListHeaderClickListener
 import com.nrs.nsnik.notes.view.listeners.NoteItemClickListener
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.item_indicator.view.*
-import kotlinx.android.synthetic.main.single_folder_layout.view.*
-import kotlinx.android.synthetic.main.single_list_header.view.*
-import kotlinx.android.synthetic.main.single_note_layout.view.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import timber.log.Timber
 import java.io.File
 
-
-/**
- * This adapter takes in a uri queries the uri and
- * registers for change in uri i.e. if any items in
- * that uri changes the adapter is notified and then
- * adapters clear the old list re draws the entire list
- * with the new data set
- */
 
 class NotesAdapter(private val mContext: Context,
                    private var mNotesList: List<NoteEntity>,
@@ -78,28 +70,18 @@ class NotesAdapter(private val mContext: Context,
         private const val HEADER = 2
     }
 
-    private val mLayoutInflater: LayoutInflater
-    private val mRequestManager: RequestManager?
-    private val mFileUtil: FileUtil?
-    private val mCompositeDisposable: CompositeDisposable
-    private val mRootFolder: File
-
-    init {
-
-        mRequestManager = (mContext.applicationContext as MyApplication).requestManager
-        mFileUtil = (mContext.applicationContext as MyApplication).fileUtil
-        mRootFolder = mFileUtil.rootFolder
-
-        mLayoutInflater = LayoutInflater.from(mContext)
-        mCompositeDisposable = CompositeDisposable()
-    }
+    private val mLayoutInflater: LayoutInflater = LayoutInflater.from(mContext)
+    private val mRequestManager: RequestManager? = (mContext.applicationContext as MyApplication).requestManager
+    private val mFileUtil: FileUtil? = (mContext.applicationContext as MyApplication).fileUtil
+    private val mCompositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val mRootFolder: File = mFileUtil!!.rootFolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            FOLDER -> FolderViewHolder(mLayoutInflater.inflate(R.layout.single_folder_layout, parent, false))
-            NOTES -> NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
-            HEADER -> HeaderViewHolder(mLayoutInflater.inflate(R.layout.single_list_header, parent, false))
-            else -> NoteViewHolder(mLayoutInflater.inflate(R.layout.single_note_layout, parent, false))
+            FOLDER -> FolderViewHolder(SingleFolderLayoutBinding.inflate(mLayoutInflater, parent, false))
+            NOTES -> NoteViewHolder(SingleNoteLayoutBinding.inflate(mLayoutInflater, parent, false))
+            HEADER -> HeaderViewHolder(SingleListHeaderBinding.inflate(mLayoutInflater, parent, false))
+            else -> NoteViewHolder(SingleNoteLayoutBinding.inflate(mLayoutInflater, parent, false))
         }
     }
 
@@ -168,7 +150,6 @@ class NotesAdapter(private val mContext: Context,
                     noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
                     noteViewHolder.noteContent.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                     noteViewHolder.noteContent.compoundDrawablePadding = 0
-                    //noteViewHolder.noteContent.setTextColor(ContextCompat.getColor(mContext, R.color.contentColor))
                 } else {
                     noteViewHolder.noteContent.visibility = View.GONE
                 }
@@ -196,13 +177,11 @@ class NotesAdapter(private val mContext: Context,
         imageView.visibility = if (value == 1) View.VISIBLE else View.GONE
     }
 
-    //TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
     fun updateNotesList(noteList: List<NoteEntity>) {
         mNotesList = noteList
         notifyDataSetChanged()
     }
 
-    //TODO CHANGE NOTIFY-DATA-SET-CHANGE WITH DIFF UTIL
     fun updateFolderList(folderList: List<FolderEntity>) {
         mFolderList = folderList
         notifyDataSetChanged()
@@ -221,7 +200,6 @@ class NotesAdapter(private val mContext: Context,
         }
     }
 
-    //TODO
     override fun onItemMoved(fromPosition: Int, toPosition: Int, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         var startPos = -100
         if (viewHolder.itemViewType == NOTES) {
@@ -234,9 +212,7 @@ class NotesAdapter(private val mContext: Context,
         val toPos = toPosition - startPos
     }
 
-    //TODO
     override fun onItemDismiss(position: Int) {
-        //notifyItemRemoved(position);
     }
 
     private fun cleanUp() {
@@ -248,24 +224,23 @@ class NotesAdapter(private val mContext: Context,
         super.onDetachedFromRecyclerView(recyclerView)
     }
 
-    internal inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    internal inner class NoteViewHolder(binding: SingleNoteLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val noteTitle: TextView = itemView.singleNoteTitle
-        val noteContent: TextView = itemView.singleNoteContent
-        val noteImage: ImageView = itemView.singleNoteImage
-        val isPinned: ImageView = itemView.itemIndicatorPin
-        val isLocked: ImageView = itemView.itemIndicatorLock
+        val noteTitle: TextView = binding.singleNoteTitle
+        val noteContent: TextView = binding.singleNoteContent
+        val noteImage: ImageView = binding.singleNoteImage
+        val isPinned: ImageView = itemView.findViewById(R.id.itemIndicatorPin)
+        val isLocked: ImageView = itemView.findViewById(R.id.itemIndicatorLock)
 
         init {
-
             mCompositeDisposable.addAll(
-                    RxView.clicks(itemView).subscribe({
+                    itemView.clicks().subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mNoteItemClickListener.onClick(adapterPosition, itemViewType)
                         }
                     }, { throwable -> Timber.d(throwable.message) }),
 
-                    RxView.longClicks(itemView).subscribe({
+                    itemView.longClicks().subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, itemView)
                         }
@@ -275,20 +250,20 @@ class NotesAdapter(private val mContext: Context,
     }
 
 
-    internal inner class FolderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    internal inner class FolderViewHolder(binding: SingleFolderLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val folderName: TextView = itemView.singleFolderName
-        val isPinned: ImageView = itemView.itemIndicatorPin
-        val isLocked: ImageView = itemView.itemIndicatorLock
+        val folderName: TextView = binding.singleFolderName
+        val isPinned: ImageView = itemView.findViewById(R.id.itemIndicatorPin)
+        val isLocked: ImageView = itemView.findViewById(R.id.itemIndicatorLock)
 
         init {
             mCompositeDisposable.addAll(
-                    RxView.clicks(itemView).subscribe {
+                    itemView.clicks().subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mNoteItemClickListener.onClick(adapterPosition, itemViewType)
                         }
                     },
-                    RxView.longClicks(itemView).subscribe({
+                    itemView.longClicks().subscribe({
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             mNoteItemClickListener.onLongClick(adapterPosition, itemViewType, itemView)
                         }
@@ -298,16 +273,15 @@ class NotesAdapter(private val mContext: Context,
         }
     }
 
-    internal inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    internal inner class HeaderViewHolder(binding: SingleListHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val itemHeader: TextView = itemView.itemHeader
-        private val itemHeaderMore: ImageView = itemView.itemHeaderMore
-        val itemHeaderContainer: ConstraintLayout = itemView.itemHeaderContainer
-
+        val itemHeader: TextView = binding.itemHeader
+        private val itemHeaderMore: ImageView = binding.itemHeaderMore
+        val itemHeaderContainer: ConstraintLayout = binding.itemHeaderContainer
 
         init {
             mCompositeDisposable.addAll(
-                    RxView.clicks(itemHeaderMore).subscribe {
+                    itemHeaderMore.clicks().subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             listHeaderClickListener.headerClick(
                                     if (itemHeader.text.toString() == mContext.resources.getString(R.string.headingFolder)) ListFragment.ItemType.FOLDER

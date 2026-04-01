@@ -30,11 +30,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.view.fragments.dialogFragments.PasswordDialogFragment
-import io.reactivex.Single
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import java.nio.charset.Charset
 import java.security.*
@@ -97,7 +97,7 @@ class PasswordUtil {
             }
 
             val single: Single<String> = Single.fromCallable {
-                return@fromCallable decrypt(sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePasswordKey), default),
+                return@fromCallable decrypt(sharedPreferences.getString(context.resources?.getString(R.string.sharedPreferencePasswordKey), default) ?: default,
                         sharedPreferences, context)
             }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
             single.subscribe(object : SingleObserver<String> {

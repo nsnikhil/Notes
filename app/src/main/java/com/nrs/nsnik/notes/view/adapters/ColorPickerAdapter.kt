@@ -26,18 +26,15 @@ package com.nrs.nsnik.notes.view.adapters
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.ListAdapter
-
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxbinding2.view.RxView
-import com.nrs.nsnik.notes.R
+import com.jakewharton.rxbinding4.view.clicks
+import com.nrs.nsnik.notes.databinding.ColorPickerImageBinding
 import com.nrs.nsnik.notes.util.events.ColorPickerEvent
 import com.nrs.nsnik.notes.view.adapters.diffUtil.StringDiffUtil
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.color_picker_image.view.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.greenrobot.eventbus.EventBus
 
 
@@ -47,7 +44,8 @@ class ColorPickerAdapter : ListAdapter<String, ColorPickerAdapter.MyViewHolder>(
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.color_picker_image, parent, false))
+        val binding = ColorPickerImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -64,11 +62,11 @@ class ColorPickerAdapter : ListAdapter<String, ColorPickerAdapter.MyViewHolder>(
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val color: ImageView = itemView.singleColor
+    inner class MyViewHolder internal constructor(binding: ColorPickerImageBinding) : RecyclerView.ViewHolder(binding.root) {
+        val color: ImageView = binding.singleColor
 
         init {
-            compositeDisposable.add(RxView.clicks(color).subscribe {
+            compositeDisposable.add(color.clicks().subscribe {
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     EventBus.getDefault().post(ColorPickerEvent(getItem(adapterPosition)))
                 }

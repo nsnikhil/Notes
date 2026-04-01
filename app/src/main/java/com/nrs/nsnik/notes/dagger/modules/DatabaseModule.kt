@@ -52,7 +52,7 @@ class DatabaseModule {
     @Provides
     @ApplicationScope
     internal fun getNoteDatabase(@ApplicationQualifier context: Context, @DatabaseName @ApplicationScope databaseName: String): NotesDatabase {
-        return Room.databaseBuilder(context, NotesDatabase::class.java, databaseName).build()
+        return Room.databaseBuilder(context, NotesDatabase::class.java, databaseName).fallbackToDestructiveMigration().build()
     }
 
     companion object {

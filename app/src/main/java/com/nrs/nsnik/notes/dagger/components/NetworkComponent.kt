@@ -30,6 +30,6 @@ import dagger.Component
 
 @ApplicationScope
 @Component(modules = [(NetworkModule::class)])
-abstract class NetworkComponent {
-    abstract fun getNetworkUtil(): NetworkUtil
+interface NetworkComponent {
+    fun getNetworkUtil(): NetworkUtil
 }

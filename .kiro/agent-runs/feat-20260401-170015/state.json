@@ -1,0 +1,26 @@
+{
+  "feature_id": "feat-20260401-170015",
+  "requirements_file": "/Users/eniksoni/workspace/agentTest/testingScenarios/android_fix_final_two_bugs_notes_app.txt",
+  "repo_path": "/Users/eniksoni/AndroidStudioProjects/Notes",
+  "output_dir": "/Users/eniksoni/AndroidStudioProjects/Notes/.kiro/agent-runs/feat-20260401-170015",
+  "status": "complete",
+  "phase": "complete",
+  "project_context": {
+    "source": "previous_runs",
+    "language": "Kotlin",
+    "framework": "Android (MVVM, Dagger 2, Room, RxJava 3, Navigation Component)",
+    "build_tool": "Gradle 8.9 with AGP 8.7.3",
+    "build_command": "./gradlew assembleDebug",
+    "test_command": "./gradlew connectedDemoDebugAndroidTest",
+    "project_structure_notes": "Two product flavors (demo/full), compileSdk 35, Kotlin 2.1.10. All bugs fixed, tests cleaned up."
+  },
+  "phases_completed": ["requirement_gathering", "requirement_validation", "planning", "execution", "integration_testing"],
+  "subtasks": [
+    {"id": "ST-001", "name": "Fix checklist Enter duplication", "status": "pass", "attempts": 1},
+    {"id": "ST-002", "name": "Fix lock first-attempt", "status": "pass", "attempts": 1},
+    {"id": "ST-003", "name": "Clean up redundant Espresso tests", "status": "pass", "attempts": 1},
+    {"id": "ST-004", "name": "Final verification", "status": "pass", "attempts": 1}
+  ],
+  "max_attempts_per_subtask": 3,
+  "agent_history": []
+}

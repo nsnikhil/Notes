@@ -29,13 +29,13 @@ import com.nrs.nsnik.notes.dagger.scopes.ApplicationScope
 import com.nrs.nsnik.notes.data.FolderEntity
 import com.nrs.nsnik.notes.data.NoteEntity
 import com.nrs.nsnik.notes.data.NotesDatabase
-import io.reactivex.Completable
-import io.reactivex.CompletableObserver
-import io.reactivex.Single
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.CompletableObserver
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
@@ -60,12 +60,12 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
 
             override fun onSuccess(longs: LongArray) {
                 noteEntities.forEach {
+                    val name = it.fileName ?: return@forEach
                     try {
-                        mFileUtil.saveNote(it, it.fileName!!)
+                        mFileUtil.saveNote(it, name)
                     } catch (e: IOException) {
-                        e.printStackTrace()
+                        Timber.e(e, "Failed to save note file: %s", name)
                     }
-
                 }
                 longs.forEach {
                     Timber.d(it.toString())
@@ -127,10 +127,11 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
 
             override fun onSuccess(t: Int) {
                 noteEntities.forEach {
+                    val name = it.fileName ?: return@forEach
                     try {
-                        mFileUtil.saveNote(it, it.fileName!!)
+                        mFileUtil.saveNote(it, name)
                     } catch (e: IOException) {
-                        e.printStackTrace()
+                        Timber.e(e, "Failed to save note file: %s", name)
                     }
                 }
                 Timber.d(t.toString())
@@ -332,6 +333,38 @@ internal constructor(private val mNotesDatabase: NotesDatabase, @param:Applicati
                 Timber.d(e.message)
             }
         })
+    }
+
+    // BUG-004 fix: recursively delete nested sub-folders before deleting parent
+    fun deleteFolderCascade(folderName: String) {
+        val completable = Completable.fromCallable {
+            deleteFolderTreeSync(folderName)
+            null
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        completable.subscribe(object : CompletableObserver {
+            override fun onSubscribe(d: Disposable) {}
+            override fun onComplete() {
+                Timber.d("Cascade delete successful for folder: %s", folderName)
+            }
+            override fun onError(e: Throwable) {
+                Timber.e(e, "Cascade delete failed for folder: %s", folderName)
+            }
+        })
+    }
+
+    /**
+     * Synchronous recursive deletion: deletes all sub-folders (depth-first),
+     * their notes, and finally the target folder and its notes.
+     * Must be called on a background thread.
+     */
+    internal fun deleteFolderTreeSync(folderName: String) {
+        val children = mNotesDatabase.folderDao.getChildFoldersByParentSync(folderName)
+        for (child in children) {
+            val childName = child.folderName ?: continue
+            deleteFolderTreeSync(childName)
+        }
+        mNotesDatabase.noteDao.deleteNoteByFolderName(folderName)
+        mNotesDatabase.folderDao.deleteFolderByName(folderName)
     }
 
     fun updateFolder(vararg folderEntities: FolderEntity) {

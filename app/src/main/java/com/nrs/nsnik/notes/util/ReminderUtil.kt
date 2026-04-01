@@ -31,6 +31,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.util.receiver.NotificationReceiver
@@ -59,11 +60,35 @@ class ReminderUtil {
 
             val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-            val pendingIntent = PendingIntent.getBroadcast(activity, 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent = PendingIntent.getBroadcast(activity, 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) // BUG-001 fix: FLAG_IMMUTABLE required on API 31+
             calendar.set(Calendar.HOUR_OF_DAY, hour)
             calendar.set(Calendar.MINUTE, minutes)
+            calendar.set(Calendar.SECOND, 0)
 
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
+            // ST-003 fix: if the chosen time already passed today, roll to the next day
+            if (calendar.timeInMillis <= System.currentTimeMillis()) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
+            }
+
+            // ST-004 fix: setInexactRepeating is heavily batched on API 31+ and may
+            // delay notifications by minutes or hours. Use setExactAndAllowWhileIdle
+            // for precise one-time delivery. On API 31+ exact alarms require the user
+            // to grant SCHEDULE_EXACT_ALARM in Settings; fall back to
+            // setAndAllowWhileIdle when that permission is not granted.
+            scheduleAlarm(alarmManager, calendar.timeInMillis, pendingIntent)
+        }
+
+        /**
+         * Schedules an exact alarm when permitted, otherwise falls back to an inexact
+         * but Doze-safe alarm. On API 31+ the user must grant SCHEDULE_EXACT_ALARM
+         * in system Settings for exact alarms to work.
+         */
+        internal fun scheduleAlarm(alarmManager: AlarmManager, triggerAtMillis: Long, pendingIntent: PendingIntent) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+            } else {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+            }
         }
 
         fun cancelReminder(activity: Activity) {
@@ -74,7 +99,7 @@ class ReminderUtil {
 
             val intent = Intent(activity, NotificationReceiver::class.java)
 
-            val pendingIntent = PendingIntent.getBroadcast(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent = PendingIntent.getBroadcast(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) // BUG-001 fix: FLAG_IMMUTABLE required on API 31+
 
             val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(pendingIntent)

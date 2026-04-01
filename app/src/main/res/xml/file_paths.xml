@@ -22,10 +22,18 @@
   -->
 
 <paths>
-    <external-path
+    <!--
+      ST-002 FIX: Changed from <external-path> to <external-files-path>.
+      - <external-path> maps to Environment.getExternalStorageDirectory(), which is
+        restricted on API 29+ (scoped storage). The old entries also hardcoded
+        applicationId variants (.debug) that don't match the actual flavors (.demo, .full).
+      - <external-files-path> maps to context.getExternalFilesDir(), which is exactly
+        where createImageFile() stores camera photos. path="Pictures" matches
+        getExternalFilesDir(Environment.DIRECTORY_PICTURES). This single entry works
+        for all build flavors because getExternalFilesDir() is already scoped to the
+        app's own package directory.
+    -->
+    <external-files-path
         name="my_images"
-        path="Android/data/com.nrs.nsnik.notes/files/Pictures" />
-    <external-path
-        name="my_images"
-        path="Android/data/com.nrs.nsnik.notes.debug/files/Pictures" />
+        path="Pictures" />
 </paths>

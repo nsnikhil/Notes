@@ -28,12 +28,14 @@ import com.nrs.nsnik.notes.model.CheckListObject
 
 class CheckListDiffUtil : DiffUtil.ItemCallback<CheckListObject>() {
 
+    // Compare identity by stable UUID — each CheckListObject instance has a unique id,
+    // so DiffUtil correctly distinguishes multiple empty items.
     override fun areItemsTheSame(oldItem: CheckListObject, newItem: CheckListObject): Boolean {
-        return false
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: CheckListObject, newItem: CheckListObject): Boolean {
-        return false
+        return oldItem.text == newItem.text && oldItem.done == newItem.done
     }
 
 }

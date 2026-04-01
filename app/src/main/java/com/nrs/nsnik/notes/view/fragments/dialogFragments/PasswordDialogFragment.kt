@@ -29,21 +29,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.material.textfield.TextInputEditText
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
 import com.nrs.nsnik.notes.MyApplication
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.FragmentPasswordDialogBinding
 import com.nrs.nsnik.notes.util.PasswordUtil
 import com.nrs.nsnik.notes.util.events.PasswordEvent
 import com.nrs.nsnik.notes.view.fragments.ListFragment
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_password_dialog.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.greenrobot.eventbus.EventBus
 
 
 class PasswordDialogFragment : DialogFragment() {
+
+    companion object {
+        const val REQUEST_KEY = "password_created_request"
+        const val RESULT_PASSWORD_CREATED = "password_created"
+    }
+
+    private var _binding: FragmentPasswordDialogBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var sharedPreferences: SharedPreferences
     private val default: String = "NA"
@@ -52,9 +61,11 @@ class PasswordDialogFragment : DialogFragment() {
     private lateinit var itemType: ListFragment.ItemType
     private var itemPosition: Int = -1
     private lateinit var eventType: ListFragment.EventType
+    private var isChangePassword: Boolean = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_password_dialog, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentPasswordDialogBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,8 +74,15 @@ class PasswordDialogFragment : DialogFragment() {
         listeners()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initialize() {
         val resources = activity?.resources
+
+        isChangePassword = arguments?.getBoolean("is_change_password", false) ?: false
 
         if (arguments != null) {
             itemType = ListFragment.ItemType.values()[arguments?.getInt(resources?.getString(R.string.bundleItemType), 0)!!]
@@ -73,7 +91,8 @@ class PasswordDialogFragment : DialogFragment() {
         }
 
         sharedPreferences = (activity?.applicationContext as MyApplication).sharedPreferences
-        PasswordUtil.decryptAndGet(sharedPreferences, activity!!).observe(this, Observer {
+        // BUG FIX: use viewLifecycleOwner instead of 'this' for LiveData observers in DialogFragment
+        PasswordUtil.decryptAndGet(sharedPreferences, activity!!).observe(viewLifecycleOwner, Observer {
             value = it
             setValues(value != default)
         })
@@ -83,38 +102,38 @@ class PasswordDialogFragment : DialogFragment() {
         val resources = activity?.resources
 
         if (!hasPassword) {
-            passwordDialogTextContainerOld.visibility = View.VISIBLE
-            passwordDialogCreate.text = resources?.getString(R.string.save)
+            binding.passwordDialogTextContainerOld.visibility = View.VISIBLE
+            binding.passwordDialogCreate.text = resources?.getString(R.string.save)
             setFields(resources?.getString(R.string.reEnterNewPassword), resources?.getString(R.string.enterNewPassword))
         } else {
-            if (targetRequestCode == 1954) {
-                passwordDialogTextContainerOld.visibility = View.VISIBLE
-                passwordDialogCreate.text = resources?.getString(R.string.save)
+            if (isChangePassword) {
+                binding.passwordDialogTextContainerOld.visibility = View.VISIBLE
+                binding.passwordDialogCreate.text = resources?.getString(R.string.save)
                 setFields(resources?.getString(R.string.enterNewPassword), resources?.getString(R.string.oldPassword))
             } else {
-                passwordDialogTextContainerOld.visibility = View.GONE
-                passwordDialogCreate.text = resources?.getString(R.string.enter)
-                passwordDialogText.hint = resources?.getString(R.string.password)
+                binding.passwordDialogTextContainerOld.visibility = View.GONE
+                binding.passwordDialogCreate.text = resources?.getString(R.string.enter)
+                binding.passwordDialogText.hint = resources?.getString(R.string.password)
             }
         }
     }
 
     private fun setFields(newHint: String?, oldHint: String?) {
-        passwordDialogText.hint = newHint
-        passwordDialogTextOld.hint = oldHint
+        binding.passwordDialogText.hint = newHint
+        binding.passwordDialogTextOld.hint = oldHint
     }
 
     private fun listeners() {
         compositeDisposable.addAll(
-                RxView.clicks(passwordDialogCreate).subscribe {
-                    if (isNotEmpty(passwordDialogText))
+                binding.passwordDialogCreate.clicks().subscribe {
+                    if (isNotEmpty(binding.passwordDialogText))
                         when {
                             value == default -> addNewPassWord()
-                            targetRequestCode == 1954 -> changePassword()
-                            else -> isPasswordCorrect(passwordDialogText)
+                            isChangePassword -> changePassword()
+                            else -> isPasswordCorrect(binding.passwordDialogText)
                         }
                 },
-                RxView.clicks(passwordDialogCancel).subscribe {
+                binding.passwordDialogCancel.clicks().subscribe {
                     dismiss()
                 }
         )
@@ -140,23 +159,28 @@ class PasswordDialogFragment : DialogFragment() {
     }
 
     private fun addNewPassWord() {
-        if (passwordDialogText.text.toString() == passwordDialogTextOld.text.toString()) savePassword()
-        else passwordDialogText.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
+        if (binding.passwordDialogText.text.toString() == binding.passwordDialogTextOld.text.toString()) savePassword()
+        else binding.passwordDialogText.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
     }
 
     private fun changePassword() {
-        if (value == passwordDialogTextOld.text.toString()) savePassword()
+        if (value == binding.passwordDialogTextOld.text.toString()) savePassword()
         else {
-            passwordDialogTextOld.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
-            passwordDialogText.setText("")
+            binding.passwordDialogTextOld.error = activity?.resources?.getString(R.string.errorPasswordNoMatch)
+            binding.passwordDialogText.setText("")
         }
     }
 
     private fun savePassword() {
-        PasswordUtil.encryptAndGet(passwordDialogText.text.toString(), sharedPreferences, activity!!)
-                .observe(this, Observer {
+        // BUG FIX: use viewLifecycleOwner instead of 'this' for LiveData observers in DialogFragment
+        PasswordUtil.encryptAndGet(binding.passwordDialogText.text.toString(), sharedPreferences, activity!!)
+                .observe(viewLifecycleOwner, Observer {
                     if (it.isNotEmpty() && it != default) {
                         sharedPreferences.edit().putString(activity?.resources?.getString(R.string.sharedPreferencePasswordKey), it).apply()
+                        parentFragmentManager.setFragmentResult(
+                            REQUEST_KEY,
+                            bundleOf(RESULT_PASSWORD_CREATED to true)
+                        )
                         dismiss()
                     }
                 })

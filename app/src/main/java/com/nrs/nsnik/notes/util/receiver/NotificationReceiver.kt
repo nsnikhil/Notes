@@ -59,9 +59,13 @@ class NotificationReceiver : BroadcastReceiver() {
         val notificationIntent = Intent(context, SplashActivity::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
 
-        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) // BUG-002 fix: FLAG_IMMUTABLE required on API 31+
 
-        val notificationBuilder = NotificationCompat.Builder(context, context.resources.getString(R.string.notificationChannelReminder))
+        // ST-003 fix: use the channel *ID* resource (notificationChannelReminderId) in the Builder
+        // constructor so it matches the ID used in createNotificationChannel() below
+        val channelId: String = context.resources.getString(R.string.notificationChannelReminderId)
+
+        val notificationBuilder = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_alarm_add_white_48px)
                 .setContentTitle(i.extras?.getString(context.resources.getString(R.string.notificationTitle)))
                 .setContentText(i.extras?.getString(context.resources.getString(R.string.notificationContent)))
@@ -71,17 +75,12 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val notificationManager = context.getSystemService(NotificationManager::class.java)
 
-
-        val channelId: String = context.resources.getString(R.string.notificationChannelReminderId)
-
         val notificationChannel = NotificationChannel(channelId, context.resources.getString(R.string.notificationChannelReminder), NotificationManager.IMPORTANCE_DEFAULT)
         notificationChannel.description = context.resources.getString(R.string.notificationChannelReminderDescription)
         notificationChannel.enableLights(true)
         notificationChannel.lightColor = Color.RED
         notificationChannel.enableVibration(true)
         notificationChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-
-        notificationBuilder.setChannelId(channelId)
 
         notificationManager?.createNotificationChannel(notificationChannel)
         notificationManager?.notify(1, notificationBuilder.build())

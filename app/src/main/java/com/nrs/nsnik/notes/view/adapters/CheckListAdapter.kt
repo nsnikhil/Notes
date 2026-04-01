@@ -26,7 +26,6 @@ package com.nrs.nsnik.notes.view.adapters
 import android.content.Context
 import android.graphics.Paint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -37,17 +36,18 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxCompoundButton
-import com.jakewharton.rxbinding2.widget.RxTextView
+import com.jakewharton.rxbinding4.view.clicks
+import com.jakewharton.rxbinding4.widget.checkedChanges
+import com.jakewharton.rxbinding4.widget.textChanges
+import com.jakewharton.rxbinding4.widget.editorActions
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.SingleCheckListItemBinding
 import com.nrs.nsnik.notes.model.CheckListObject
 import com.nrs.nsnik.notes.view.adapters.diffUtil.CheckListDiffUtil
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnAddClickListener
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.single_check_list_item.view.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 
 
@@ -58,7 +58,8 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, priv
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         context = parent.context
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.single_check_list_item, parent, false))
+        val binding = SingleCheckListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -94,26 +95,29 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, priv
         cleanUp()
     }
 
-    inner class MyViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val checkBox: CheckBox = itemView.checkListTicker
-        val text: EditText = itemView.checkListItem
-        private val remove: ImageView = itemView.checkListRemove
+    inner class MyViewHolder internal constructor(binding: SingleCheckListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        val checkBox: CheckBox = binding.checkListTicker
+        val text: EditText = binding.checkListItem
+        private val remove: ImageView = binding.checkListRemove
 
         init {
             compositeDisposable.addAll(
 
-                    RxTextView.textChanges(text).debounce(500, TimeUnit.MILLISECONDS).subscribe {
+                    text.textChanges().debounce(500, TimeUnit.MILLISECONDS).subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             val newContent: String = it.toString()
                             getItem(adapterPosition).text = newContent
                         }
                     },
 
-                    RxTextView.editorActions(text).subscribe {
-                        if (it == EditorInfo.IME_ACTION_NEXT) mOnAddClickListener.addClickListener()
-                    },
+                    // BUG FIX: throttle editorActions to prevent duplicate item creation from focus-steal
+                    text.editorActions()
+                        .throttleFirst(300, TimeUnit.MILLISECONDS)
+                        .subscribe {
+                            if (it == EditorInfo.IME_ACTION_NEXT) mOnAddClickListener.addClickListener()
+                        },
 
-                    RxCompoundButton.checkedChanges(checkBox).subscribe {
+                    checkBox.checkedChanges().skipInitialValue().subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION) {
                             val value: Boolean = it
                             getItem(adapterPosition).done = value
@@ -121,7 +125,7 @@ class CheckListAdapter(private val mOnAddClickListener: OnAddClickListener, priv
                         }
                     },
 
-                    RxView.clicks(remove).subscribe {
+                    remove.clicks().subscribe {
                         if (adapterPosition != RecyclerView.NO_POSITION)
                             onItemRemoveListener.onItemRemoved(adapterPosition, AdapterType.CHECKLIST_ADAPTER)
                     }

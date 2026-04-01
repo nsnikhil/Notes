@@ -24,29 +24,28 @@
 package com.nrs.nsnik.notes.view.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding4.view.clicks
 import com.nrs.nsnik.notes.R
 import com.nrs.nsnik.notes.data.FolderEntity
+import com.nrs.nsnik.notes.databinding.SingleFolderLayoutBinding
 import com.nrs.nsnik.notes.util.AppUtil
 import com.nrs.nsnik.notes.view.adapters.diffUtil.FolderDiffUtil
 import com.nrs.nsnik.notes.view.listeners.ItemPositionClickListener
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.item_indicator.view.*
-import kotlinx.android.synthetic.main.single_folder_layout.view.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class FolderListAdapter(val itemPositionClickListener: ItemPositionClickListener) : ListAdapter<FolderEntity, FolderListAdapter.MyViewHolder>(FolderDiffUtil()) {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.single_folder_layout, parent, false))
+        val binding = SingleFolderLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -57,16 +56,16 @@ class FolderListAdapter(val itemPositionClickListener: ItemPositionClickListener
         holder.container.minimumWidth = 300
     }
 
-    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder(binding: SingleFolderLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val folderName: TextView = itemView.singleFolderName
-        val isPinned: ImageView = itemView.itemIndicatorPin
-        val isLocked: ImageView = itemView.itemIndicatorLock
-        val container: CardView = itemView.singleFolderContainer
+        val folderName: TextView = binding.singleFolderName
+        val isPinned: ImageView = itemView.findViewById(R.id.itemIndicatorPin)
+        val isLocked: ImageView = itemView.findViewById(R.id.itemIndicatorLock)
+        val container: CardView = binding.singleFolderContainer
 
         init {
             compositeDisposable.addAll(
-                    RxView.clicks(container).subscribe { itemPositionClickListener.itemClicked(adapterPosition) }
+                    container.clicks().subscribe { itemPositionClickListener.itemClicked(adapterPosition) }
             )
         }
     }

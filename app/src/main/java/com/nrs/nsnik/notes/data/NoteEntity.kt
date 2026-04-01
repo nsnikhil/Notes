@@ -28,17 +28,13 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nrs.nsnik.notes.model.CheckListObject
-import com.twitter.serial.serializer.CollectionSerializers
-import com.twitter.serial.serializer.CoreSerializers
-import com.twitter.serial.serializer.ObjectSerializer
-import com.twitter.serial.serializer.SerializationContext
-import com.twitter.serial.stream.SerializerInput
-import com.twitter.serial.stream.SerializerOutput
-import java.io.Serializable
+import com.nrs.nsnik.notes.util.DateSerializer
+import kotlinx.serialization.Serializable
 import java.util.*
 
+@Serializable
 @Entity
-open class NoteEntity : Serializable {
+open class NoteEntity {
 
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
@@ -52,6 +48,7 @@ open class NoteEntity : Serializable {
     var locked: Int = 0
 
     @TypeConverters(DateConverter::class)
+    @Serializable(with = DateSerializer::class)
     var dateModified: Date? = null
 
     var color: String? = null
@@ -67,50 +64,4 @@ open class NoteEntity : Serializable {
 
     @Ignore
     var hasReminder: Int = 0
-
-    companion object {
-
-        @Ignore
-        val SERIALIZER: ObjectSerializer<NoteEntity> = NoteEntityObjectSerializer()
-
-        class NoteEntityObjectSerializer : ObjectSerializer<NoteEntity>() {
-
-            override fun serializeObject(context: SerializationContext, output: SerializerOutput<out SerializerOutput<*>>, noteEntity: NoteEntity) {
-                val abc = DateConverter()
-                output.writeInt(noteEntity.uid)
-                output.writeString(noteEntity.title)
-                output.writeString(noteEntity.noteContent)
-                output.writeString(noteEntity.fileName)
-                output.writeString(noteEntity.folderName)
-                output.writeInt(noteEntity.pinned)
-                output.writeInt(noteEntity.locked)
-                output.writeObject(SerializationContext.ALWAYS_RELEASE, noteEntity.dateModified, CoreSerializers.DATE)
-                output.writeString(noteEntity.color)
-                output.writeObject(SerializationContext.ALWAYS_RELEASE, noteEntity.imageList, CollectionSerializers.getListSerializer(CoreSerializers.STRING))
-                output.writeObject(SerializationContext.ALWAYS_RELEASE, noteEntity.audioList, CollectionSerializers.getListSerializer(CoreSerializers.STRING))
-                output.writeObject(SerializationContext.ALWAYS_RELEASE, noteEntity.checkList, CollectionSerializers.getListSerializer(CheckListObject.SERIALIZER))
-                output.writeInt(noteEntity.hasReminder)
-            }
-
-            override fun deserializeObject(context: SerializationContext, input: SerializerInput, versionNumber: Int): NoteEntity? {
-                val noteEntity = NoteEntity()
-                noteEntity.uid = input.readInt()
-                noteEntity.title = input.readString()
-                noteEntity.noteContent = input.readString()
-                noteEntity.fileName = input.readString()
-                noteEntity.folderName = input.readString()
-                noteEntity.pinned = input.readInt()
-                noteEntity.locked = input.readInt()
-                noteEntity.dateModified = input.readObject(SerializationContext.ALWAYS_RELEASE, CoreSerializers.DATE)
-                noteEntity.color = input.readString()
-                noteEntity.imageList = input.readObject(SerializationContext.ALWAYS_RELEASE, CollectionSerializers.getListSerializer(CoreSerializers.STRING))
-                noteEntity.audioList = input.readObject(SerializationContext.ALWAYS_RELEASE, CollectionSerializers.getListSerializer(CoreSerializers.STRING))
-                noteEntity.checkList = input.readObject(SerializationContext.ALWAYS_RELEASE, CollectionSerializers.getListSerializer(CheckListObject.SERIALIZER))
-                noteEntity.hasReminder = input.readInt()
-                return noteEntity
-            }
-
-        }
-    }
-
 }

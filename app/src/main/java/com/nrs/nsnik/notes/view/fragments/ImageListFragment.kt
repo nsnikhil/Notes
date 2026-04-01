@@ -32,23 +32,25 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.RecyclerViewBinding
 import com.nrs.nsnik.notes.view.adapters.ImageAdapter
 import com.nrs.nsnik.notes.view.listeners.AdapterType
 import com.nrs.nsnik.notes.view.listeners.OnItemRemoveListener
-import com.twitter.serial.serializer.CollectionSerializers
-import com.twitter.serial.serializer.CoreSerializers
-import com.twitter.serial.stream.bytebuffer.ByteBufferSerial
-import kotlinx.android.synthetic.main.recycler_view.*
+import kotlinx.serialization.json.Json
 
 
 class ImageListFragment : Fragment(), OnItemRemoveListener {
+
+    private var _binding: RecyclerViewBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var imageList: MutableList<String>
     private var position: Int = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.recycler_view, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = RecyclerViewBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,17 +58,22 @@ class ImageListFragment : Fragment(), OnItemRemoveListener {
         initialize()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initialize() {
         val resources = activity?.resources
-        imageList = ByteBufferSerial().fromByteArray(arguments?.getByteArray(resources?.getString(R.string.bundleImageList)), CollectionSerializers.getListSerializer(CoreSerializers.STRING))!!
+        val imageBytes = arguments?.getByteArray(resources?.getString(R.string.bundleImageList))
+        imageList = Json.decodeFromString<List<String>>(String(imageBytes!!, Charsets.UTF_8)).toMutableList()
         position = arguments?.getInt(resources?.getString(R.string.bundleImageListPosition), 0)!!
         imageAdapter = ImageAdapter(true, this)
 
-        recyclerView.apply {
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             itemAnimator = DefaultItemAnimator()
             adapter = imageAdapter
-            //scrollToPosition(position)
         }
 
         imageAdapter.submitList(imageList)

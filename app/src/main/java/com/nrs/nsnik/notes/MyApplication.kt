@@ -24,26 +24,16 @@
 package com.nrs.nsnik.notes
 
 import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import com.bumptech.glide.RequestManager
-import com.crashlytics.android.Crashlytics
-import com.facebook.stetho.Stetho
-import com.github.moduth.blockcanary.BlockCanary
 import com.google.firebase.FirebaseApp
 import com.nrs.nsnik.notes.dagger.components.*
 import com.nrs.nsnik.notes.dagger.modules.ContextModule
-import com.nrs.nsnik.notes.util.AppBlockCanaryContext
 import com.nrs.nsnik.notes.util.DbUtil
 import com.nrs.nsnik.notes.util.FileUtil
 import com.nrs.nsnik.notes.util.NetworkUtil
-import com.rollbar.android.Rollbar
-import com.squareup.leakcanary.LeakCanary
-import com.squareup.leakcanary.RefWatcher
-import io.branch.referral.Branch
-import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 import java.io.File
 
@@ -55,15 +45,9 @@ class MyApplication : Application() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
 
-        fun getRefWatcher(context: Context): RefWatcher? {
-            val application = context.applicationContext as MyApplication
-            return application.refWatcher
-        }
-
     }
 
-    private var contextModule: ContextModule = ContextModule(this)
-    private var refWatcher: RefWatcher? = null
+    private lateinit var contextModule: ContextModule
 
     lateinit var requestManager: RequestManager
     lateinit var dbUtil: DbUtil
@@ -74,19 +58,20 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        contextModule = ContextModule(this)
 
-        Branch.getAutoInstance(this)
-        FirebaseApp.initializeApp(this)
-        Fabric.with(this, Crashlytics())
+        try {
+            FirebaseApp.initializeApp(this)
+        } catch (e: Exception) {
+            Timber.e(e, "Firebase init failed")
+        }
 
         if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this)
             Timber.plant(object : Timber.DebugTree() {
-                override fun createStackElementTag(element: StackTraceElement): String {
+                override fun createStackElementTag(element: StackTraceElement): String? {
                     return super.createStackElementTag(element) + ":" + element.lineNumber
                 }
             })
-            refWatcher = LeakCanary.install(this)
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
@@ -95,10 +80,7 @@ class MyApplication : Application() {
                     .detectAll()
                     .penaltyLog()
                     .build())
-            BlockCanary.install(this, AppBlockCanaryContext()).start()
-            Rollbar.init(this, "3b2ad6f009e643fdaf91228cdc54acab", "development")
         }
-        if (LeakCanary.isInAnalyzerProcess(this)) return
         moduleSetter()
     }
 

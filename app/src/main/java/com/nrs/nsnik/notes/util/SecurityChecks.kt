@@ -43,7 +43,7 @@ class SecurityChecks @Inject internal constructor(@param:ApplicationQualifier pr
     fun checkAppSignature(): Boolean {
         try {
             @SuppressLint("PackageManagerGetSignatures") val packageInfo = mContext.packageManager.getPackageInfo(mContext.packageName, PackageManager.GET_SIGNATURES)
-            for (signature in packageInfo.signatures) {
+            for (signature in packageInfo.signatures.orEmpty()) {
                 val signatureBytes = signature.toByteArray()
                 val md = MessageDigest.getInstance("SHA")
                 md.update(signatureBytes)

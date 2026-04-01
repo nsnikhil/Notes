@@ -32,15 +32,19 @@ import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.nrs.nsnik.notes.R
+import com.nrs.nsnik.notes.databinding.FragmentSearchBinding
 
 //TODO
 class SearchFragment : Fragment() {
 
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
     private lateinit var searchView: SearchView
     private lateinit var searchItem: MenuItem
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_search, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,17 +52,22 @@ class SearchFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.main_menu, menu)
-        searchView = menu?.findItem(R.id.menuMainSearch)?.actionView as SearchView
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+        searchView = menu.findItem(R.id.menuMainSearch)?.actionView as SearchView
         searchItem = menu.findItem(R.id.menuMainSearch)
         searchView.setSearchableInfo((activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager).getSearchableInfo(activity!!.componentName))
         menuListener()
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menuMainSearch -> {
             }
         }
@@ -80,11 +89,11 @@ class SearchFragment : Fragment() {
         })
 
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(menuItem: MenuItem?): Boolean {
+            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
                 return true
             }
 
-            override fun onMenuItemActionCollapse(menuItem: MenuItem?): Boolean {
+            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
                 return true
             }
 

@@ -1,0 +1,29 @@
+{
+  "feature_id": "feat-20260401-114627",
+  "requirements_file": "/Users/eniksoni/workspace/agentTest/testingScenarios/android_espresso_tests_notes_app.txt",
+  "repo_path": "/Users/eniksoni/AndroidStudioProjects/Notes",
+  "output_dir": "/Users/eniksoni/AndroidStudioProjects/Notes/.kiro/agent-runs/feat-20260401-114627",
+  "status": "complete",
+  "phase": "complete",
+  "project_context": {
+    "source": "previous_runs",
+    "language": "Kotlin",
+    "framework": "Android (MVVM, Dagger 2, Room, RxJava 3, Navigation Component)",
+    "build_tool": "Gradle 8.9 with AGP 8.7.3",
+    "build_command": "./gradlew assembleDebug",
+    "test_command": "./gradlew testDebugUnitTest",
+    "project_structure_notes": "Two product flavors (demo/full), compileSdk 35, Kotlin 2.1.10. All features fixed and tested."
+  },
+  "phases_completed": ["requirement_gathering", "requirement_validation", "planning", "execution", "integration_testing"],
+  "subtasks": [
+    {"id": "ST-001", "name": "Fix submitList() mutable list bug", "status": "pass", "attempts": 1},
+    {"id": "ST-002", "name": "Migrate to Activity Result API", "status": "pass", "attempts": 1},
+    {"id": "ST-003", "name": "Fix reminders", "status": "pass", "attempts": 1},
+    {"id": "ST-004", "name": "Fix lock + navigation", "status": "pass", "attempts": 1},
+    {"id": "ST-005", "name": "Espresso tests: core flows", "status": "pass", "attempts": 1},
+    {"id": "ST-006", "name": "Espresso tests: remaining flows", "status": "pass", "attempts": 1},
+    {"id": "ST-007", "name": "Final verification", "status": "pass", "attempts": 1}
+  ],
+  "max_attempts_per_subtask": 3,
+  "agent_history": []
+}
